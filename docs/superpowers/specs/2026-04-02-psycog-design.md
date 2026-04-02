@@ -81,7 +81,7 @@ The wavefolder's **output amplitude** (fold intensity) can trigger new freeze po
 | **Freeze Mode** | Manual / Auto / Off | Manual = button triggers freeze. Auto = threshold triggers freeze. Off = no freeze |
 | **Threshold** | 0 – 1 | Sensitivity for auto-trigger. Only active in Auto mode. Visible but dimmed in other modes |
 
-**Freeze Buffer:** 3 seconds of audio
+**Freeze Buffer:** 3 seconds of audio, **continuously recording** (circular buffer, oldest audio replaced by newest). When freeze is triggered, playback loops within the current 3-second buffer.
 
 ### Wavefolding Stage
 
@@ -98,13 +98,14 @@ The wavefolder's **output amplitude** (fold intensity) can trigger new freeze po
 | **Auto-normalize** | (internal) | Output always at healthy level |
 | **Soft-clip** | (internal) | Prevents harshness on final output |
 
-### LFO Modulation
+### LFO Stage
 
-Built-in LFO for preset parameter modulation:
-- **Rate:** 0.01 – 20 Hz (how fast the parameter cycles)
-- **Waveform:** Sine, Triangle, Square, Random S&H
-- **Depth:** 0 – 1 per assigned parameter (0 = no modulation, 1 = full range)
-- **Targets:** Any combination of: Stretch, Position, Fold Amount, Fold Offset
+| Parameter | Range | Description |
+|-----------|-------|-------------|
+| **LFO Rate** | 0.01 – 20 Hz | How fast the modulated parameter cycles |
+| **LFO Waveform** | Sine, Triangle, Square, Random S&H | Shape of modulation |
+| **LFO Depth** | 0 – 1 | Modulation intensity (0 = none, 1 = full range of target parameter) |
+| **LFO Target** | Stretch, Position, Fold Amount, Fold Offset (any combination) | Which parameter(s) are modulated |
 
 Each preset defines default LFO assignments. Users can modify rate, waveform, depth, and targets.
 
@@ -127,7 +128,7 @@ Each preset defines default LFO assignments. Users can modify rate, waveform, de
 | **Platforms** | Linux, Windows, macOS |
 | **Sample Rates** | 44.1 kHz, 48 kHz |
 | **Buffer Size** | 128 samples minimum (live use possible) |
-| **Latency** | One buffer (safety) |
+| **Latency** | One buffer (~2.7ms @ 48kHz, 128 samples) |
 | **CPU Budget** | < 15% single core |
 | **Automation** | All parameters DAW-automatable |
 
@@ -194,18 +195,32 @@ Each preset defines default LFO assignments. Users can modify rate, waveform, de
 | Fold Offset | 0.2 | Slight asymmetry |
 | Mix | 80% | Primarily wet |
 
+| LFO Setting | Value |
+|-------------|-------|
+| Rate | 0.1 Hz |
+| Waveform | Sine |
+| Depth | 0.3 |
+| Target | Position |
+
 ### 2. Golden Memories
 **Character:** Warm keys that transform to psychedelic when held, responds to note duration
 
 | Parameter | Value | Notes |
 |-----------|-------|-------|
-| Stretch | 0.8x → 0.2x (LFO) | Starts subtle, gets extreme |
+| Stretch | 0.8x base, LFO modulated | Starts subtle, gets extreme |
 | Position | Static | No position movement |
 | Freeze Mode | Auto | Catches sustained notes |
 | Threshold | 0.4 | Medium-high sensitivity |
-| Fold Amount | 0.3 → 0.6 (LFO) | Evolves over time |
+| Fold Amount | 0.3 base, LFO modulated | Evolves over time |
 | Fold Offset | 0.1 | Minimal asymmetry |
 | Mix | 70% | Blend with original |
+
+| LFO Setting | Value |
+|-------------|-------|
+| Rate | 0.05 Hz |
+| Waveform | Triangle |
+| Depth | Stretch: 0.7, Fold: 0.5 |
+| Target | Stretch, Fold Amount |
 
 ### 3. Omnipotent Observers
 **Character:** Thick fat psy pad with overlapping modulation zones, epiphany of sound
@@ -220,6 +235,13 @@ Each preset defines default LFO assignments. Users can modify rate, waveform, de
 | Fold Offset | 0.4 | Noticeable asymmetry |
 | Mix | 90% | Almost fully processed |
 
+| LFO Setting | Value |
+|-------------|-------|
+| Rate | 0.15 Hz |
+| Waveform | Sine |
+| Depth | 0.4 |
+| Target | Position |
+
 ### 4. Infinite Cogs
 **Character:** Interlocking evolution — mechanical motion dissolving into organic drift
 
@@ -233,17 +255,27 @@ Each preset defines default LFO assignments. Users can modify rate, waveform, de
 | Fold Offset | 0.3 | Moderate asymmetry |
 | Mix | 85% | Strong processing |
 
+| LFO Setting | Value |
+|-------------|-------|
+| Rate | 0.2 Hz |
+| Waveform | Triangle |
+| Depth | 0.35 |
+| Target | Position |
+
 ---
 
 ## Interaction Details
 
 ### Freeze Trigger Mechanism
 
+The freeze buffer is **always recording** — a circular buffer continuously captures the last 3 seconds of input audio (oldest replaced by newest).
+
 When Freeze Mode = Auto:
 1. Wavefolder output amplitude is continuously monitored
-2. When amplitude crosses the threshold, a new 3-second buffer is captured
-3. Playback continues from the new freeze point
-4. This creates cascading transformation layers
+2. When amplitude crosses the threshold, a new freeze point is set at the current buffer position
+3. Playback loops within the captured 3-second buffer
+4. The buffer continues recording underneath (fresh audio available when next freeze triggers)
+5. This creates cascading transformation layers — each freeze captures a different moment
 
 ### LFO Assignment
 
@@ -285,9 +317,15 @@ Circular buffer of 3 seconds. When freeze is triggered, playback loops within th
 ### Wavefolding Implementation
 Use tanh-based folding for musical harmonics. Fold Offset shifts the zero-crossing point before folding:
 ```
-folded = tanh((input + offset) * amount)
+// Mono input: apply different offset per channel for stereo width
+L: folded = tanh((input + (offset * stereo_spread)) * amount)
+R: folded = tanh((input + (offset * -stereo_spread)) * amount)
+
+// Stereo input: offset modulates each channel independently
+L: folded = tanh((input_L + offset) * amount)
+R: folded = tanh((input_R - offset) * amount)  // opposite sign creates width
 ```
-Apply different offset values for L and R channels to create stereo width.
+This creates stereo width from mono input and enhances width from stereo input.
 
 ### Soft-Clip
 Apply soft-clip after mix:
