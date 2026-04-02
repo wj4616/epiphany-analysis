@@ -77,11 +77,13 @@ The wavefolder's **output amplitude** (fold intensity) can trigger new freeze po
 | Parameter | Range | Description |
 |-----------|-------|-------------|
 | **Stretch** | 0.1x – 10x | Time stretch amount. 0.1x = extreme compression, 10x = extreme stretch |
-| **Position** | 0 – 1 | Buffer position (where playhead reads). When frozen: position in frozen buffer. When not frozen: position in stretched audio |
-| **Freeze Mode** | Manual / Auto / Off | Manual = button triggers freeze. Auto = threshold triggers freeze. Off = no freeze |
-| **Threshold** | 0 – 1 | Sensitivity for auto-trigger. Only active in Auto mode. Visible but dimmed in other modes |
+| **Position** | 0 – 1 | Buffer position (where playhead reads). Active only when frozen (Manual/Auto modes). Ignored in Off mode. |
+| **Freeze Mode** | Manual / Auto / Off | Manual = toggle button (press to freeze, press again to unfreeze). Auto = threshold triggers freeze. Off = no freeze |
+| **Threshold** | 0 – 1 | Sensitivity for auto-trigger. Only active in Auto mode. Visible but dimmed in other modes. 100ms cooldown between triggers prevents rapid re-triggering |
 
 **Freeze Buffer:** 3 seconds of audio, **continuously recording** (circular buffer, oldest audio replaced by newest). When freeze is triggered, playback loops within the current 3-second buffer.
+
+**Stretch During Freeze:** When frozen, Stretch controls playback speed of the frozen buffer (creates pitch-shift effect on frozen audio).
 
 ### Wavefolding Stage
 
@@ -96,7 +98,9 @@ The wavefolder's **output amplitude** (fold intensity) can trigger new freeze po
 |-----------|-------|-------------|
 | **Mix** | 0 – 100% | Wet/dry blend. 0% = dry only, 100% = fully processed |
 | **Auto-normalize** | (internal) | Output always at healthy level |
-| **Soft-clip** | (internal) | Prevents harshness on final output |
+| **Soft-clip** | (internal) | Applied after mix — both dry and wet are soft-clipped together |
+
+**Signal path:** Dry signal + wet signal → Mix → Soft-clip → Auto-normalize → Output
 
 ### LFO Stage
 
@@ -219,7 +223,7 @@ Each preset defines default LFO assignments. Users can modify rate, waveform, de
 |-------------|-------|
 | Rate | 0.05 Hz |
 | Waveform | Triangle |
-| Depth | Stretch: 0.7, Fold: 0.5 |
+| Depth | 0.6 |
 | Target | Stretch, Fold Amount |
 
 ### 3. Omnipotent Observers
@@ -270,12 +274,21 @@ Each preset defines default LFO assignments. Users can modify rate, waveform, de
 
 The freeze buffer is **always recording** — a circular buffer continuously captures the last 3 seconds of input audio (oldest replaced by newest).
 
-When Freeze Mode = Auto:
+**Manual Mode:**
+- Toggle button: press once to freeze, press again to unfreeze
+- Position parameter scrubs through frozen buffer
+
+**Auto Mode:**
 1. Wavefolder output amplitude is continuously monitored
-2. When amplitude crosses the threshold, a new freeze point is set at the current buffer position
-3. Playback loops within the captured 3-second buffer
-4. The buffer continues recording underneath (fresh audio available when next freeze triggers)
-5. This creates cascading transformation layers — each freeze captures a different moment
+2. When amplitude crosses threshold, freeze is triggered
+3. **100ms cooldown** prevents rapid re-triggering from same peak
+4. Playback loops within the frozen 3-second buffer
+5. Position parameter scrubs through frozen buffer
+6. Buffer continues recording underneath (fresh audio for next trigger)
+
+**Off Mode:**
+- No freeze, position parameter ignored
+- Audio passes through time-stretch only
 
 ### LFO Assignment
 
@@ -291,7 +304,7 @@ Users can modify LFO assignments beyond presets.
 For mono input:
 1. Mono signal is split to L and R channels
 2. Fold Offset is applied differently per channel (creates width from asymmetric harmonics)
-3. Post-fold stereo widening effect is applied
+3. Mid/side processing enhances stereo width after wavefolding
 4. Result: Wide stereo image from mono source
 
 ---
