@@ -106,15 +106,10 @@ void PsycogAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
     freezeMode = static_cast<PsycogConstants::FreezeMode>(freezeModeInt);
     auto lfoWaveform = static_cast<PsycogConstants::LfoWaveform>(lfoWaveformInt);
 
-    // Set LFO parameters and process
+    // Set LFO parameters (advance() is called per-sample in the loop below)
     lfo.setRate(lfoRate);
     lfo.setWaveform(lfoWaveform);
     lfo.setDepth(lfoDepth);
-    lfo.targetStretch = targetStretch;
-    lfo.targetPosition = targetPosition;
-    lfo.targetFoldAmount = targetFoldAmount;
-    lfo.targetFoldOffset = targetFoldOffset;
-    lfo.process(numSamples);
 
     // Set smoother targets (per-sample getNextValue in loop below)
     stretchSmoother.setTargetValue(stretchNorm);
@@ -146,7 +141,7 @@ void PsycogAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
         float smoothedMix = mixSmoother.getNextValue();
 
         // Apply LFO modulation to normalized parameter values
-        float lfoValue = lfo.getValue(i);
+        float lfoValue = lfo.advance();
 
         float finalStretch = smoothedStretch;
         float finalPosition = smoothedPosition;

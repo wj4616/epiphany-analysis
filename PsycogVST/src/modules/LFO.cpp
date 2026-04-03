@@ -1,12 +1,10 @@
 /*
   PsycogVST - Interdimensional sound transformation plugin
-  Phase 4: DSP Implementation - LFO
+  LFO — Inline per-sample computation
 */
 
 #include "LFO.h"
-#include "../utils/MathUtils.h"
 #include "../Parameters.h"
-#include <chrono>
 
 LFO::LFO()
 {
@@ -16,79 +14,27 @@ void LFO::prepare(double sr)
 {
     sampleRate = sr;
     depthSmoother.reset(sampleRate, PsycogConstants::smoothingTimeSeconds);
+    depthSmoother.setCurrentAndTargetValue(0.0f);
 
-    // Pre-allocate buffer for max block size (no allocations in processBlock)
-    blockSize = 4096;
-    lfoValues.resize(blockSize);
-
-    // Initialize random number generator for S&H
-    randomEngine.seed(static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count()));
-    heldValue = 0.0f;
-
-    // Start at phase 0
     phase = 0.0f;
+    phaseIncrement = 0.0f;
+
+    // Seed LCG from address of this object (deterministic per instance, unique per run)
+    lcgState = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(this)) | 1u;
+
+    // Initialize S&H with a random value so first cycle isn't silent
+    heldValue = nextRandom();
 }
 
-void LFO::process(int numSamples)
+void LFO::reset()
 {
-    // CRITICAL: Per-sample processing
-    // Phase increments per-sample, not per-block
-    depthSmoother.setTargetValue(depth);
-
-    for (int i = 0; i < numSamples; ++i)
-    {
-        // Smooth depth per-sample (CM-05 prevention)
-        float smoothedDepth = depthSmoother.getNextValue();
-
-        // Generate waveform value
-        float value = 0.0f;
-
-        switch (waveform)
-        {
-            case PsycogConstants::LfoWaveform::Sine:
-                value = std::sin(2.0f * juce::MathConstants<float>::pi * phase);
-                break;
-
-            case PsycogConstants::LfoWaveform::Triangle:
-                // Triangle: bipolar from -1 to +1
-                // Simpler formula: 1 - 4 * |phase - 0.5|
-                value = 1.0f - 4.0f * std::abs(phase - 0.5f);
-                break;
-
-            case PsycogConstants::LfoWaveform::Square:
-                value = (phase < 0.5f) ? 1.0f : -1.0f;
-                break;
-
-            case PsycogConstants::LfoWaveform::SampleAndHold:
-                // S&H: Generate new random value at start of each cycle
-                // Detect cycle start when phase wraps around
-                {
-                    float nextPhase = phase + phaseIncrement;
-                    if (nextPhase >= 1.0f || phase < phaseIncrement)
-                    {
-                        // Just started a new cycle
-                        heldValue = randomDist(randomEngine);
-                    }
-                }
-                value = heldValue;
-                break;
-        }
-
-        // Store bipolar value scaled by depth
-        lfoValues[i] = value * smoothedDepth;
-
-        // CRITICAL: Increment phase per-sample
-        float prevPhase = phase;
-        phase += phaseIncrement;
-        if (phase >= 1.0f)
-            phase -= 1.0f;
-    }
+    phase = 0.0f;
+    depthSmoother.setCurrentAndTargetValue(0.0f);
+    heldValue = nextRandom();
 }
 
 void LFO::setRate(float normalizedRate)
 {
-    // Convert normalized [0, 1] to actual rate using log scale
-    // Rate range: 0.01 Hz to 20 Hz
     float rate = ParamConversions::lfoRateFromNormalized(normalizedRate);
     phaseIncrement = static_cast<float>(rate / sampleRate);
 }
@@ -101,9 +47,53 @@ void LFO::setWaveform(PsycogConstants::LfoWaveform wf)
 void LFO::setDepth(float d)
 {
     depth = d;
+    depthSmoother.setTargetValue(d);
 }
 
-float LFO::getValue(int sampleIndex) const
+float LFO::advance()
 {
-    return lfoValues[sampleIndex];
+    float smoothedDepth = depthSmoother.getNextValue();
+
+    // Generate waveform value (bipolar -1 to +1)
+    float value = 0.0f;
+
+    switch (waveform)
+    {
+        case PsycogConstants::LfoWaveform::Sine:
+            value = std::sin(2.0f * juce::MathConstants<float>::pi * phase);
+            break;
+
+        case PsycogConstants::LfoWaveform::Triangle:
+            value = 1.0f - 4.0f * std::abs(phase - 0.5f);
+            break;
+
+        case PsycogConstants::LfoWaveform::Square:
+            value = (phase < 0.5f) ? 1.0f : -1.0f;
+            break;
+
+        case PsycogConstants::LfoWaveform::SampleAndHold:
+            value = heldValue;
+            break;
+    }
+
+    // Advance phase
+    float prevPhase = phase;
+    phase += phaseIncrement;
+    if (phase >= 1.0f)
+        phase -= 1.0f;
+
+    // S&H: new random value when phase wraps
+    // Fix for Issue #6: compare prevPhase vs phase, not phase vs phaseIncrement
+    if (waveform == PsycogConstants::LfoWaveform::SampleAndHold && phase < prevPhase)
+        heldValue = nextRandom();
+
+    return value * smoothedDepth;
+}
+
+float LFO::nextRandom()
+{
+    // Numerical Recipes LCG — lightweight, no allocation, deterministic
+    lcgState = lcgState * 1664525u + 1013904223u;
+    // Convert to float in [-1, 1]
+    return static_cast<float>(static_cast<int32_t>(lcgState)) / 2147483648.0f;
 }
