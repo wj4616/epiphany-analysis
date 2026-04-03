@@ -1,10 +1,6 @@
 /*
   PsycogVST - Interdimensional sound transformation plugin
-  Phase 4: DSP Implementation - TimeStretch
-
-  NOTE: Full granular overlap-add implementation is pending.
-  This version handles freeze correctly but uses pass-through for Off mode.
-  The granular engine for time-stretching without freeze is a stub.
+  TimeStretch — 4-grain overlap-add engine (Issue #7)
 */
 
 #include "TimeStretch.h"
@@ -13,98 +9,221 @@
 
 TimeStretch::TimeStretch()
 {
-    // Generate Hann window for granular processing
-    grainWindow.resize(grainSize);
+    // Pre-compute Hann window
     for (int i = 0; i < grainSize; ++i)
     {
-        grainWindow[i] = 0.5f * (1.0f - std::cos(2.0f * juce::MathConstants<float>::pi * i / (grainSize - 1)));
+        hannWindow[i] = 0.5f * (1.0f - std::cos(
+            2.0f * juce::MathConstants<float>::pi * static_cast<float>(i)
+            / static_cast<float>(grainSize - 1)));
     }
-
-    // Allocate input buffers
-    inputBufferL.resize(grainSize * 4);  // 4x grain size for overlap
-    inputBufferR.resize(grainSize * 4);
 }
 
 void TimeStretch::prepare(double sr, int /*maxSamples*/)
 {
     sampleRate = sr;
-    currentStretch = 1.0f;
 
-    // Initialize freeze buffer
+    inputBufferL.resize(inputBufferSize, 0.0f);
+    inputBufferR.resize(inputBufferSize, 0.0f);
+    inputWritePos = 0;
+    inputReadHead = 0.0f;
+
     freezeBuffer.prepare(sampleRate);
 
-    // Initialize smoothers (20ms per spec)
     stretchSmoother.reset(sampleRate, PsycogConstants::smoothingTimeSeconds);
     positionSmoother.reset(sampleRate, PsycogConstants::smoothingTimeSeconds);
-    stretchSmoother.setCurrentAndTargetValue(0.5f);  // Normalized 1x
+    stretchSmoother.setCurrentAndTargetValue(0.5f);
     positionSmoother.setCurrentAndTargetValue(0.5f);
 
-    // Clear input buffers
-    std::fill(inputBufferL.begin(), inputBufferL.end(), 0.0f);
-    std::fill(inputBufferR.begin(), inputBufferR.end(), 0.0f);
-    inputWritePos = 0;
-    grainReadPos = 0;
+    crossfadeLength = static_cast<int>(PsycogConstants::freezeCrossfadeMs * sampleRate / 1000.0);
+
+    jitterLcgState = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(this)) | 1u;
+
+    reset();
 }
 
-void TimeStretch::process(float* leftOut, float* rightOut,
-                          const float* leftIn, const float* rightIn,
-                          int numSamples, float normalizedStretch, float normalizedPosition,
-                          PsycogConstants::FreezeMode freezeMode, float threshold)
+void TimeStretch::reset()
 {
-    // Set smoothing targets
-    stretchSmoother.setTargetValue(normalizedStretch);
-    positionSmoother.setTargetValue(normalizedPosition);
+    for (auto& g : grains)
+        g.active = false;
 
-    // Track current stretch for reporting
-    currentStretch = ParamConversions::stretchFromNormalized(normalizedStretch);
+    nextGrainSlot = 0;
+    samplesSinceLastGrain = grainSize;  // Launch a grain immediately
+    inputWritePos = 0;
+    inputReadHead = 0.0f;
+    std::fill(inputBufferL.begin(), inputBufferL.end(), 0.0f);
+    std::fill(inputBufferR.begin(), inputBufferR.end(), 0.0f);
 
-    for (int i = 0; i < numSamples; ++i)
+    freezeBuffer.reset();
+    lastFreezeMode = PsycogConstants::FreezeMode::Off;
+    crossfadeProgress = 1.0f;
+    prevOutputL = 0.0f;
+    prevOutputR = 0.0f;
+}
+
+void TimeStretch::writeFreezeBuffer(const float* leftIn, const float* rightIn, int numSamples)
+{
+    freezeBuffer.write(leftIn, rightIn, numSamples);
+}
+
+int TimeStretch::nextJitter()
+{
+    jitterLcgState = jitterLcgState * 1664525u + 1013904223u;
+    return static_cast<int>(jitterLcgState % (2 * jitterRange + 1)) - jitterRange;
+}
+
+void TimeStretch::launchGrain(float stretch, float position, PsycogConstants::FreezeMode mode)
+{
+    for (int attempt = 0; attempt < numGrains; ++attempt)
     {
-        // CRITICAL: Per-sample smoothing (CM-05 prevention)
-        float smoothedStretchNorm = stretchSmoother.getNextValue();
-        float smoothedPosition = positionSmoother.getNextValue();
-
-        // Store input in buffer for potential granular processing
-        inputBufferL[inputWritePos] = leftIn[i];
-        inputBufferR[inputWritePos] = rightIn[i];
-        inputWritePos = (inputWritePos + 1) % static_cast<int>(inputBufferL.size());
-
-        switch (freezeMode)
+        int slot = (nextGrainSlot + attempt) % numGrains;
+        if (!grains[slot].active)
         {
-            case PsycogConstants::FreezeMode::Off:
-                // Off mode: TODO - implement granular time-stretch
-                // Currently passes through input
-                // Granular overlap-add would go here
-                leftOut[i] = leftIn[i];
-                rightOut[i] = rightIn[i];
-                break;
+            Grain& g = grains[slot];
+            g.playbackPosition = 0;
+            g.active = true;
 
-            case PsycogConstants::FreezeMode::Manual:
-            case PsycogConstants::FreezeMode::Auto:
-                // Manual/Auto mode: use freeze buffer
-                if (freezeBuffer.isFrozen())
-                {
-                    // Read from frozen buffer at position
-                    float outL, outR;
-                    freezeBuffer.read(&outL, &outR, 1, smoothedPosition);
-                    leftOut[i] = outL;
-                    rightOut[i] = outR;
-                }
-                else
-                {
-                    // Not frozen: pass through
-                    leftOut[i] = leftIn[i];
-                    rightOut[i] = rightIn[i];
-                }
+            int jitter = nextJitter();
 
-                // Always write incoming audio for potential freeze
-                freezeBuffer.write(&leftIn[i], &rightIn[i], 1);
-                break;
+            if (mode == PsycogConstants::FreezeMode::Off)
+            {
+                float readPos = inputReadHead + static_cast<float>(jitter);
+                while (readPos < 0.0f) readPos += static_cast<float>(inputBufferSize);
+                while (readPos >= static_cast<float>(inputBufferSize)) readPos -= static_cast<float>(inputBufferSize);
+                g.sourcePosition = readPos;
+            }
+            else
+            {
+                int bufLen = static_cast<int>(PsycogConstants::freezeBufferSeconds * sampleRate);
+                float startSample = position * static_cast<float>(bufLen - 1) + static_cast<float>(jitter);
+                startSample = juce::jlimit(0.0f, static_cast<float>(bufLen - 1), startSample);
+                g.sourcePosition = startSample;
+            }
+
+            nextGrainSlot = (slot + 1) % numGrains;
+            return;
         }
     }
+}
+
+void TimeStretch::processGrainSample(Grain& grain, float& outL, float& outR,
+                                      PsycogConstants::FreezeMode mode, float stretchRate)
+{
+    if (!grain.active) return;
+
+    float window = hannWindow[grain.playbackPosition];
+
+    float sampleL = 0.0f;
+    float sampleR = 0.0f;
+
+    if (mode == PsycogConstants::FreezeMode::Off)
+    {
+        int readIdx = static_cast<int>(grain.sourcePosition + grain.playbackPosition) % inputBufferSize;
+        if (readIdx < 0) readIdx += inputBufferSize;
+        sampleL = inputBufferL[readIdx];
+        sampleR = inputBufferR[readIdx];
+    }
+    else
+    {
+        float readPos = grain.sourcePosition + static_cast<float>(grain.playbackPosition) * stretchRate;
+        int readIdx = static_cast<int>(readPos);
+        freezeBuffer.readSampleAt(readIdx, sampleL, sampleR);
+    }
+
+    outL += sampleL * window;
+    outR += sampleR * window;
+
+    grain.playbackPosition++;
+    if (grain.playbackPosition >= grainSize)
+        grain.active = false;
+}
+
+void TimeStretch::processSample(float& outL, float& outR,
+                                 float inL, float inR,
+                                 float normalizedStretch, float normalizedPosition,
+                                 PsycogConstants::FreezeMode freezeMode)
+{
+    // Store input in circular buffer
+    inputBufferL[inputWritePos] = inL;
+    inputBufferR[inputWritePos] = inR;
+    inputWritePos = (inputWritePos + 1) % inputBufferSize;
+
+    // Smooth parameters
+    stretchSmoother.setTargetValue(normalizedStretch);
+    positionSmoother.setTargetValue(normalizedPosition);
+    float smoothedStretchNorm = stretchSmoother.getNextValue();
+    float smoothedPosition = positionSmoother.getNextValue();
+
+    // Convert normalized stretch to actual value
+    float stretch = ParamConversions::stretchFromNormalized(smoothedStretchNorm);
+
+    // Detect mode transition for crossfade
+    bool modeChanged = (freezeMode != lastFreezeMode);
+    if (modeChanged)
+    {
+        crossfadeProgress = 0.0f;
+        lastFreezeMode = freezeMode;
+    }
+
+    // Compute hop size
+    float overlapFactor = 2.0f;
+    float hopSize = static_cast<float>(grainSize) / (stretch * overlapFactor);
+    hopSize = std::max(hopSize, 1.0f);
+
+    // Check if time to launch a new grain
+    samplesSinceLastGrain++;
+    if (samplesSinceLastGrain >= static_cast<int>(hopSize))
+    {
+        launchGrain(stretch, smoothedPosition, freezeMode);
+        samplesSinceLastGrain = 0;
+
+        if (freezeMode == PsycogConstants::FreezeMode::Off)
+        {
+            inputReadHead += hopSize;
+            while (inputReadHead >= static_cast<float>(inputBufferSize))
+                inputReadHead -= static_cast<float>(inputBufferSize);
+        }
+    }
+
+    // Sum all active grains
+    float grainOutL = 0.0f;
+    float grainOutR = 0.0f;
+
+    float stretchRate = (freezeMode != PsycogConstants::FreezeMode::Off) ? stretch : 1.0f;
+
+    for (auto& grain : grains)
+    {
+        if (grain.active)
+            processGrainSample(grain, grainOutL, grainOutR, freezeMode, stretchRate);
+    }
+
+    // Apply mode transition crossfade
+    if (crossfadeProgress < 1.0f)
+    {
+        float fadeIn = crossfadeProgress;
+        float fadeOut = 1.0f - fadeIn;
+        outL = grainOutL * fadeIn + prevOutputL * fadeOut;
+        outR = grainOutR * fadeIn + prevOutputR * fadeOut;
+        crossfadeProgress += 1.0f / static_cast<float>(crossfadeLength);
+        if (crossfadeProgress > 1.0f)
+            crossfadeProgress = 1.0f;
+    }
+    else
+    {
+        outL = grainOutL;
+        outR = grainOutR;
+    }
+
+    // Save output for potential crossfade on next mode transition
+    prevOutputL = outL;
+    prevOutputR = outR;
 }
 
 void TimeStretch::triggerFreeze()
 {
     freezeBuffer.triggerFreeze();
+}
+
+void TimeStretch::toggleFreeze()
+{
+    freezeBuffer.toggleFreeze();
 }

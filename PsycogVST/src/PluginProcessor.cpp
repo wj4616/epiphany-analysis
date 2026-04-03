@@ -43,6 +43,13 @@ void PsycogAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 void PsycogAudioProcessor::releaseResources()
 {
     dryDelay.reset();
+    timeStretch.reset();
+    wavefolder.reset();
+    thresholdDetector.reset();
+    wetProcessor.reset();
+    mixer.reset();
+    lfo.reset();
+    // outputProtection is stateless — no reset needed
 }
 
 bool PsycogAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
@@ -72,15 +79,13 @@ void PsycogAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
     // Handle mono input by copying to both channels
     bool isMonoInput = (totalNumInputChannels == 1);
     if (isMonoInput && totalNumOutputChannels >= 2)
-    {
         buffer.copyFrom(1, 0, buffer, 0, 0, numSamples);
-    }
 
     // Get input pointers
     const float* leftIn = buffer.getReadPointer(0);
     const float* rightIn = buffer.getReadPointer(1);
 
-    // Get parameter values (raw, not normalized)
+    // === 1. Read all raw parameter values (once per block) ===
     float stretchNorm = *apvts.getRawParameterValue(ParamIDs::stretch);
     float positionNorm = *apvts.getRawParameterValue(ParamIDs::position);
     int freezeModeInt = static_cast<int>(*apvts.getRawParameterValue(ParamIDs::freezeMode));
@@ -96,29 +101,45 @@ void PsycogAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
     bool targetFoldOffset = *apvts.getRawParameterValue(ParamIDs::lfoTargetFoldOffset) > 0.5f;
     float mix = *apvts.getRawParameterValue(ParamIDs::mix);
 
-    freezeMode = static_cast<PsycogConstants::FreezeMode>(freezeModeInt);
+    auto currentFreezeMode = static_cast<PsycogConstants::FreezeMode>(freezeModeInt);
     auto lfoWaveform = static_cast<PsycogConstants::LfoWaveform>(lfoWaveformInt);
 
-    // Set LFO parameters (advance() is called per-sample in the loop below)
+    // === 2. Configure LFO ===
     lfo.setRate(lfoRate);
     lfo.setWaveform(lfoWaveform);
     lfo.setDepth(lfoDepth);
 
-    // Get buffer pointers for wet path
-    float* wetLeft = wetBuffer.getWritePointer(0);
-    float* wetRight = wetBuffer.getWritePointer(1);
+    // === 3. Dry path: DryDelay (block-level) ===
     float* dryLeft = dryBuffer.getWritePointer(0);
     float* dryRight = dryBuffer.getWritePointer(1);
-
-    // Dry path: delay 2048 samples to match wet path latency
     dryDelay.process(dryLeft, dryRight, leftIn, rightIn, numSamples);
+
+    // === 4. FreezeBuffer write (ALWAYS, even in Off mode — spec requirement) ===
+    timeStretch.writeFreezeBuffer(leftIn, rightIn, numSamples);
+
+    // === 4b. Handle Manual freeze toggle ===
+    if (currentFreezeMode == PsycogConstants::FreezeMode::Manual
+        && lastFreezeMode != PsycogConstants::FreezeMode::Manual)
+    {
+        timeStretch.toggleFreeze();  // Start freeze
+    }
+    else if (currentFreezeMode != PsycogConstants::FreezeMode::Manual
+             && lastFreezeMode == PsycogConstants::FreezeMode::Manual)
+    {
+        timeStretch.toggleFreeze();  // Stop freeze
+    }
+    lastFreezeMode = currentFreezeMode;
+
+    // === 5. Wet path PER-SAMPLE loop ===
+    float* wetLeft = wetBuffer.getWritePointer(0);
+    float* wetRight = wetBuffer.getWritePointer(1);
 
     for (int i = 0; i < numSamples; ++i)
     {
-        // LFO advances per-sample
+        // 5a. LFO advance (per-sample)
         float lfoValue = lfo.advance();
 
-        // Apply LFO modulation to raw parameter values (modules smooth internally)
+        // 5b. Compute modulated parameters (raw + LFO, clamped)
         float finalStretch = stretchNorm;
         float finalPosition = positionNorm;
         float finalFoldAmount = foldAmount;
@@ -133,64 +154,44 @@ void PsycogAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
         if (targetFoldOffset)
             finalFoldOffset = juce::jlimit(-1.0f, 1.0f, foldOffset + lfoValue);
 
-        // Wet path processing for this sample (same modules, raw+LFO values)
-        float wetL = leftIn[i];
-        float wetR = rightIn[i];
+        // 5c. TimeStretch (granular engine)
+        float tsL, tsR;
+        timeStretch.processSample(tsL, tsR, leftIn[i], rightIn[i],
+                                  finalStretch, finalPosition, currentFreezeMode);
 
-        if (freezeMode == PsycogConstants::FreezeMode::Off)
+        // 5d. Wavefolder
+        float wfL, wfR;
+        wavefolder.processSample(wfL, wfR, tsL, tsR,
+                                 finalFoldAmount, finalFoldOffset, isMonoInput);
+
+        // 5e. Threshold detection (per-sample, from Wavefolder output)
+        bool triggered = thresholdDetector.processSample(wfL, wfR, threshold);
+
+        // 5f. Auto-freeze trigger
+        if (triggered && currentFreezeMode == PsycogConstants::FreezeMode::Auto)
         {
-            wetL = leftIn[i];
-            wetR = rightIn[i];
+            timeStretch.triggerFreeze();
+            wetProcessor.notifyFreezeTransition();
         }
 
-        float wfL, wfR;
-        wavefolder.process(&wfL, &wfR, &wetL, &wetR, 1,
-                          finalFoldAmount, finalFoldOffset, isMonoInput);
+        // 5g. WetProcessor (soft-clip + auto-normalize)
+        float wpL, wpR;
+        wetProcessor.processSample(wpL, wpR, wfL, wfR);
 
-        wetProcessor.process(&wfL, &wfR, &wfL, &wfR, 1);
-
-        wetLeft[i] = wfL;
-        wetRight[i] = wfR;
+        // 5h. Store in wet buffer
+        wetLeft[i] = wpL;
+        wetRight[i] = wpR;
     }
 
-    // Block-level freeze path (still uses old TimeStretch.process until Task 10)
-    if (freezeMode != PsycogConstants::FreezeMode::Off)
-    {
-        timeStretch.process(wetLeft, wetRight, leftIn, rightIn, numSamples,
-                           stretchNorm, positionNorm, freezeMode, threshold);
-    }
-
-    // === Mixer (pass raw mix — Mixer will get internal smoother in Task 8) ===
+    // === 6. Mixer (block-level, smooths mix internally) ===
     mixer.process(buffer.getWritePointer(0), buffer.getWritePointer(1),
                   wetLeft, wetRight, dryLeft, dryRight,
                   numSamples, mix);
 
-    // === Output protection ===
+    // === 7. Output protection (block-level) ===
     outputProtection.process(buffer.getWritePointer(0), buffer.getWritePointer(1),
                             buffer.getReadPointer(0), buffer.getReadPointer(1),
                             numSamples);
-}
-
-void PsycogAudioProcessor::processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer& midiBuffer)
-{
-    juce::ScopedNoDenormals noDenormals;
-    // Convert to float and process
-    juce::AudioBuffer<float> floatBuffer(buffer.getNumChannels(), buffer.getNumSamples());
-    for (int channel = 0; channel < buffer.getNumChannels(); ++channel)
-    {
-        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-        {
-            floatBuffer.setSample(channel, sample, static_cast<float>(buffer.getSample(channel, sample)));
-        }
-    }
-    processBlock(floatBuffer, midiBuffer);
-    for (int channel = 0; channel < buffer.getNumChannels(); ++channel)
-    {
-        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-        {
-            buffer.setSample(channel, sample, static_cast<double>(floatBuffer.getSample(channel, sample)));
-        }
-    }
 }
 
 juce::AudioProcessorEditor* PsycogAudioProcessor::createEditor()

@@ -30,7 +30,6 @@ public:
     bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
 
     void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
-    void processBlock(juce::AudioBuffer<double>&, juce::MidiBuffer&) override;
 
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override { return true; }
@@ -40,7 +39,7 @@ public:
     bool acceptsMidi() const override { return false; }
     bool producesMidi() const override { return false; }
     bool isMidiEffect() const override { return false; }
-    double getTailLengthSeconds() const override { return 0.0; }
+    double getTailLengthSeconds() const override { return 4.0; }
 
     int getNumPrograms() override { return Presets::numPresets; }
     int getCurrentProgram() override { return currentProgramIndex; }
@@ -65,7 +64,7 @@ private:
     OutputProtection outputProtection;
 
     // Freeze state
-    PsycogConstants::FreezeMode freezeMode = PsycogConstants::FreezeMode::Off;
+    PsycogConstants::FreezeMode lastFreezeMode = PsycogConstants::FreezeMode::Off;
 
     // Current preset index
     int currentProgramIndex = 0;
