@@ -35,13 +35,6 @@ void PsycogAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     mixer.prepare(sampleRate, samplesPerBlock);
     lfo.prepare(sampleRate);
 
-    // Initialize smoothers (20ms per spec)
-    stretchSmoother.reset(sampleRate, PsycogConstants::smoothingTimeSeconds);
-    positionSmoother.reset(sampleRate, PsycogConstants::smoothingTimeSeconds);
-    foldAmountSmoother.reset(sampleRate, PsycogConstants::smoothingTimeSeconds);
-    foldOffsetSmoother.reset(sampleRate, PsycogConstants::smoothingTimeSeconds);
-    mixSmoother.reset(sampleRate, PsycogConstants::smoothingTimeSeconds);
-
     // Allocate temp buffers
     wetBuffer.setSize(2, samplesPerBlock * 2);  // Double for safety
     dryBuffer.setSize(2, samplesPerBlock * 2);
@@ -111,13 +104,6 @@ void PsycogAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
     lfo.setWaveform(lfoWaveform);
     lfo.setDepth(lfoDepth);
 
-    // Set smoother targets (per-sample getNextValue in loop below)
-    stretchSmoother.setTargetValue(stretchNorm);
-    positionSmoother.setTargetValue(positionNorm);
-    foldAmountSmoother.setTargetValue(foldAmount);
-    foldOffsetSmoother.setTargetValue(foldOffset);
-    mixSmoother.setTargetValue(mix);
-
     // Get buffer pointers for wet path
     float* wetLeft = wetBuffer.getWritePointer(0);
     float* wetRight = wetBuffer.getWritePointer(1);
@@ -127,100 +113,59 @@ void PsycogAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
     // Dry path: delay 2048 samples to match wet path latency
     dryDelay.process(dryLeft, dryRight, leftIn, rightIn, numSamples);
 
-    // ========================================================================
-    // Process wet path sample-by-sample with per-sample LFO modulation
-    // This ensures LFO affects parameters correctly per the spec
-    // ========================================================================
     for (int i = 0; i < numSamples; ++i)
     {
-        // CRITICAL: Per-sample smoothing (CM-05 prevention)
-        float smoothedStretch = stretchSmoother.getNextValue();
-        float smoothedPosition = positionSmoother.getNextValue();
-        float smoothedFoldAmount = foldAmountSmoother.getNextValue();
-        float smoothedFoldOffset = foldOffsetSmoother.getNextValue();
-        float smoothedMix = mixSmoother.getNextValue();
-
-        // Apply LFO modulation to normalized parameter values
+        // LFO advances per-sample
         float lfoValue = lfo.advance();
 
-        float finalStretch = smoothedStretch;
-        float finalPosition = smoothedPosition;
-        float finalFoldAmount = smoothedFoldAmount;
-        float finalFoldOffset = smoothedFoldOffset;
+        // Apply LFO modulation to raw parameter values (modules smooth internally)
+        float finalStretch = stretchNorm;
+        float finalPosition = positionNorm;
+        float finalFoldAmount = foldAmount;
+        float finalFoldOffset = foldOffset;
 
         if (targetStretch)
-            finalStretch = juce::jlimit(0.0f, 1.0f, smoothedStretch + lfoValue);
+            finalStretch = juce::jlimit(0.0f, 1.0f, stretchNorm + lfoValue);
         if (targetPosition)
-            finalPosition = juce::jlimit(0.0f, 1.0f, smoothedPosition + lfoValue);
+            finalPosition = juce::jlimit(0.0f, 1.0f, positionNorm + lfoValue);
         if (targetFoldAmount)
-            finalFoldAmount = juce::jlimit(0.0f, 1.0f, smoothedFoldAmount + lfoValue);
+            finalFoldAmount = juce::jlimit(0.0f, 1.0f, foldAmount + lfoValue);
         if (targetFoldOffset)
-            finalFoldOffset = juce::jlimit(-1.0f, 1.0f, smoothedFoldOffset + lfoValue);
+            finalFoldOffset = juce::jlimit(-1.0f, 1.0f, foldOffset + lfoValue);
 
-        // Note: LFO does NOT modulate mix (per spec)
-
-        // ----------------------------------------------------------------
-        // Wet path processing for this sample
-        // ----------------------------------------------------------------
-
-        // Input sample
+        // Wet path processing for this sample (same modules, raw+LFO values)
         float wetL = leftIn[i];
         float wetR = rightIn[i];
 
-        // TimeStretch / Freeze (simplified - uses current position)
-        // For now, pass through if not frozen (granular engine is a stub)
         if (freezeMode == PsycogConstants::FreezeMode::Off)
         {
-            // TODO: Implement granular time-stretch
-            // Currently passes through - stretch parameter has no effect
             wetL = leftIn[i];
             wetR = rightIn[i];
         }
-        // Note: For freeze modes, we'd need sample-by-sample freeze buffer access
-        // This is a known limitation - freeze works at block level, not sample level
 
-        // Wavefolder with LFO-modulated parameters
         float wfL, wfR;
         wavefolder.process(&wfL, &wfR, &wetL, &wetR, 1,
                           finalFoldAmount, finalFoldOffset, isMonoInput);
 
-        // WetProcessor (soft-clip + auto-normalize)
         wetProcessor.process(&wfL, &wfR, &wfL, &wfR, 1);
 
-        // Store for mixing
         wetLeft[i] = wfL;
         wetRight[i] = wfR;
     }
 
-    // For freeze modes, process through TimeStretch at block level
-    // This is a known limitation - freeze and LFO position work at different rates
+    // Block-level freeze path (still uses old TimeStretch.process until Task 10)
     if (freezeMode != PsycogConstants::FreezeMode::Off)
     {
         timeStretch.process(wetLeft, wetRight, leftIn, rightIn, numSamples,
                            stretchNorm, positionNorm, freezeMode, threshold);
     }
 
-    // Check threshold for auto-freeze (amplitude measured at Wavefolder output)
-    if (freezeMode == PsycogConstants::FreezeMode::Auto)
-    {
-        float amplitude = wavefolder.getCurrentAmplitude();
-        if (thresholdDetector.checkThreshold(amplitude, threshold))
-        {
-            timeStretch.triggerFreeze();
-        }
-    }
-
-    // CRITICAL: Advance cooldown for threshold detector
-    thresholdDetector.advanceCooldown(numSamples);
-
-    // Mix wet and dry — mix is NOT modulated by LFO (per spec)
-    // Use smoothed mix value (smoother was advanced per-sample in loop above)
-    float smoothedMixForBlock = mixSmoother.getCurrentValue();
+    // === Mixer (pass raw mix — Mixer will get internal smoother in Task 8) ===
     mixer.process(buffer.getWritePointer(0), buffer.getWritePointer(1),
                   wetLeft, wetRight, dryLeft, dryRight,
-                  numSamples, smoothedMixForBlock);
+                  numSamples, mix);
 
-    // Final output protection (soft-clip)
+    // === Output protection ===
     outputProtection.process(buffer.getWritePointer(0), buffer.getWritePointer(1),
                             buffer.getReadPointer(0), buffer.getReadPointer(1),
                             numSamples);
