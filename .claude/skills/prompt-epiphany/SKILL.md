@@ -158,6 +158,47 @@ Five checks, all must pass.
 
 ---
 
+## Minimal Mode — Fast Track
+
+**Rationale:** Compact output doesn't justify the full creative multi-step pipeline. If the result will be minimal, the process should be too — save tokens where the depth won't show in the result.
+
+When minimal mode is detected at Step 1, replace Steps 3-6 with this streamlined 3-step process.
+
+### Step 3m: Quick Analysis
+
+Two dimensions only:
+
+- **Intent** — What is the prompt trying to accomplish? Success criteria?
+- **Inventory** — Catalog every item to preserve exactly: code blocks, formulas, API references, named entities, numeric values.
+
+Skip Structure, Constraints, Techniques, Weaknesses. These feed the creative ideation process which minimal bypasses. (See Step 4m for how this affects T3.)
+
+### Step 4m: Direct Synthesis
+
+Single-pass technique application — no creative exploration, no ideation step.
+
+**Eligible techniques:** T1 (XML structure), T2 (Decomposition), T3 (Constraints — structure already-explicit constraints into bullets, not discovery of implicit ones), T5 (Output format), T7 (Priority). Apply only those the Quick Analysis identifies as needed. This is a ceiling, not a checklist — if the input already has XML structure, don't reapply T1.
+
+**Skipped by default:** T4 (persona), T6 (reasoning), T8 (edge cases), T9 (examples), T10 (self-critique), T11 (context anchoring), T12 (audience), T13 (escape hatch). These are the creative/depth techniques that minimal intentionally foregoes.
+
+**Output rules:**
+- Bullet-point constraints (no narrative framing)
+- Remove filler, tighten language
+- Preserve ALL Inventory items exactly
+- **Proportionality:** Aim for the most compact enhancement that preserves all content and adds necessary structure. Output may be shorter than, equal to, or moderately longer than input depending on what's needed. No fixed ratio — let the content dictate the length.
+
+### Step 5m: Lite Verification
+
+Three checks:
+
+- **Element Completeness** — Every Inventory item exists in output. Missing → FAIL.
+- **Semantic Fidelity** — Intent matches enhanced prompt. Same objective, same success criteria. Any "no" → FAIL.
+- **Technical Integrity** — Code, formulas, API refs content-identical. Any alteration → FAIL.
+
+Fail → fix in Step 4m, re-verify. Same check fails twice → output with note: "Verification check [name] could not be fully resolved — review flagged area."
+
+---
+
 ## Enhancement Techniques Reference
 
 | # | Technique | Trigger | Application |
