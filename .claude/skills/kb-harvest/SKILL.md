@@ -664,3 +664,168 @@ For each registered KB:
 1. Read `<kb_path>/harvest-status.json` if exists
 2. Read manifests to count entries by status
 3. Display per-layer: total / harvested / placeholder / failed / avg confidence
+
+## Checkpointing
+
+After each entry is processed (step 17), update `<kb_path>/harvest-checkpoint.json`:
+
+```json
+{
+  "session_id": "<ISO-date>-<seq>",
+  "started_at": "<ISO timestamp>",
+  "backend": "<backend>",
+  "batch_size": 5,
+  "current_batch": 2,
+  "entries": {
+    "<entry-id>": { "status": "completed", "confidence": 0.72 },
+    "<entry-id>": { "status": "fetch_failed", "reason": "all URLs empty" },
+    "<entry-id>": { "status": "in_progress", "urls_fetched": 3, "urls_remaining": 2 },
+    "<entry-id>": { "status": "pending" }
+  },
+  "mode": "auto",
+  "seen_urls": ["https://..."],
+  "import_state": null,
+  "cascade_journal": {
+    "batch_1": { "manifest": "done", "master_index": "done", "cross_refs": "done", "bridges": "done", "search_terms": "done" }
+  }
+}
+```
+
+For import mode, `import_state` tracks progress:
+```json
+"import_state": {
+  "source_path": "/path/to/external-kb",
+  "format": "json-entries",
+  "files_total": 45,
+  "files_processed": 23,
+  "files_remaining": ["path/to/file24.json", "..."]
+}
+```
+
+## Resume
+
+`--resume`: Continue an interrupted harvest session.
+
+1. Read `<kb_path>/harvest-checkpoint.json`. If file does not exist: inform user "No harvest session to resume for this KB." and exit.
+2. Show session summary: started_at, mode, entries completed/pending/failed
+3. If `<kb_path>/harvested/staged/` has entries from interrupted interactive session: show for approval first
+4. Continue from `in_progress` entries (resume mid-fetch), then `pending` entries
+5. Skip `completed` and `fetch_failed`
+6. Restore `seen_urls` to avoid re-fetching
+
+## Re-Harvest Versioning
+
+When kb-harvest targets an existing non-placeholder entry:
+
+1. Read existing entry
+2. Bump version: `1.0.0 → 1.1.0` (minor bump)
+3. Set `supersedes` field in new entry to existing entry's `id`
+4. Move existing entry to `<kb_path>/<layer>/<topic>/_archive/<entry-id>-v<old-version>.json`
+5. Write new entry to original file location
+6. Update manifest (new version, timestamps, confidence)
+
+Old entries remain in `_archive/` for reference and rollback.
+
+## Manifest Rebuild
+
+`--rebuild-manifest`: Fix broken manifests by reconstructing from actual files.
+
+For each layer directory in the KB:
+1. List all .json files (exclude manifest.json, any file starting with `_`)
+2. Read each entry file:
+   - Extract `status` field
+   - Count `code_blocks[]` length → `code_block_count`
+   - Measure `original_markdown` length → `markdown_length` (0 if absent)
+   - Read `harvest_metadata.overall_confidence` → `confidence` (null if absent)
+   - Read `harvest_metadata.review_flag` → `review_flag` (false if absent)
+   - Read `source.backend` → `source` (infer "research-docs" if absent)
+3. Group entries by topic (from entry's `topic` field)
+4. Build manifest:
+   ```json
+   {
+     "kb_name": "<layer-name>",
+     "version": "1.0.0",
+     "created": "<earliest entry date or now>",
+     "last_sync": "<now>",
+     "status": "ready",
+     "topics": [
+       {
+         "name": "<topic>",
+         "files": {
+           "<filename>.json": {
+             "status": "harvested",
+             "harvested_at": "<from entry or now>",
+             "synced_at": null,
+             "synced_timestamp": null,
+             "has_semantic": true,
+             "source": "ddg+webfetch",
+             "markdown_length": 8532,
+             "code_block_count": 13,
+             "confidence": 0.72,
+             "review_flag": false
+           }
+         }
+       }
+     ]
+   }
+   ```
+5. Write `<kb_path>/<layer>/manifest.json`
+
+Report: N layers rebuilt, N total entries found.
+
+## Staged Review
+
+`--review`: Show entries awaiting approval in `<kb_path>/harvested/staged/`.
+
+For each .json file in staged/:
+1. Read entry, display summary:
+   - Title, topic, layer
+   - Confidence score, review_flag
+   - Code block count, description length
+   - Source URL(s)
+2. User options:
+   - **approve** → move to final KB location, run cascade
+   - **reject** → delete from staged/
+   - **skip** → leave in staged/ for later
+
+## Error Handling
+
+### Search Failures
+
+| Scenario | Action |
+|----------|--------|
+| DDG bot detection (0 results) | Auto-fallback to websearch+webfetch for this query |
+| DDG bot detection (partial) | Use whatever results were returned |
+| DDG CLI not installed | Fall back to websearch+webfetch, log warning |
+| Network error (any backend) | Retry once, then skip query |
+| WebSearch 0 results | Try next query from search-terms.json |
+| All queries exhausted, no URLs | Entry stays placeholder, log in harvest-status.json |
+
+### Fetch Failures
+
+| Scenario | Action |
+|----------|--------|
+| URL redirects | Follow with new WebFetch call on redirect URL |
+| Auth-required / paywall | Skip, log URL, suggest `--urls` with manual content |
+| Empty / login page | Skip, log as unusable, try next URL |
+| JavaScript-only page | Skip, note limitation |
+| No code blocks (code KB expected) | Second pass with webfetch-code.md prompt |
+| Timeout | Skip URL, try next |
+
+### Cascade Failures
+
+| Scenario | Action |
+|----------|--------|
+| Manifest write fails | Log in journal, kb-sync repairs later |
+| Master-index write fails | Log in journal, entries on disk are still valid |
+| Lock acquisition fails after retry | Fail with message: "KB is locked by another harvest. Wait or use --kb with different KB." |
+| Concurrent session detected | Inform user, suggest waiting |
+
+### Quality Failures
+
+| Scenario | Action |
+|----------|--------|
+| All URLs produce < 0.30 confidence | Entry stays placeholder, log reason in harvest-status.json |
+| No code blocks for code-oriented KB | Lower overall_confidence by 0.10, set review_flag |
+| Bridge detection conflicts with existing | Flag for review, don't modify existing bridge |
+| Entry schema validation fails | Don't write entry, log specific validation errors |
