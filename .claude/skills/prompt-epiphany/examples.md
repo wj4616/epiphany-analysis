@@ -227,7 +227,9 @@ Produce actionable findings prioritized by impact.
 - DO NOT suggest changes that add complexity without clear benefit
   *Why: user explicitly requested no overengineering*
 - DO NOT propose refactoring for its own sake
+  *Why: refactoring without clear benefit adds complexity the user explicitly wants to avoid*
 - DO NOT flag style preferences as issues
+  *Why: style debates are subjective and distract from real correctness problems*
 </constraints>
 
 <defaults>
