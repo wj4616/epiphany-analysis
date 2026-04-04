@@ -199,6 +199,78 @@ Fail → fix in Step 4m, re-verify. Same check fails twice → output with note:
 
 ---
 
+## Verbose Mode — Expansion Pass
+
+**Rationale:** Some prompts benefit from richer enhancement than normal mode provides. Rather than changing the normal pipeline (which works well), verbose adds a second pass that identifies where the normal output is thin and expands there specifically.
+
+Normal pipeline runs completely first (Steps 1-6), producing an intermediate enhanced prompt (internal — not shown to user). Then a second pass targets thin spots.
+
+### Step 7v: Gap Scan
+
+Read the normal-mode output and identify where it's thin. Evaluate each gap category against the Intent extracted during the normal pipeline's Step 3a analysis — skip categories that don't apply to this prompt type. Not every gap category is relevant to every prompt.
+
+**Gap categories:**
+- **Sparse context** — background knowledge that would help the AI but wasn't added
+- **Bare constraints** — constraints without "why" explanations
+- **Missing edge cases** — boundary conditions not addressed
+- **No examples** — task that would benefit from few-shot exemplars but has none
+- **Weak reasoning guidance** — multi-step task without CoT structure
+- **Missing audience calibration** — no target reader specified
+
+**Thinness threshold:** A section is thin if expanding it would meaningfully improve the prompt's effectiveness for its stated intent. Brevity alone is not thinness — a two-sentence context section is fine if those sentences are sufficient.
+
+**If no thin spots found:** Return the normal output with a note — "Normal enhancement is already comprehensive. Returning standard version."
+
+### Step 8v: Expansion Ideation
+
+For each thin spot identified in the Gap Scan:
+
+1. Design a targeted expansion (what to add, where to place it)
+2. For each expansion, determine: is this information present in or directly derivable from the original prompt text?
+3. If not — if you had to reason beyond the text to justify it — track it for flagging to user (see Output Flow)
+
+Every expansion must pass:
+
+| Test | Question | Fail → |
+|------|----------|--------|
+| Impact | Does this expansion improve the prompt's effectiveness? | Discard |
+| Risk | Could it introduce inaccuracy or fabrication? | Discard |
+| Validity | Faithful to original intent? | Discard |
+| Necessity | Filling a real gap, not padding? | Discard |
+
+### Step 9v: Expansion Synthesis
+
+Apply expansions to the normal-mode output:
+
+- Add "why" explanations to bare constraints
+- Expand context section with background knowledge
+- Add examples section with 1-2 exemplars (if Gap Scan identified this need)
+- Add reasoning guidance for multi-step tasks
+- Add edge cases for ambiguous boundaries
+- Add audience calibration if missing
+
+Expand within existing sections where possible. Add new sections only when the Gap Scan identifies a missing section type (e.g., `<examples>`, `<edge_cases>`). Do not reorganize or merge existing sections.
+
+**Proportionality:** No arbitrary length target. Expand until all identified gaps are filled. If the expanded output is less than ~20% longer by word count than the normal output, note to user that the normal enhancement was already comprehensive.
+
+### Step 10v: Expansion Verification
+
+Three expansion-specific checks:
+
+- **No Fabrication** — Every expansion traces to a Gap Scan finding and Ideation design. No invented requirements.
+- **Rationale Accuracy** — For each "why" explanation, apply this three-tier test: (1) Derivable from the original prompt text → include, no flag. (2) Requires reasoning beyond the text but reasonably supportable → include, flag it for user review (see Output Flow). (3) Cannot be reasonably supported → omit rather than guess.
+- **Value Added** — Each expansion genuinely improves the prompt. Remove any that are padding.
+
+Then re-run the subset of normal checks that expansion could affect:
+
+- **6a. Element Completeness** — Could expansion have displaced an Inventory item?
+- **6b. Semantic Fidelity** — Could expansion have drifted from Intent?
+- **6e. Production Readiness** — New sections could have placeholders or incomplete sentences.
+
+Skip 6c (Technical Integrity — expansion shouldn't touch code) and 6d (Enhancement Validation — covered by expansion-specific checks above).
+
+---
+
 ## Enhancement Techniques Reference
 
 | # | Technique | Trigger | Application |
