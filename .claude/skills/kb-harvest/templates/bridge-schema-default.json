@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Bridge Entry Schema (Default)",
+  "description": "Maps subjective descriptors to technical DSP parameters. Used for bridge layers.",
+  "type": "object",
+  "required": ["id", "category", "status", "version", "parameters", "intent_mappings"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]+$",
+      "description": "Format: bridge_{category}_{descriptor}"
+    },
+    "status": { "type": "string", "enum": ["placeholder", "harvested", "curated", "synced"] },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "category": { "type": "string", "description": "Bridge category: timbre, dynamics, spatial, etc." },
+    "parameters": { "type": "array", "items": { "type": "string" } },
+    "intent_mappings": {
+      "type": "object",
+      "description": "Keyed by descriptor (warm, bright, punchy, etc.)",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["parameter", "value_range", "typical_default", "confidence"],
+        "properties": {
+          "parameter": { "type": "string" },
+          "value_range": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+          "typical_default": { "type": "number" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "source": { "type": "string" },
+          "why": { "type": "string" },
+          "anti_patterns": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["expert-knowledge", "auto-detected", "web-harvested", "external-import"] },
+        "backend": { "type": "string", "enum": ["research-docs", "ddg+webfetch", "websearch+webfetch", "webfetch", "firecrawl", "imported"] },
+        "reference": { "type": "string" },
+        "url": { "type": "string" }
+      }
+    },
+    "harvest_metadata": {
+      "type": "object",
+      "description": "Same structure as entry harvest_metadata (see entry-schema-default.json)"
+    }
+  }
+}
