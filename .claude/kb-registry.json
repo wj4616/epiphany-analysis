@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0",
+  "registries": [
+    {
+      "name": "juce-agent-prototype",
+      "path": "/home/myuser/agents/juce-agent/playbookdata",
+      "schema_path": null,
+      "bridge_schema_path": null,
+      "master_index_path": "master-index.json",
+      "generated_by": "manual",
+      "layers": [
+        "cmake-kb",
+        "cpp-kb",
+        "dsp-kb",
+        "juce-kb",
+        "midi-kb",
+        "playbook-kb",
+        "sound-design-kb",
+        "testing-kb",
+        "ui-kb"
+      ],
+      "bridge_eligible_layers": [
+        "sound-design-kb"
+      ],
+      "default_backend": "ddg+webfetch",
+      "registered_at": "2026-04-04T22:07:46.284509Z"
+    }
+  ],
+  "default_kb": "juce-agent-prototype"
+}
