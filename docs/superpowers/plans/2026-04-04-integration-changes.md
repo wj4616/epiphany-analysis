@@ -408,10 +408,10 @@ When the source KB entry includes `harvest_metadata`, this factor blends into th
 **Calculation:**
 
 ```
-harvest_factor = overall_confidence * method_modifier * source_count_modifier
+harvest_factor = min(overall_confidence * method_modifier, 1.0) * source_count_modifier
 
 method_modifier:
-  - If any code_blocks have field_provenance.method == "direct-extracted": 1.1 (cap at 1.0 after multiply)
+  - If any code_blocks have field_provenance.method == "direct-extracted": 1.1
   - If all field_provenance methods are "ai-inferred": 0.8
   - Otherwise: 1.0
 
@@ -423,8 +423,8 @@ source_count_modifier:
 
 | Scenario | harvest_factor | Effect |
 |----------|---------------|--------|
-| High confidence, direct code extraction, 3 sources | 0.72 × 1.0 × 1.0 = 0.72 | Strong positive signal |
-| Medium confidence, all ai-inferred, 1 source | 0.55 × 0.8 × 0.9 = 0.40 | Drags score down |
+| High confidence, direct code extraction, 3 sources | min(0.72 × 1.1, 1.0) × 1.0 = 0.79 | Strong positive signal |
+| Medium confidence, all ai-inferred, 1 source | min(0.55 × 0.8, 1.0) × 0.9 = 0.40 | Drags score down |
 | No harvest_metadata | N/A | Base formula only |
 
 **How to determine:**
@@ -465,17 +465,19 @@ base_score = 0.875
 
 **Harvest Factor:**
 ```
-harvest_factor = 0.78 * min(1.1, 1.0) * 1.0 = 0.78
+method_modifier = 1.1 (direct-extracted code_blocks present)
+source_count_modifier = 1.0 (3 URLs)
+harvest_factor = min(0.78 * 1.1, 1.0) * 1.0 = min(0.858, 1.0) = 0.858
 ```
 
 **Final Score:**
 ```
-score = 0.875 * 0.70 + 0.78 * 0.30
-score = 0.6125 + 0.234
-score = 0.847
+score = 0.875 * 0.70 + 0.858 * 0.30
+score = 0.6125 + 0.2574
+score = 0.870
 ```
 
-**Result:** MEDIUM (0.85) — close to HIGH threshold
+**Result:** MEDIUM (0.87) — close to HIGH threshold
 ````
 
 - [ ] **Step 5: Verify changes**
@@ -551,7 +553,7 @@ Replace with:
 
 - [ ] **Step 3: Update auto-investigate.md**
 
-In `~/.claude/skills/kb-validate/auto-investigate.md`, find the cross-reference investigation steps (line 37):
+In `~/.claude/skills/kb-validate/auto-investigate.md`, find the cross-reference investigation steps (line 36):
 
 ```markdown
 **For cross-reference gaps:**
@@ -580,7 +582,7 @@ Replace with:
 ```
 ```
 
-Also find the recency investigation steps (line 48):
+Also find the recency investigation steps (line 47):
 
 ```markdown
 **For recency issues:**
@@ -628,7 +630,7 @@ Replace with:
 
 - [ ] **Step 4: Update INTEGRATION.md hook matchers**
 
-In `~/.claude/skills/kb-validate/INTEGRATION.md`, find the post-knowledge hook (line 21):
+In `~/.claude/skills/kb-validate/INTEGRATION.md`, find the post-knowledge hook (line 22):
 
 ```json
 "matcher": "firecrawl-scrape|firecrawl-search|kb-harvest|kb-autofill|kb-sync",
