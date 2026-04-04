@@ -100,7 +100,7 @@ Create `~/.claude/skills/kb-harvest/templates/kb-harvest-config-default.json`:
       "weight": 0.9
     },
     "expert_blogs": {
-      "domains": ["earlevel.com", "musicdsp.org", "theaudioprogrammer.com", "kvraudio.com/forum"],
+      "domains": ["earlevel.com", "musicdsp.org", "theaudioprogrammer.com", "forum.juce.com"],
       "weight": 0.8
     },
     "code_repos": {
@@ -108,7 +108,7 @@ Create `~/.claude/skills/kb-harvest/templates/kb-harvest-config-default.json`:
       "weight": 0.7
     },
     "community": {
-      "domains": ["kvraudio.com", "forum.juce.com", "stackoverflow.com"],
+      "domains": ["kvraudio.com", "stackoverflow.com"],
       "weight": 0.6
     },
     "default_weight": 0.5
@@ -304,8 +304,15 @@ Create `~/.claude/skills/kb-harvest/templates/bridge-schema-default.json`:
   "title": "Bridge Entry Schema (Default)",
   "description": "Maps subjective descriptors to technical DSP parameters. Used for bridge layers.",
   "type": "object",
-  "required": ["category", "parameters", "intent_mappings"],
+  "required": ["id", "category", "status", "version", "parameters", "intent_mappings"],
   "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]+$",
+      "description": "Format: bridge_{category}_{descriptor}"
+    },
+    "status": { "type": "string", "enum": ["placeholder", "harvested", "curated", "synced"] },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
     "category": { "type": "string", "description": "Bridge category: timbre, dynamics, spatial, etc." },
     "parameters": { "type": "array", "items": { "type": "string" } },
     "intent_mappings": {
@@ -515,7 +522,21 @@ them (method: "ai-inferred").
 Preserve ALL code blocks with exact original formatting.
 
 ENTRY SCHEMA FIELDS TO EXTRACT:
-(Same 10 fields as extraction-standard.md — substitute from that file)
+1. title: Clear, descriptive title for this knowledge entry
+2. summary: One line, max 100 characters
+3. description: Substantive content, minimum 100 characters. Include specific
+   parameter ranges, implementation details, and practical guidance.
+4. concepts: Key concepts as [{name, description, related[]}]. Minimum 2.
+5. code_blocks: ALL code examples from the source.
+   CRITICAL: Preserve code blocks EXACTLY as they appear — do not reformat,
+   fix, simplify, or modify any code. Copy verbatim including whitespace,
+   indentation, and comments. Include language tag and description for each.
+6. tags: Searchable keywords. Minimum 3.
+7. difficulty: beginner | intermediate | advanced
+8. domain_relevance: 1-10 for [domain description]
+9. related_topics: Other topics this content connects to
+10. cross_references: If content explicitly references concepts from other
+    domains (e.g., DSP concepts in a sound design article), note them.
 
 For each field, also provide:
 - confidence: 0.0-1.0
@@ -989,7 +1010,7 @@ Update `<kb_path>/harvest-checkpoint.json` — mark entry as completed, update s
 grep -c "### Step" ~/.claude/skills/kb-harvest/SKILL.md
 ```
 
-Expected: `17` (Steps 1-3 as one header, then individual steps 4-17 = 14 headers + 2 sub-numbered = depends on exact counting, but should show ~15-17 matches).
+Expected: `15` (Steps 1-3 as one combined header, then Steps 4-17 as individual headers = 1 + 14 = 15).
 
 - [ ] **Step 3: Commit**
 
@@ -1024,7 +1045,7 @@ Add to end of `~/.claude/skills/kb-harvest/SKILL.md`:
 
 ### Source Domain Matching
 
-Match the URL hostname against domain tiers in `source_domain_rankings`. For `https://github.com/user/repo/...`, match against `github.com`. First matching tier wins. If no tier matches, use `default_weight` (0.5).
+Match the URL hostname against domain tiers in `source_domain_rankings`. Extract hostname only — ignore path, port, and query. For `https://github.com/user/repo/...`, match against `github.com`. For `https://forum.juce.com/t/12345`, match against `forum.juce.com`. Check tiers in weight-descending order (academic first). First matching tier wins. If no tier matches, use `default_weight` (0.5).
 
 ### Confidence Formula Rationale
 

@@ -310,7 +310,7 @@ Per-KB in population-strategy, with built-in defaults:
     "weight": 0.9
   },
   "expert_blogs": {
-    "domains": ["earlevel.com", "musicdsp.org", "theaudioprogrammer.com"],
+    "domains": ["earlevel.com", "musicdsp.org", "theaudioprogrammer.com", "forum.juce.com"],
     "weight": 0.8
   },
   "code_repos": {
@@ -318,7 +318,7 @@ Per-KB in population-strategy, with built-in defaults:
     "weight": 0.7
   },
   "community": {
-    "domains": ["kvraudio.com", "forum.juce.com", "stackoverflow.com"],
+    "domains": ["kvraudio.com", "stackoverflow.com"],
     "weight": 0.6
   },
   "default_weight": 0.5
@@ -1383,7 +1383,7 @@ File: `~/.claude/kb-harvest-config.json`
       "weight": 0.9
     },
     "expert_blogs": {
-      "domains": ["earlevel.com", "musicdsp.org", "theaudioprogrammer.com", "kvraudio.com/forum"],
+      "domains": ["earlevel.com", "musicdsp.org", "theaudioprogrammer.com", "forum.juce.com"],
       "weight": 0.8
     },
     "code_repos": {
@@ -1391,7 +1391,7 @@ File: `~/.claude/kb-harvest-config.json`
       "weight": 0.7
     },
     "community": {
-      "domains": ["kvraudio.com", "forum.juce.com", "stackoverflow.com"],
+      "domains": ["kvraudio.com", "stackoverflow.com"],
       "weight": 0.6
     },
     "default_weight": 0.5
@@ -1421,8 +1421,8 @@ File: `<kb-path>/harvest-checkpoint.json`
   "seen_urls": ["https://...", "https://..."],
   "import_state": null,
   "cascade_journal": {
-    "batch_1": { "manifest": "done", "master_index": "done", "cross_refs": "done", "bridges": "done" },
-    "batch_2": { "manifest": "done", "master_index": "pending" }
+    "batch_1": { "manifest": "done", "master_index": "done", "cross_refs": "done", "bridges": "done", "search_terms": "done" },
+    "batch_2": { "manifest": "done", "master_index": "pending", "cross_refs": "pending", "bridges": "pending", "search_terms": "pending" }
   }
 }
 ```
