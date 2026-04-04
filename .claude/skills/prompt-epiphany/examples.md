@@ -185,7 +185,7 @@ Prioritize findings by impact.
 ---
 ```
 
-**What changed:** Quick Analysis identified task + constraints as the core content. Direct Synthesis applied T1 (XML structure with only `<task>` and `<constraints>`), T2 (decomposition into two sections), T3 (structured existing constraints into bullets). Skipped T4 (persona), T8 (edge cases), T9 (examples), T5 (output format) — these are creative/depth techniques that minimal foregoes. All original content preserved in compact form.
+**What changed:** Quick Analysis identified task + constraints as the core content. Direct Synthesis applied T1 (XML structure with only `<task>` and `<constraints>`), T2 (decomposition into two sections), T3 (structured existing constraints into bullets). Skipped T4 (persona), T8 (edge cases), T9 (examples) — these are creative/depth techniques that minimal foregoes. T5 (output format) and T7 (priority) were eligible but not needed for this prompt — the structured constraint bullets already imply the output structure. All original content preserved in compact form.
 
 ## Example 5: Verbose Mode
 
