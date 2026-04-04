@@ -471,12 +471,37 @@ ENTRY SCHEMA FIELDS TO EXTRACT:
 10. cross_references: If content explicitly references concepts from other
     domains (e.g., DSP concepts in a sound design article), note them.
 
-For each field, also provide:
-- confidence: 0.0-1.0 how confident you are in this extraction
-- method: "direct-extracted" (verbatim from source), "ai-synthesized"
-  (generated from source content), or "ai-inferred" (estimated)
+For each field, also provide confidence and method metadata.
 
-Return as JSON matching the entry schema.
+Return as JSON with this structure:
+```json
+{
+  "fields": {
+    "title": "...",
+    "summary": "...",
+    "description": "...",
+    "concepts": [...],
+    "code_blocks": [...],
+    "tags": [...],
+    "difficulty": "...",
+    "domain_relevance": 8,
+    "related_topics": [...],
+    "cross_references": [...]
+  },
+  "field_provenance": {
+    "title": { "confidence": 0.9, "method": "direct-extracted" },
+    "description": { "confidence": 0.8, "method": "ai-synthesized" },
+    "code_blocks": { "confidence": 0.95, "method": "direct-extracted" },
+    "difficulty": { "confidence": 0.6, "method": "ai-inferred" }
+  },
+  "bridge_detections": []
+}
+```
+
+Method values: "direct-extracted" (verbatim from source), "ai-synthesized"
+(generated from source content), or "ai-inferred" (estimated with limited basis).
+`fields` contains entry schema values. `field_provenance` maps to harvest_metadata.
+`bridge_detections` is empty unless bridge detection prompt is appended.
 ````
 
 - [ ] **Step 2: Write bridge detection prompt**
@@ -538,11 +563,23 @@ ENTRY SCHEMA FIELDS TO EXTRACT:
 10. cross_references: If content explicitly references concepts from other
     domains (e.g., DSP concepts in a sound design article), note them.
 
-For each field, also provide:
-- confidence: 0.0-1.0
-- method: "direct-mapped" | "direct-extracted" | "ai-synthesized" | "ai-inferred"
+For each field, also provide confidence and method metadata.
 
-Return as JSON matching the entry schema.
+Return as JSON with this structure (same as extraction-standard.md):
+```json
+{
+  "fields": { "title": "...", "description": "...", ... },
+  "field_provenance": {
+    "title": { "confidence": 0.95, "method": "direct-mapped" },
+    "description": { "confidence": 0.85, "method": "direct-mapped" },
+    "concepts": { "confidence": 0.75, "method": "ai-synthesized" }
+  },
+  "bridge_detections": []
+}
+```
+
+Method values: "direct-mapped" (1:1 from format adapter), "direct-extracted"
+(verbatim from source), "ai-synthesized" (generated from content), "ai-inferred" (estimated).
 ````
 
 - [ ] **Step 4: Write multi-topic detection prompt**
@@ -674,7 +711,7 @@ On every invocation, check:
        "registered_at": "<ISO timestamp>"
      }
      ```
-   - Discover layers by listing subdirectories that contain .json files (exclude `_archive`)
+   - Discover layers by listing subdirectories that contain .json files (exclude `_archive`, `harvested`, and any directory starting with `_`)
    - Fill the `layers` array with discovered layer names
 ````
 
@@ -819,12 +856,14 @@ For each entry that needs harvesting, generate or load search queries:
 1. Check `<kb_path>/search-terms.json` — if entry ID has queries with `used: false`, use those
 2. If no queries exist, generate from the entry's topic name and layer context:
 
-**Generate 1-2 queries per perspective:**
+**Generate 1-2 queries per perspective** (cap total at `max_search_queries_per_entry` from config, default 8):
 - **Academic:** `[topic] algorithm`, `[topic] computational method IEEE`
 - **Practitioner:** `[topic] C++ implementation real-time audio`, `[topic] best practices production code`
 - **Educator:** `[topic] tutorial explained in depth`, `[topic] advanced guide`
 - **Domain expert:** Alternative terminology and synonyms for the topic
 - **Code-targeting:** `[topic] JUCE tutorial code example`, `[topic] site:github.com C++ implementation`
+
+If generated count exceeds `max_search_queries_per_entry`, keep the highest-priority queries (academic + practitioner + code-targeting first, then educator + domain expert).
 
 3. Save to `<kb_path>/search-terms.json`:
 
@@ -870,6 +909,10 @@ Add to end of `~/.claude/skills/kb-harvest/SKILL.md`:
 
 ## Harvest Pipeline (Single Entry)
 
+**Session-level limits** (from `~/.claude/kb-harvest-config.json`):
+- Track total URLs fetched across all entries. Stop fetching when `max_urls_per_session` (default 30) is reached. Entries still in queue stay as placeholders.
+- In auto mode, skip an entry if elapsed time exceeds `auto_harvest_timeout_seconds` (default 120) for that entry. Mark as `fetch_failed` with reason "timeout".
+
 Execute these steps for each entry to harvest:
 
 ### Steps 1-3: Resolve
@@ -907,16 +950,17 @@ Look up each URL's domain in source_domain_rankings (from KB population strategy
 Take top N URLs: `max_urls_per_entry` (default 5) in interactive mode, `auto_harvest_max_urls_per_entry` (default 3) in auto mode.
 
 ### Step 9: Fetch
-For each URL:
+For each URL (wait `cooldown_between_fetches_ms` from config, default 1000ms, between consecutive WebFetch calls):
 
-1. Read `prompts/webfetch-content.md`. Replace `[topic]` with the entry's topic.
-2. Call **WebFetch** with the URL and the assembled prompt.
-3. Check if the result contains code blocks (look for triple-backtick fences).
-4. If NO code blocks found AND this layer is code-oriented (check layer name — dsp, juce, cpp, cmake, etc.):
+1. Check session URL count against `max_urls_per_session` (default 30). If reached, stop fetching — remaining entries stay as placeholders.
+2. Read `prompts/webfetch-content.md`. Replace `[topic]` with the entry's topic.
+3. Call **WebFetch** with the URL and the assembled prompt.
+4. Check if the result contains code blocks (look for triple-backtick fences).
+5. If NO code blocks found AND this layer is code-oriented (check layer name — dsp, juce, cpp, cmake, etc.):
    - Read `prompts/webfetch-code.md`. Replace `[topic]`.
    - Call **WebFetch** again with the code-targeting prompt.
    - Merge both results into one markdown document.
-5. Save raw output to `<kb_path>/harvested/raw/<entry-id>-<N>.md` (N = URL index).
+6. Save raw output to `<kb_path>/harvested/raw/<entry-id>-<N>.md` (N = URL index).
 
 **WebFetch constraint:** WebFetch uses a small, fast model — NOT the main Claude model. Use it ONLY for fetching content. All structured field extraction happens in Step 10 with the full model.
 
@@ -928,7 +972,7 @@ For each fetched page (**PER-PAGE**, not per-batch — to manage context window)
    - `[topic]` → entry topic
    - `[kb-layer]` → layer name
    - `[kb-name]` → KB name
-   - `[domain description]` → brief description of the KB domain
+   - `[domain description]` → from master-index `knowledge_bases[kb].description` if present, else derive from KB name (e.g., "dsp-kb" → "DSP and audio signal processing")
 3. If this layer is in `bridge_eligible_layers`: read and append `prompts/extraction-bridge.md`
 4. Read and append `prompts/extraction-multitopic.md`
 5. Present the raw markdown to Claude with the assembled extraction prompt
@@ -1069,6 +1113,22 @@ BATCH COMPLETE (N entries written)
 │     Create <kb_path>/cascade-journal.json (for kb-sync discovery)
 │     AND update cascade_journal in harvest-checkpoint.json (for resume)
 │     Initialize all steps as "pending"
+│     Standalone cascade-journal.json format:
+│     ```json
+│     {
+│       "session_id": "<ISO-date>-<seq>",
+│       "batch_id": "batch_<N>",
+│       "started_at": "<ISO timestamp>",
+│       "entries_in_batch": ["<entry-id-1>", "<entry-id-2>"],
+│       "steps": {
+│         "manifest": "pending",
+│         "master_index": "pending",
+│         "cross_refs": "pending",
+│         "bridges": "pending",
+│         "search_terms": "pending"
+│       }
+│     }
+│     ```
 │
 ├── 3. MANIFEST UPDATE
 │     For each KB layer touched in this batch:
@@ -1411,7 +1471,7 @@ For import mode, `import_state` tracks progress:
 
 `--resume`: Continue an interrupted harvest session.
 
-1. Read `<kb_path>/harvest-checkpoint.json`
+1. Read `<kb_path>/harvest-checkpoint.json`. If file does not exist: inform user "No harvest session to resume for this KB." and exit.
 2. Show session summary: started_at, mode, entries completed/pending/failed
 3. If `<kb_path>/harvested/staged/` has entries from interrupted interactive session: show for approval first
 4. Continue from `in_progress` entries (resume mid-fetch), then `pending` entries

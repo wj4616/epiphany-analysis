@@ -1217,6 +1217,9 @@ BATCH COMPLETE (N entries written)
     ├── 2. JOURNAL: Create cascade-journal.json (standalone file for kb-sync discovery)
     |         AND update cascade_journal in harvest-checkpoint.json (for session resume)
     |         Track each step's completion status in both locations
+    |         Standalone format: { session_id, batch_id, started_at, entries_in_batch[],
+    |         steps: { manifest, master_index, cross_refs, bridges, search_terms } }
+    |         Each step value: "pending" | "done" | "failed"
     |
     ├── 3. MANIFEST UPDATE (once per KB layer touched):
     |     ├── Read manifest.json for each affected layer
@@ -1322,12 +1325,23 @@ ENTRY SCHEMA FIELDS TO EXTRACT:
 10. cross_references: If content explicitly references concepts from other 
     domains (e.g., DSP concepts in a sound design article), note them.
 
-For each field, also provide:
-- confidence: 0.0-1.0 how confident you are in this extraction
-- method: "direct-extracted" (verbatim from source), "ai-synthesized" 
-  (generated from source content), or "ai-inferred" (estimated)
+For each field, also provide confidence and method metadata.
 
-Return as JSON matching the entry schema.
+Return as JSON with this structure:
+{
+  "fields": { "title": "...", "summary": "...", "description": "...", ... },
+  "field_provenance": {
+    "title": { "confidence": 0.9, "method": "direct-extracted" },
+    "description": { "confidence": 0.8, "method": "ai-synthesized" },
+    ...
+  },
+  "bridge_detections": []
+}
+
+Method values: "direct-extracted" (verbatim from source), "ai-synthesized"
+(generated from source content), or "ai-inferred" (estimated).
+"fields" contains entry schema values. "field_provenance" maps to harvest_metadata.
+"bridge_detections" is empty unless bridge detection prompt is appended.
 ```
 
 **Bridge detection extraction prompt (appended for bridge-eligible layers):**
