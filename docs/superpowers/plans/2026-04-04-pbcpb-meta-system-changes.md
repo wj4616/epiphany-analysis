@@ -338,7 +338,7 @@ items[4]['description'] += (
     "Default weights: description 0.25, concepts 0.15, code_blocks 0.25, "
     "title 0.05, summary 0.05, tags 0.05, related_topics 0.05, "
     "difficulty 0.05, domain_relevance 0.05, cross_references 0.05. "
-    "All weighted fields correspond to extraction prompt fields (Section 8.2).\n\n"
+    "All weighted fields correspond to extraction prompt fields in the kb-harvest skill.\n\n"
     "Source domain rankings: define quality tiers for web sources relevant "
     "to this KB's domain. Academic and official documentation sources rank "
     "highest. Include specific domain names where possible.\n\n"
@@ -391,7 +391,8 @@ print('  items[5]: Define index and directory structure — added master-index a
 
 - [ ] **Step 2: Run the modification script**
 
-Run: `cd /home/myuser/Documents/pbcpb && python3 <script-file>`
+Save the Step 1 code block as a temporary `.py` file, then run it:
+`cd /home/myuser/Documents/pbcpb && python3 /tmp/task_step.py`
 
 - [ ] **Step 3: Verify changes applied correctly**
 
@@ -480,7 +481,7 @@ new_task = {
 items.insert(6, new_task)
 # Gate is now items[7]
 
-# §7.2.7: Add 8 new gate conditions to items[7]
+# §7.2.7: Add 9 new gate conditions to items[7]
 gate = items[7]
 new_conditions = [
     "Entry schema includes source.backend, original_markdown, and harvest_metadata fields",
@@ -519,7 +520,8 @@ print(f'Phase 2 now has {len(items)} items (was 7)')
 
 - [ ] **Step 2: Run the modification script**
 
-Run: `cd /home/myuser/Documents/pbcpb && python3 <script-file>`
+Save the Step 1 code block as a temporary `.py` file, then run it:
+`cd /home/myuser/Documents/pbcpb && python3 /tmp/task_step.py`
 Expected: Phase 2 now has 8 items
 
 - [ ] **Step 3: Verify changes**
@@ -638,7 +640,8 @@ print(f'Phase 3 now has {len(items)} items (was 7, now 8)')
 
 - [ ] **Step 2: Run the modification script**
 
-Run: `cd /home/myuser/Documents/pbcpb && python3 <script-file>`
+Save the Step 1 code block as a temporary `.py` file, then run it:
+`cd /home/myuser/Documents/pbcpb && python3 /tmp/task_step.py`
 Expected: Phase 3 now has 8 items
 
 - [ ] **Step 3: Verify item positions after insertion**
@@ -744,8 +747,8 @@ items[4]['description'] += (
     "- source.backend set to \"research-docs\"\n\n"
     "After harvesting, count remaining placeholder entries per layer. These "
     "placeholders are candidates for web harvesting. Record the count in "
-    "harvest-status.json per the format defined in Section 7.3.3 (track "
-    "research_harvested, web_harvested, imported, placeholder, and failed per layer)."
+    "harvest-status.json (track research_harvested, web_harvested, imported, "
+    "placeholder, and failed per layer)."
 )
 
 # §7.3.3: Insert "Generate search terms" after items[4]
@@ -814,7 +817,8 @@ print(f'Phase 3 now has {len(items)} items')
 
 - [ ] **Step 2: Run the modification script**
 
-Run: `cd /home/myuser/Documents/pbcpb && python3 <script-file>`
+Save the Step 1 code block as a temporary `.py` file, then run it:
+`cd /home/myuser/Documents/pbcpb && python3 /tmp/task_step.py`
 Expected: Phase 3 now has 10 items
 
 - [ ] **Step 3: Verify item positions**
@@ -985,7 +989,8 @@ print(f'Modified: success_criteria — {len(phase3["compilation"]["success_crite
 
 - [ ] **Step 2: Run the modification script**
 
-Run: `cd /home/myuser/Documents/pbcpb && python3 <script-file>`
+Save the Step 1 code block as a temporary `.py` file, then run it:
+`cd /home/myuser/Documents/pbcpb && python3 /tmp/task_step.py`
 
 - [ ] **Step 3: Verify changes**
 
@@ -1087,7 +1092,8 @@ print('Updated: items[4] (skill_activation) — added kb-harvest, kb-sync, kb-va
 
 - [ ] **Step 2: Run the modification script**
 
-Run: `cd /home/myuser/Documents/pbcpb && python3 <script-file>`
+Save the Step 1 code block as a temporary `.py` file, then run it:
+`cd /home/myuser/Documents/pbcpb && python3 /tmp/task_step.py`
 
 - [ ] **Step 3: Verify changes**
 
@@ -1188,7 +1194,8 @@ print(f'Total failure modes: {len(fms)}')
 
 - [ ] **Step 2: Run the modification script**
 
-Run: `cd /home/myuser/Documents/pbcpb && python3 <script-file>`
+Save the Step 1 code block as a temporary `.py` file, then run it:
+`cd /home/myuser/Documents/pbcpb && python3 /tmp/task_step.py`
 Expected: Total failure modes: 31
 
 - [ ] **Step 3: Verify FM entries**
@@ -1362,7 +1369,8 @@ for num, status, desc in results:
 print(f"\n{'ALL CHECKS PASSED' if all_pass else 'SOME CHECKS FAILED'}: {sum(1 for _, s, _ in results if s == 'PASS')}/{len(results)}")
 ```
 
-Run: `cd /home/myuser/Documents/pbcpb && python3 <script-file>`
+Save the Step 1 code block as a temporary `.py` file, then run it:
+`cd /home/myuser/Documents/pbcpb && python3 /tmp/task_step.py`
 Expected: `ALL CHECKS PASSED: 21/21`
 
 - [ ] **Step 5: If any checks fail, fix and re-run**
