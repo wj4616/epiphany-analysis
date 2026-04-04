@@ -247,14 +247,6 @@ Unless otherwise specified:
 - If multiple findings share a root cause, group them under one entry
 </edge_cases>
 
-<examples>
-**Example finding (critical):**
-- **Buffer overrun in processBlock** — `PluginProcessor.cpp:142` — Reads past buffer end when block size < 64 samples. Causes memory corruption and potential crash. Fix: clamp loop to `buffer.getNumSamples()`.
-
-**Example finding (low priority):**
-- **Unused include** — `Utils.h:3` — `#include <algorithm>` not referenced. Harmless but adds compile time.
-</examples>
-
 <output_format>
 ## Findings
 
@@ -271,6 +263,14 @@ Unless otherwise specified:
 - Total findings: X critical, Y recommended, Z low priority
 - Most impactful area: [area]
 </output_format>
+
+<examples>
+**Example finding (critical):**
+- **Buffer overrun in processBlock** — `PluginProcessor.cpp:142` — Reads past buffer end when block size < 64 samples. Causes memory corruption and potential crash. Fix: clamp loop to `buffer.getNumSamples()`.
+
+**Example finding (low priority):**
+- **Unused include** — `Utils.h:3` — `#include <algorithm>` not referenced. Harmless but adds compile time.
+</examples>
 
 <verification>
 Verify: every finding has a file:line reference, every severity is justified,

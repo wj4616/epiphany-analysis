@@ -141,7 +141,7 @@ The creative core — genuine problem-solving, not mechanical technique applicat
 4. Attention order: critical at start/end, supporting in middle
 5. **Optimize:** Remove redundant phrases, trim whitespace. Preserve emphasis words (critical, essential, must), code blocks, formulas, and INVENTORY items.
 
-**Proportionality:** Short (<50 words): up to 4x. Medium (50-500): 3-4x. Long (500+): similar length.
+**Proportionality:** Short (<50 words): up to 4x, but structurally sparse inputs (no role, no constraints, no format) may need more to add necessary sections. Medium (50-500): 3-4x. Long (500+): similar length.
 
 ### Step 6: Verification & Quality Gate
 
@@ -212,7 +212,7 @@ Fail → fix in Step 4m, re-verify. Same check fails twice → output with note:
 
 Normal pipeline runs completely first (Steps 1-6), producing an intermediate enhanced prompt (internal — not shown to user). Then a second pass targets thin spots.
 
-### Step 7v: Gap Scan
+### Step 7v: Gap Scan (internal — not shown to user)
 
 Read the normal-mode output and identify where it's thin. Evaluate each gap category against the Intent extracted during the normal pipeline's Step 3a analysis — skip categories that don't apply to this prompt type. Not every gap category is relevant to every prompt.
 
