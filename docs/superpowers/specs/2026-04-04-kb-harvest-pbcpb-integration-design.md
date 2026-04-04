@@ -91,7 +91,7 @@ Every change in this spec traces: **PBCPB modification -> generated playbook cha
 
 ## 3. Backend Architecture
 
-Four user-selectable backends, all producing schema-conformant entries through a common pipeline.
+Five user-selectable backends, all producing schema-conformant entries through a common pipeline.
 
 | Backend | Search Tool | Scrape Tool | Requirements | Quality Floor |
 |---------|-------------|-------------|--------------|---------------|
@@ -203,9 +203,17 @@ The entry schema is defined per-KB in `architecture/entry-schema.json` (generate
   "reference": "Page title or document section name",
   "url": "...",
   "backend": "research-docs | firecrawl | ddg+webfetch | websearch+webfetch | webfetch | imported",
-  "retrieved_date": "2026-04-04"
+  "retrieved_date": "2026-04-04",
+  "import_source": {
+    "path": "/absolute/path/to/original/file",
+    "format": "json-entries | markdown-dir | obsidian | csv | prototype | custom",
+    "field_map_used": true,
+    "import_date": "2026-04-04"
+  }
 }
 ```
+
+`source.import_source` (object, present only on imported entries): tracks the original file path, detected format, whether a custom field map was applied, and import date. See Section 8.8 for full import provenance details.
 
 `source.type` values for new entries:
 - `"web-harvested"` — content fetched from web via any web backend
@@ -225,6 +233,14 @@ The full source content in markdown format. For web-harvested entries, this is t
 
 ```json
 "original_markdown": "# Subtractive Synthesis\n\n## Core Concepts\n\n..."
+```
+
+**`supersedes`** (string, present on re-harvested entries only):
+
+The entry ID of the previous version this entry replaces. Used by re-harvest versioning (Section 8.7). When present, the superseded entry has been moved to `_archive/`. Allows tracing entry lineage.
+
+```json
+"supersedes": "dsp-kb_filters_biquad"
 ```
 
 **`harvest_metadata`** (object, present on all non-research-doc entries — web-harvested and imported):
@@ -297,8 +313,12 @@ Per-KB in population-strategy, with built-in defaults:
     "domains": ["earlevel.com", "musicdsp.org", "theaudioprogrammer.com"],
     "weight": 0.8
   },
+  "code_repos": {
+    "domains": ["github.com", "gitlab.com"],
+    "weight": 0.7
+  },
   "community": {
-    "domains": ["kvraudio.com", "forum.juce.com", "github.com"],
+    "domains": ["kvraudio.com", "forum.juce.com", "stackoverflow.com"],
     "weight": 0.6
   },
   "default_weight": 0.5
@@ -700,7 +720,7 @@ Original content (required for all non-placeholder entries):
   consumption — agents can read complete tutorials and reference material,
   not just extracted fragments.
 
-Harvest metadata (required for web-harvested entries):
+Harvest metadata (required for web-harvested and imported entries):
 - harvest_metadata.overall_confidence: 0.0-1.0 composite score
 - harvest_metadata.field_provenance: per-field {method, confidence}
   where method is "direct-extracted" | "direct-mapped" | "ai-synthesized" | "ai-inferred"
@@ -728,7 +748,7 @@ simplification, or modification during extraction.
 **Add to description:**
 ```
 Bridge entries from web harvesting gain provenance tracking:
-- source.type: "manual" | "auto-detected" | "web-harvested"
+- source.type: "expert-knowledge" | "auto-detected" | "web-harvested" | "external-import"
 - source.backend: same enum as entry schema
 - harvest_metadata: same structure as entry schema (for web-sourced bridges)
 
@@ -754,6 +774,8 @@ Standard backends:
    quality_floor: 0.50 (higher because user curated the source)
 4. firecrawl — Firecrawl search + scrape. Requires API key + credits.
    quality_floor: 0.55
+5. imported — Local files via format adapter + Claude extraction. No requirements.
+   quality_floor: 0.45
 
 Confidence weights: define per-field weights for overall_confidence 
 calculation. Weight fields by importance to agent consumption in this domain.
@@ -941,8 +963,9 @@ research_harvested, web_harvested, imported, placeholder, and failed per layer).
 **Add to existing description:**
 ```
 Additional validation for web-harvested entries:
-5. harvest_metadata presence: every web-harvested entry (source.backend != "research-docs") 
-   must have harvest_metadata with overall_confidence, field_provenance, and extraction_prompt_version.
+5. harvest_metadata presence: every non-research-doc entry (source.backend != "research-docs",
+   i.e. web-harvested and imported entries) must have harvest_metadata with overall_confidence, 
+   field_provenance, and extraction_prompt_version.
 6. Code block integrity: for entries with code_blocks[], verify code blocks also appear in 
    original_markdown (if present). Any code_block not found in original_markdown may indicate 
    extraction error.
@@ -1120,7 +1143,7 @@ kb-harvest --list                                   # List registered KBs
    d. Set `source.backend = "imported"`, `source.type = "external-import"`
    e. Generate `harvest_metadata` with `field_provenance` per field (`"direct-mapped"` for adapter fields, `"ai-synthesized"` for Claude-generated fields)
 5. Validate against target KB's entry-schema.json
-6. Quality gate (floor 0.45)
+6. Quality gate (per-KB quality_floor for `imported` backend, default 0.45)
 7. Show import summary: N accepted, N flagged, N rejected — user approves
 8. Write entries to target KB
 9. Cascade (see Section 8.1 — same cascade as web harvest)
@@ -1191,8 +1214,9 @@ BATCH COMPLETE (N entries written)
     |         If lock exists and < 30 min old: wait/fail
     |         Stale locks (> 30 min): auto-clear
     |
-    ├── 2. JOURNAL: Create cascade-journal.json
-    |         Track each step's completion status
+    ├── 2. JOURNAL: Create cascade-journal.json (standalone file for kb-sync discovery)
+    |         AND update cascade_journal in harvest-checkpoint.json (for session resume)
+    |         Track each step's completion status in both locations
     |
     ├── 3. MANIFEST UPDATE (once per KB layer touched):
     |     ├── Read manifest.json for each affected layer
@@ -1262,7 +1286,7 @@ BATCH COMPLETE (N entries written)
 
 **Cascade failure recovery:** If interrupted mid-cascade, the journal records which steps completed. kb-sync can replay incomplete journals on its next verification pass.
 
-**Cascade ordering:** Steps 5 and 6 are independent and can be done in either order. All other steps are sequential (3 before 4, 4 before 5/6, 7 after 5/6).
+**Cascade ordering:** All steps are sequential: 3 → 4 → 5 → 6 → 7. Step 6 (bridge detection) creates new entries and writes to master-index cross_references — the same target as step 5. Step 6 also needs accurate master-index state from step 4/5 to avoid stale file_counts. If no bridge-eligible entries exist in the batch, step 6 is skipped entirely.
 
 ### 8.2 Extraction Prompt Design
 
@@ -1707,6 +1731,7 @@ All consumption skills (sound-design-bridge, juce-dsp-implementation, juce-ui-br
 | `<kb>/harvest-status.json` | Placeholder fill tracking | PBCPB Phase 3 or kb-harvest |
 | `<kb>/harvest-checkpoint.json` | Session resume point | kb-harvest |
 | `<kb>/harvest.lock` | Concurrent access lock | kb-harvest cascade |
+| `<kb>/cascade-journal.json` | Cascade step completion tracking | kb-harvest cascade, read by kb-sync |
 | `<kb>/harvested/raw/*.md` | Raw WebFetch output | kb-harvest |
 | `<kb>/harvested/staged/*.json` | Entries awaiting approval | kb-harvest (interactive mode) |
 | `<kb>/<layer>/<topic>/_archive/` | Superseded entry versions | kb-harvest re-harvest |
