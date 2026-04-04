@@ -192,3 +192,40 @@ When backend is `firecrawl`:
 - Credit tracking: each search + scrape uses credits (check `firecrawl credit-usage`)
 - Limits: use `--limit N` to cap results (default 10)
 - For specific URLs: `firecrawl scrape "<url>" -o .firecrawl/page.md`
+
+## Search Term Generation
+
+For each entry that needs harvesting, generate or load search queries:
+
+1. Check `<kb_path>/search-terms.json` — if entry ID has queries with `used: false`, use those
+2. If no queries exist, generate from the entry's topic name and layer context:
+
+**Generate 1-2 queries per perspective** (cap total at `max_search_queries_per_entry` from config, default 8):
+- **Academic:** `[topic] algorithm`, `[topic] computational method IEEE`
+- **Practitioner:** `[topic] C++ implementation real-time audio`, `[topic] best practices production code`
+- **Educator:** `[topic] tutorial explained in depth`, `[topic] advanced guide`
+- **Domain expert:** Alternative terminology and synonyms for the topic
+- **Code-targeting:** `[topic] JUCE tutorial code example`, `[topic] site:github.com C++ implementation`
+
+If generated count exceeds `max_search_queries_per_entry`, keep the highest-priority queries (academic + practitioner + code-targeting first, then educator + domain expert).
+
+3. Save to `<kb_path>/search-terms.json`:
+
+```json
+{
+  "version": "1.0.0",
+  "generated_at": "<ISO timestamp>",
+  "entries": {
+    "<entry-id>": {
+      "status": "pending",
+      "queries": [
+        { "perspective": "academic", "query": "biquad filter algorithm digital signal processing", "used": false },
+        { "perspective": "practitioner", "query": "biquad filter C++ implementation real-time audio", "used": false },
+        { "perspective": "code", "query": "biquad filter JUCE tutorial code example", "used": false }
+      ]
+    }
+  }
+}
+```
+
+In interactive mode, display generated queries and let user edit/add before searching.
