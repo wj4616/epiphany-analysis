@@ -105,3 +105,90 @@ On every invocation, check:
      - If user provides key: `export FIRECRAWL_API_KEY="<key>"` for this session
      - If user declines: fall back to `--backend ddg+webfetch`
    - If set: proceed with Firecrawl backend
+
+## Registry Resolution
+
+For any command requiring `--kb`:
+
+1. Read `~/.claude/kb-registry.json`
+2. Find entry where `name` matches the `--kb` value
+3. If not found: list all registered KB names and ask user to choose, or offer to register a new KB
+4. From the matched registry entry, resolve paths:
+   - `kb_path` = `entry.path` (absolute path to KB root)
+   - `schema_path` = `kb_path + "/" + entry.schema_path` if entry.schema_path is not null, else use `templates/entry-schema-default.json` from this skill
+   - `bridge_schema_path` = `kb_path + "/" + entry.bridge_schema_path` if not null
+   - `master_index_path` = `kb_path + "/" + entry.master_index_path`
+   - `layers` = `entry.layers`
+   - `bridge_eligible_layers` = `entry.bridge_eligible_layers` (default `[]`)
+   - `default_backend` = `entry.default_backend`
+5. Read the entry schema from resolved `schema_path`
+6. Read config from `~/.claude/kb-harvest-config.json`
+7. If `--layer` specified, verify it exists in `layers`. If not, list available layers and ask.
+8. If `--topic` specified, verify it exists in the layer directory. If not, list available topics and ask.
+
+### KB Registry Format
+
+`~/.claude/kb-registry.json`:
+```json
+{
+  "version": "1.0.0",
+  "registries": [
+    {
+      "name": "unique-kb-name",
+      "path": "/absolute/path/to/kb",
+      "schema_path": "../architecture/entry-schema.json",
+      "bridge_schema_path": "../architecture/bridge-schema.json",
+      "master_index_path": "master-index.json",
+      "generated_by": "pbcpb",
+      "layers": ["dsp-kb", "sound-design-kb"],
+      "bridge_eligible_layers": ["sound-design-kb"],
+      "default_backend": "ddg+webfetch",
+      "registered_at": "2026-04-04T00:00:00Z"
+    }
+  ],
+  "default_kb": "unique-kb-name"
+}
+```
+
+Path convention: `path` is always absolute. `schema_path`, `bridge_schema_path`, `master_index_path` are always relative to `path`.
+
+## Backend Selection
+
+1. If `--urls` present → `webfetch`
+2. If `--import` present → `imported`
+3. If `--firecrawl` present → `firecrawl` (after API key check)
+4. If `--backend <name>` specified → use that backend
+5. Else → registry entry's `default_backend`
+6. If resolved backend is `ddg+webfetch`:
+   - Run: `which ddg-search`
+   - If not found: fall back to `websearch+webfetch`, warn user
+
+**Backend reference:**
+
+| Backend | Search Tool | Fetch Tool | Quality Floor |
+|---------|-------------|------------|---------------|
+| `ddg+webfetch` | `ddg-search "[q]" -f json -n 10` | WebFetch | 0.45 |
+| `websearch+webfetch` | Claude WebSearch tool | WebFetch | 0.40 |
+| `webfetch` | None (user provides URLs) | WebFetch | 0.50 |
+| `firecrawl` | Firecrawl search API | Firecrawl or WebFetch | 0.55 |
+| `imported` | None (local files) | Format adapter + Claude | 0.45 |
+
+Quality floors are defaults — override per-KB in population-strategy if available.
+
+### WebSearch URL Extraction
+
+WebSearch returns markdown with embedded links. Extract URLs:
+1. Collect all URLs matching pattern `https?://[^\s\)\]]+` from the markdown
+2. Deduplicate
+3. Filter out: google.com, bing.com, duckduckgo.com, *.search.yahoo.com
+4. Remaining URLs are the search results → pass to WebFetch
+
+### Firecrawl Usage
+
+When backend is `firecrawl`:
+- Use Firecrawl CLI: `firecrawl search "[query]" --scrape -o .firecrawl/result.json --json`
+- `--scrape` fetches full page content for each result
+- Results include full markdown content, not just snippets
+- Credit tracking: each search + scrape uses credits (check `firecrawl credit-usage`)
+- Limits: use `--limit N` to cap results (default 10)
+- For specific URLs: `firecrawl scrape "<url>" -o .firecrawl/page.md`
