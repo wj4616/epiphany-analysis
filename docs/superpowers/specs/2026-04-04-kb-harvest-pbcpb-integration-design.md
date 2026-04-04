@@ -227,7 +227,7 @@ The full source content in markdown format. For web-harvested entries, this is t
 "original_markdown": "# Subtractive Synthesis\n\n## Core Concepts\n\n..."
 ```
 
-**`harvest_metadata`** (object, present on web-harvested entries):
+**`harvest_metadata`** (object, present on all non-research-doc entries — web-harvested and imported):
 
 ```json
 "harvest_metadata": {
@@ -260,14 +260,16 @@ Confidence weights are per-KB, defined in population-strategy (not global). Diff
 
 ```json
 "confidence_weights": {
-  "description": 0.20,
+  "description": 0.25,
   "concepts": 0.15,
   "code_blocks": 0.25,
-  "original_markdown": 0.10,
-  "source": 0.15,
+  "title": 0.05,
+  "summary": 0.05,
   "tags": 0.05,
+  "related_topics": 0.05,
   "difficulty": 0.05,
-  "domain_relevance": 0.05
+  "domain_relevance": 0.05,
+  "cross_references": 0.05
 }
 ```
 
@@ -311,8 +313,8 @@ Bridge entries (like `bridge_timbre_warm.json`) gain provenance tracking:
 {
   "...existing bridge fields...",
   "source": {
-    "type": "manual | auto-detected | web-harvested",
-    "backend": "research-docs | ddg+webfetch | ...",
+    "type": "expert-knowledge | auto-detected | web-harvested | external-import",
+    "backend": "research-docs | ddg+webfetch | websearch+webfetch | webfetch | firecrawl | imported",
     "reference": "...",
     "url": "..."
   },
@@ -423,12 +425,17 @@ New fields vs prototype: `code_block_count`, `confidence`, `review_flag`.
 
 Cross-references are maintained automatically by kb-harvest during the cascade (Section 8). The maintenance algorithm:
 
+**Master-index cross_references** (maintained by kb-harvest cascade):
+
 1. For each new/updated entry, read its `tags[]`, `concepts[].name`, and `related_topics[]`
 2. For each term found:
    a. Look up term in master-index `cross_references`
    b. If exists: add this entry's KB to the `kbs[]` array if not already present
    c. If doesn't exist: create new cross_reference entry with this KB as first reference
-3. For entry-level `cross_references[]` field: only populate when a concept name in the new entry exactly matches a concept name in an entry in another registered KB. Don't infer from tags alone — require exact concept name overlap.
+
+**Entry-level cross_references[]** (maintained by kb-sync, NOT cascade):
+
+Entry-level cross_references require scanning entries in other registered KBs to find exact concept name matches — this is O(N) per other KB and risks lock conflicts with concurrent harvests. Therefore, entry-level cross_references are populated only by `kb-sync --repair`, which reads all registered KBs safely during its verification pass. Rule: only populate when a concept name in one entry exactly matches a concept name in an entry in another registered KB. Don't infer from tags alone.
 
 ### Bridge Auto-Detection
 
@@ -500,6 +507,21 @@ Location: `~/.claude/kb-registry.json`
 - `path`: always absolute (the KB root directory)
 - `schema_path`, `bridge_schema_path`, `master_index_path`: always relative to `path`
 - Skills resolve: `path + "/" + schema_path` to get the absolute schema location
+
+### Required vs Optional Fields
+
+| Field | Required | Notes |
+|-------|----------|-------|
+| `name` | yes | Unique identifier for this KB |
+| `path` | yes | Absolute path to KB root |
+| `master_index_path` | yes | Relative to path |
+| `generated_by` | yes | `"pbcpb"` or `"manual"` |
+| `layers` | yes | Array of layer names |
+| `default_backend` | yes | Default harvesting backend |
+| `registered_at` | yes | ISO timestamp |
+| `schema_path` | no | null for prototype/manual KBs — skill uses built-in default |
+| `bridge_schema_path` | no | null if no bridge layer |
+| `bridge_eligible_layers` | no | Empty array or absent if no bridge detection needed |
 
 ### Registry Behavior
 
@@ -666,7 +688,7 @@ system configuration — each independently searchable.
 ```
 Source provenance (required for all entries):
 - source.backend: which harvesting backend produced this entry
-  (research-docs | firecrawl | ddg+webfetch | websearch+webfetch | webfetch)
+  (research-docs | firecrawl | ddg+webfetch | websearch+webfetch | webfetch | imported)
   Default for existing entries without this field: "research-docs"
 - source.url: source URL (required for web-harvested entries)
 - source.retrieved_date: ISO date when content was fetched
@@ -681,7 +703,7 @@ Original content (required for all non-placeholder entries):
 Harvest metadata (required for web-harvested entries):
 - harvest_metadata.overall_confidence: 0.0-1.0 composite score
 - harvest_metadata.field_provenance: per-field {method, confidence}
-  where method is "direct-extracted" | "ai-synthesized" | "ai-inferred"
+  where method is "direct-extracted" | "direct-mapped" | "ai-synthesized" | "ai-inferred"
 - harvest_metadata.source_content_length_chars: character count of source content
 - harvest_metadata.extraction_prompt_version: version string
 - harvest_metadata.source_urls: array of URLs content was fetched from
@@ -735,9 +757,10 @@ Standard backends:
 
 Confidence weights: define per-field weights for overall_confidence 
 calculation. Weight fields by importance to agent consumption in this domain.
-Default weights: description 0.20, concepts 0.15, code_blocks 0.25,
-original_markdown 0.10, source 0.15, tags 0.05, difficulty 0.05,
-domain_relevance 0.05.
+Default weights: description 0.25, concepts 0.15, code_blocks 0.25,
+title 0.05, summary 0.05, tags 0.05, related_topics 0.05, 
+difficulty 0.05, domain_relevance 0.05, cross_references 0.05.
+All weighted fields correspond to extraction prompt fields (Section 8.2).
 
 Source domain rankings: define quality tiers for web sources relevant 
 to this KB's domain. Academic and official documentation sources rank 
@@ -1100,7 +1123,7 @@ kb-harvest --list                                   # List registered KBs
 6. Quality gate (floor 0.45)
 7. Show import summary: N accepted, N flagged, N rejected — user approves
 8. Write entries to target KB
-9. Cascade (manifest, master-index, cross-references, bridges)
+9. Cascade (see Section 8.1 — same cascade as web harvest)
 
 `--dry-run` stops after step 6 and reports what would be imported without writing.
 
@@ -1134,6 +1157,8 @@ kb-harvest --list                                   # List registered KBs
              c. Records field_provenance per field
              d. If bridge-eligible layer: run bridge detection extraction
              e. Check for multi-topic coverage (one page covering multiple entries)
+                If multi-topic: produce separate extraction results per entry.
+                Each result proceeds through steps 11-17 independently.
              f. Result stored per-page, markdown discarded from active context
 11. MERGE:   If multiple pages for same entry:
              a. Combine code_blocks from all sources (deduplicate identical blocks)
@@ -1237,7 +1262,7 @@ BATCH COMPLETE (N entries written)
 
 **Cascade failure recovery:** If interrupted mid-cascade, the journal records which steps completed. kb-sync can replay incomplete journals on its next verification pass.
 
-**Cascade ordering:** Steps 5 and 6 can run in parallel (cross-references and bridge detection are independent). All other steps are sequential.
+**Cascade ordering:** Steps 5 and 6 are independent and can be done in either order. All other steps are sequential (3 before 4, 4 before 5/6, 7 after 5/6).
 
 ### 8.2 Extraction Prompt Design
 
@@ -1368,11 +1393,24 @@ File: `<kb-path>/harvest-checkpoint.json`
     "entry-id-4": { "status": "in_progress", "urls_fetched": 3, "urls_remaining": 2 },
     "entry-id-5": { "status": "pending" }
   },
+  "mode": "auto",
   "seen_urls": ["https://...", "https://..."],
+  "import_state": null,
   "cascade_journal": {
     "batch_1": { "manifest": "done", "master_index": "done", "cross_refs": "done", "bridges": "done" },
     "batch_2": { "manifest": "done", "master_index": "pending" }
   }
+}
+```
+
+For import mode, `import_state` replaces `seen_urls`:
+```json
+"import_state": {
+  "source_path": "/home/myuser/external-kb",
+  "format": "json-entries",
+  "files_total": 45,
+  "files_processed": 23,
+  "files_remaining": ["path/to/file24.json", "..."]
 }
 ```
 
@@ -1531,7 +1569,13 @@ Imported entries carry full provenance chain:
       "concepts": { "method": "ai-synthesized", "confidence": 0.75 },
       "code_blocks": { "method": "direct-mapped", "confidence": 0.95 },
       "difficulty": { "method": "ai-inferred", "confidence": 0.60 }
-    }
+    },
+    "source_content_length_chars": 3200,
+    "extraction_prompt_version": "1.0",
+    "source_urls": [],
+    "fetch_date": "2026-04-04",
+    "backend_used": "imported",
+    "review_flag": false
   }
 }
 ```
@@ -1560,14 +1604,16 @@ Imported entries carry full provenance chain:
   - Populate entry-level `cross_references[]` fields: for each concept in each entry, check master-index cross_references to find other KBs containing the same concept, then scan those KBs for the target entry and add bidirectional cross_references. This is the only place entry-level cross_references are written (cascade only updates master-index-level cross_references).
 - Status promotion: `curated → synced` (after human marks entry as curated)
 
-**Cron job update:** Instead of checking for unharvested content, the cron runs consistency verification:
+**Cron job update:** Instead of checking for unharvested content, the cron runs consistency verification. Only triggers if a cascade journal exists (indicating recent harvest activity):
 ```json
 {
-  "cron": "*/5 * * * *",
-  "prompt": "Run kb-sync --verify for all registered KBs. If inconsistencies found, run kb-sync --repair.",
+  "cron": "*/30 * * * *",
+  "prompt": "Check for cascade-journal.json in all registered KBs. If any exist with incomplete steps, run kb-sync --repair for those KBs. If no journals found, skip.",
   "recurring": true
 }
 ```
+
+Manual full verification: `kb-sync --verify` (user-initiated, not cron — too expensive for routine automation).
 
 ### 9.2 kb-validate Changes
 
@@ -1607,6 +1653,15 @@ All consumption skills (sound-design-bridge, juce-dsp-implementation, juce-ui-br
 | Bot detection (0 results) | Auto-fallback to websearch+webfetch |
 | DDG CLI not installed | Fall back to websearch+webfetch, log warning |
 | Network error | Retry once, then fall back to websearch+webfetch |
+
+### WebSearch Failures
+
+| Scenario | Behavior |
+|----------|----------|
+| Zero results returned | Try alternative query phrasing from search-terms.json, then log as no results |
+| Results contain no extractable URLs | Log warning, try next query |
+| Network error | Retry once, then skip query |
+| All queries exhausted with no URLs | Entry stays placeholder, log in harvest-status.json |
 
 ### WebFetch Failures
 
