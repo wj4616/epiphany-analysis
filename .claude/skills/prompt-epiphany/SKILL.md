@@ -391,6 +391,9 @@ See [examples.md](examples.md) for before/after prompt transformations including
 - Code generation (CSV duplicate detection)
 - Analysis (earnings report)
 - Audit (project review)
+- Minimal mode (audit prompt, compact output)
+- Verbose mode (audit prompt, expanded with context/why/examples)
+- Verbose no-gaps (well-structured input returned unchanged)
 
 ## Quality Standard
 
