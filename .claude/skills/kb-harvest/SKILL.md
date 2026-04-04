@@ -492,3 +492,83 @@ BATCH COMPLETE (N entries written)
 
 ### Cascade Recovery
 If interrupted mid-cascade, the journal records which steps completed. `kb-sync --repair` replays incomplete journals on its next verification pass. Entries written to disk remain valid even if cascade is incomplete.
+
+## Import System
+
+Triggered by `--import <source-path>`. Converts external KB content to our schema.
+
+### Format Detection
+
+If `--format` not specified, auto-detect by scanning source path (check in order):
+
+| Format | Detection Signal | Strategy |
+|--------|-----------------|----------|
+| `prototype` | Has manifest.json with `kb_name` field, entries have `concepts[]` | Direct field mapping |
+| `json-entries` | Directory of .json files with entry-like fields | Claude maps fields to schema |
+| `markdown-dir` | Directory of .md files | Each file → original_markdown + Claude extraction |
+| `obsidian` | .md files with `[[wikilinks]]` and YAML frontmatter | Frontmatter → fields, wikilinks → cross_references |
+| `csv` | .csv or .tsv file with header row | Column headers → field mapping |
+| `custom` | User provides `--field-map <mapping.json>` | Mapping file drives conversion |
+
+Fallback: if no format detected, use `json-entries` for .json files, `markdown-dir` for .md files.
+
+### Import Pipeline
+
+1. **Scan** source path — list files, count them, detect directory structure
+2. **Detect** format (or use `--format`)
+3. **Preview** — show user: N files found, detected format, proposed target layer(s). Ask for confirmation.
+4. **For each source file:**
+   a. Read source content
+   b. Apply format adapter:
+      - Known format with direct mapping (prototype, custom with field_map) → map fields directly
+      - Other formats → read `prompts/extraction-import.md`, substitute `[format]`, `[kb-layer]`, `[kb-name]`, `[source-path]`, `[field_map_summary]` if applicable. Send content to Claude for extraction.
+   c. Store full source content as `original_markdown`
+   d. Set `source.backend = "imported"`, `source.type = "external-import"`
+   e. Set `source.import_source = { path: "<absolute source path>", format: "<detected>", field_map_used: <bool>, import_date: "<ISO date>" }`
+   f. Generate `harvest_metadata`: per-field `field_provenance` using `"direct-mapped"` for adapter fields, `"ai-synthesized"` for Claude-generated fields
+5. **Validate** against entry-schema.json
+6. **Quality gate** — per-KB quality_floor for `imported` backend (default 0.45)
+7. **Summary** — show: N accepted, N flagged for review, N rejected
+8. If `--dry-run`: stop here, report what would be imported
+9. Otherwise: user approves → write entries → cascade (§ Cascade)
+
+### Custom Field Mapping
+
+If `--field-map <mapping.json>` provided:
+
+```json
+{
+  "source_type": "json",
+  "entry_pattern": "**/*.json",
+  "field_map": {
+    "title": "name",
+    "description": "content",
+    "summary": "brief",
+    "tags": "labels",
+    "difficulty": {
+      "field": "level",
+      "transform": { "easy": "beginner", "medium": "intermediate", "hard": "advanced" }
+    }
+  },
+  "unmapped_fields": "ai-synthesize",
+  "id_field": "slug",
+  "id_prefix": "imported"
+}
+```
+
+- `field_map` keys = our schema fields, values = source field names (or objects with `field` + `transform`)
+- `unmapped_fields`: `"ai-synthesize"` (Claude generates) or `"skip"` (leave empty/default)
+- `id_field`: source field for entry IDs (default: generate from title)
+- `id_prefix`: prefix for entry IDs (default: KB name)
+
+### Import Error Handling
+
+| Scenario | Action |
+|----------|--------|
+| Source file unreadable | Skip, log path and error |
+| Format detection fails | Ask user to specify `--format` |
+| Empty required fields after mapping | Claude synthesizes from original_markdown if possible, else review_flag |
+| Entry already exists in target KB | Re-harvest: version bump, archive old (§ Re-Harvest Versioning) |
+| Source is single file (not directory) | Import as single entry, ask user for target layer/topic |
+| Source granularity finer than target | Merge related source entries |
+| Source granularity coarser than target | Split via multi-topic detection |
