@@ -168,8 +168,7 @@ Create `~/.claude/skills/kb-harvest/templates/entry-schema-default.json`:
     "summary": { "type": "string", "maxLength": 100 },
     "description": {
       "type": "string",
-      "minLength": 100,
-      "description": "Substantive content — parameter ranges, implementation detail, practical guidance"
+      "description": "Substantive content — parameter ranges, implementation detail, practical guidance. Quality threshold: >= 100 chars for harvested entries (enforced at quality gate, not schema level, so placeholders can have short descriptions)."
     },
     "source": {
       "type": "object",
@@ -200,7 +199,7 @@ Create `~/.claude/skills/kb-harvest/templates/entry-schema-default.json`:
     },
     "concepts": {
       "type": "array",
-      "minItems": 2,
+      "description": "Quality threshold: >= 2 items for harvested entries (enforced at quality gate, not schema level, so placeholders can have 0-1 concepts).",
       "items": {
         "type": "object",
         "required": ["name", "description"],
@@ -658,7 +657,7 @@ kb-harvest --list                                   # List registered KBs
 |------|---------|
 | `--kb` | REQUIRED — no default |
 | `--backend` | `ddg+webfetch` if `which ddg-search` succeeds, else `websearch+webfetch` |
-| `--batch` | 5 |
+| `--batch` | `batch_size_default` from config (default 5) |
 | mode | Interactive (no `--auto`, `--urls`, or `--import`) |
 
 `--urls` forces `webfetch` backend. `--import` forces `imported` backend.
