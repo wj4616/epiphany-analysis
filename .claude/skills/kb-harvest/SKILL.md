@@ -572,3 +572,95 @@ If `--field-map <mapping.json>` provided:
 | Source is single file (not directory) | Import as single entry, ask user for target layer/topic |
 | Source granularity finer than target | Merge related source entries |
 | Source granularity coarser than target | Split via multi-topic detection |
+
+## Interactive Mode
+
+Default mode (no `--auto`, `--urls`, or `--import`).
+
+1. Show KB status: layer names, entry counts, placeholder count, harvest-status summary
+2. List placeholder entries needing content (read from manifests; if manifests broken, scan directories)
+3. If `--layer` or `--topic` specified: filter to those. If `--entry` specified: target only that entry.
+4. User selects entries to fill (or "all")
+5. For each selected entry:
+   a. Generate search terms (§ Search Term Generation). Display for user to edit/add/remove.
+   b. Search → display ranked URLs with domain tier labels → user selects URLs (or "all")
+   c. Fetch selected URLs → extract → show extracted entry summary (title, confidence, code_block_count, field_provenance)
+   d. User: approve → write + cascade (batch 1) | reject → discard | edit → modify fields, then approve
+
+## Auto Mode
+
+`--auto`: Fill all placeholder entries automatically.
+
+1. Find all placeholder entries: scan manifests for `status: "placeholder"`. If manifests broken, scan directories for entries with `"status": "placeholder"`.
+2. If `--layer` specified: filter to that layer. If `--topic`: filter to topic. If `--entry`: target single entry.
+3. Generate search terms for all targets (§ Search Term Generation)
+4. For each entry: run § Harvest Pipeline steps 5-15
+5. Cascade runs per batch (every `--batch` entries, default 5)
+6. After all entries processed, update `<kb_path>/harvest-status.json`:
+
+```json
+{
+  "version": "1.0.0",
+  "last_updated": "<ISO timestamp>",
+  "layers": {
+    "<layer>": {
+      "total": 25,
+      "research_harvested": 12,
+      "web_harvested": 8,
+      "imported": 0,
+      "placeholder": 5,
+      "failed": {
+        "count": 2,
+        "entries": {
+          "<entry-id>": { "reason": "all URLs returned empty content", "last_attempt": "<ISO date>" }
+        }
+      }
+    }
+  }
+}
+```
+
+7. Report: N filled, N flagged for review, N failed (with reasons)
+
+## Auto Refresh Mode
+
+`--auto --refresh`: Re-harvest entries below confidence threshold.
+
+1. Read config `refresh_confidence_threshold` (default 0.60)
+2. Find entries with `harvest_metadata.overall_confidence < threshold` (exclude placeholders)
+3. Re-harvest each: run pipeline, version bump old entry (§ Re-Harvest Versioning)
+
+## Auto All Mode
+
+`--auto --all`: Re-harvest ALL non-placeholder entries.
+
+1. Find all entries with status != "placeholder"
+2. Re-harvest each with version bump
+3. Useful after extraction prompt improvements or backend changes
+
+## URL Mode
+
+`--urls <url1> <url2> ...`: Harvest specific user-provided URLs.
+
+1. Backend forced to `webfetch`
+2. For each URL: WebFetch → extract → score → gate
+3. Match extracted content to existing placeholder entry (by topic similarity). If no match: ask user which entry to target, or create new entry.
+4. Write → cascade
+
+## List Mode
+
+`--list`: Show registered KBs.
+
+Read `~/.claude/kb-registry.json`. Display table:
+
+| Name | Path | Layers | Default Backend | Registered |
+|------|------|--------|-----------------|------------|
+
+## Status Mode
+
+`--status`: Show harvest status across all registered KBs.
+
+For each registered KB:
+1. Read `<kb_path>/harvest-status.json` if exists
+2. Read manifests to count entries by status
+3. Display per-layer: total / harvested / placeholder / failed / avg confidence
