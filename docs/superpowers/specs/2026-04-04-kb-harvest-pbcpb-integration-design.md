@@ -113,7 +113,7 @@ Per-backend quality floors (configurable per-KB in population-strategy):
 
 ```
 overall_confidence >= quality_floor       -> Accept, status = "harvested"
-quality_floor - 0.20 <= conf < floor     -> Accept with review_flag = true
+0.30 <= conf < quality_floor             -> Accept with review_flag = true
 confidence < 0.30 (absolute minimum)     -> Discard, log reason
 ```
 
@@ -1018,9 +1018,9 @@ kb-harvest --list                                   # List registered KBs
 12. SCORE:   Calculate overall_confidence:
              sum(field_confidence * confidence_weight * source_domain_weight)
 13. GATE:    Check against backend's quality_floor:
-             >= floor:         accept
-             floor-0.20 to floor: accept with review_flag = true  
-             < 0.30:           discard, log reason
+             >= floor:              accept
+             0.30 to floor:        accept with review_flag = true
+             < 0.30:               discard, log reason
 14. STAGE:   Write to <kb>/harvested/staged/<entry-id>.json
              (in --auto mode: promote directly to final location)
              (in interactive: show to user for approval)
@@ -1031,7 +1031,7 @@ kb-harvest --list                                   # List registered KBs
 
 ### 8.1 Cascade — Automatic Infrastructure Updates
 
-The cascade runs ONCE per batch (not per entry). After a batch of N entries is written:
+The cascade runs ONCE per batch (not per entry). In auto mode, a batch is N entries (configurable via `--batch`, default 5). In interactive mode, the cascade runs after each user-approved entry (effectively batch size 1). After a batch of entries is written:
 
 ```
 BATCH COMPLETE (N entries written)
