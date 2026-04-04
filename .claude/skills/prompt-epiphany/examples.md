@@ -284,8 +284,9 @@ no findings are purely stylistic preferences.
 > - Added JUCE/VST3 audio plugin context and real-time constraints explanation
 > - Added "Why" explanations for each constraint based on inferred reasoning
 > - Added two example findings to demonstrate expected format
+> - Added edge case for grouping findings by root cause
 
-**What changed:** Normal pipeline ran first (producing output similar to Example 3). Expansion pass identified three thin spots: sparse context (no domain background), bare constraints (no "why" explanations), and no examples (audit task benefits from demonstrating expected finding format). Expanded context with audio plugin domain knowledge, added rationale to each constraint, and added two exemplar findings. Inferred expansions flagged for user review.
+**What changed:** Normal pipeline ran first (producing output similar to Example 3). Expansion pass identified four thin spots: sparse context (no domain background), bare constraints (no "why" explanations), no examples (audit task benefits from demonstrating expected finding format), and missing edge cases (root-cause grouping). Expanded context with audio plugin domain knowledge, added rationale to each constraint, added two exemplar findings, and added a fourth edge case. Inferred expansions flagged for user review.
 
 ## Example 6: Verbose — No Gaps Found
 
