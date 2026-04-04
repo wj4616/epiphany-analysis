@@ -1,0 +1,34 @@
+{
+  "max_urls_per_session": 30,
+  "max_urls_per_entry": 5,
+  "max_search_queries_per_entry": 8,
+  "cooldown_between_fetches_ms": 1000,
+  "auto_harvest_max_urls_per_entry": 3,
+  "auto_harvest_timeout_seconds": 120,
+  "batch_size_default": 5,
+  "refresh_confidence_threshold": 0.60,
+  "default_backend": "ddg+webfetch",
+  "source_domain_rankings_default": {
+    "academic": {
+      "domains": ["ieee.org", "aes.org", "arxiv.org", "ccrma.stanford.edu", "dafx.de"],
+      "weight": 1.0
+    },
+    "official_docs": {
+      "domains": ["docs.juce.com", "cppreference.com", "cmake.org", "steinberg.help"],
+      "weight": 0.9
+    },
+    "expert_blogs": {
+      "domains": ["earlevel.com", "musicdsp.org", "theaudioprogrammer.com", "forum.juce.com"],
+      "weight": 0.8
+    },
+    "code_repos": {
+      "domains": ["github.com", "gitlab.com"],
+      "weight": 0.7
+    },
+    "community": {
+      "domains": ["kvraudio.com", "stackoverflow.com"],
+      "weight": 0.6
+    },
+    "default_weight": 0.5
+  }
+}
