@@ -229,3 +229,147 @@ If generated count exceeds `max_search_queries_per_entry`, keep the highest-prio
 ```
 
 In interactive mode, display generated queries and let user edit/add before searching.
+
+## Harvest Pipeline (Single Entry)
+
+**Session-level limits** (from `~/.claude/kb-harvest-config.json`):
+- Track total URLs fetched across all entries. Stop fetching when `max_urls_per_session` (default 30) is reached. Entries still in queue stay as placeholders.
+- In auto mode, skip an entry if elapsed time exceeds `auto_harvest_timeout_seconds` (default 120) for that entry. Mark as `fetch_failed` with reason "timeout".
+
+Execute these steps for each entry to harvest:
+
+### Steps 1-3: Resolve
+- Read kb-registry.json → resolve KB path (§ Registry Resolution)
+- Read entry-schema.json → know target fields
+- Read layer manifest.json → find target entry
+- If manifest is broken (zero entries despite files on disk): auto-run § Manifest Rebuild first
+
+### Step 4: Terms
+Load search-terms.json → get unused queries for this entry.
+If none exist, generate per § Search Term Generation.
+
+### Step 5: Search
+
+**DDG backend:**
+```bash
+ddg-search "[query]" -f json -n 10
+```
+Parse JSON, extract URLs from `.items[].link`. If 0 results (bot detection): auto-fallback to WebSearch for this query.
+
+**WebSearch backend:**
+Use the WebSearch tool with the query. Extract URLs per § WebSearch URL Extraction.
+
+**Firecrawl backend:**
+```bash
+firecrawl search "[query]" --scrape --limit 10 -o .firecrawl/result.json --json
+```
+Extract URLs from results.
+
+**webfetch backend:** Skip — user provided URLs via `--urls`.
+
+### Step 6: Dedup
+Maintain a `seen_urls` set for this harvest session. Skip already-fetched URLs.
+
+### Step 7: Rank
+Look up each URL's domain in source_domain_rankings (from KB population strategy, or config defaults). Sort URLs by tier weight descending. First matching tier wins for each domain.
+
+### Step 8: Limit
+Take top N URLs: `max_urls_per_entry` (default 5) in interactive mode, `auto_harvest_max_urls_per_entry` (default 3) in auto mode.
+
+### Step 9: Fetch
+For each URL (wait `cooldown_between_fetches_ms` from config, default 1000ms, between consecutive WebFetch calls):
+
+1. Check session URL count against `max_urls_per_session` (default 30). If reached, stop fetching — remaining entries stay as placeholders.
+2. Read `prompts/webfetch-content.md`. Replace `[topic]` with the entry's topic.
+3. Call **WebFetch** with the URL and the assembled prompt.
+4. Check if the result contains code blocks (look for triple-backtick fences).
+5. If NO code blocks found AND this layer is code-oriented (check layer name — dsp, juce, cpp, cmake, etc.):
+   - Read `prompts/webfetch-code.md`. Replace `[topic]`.
+   - Call **WebFetch** again with the code-targeting prompt.
+   - Merge both results into one markdown document.
+6. Save raw output to `<kb_path>/harvested/raw/<entry-id>-<N>.md` (N = URL index).
+
+**WebFetch constraint:** WebFetch uses a small, fast model — NOT the main Claude model. Use it ONLY for fetching content. All structured field extraction happens in Step 10 with the full model.
+
+### Step 10: Extract
+For each fetched page (**PER-PAGE**, not per-batch — to manage context window):
+
+1. Read the raw markdown from `<kb_path>/harvested/raw/<entry-id>-<N>.md`
+2. Read `prompts/extraction-standard.md`. Substitute:
+   - `[topic]` → entry topic
+   - `[kb-layer]` → layer name
+   - `[kb-name]` → KB name
+   - `[domain description]` → from master-index `knowledge_bases[kb].description` if present, else derive from KB name (e.g., "dsp-kb" → "DSP and audio signal processing")
+3. If this layer is in `bridge_eligible_layers`: read and append `prompts/extraction-bridge.md`
+4. Read and append `prompts/extraction-multitopic.md`
+5. Present the raw markdown to Claude with the assembled extraction prompt
+6. Parse the JSON response — get all extracted fields + per-field confidence + method
+7. If response includes multiple entry results (multi-topic): each result proceeds through remaining steps independently
+8. **After extraction**, discard the raw markdown from active context (it's saved to disk)
+
+### Step 11: Merge
+If multiple pages were extracted for the same entry:
+
+1. Combine `code_blocks[]` from all pages (deduplicate identical blocks by comparing `code` field)
+2. For `description`: use the longest/most detailed version
+3. For other fields: take the value with highest confidence
+4. Concatenate `original_markdown` from all pages, separated by `\n\n---\nSource: <url>\n---\n\n`
+5. Multi-source confidence boost: +0.05 per corroborating source, max +0.15
+
+### Step 12: Score
+
+```
+overall_confidence = sum(field_confidence × weight) × 0.85 + source_domain_weight × 0.15
+```
+
+**Confidence weights** (read from KB population strategy if available, else use defaults):
+
+| Field | Default Weight |
+|-------|---------------|
+| description | 0.25 |
+| code_blocks | 0.25 |
+| concepts | 0.15 |
+| title | 0.05 |
+| summary | 0.05 |
+| tags | 0.05 |
+| related_topics | 0.05 |
+| difficulty | 0.05 |
+| domain_relevance | 0.05 |
+| cross_references | 0.05 |
+
+Weights MUST sum to 1.0.
+
+**source_domain_weight:** Look up the primary URL's domain in source_domain_rankings. Use `default_weight` (0.5) if no tier matches.
+
+### Step 13: Gate
+
+| Condition | Action |
+|-----------|--------|
+| `confidence >= quality_floor` | Accept. Set status = `"harvested"` |
+| `0.30 <= confidence < quality_floor` | Accept. Set `review_flag = true` |
+| `confidence < 0.30` | Discard. Log reason in harvest-status.json. Entry stays placeholder. |
+
+### Step 14: Stage
+- **Auto mode:** Skip staging — proceed to Step 15
+- **Interactive mode:** Write to `<kb_path>/harvested/staged/<entry-id>.json`. Display summary to user for approval.
+
+### Step 15: Write
+Write the entry JSON to `<kb_path>/<layer>/<topic>/<entry-id>.json`.
+
+Every written entry MUST include all required fields from the entry schema. Auto-populate:
+- `source.reference` = page `<title>` or first `<h1>` from fetched content
+- `source.url` = primary URL
+- `source.backend` = backend used
+- `source.retrieved_date` = today's date (ISO format)
+- `harvest_metadata.extraction_prompt_version` = `"1.0"`
+- `harvest_metadata.fetch_date` = today's date
+- `harvest_metadata.backend_used` = backend used
+- `harvest_metadata.source_urls` = all URLs fetched for this entry
+
+### Step 16: Cascade
+Run § Cascade after the batch is complete.
+- Auto mode: cascade runs after every `--batch` entries (default 5)
+- Interactive mode: cascade runs after each approved entry (batch size 1)
+
+### Step 17: Checkpoint
+Update `<kb_path>/harvest-checkpoint.json` — mark entry as completed, update seen_urls, update cascade_journal.
