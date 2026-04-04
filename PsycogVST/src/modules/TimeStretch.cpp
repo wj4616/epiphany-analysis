@@ -125,8 +125,7 @@ void TimeStretch::processGrainSample(Grain& grain, float& outL, float& outR,
     else
     {
         float readPos = grain.sourcePosition + static_cast<float>(grain.playbackPosition) * stretchRate;
-        int readIdx = static_cast<int>(readPos);
-        freezeBuffer.readSampleAt(readIdx, sampleL, sampleR);
+        freezeBuffer.readSampleAtFractional(readPos, sampleL, sampleR);
     }
 
     outL += sampleL * window;

@@ -20,10 +20,10 @@ TEST_CASE("WetProcessor soft-clip bounds", "[WetProcessor]")
     for (int i = 0; i < 1000; ++i)
         wp.processSample(outL, outR, 10.0f, -10.0f);
 
-    // tanh clips to [-1,1], but auto-normalize gain (up to 3.0) can push output higher
-    // Output should still be bounded by tanh(input) * gainMax = tanh(10) * 3.0 ≈ 3.0
-    REQUIRE(std::abs(outL) < 3.1f);
-    REQUIRE(std::abs(outR) < 3.1f);
+    // tanh clips to [-1,1], auto-normalize gain (up to 1.5) can push output higher
+    // Output should be bounded by tanh(input) * gainMax = tanh(10) * 1.5 ≈ 1.5
+    REQUIRE(std::abs(outL) < 1.6f);
+    REQUIRE(std::abs(outR) < 1.6f);
     REQUIRE(std::isfinite(outL));
     REQUIRE(std::isfinite(outR));
 }
@@ -54,11 +54,11 @@ TEST_CASE("WetProcessor auto-normalize target", "[WetProcessor]")
     for (int i = 0; i < 96000; ++i)
         wp.processSample(outL, outR, inputLevel, inputLevel);
 
-    // Output should be closer to -6dBFS target
+    // Output should be boosted toward target, limited by gainMax=1.5 (~+3.5dB)
+    // -20dBFS input * 1.5 gain = ~-16.5dBFS (can't reach -6dBFS target)
     float outputDb = MathUtils::gainToDb(std::abs(outL));
-    // Allow wider tolerance — auto-normalize with 300ms attack is slow
-    REQUIRE(outputDb > -12.0f);
-    REQUIRE(outputDb < -1.0f);
+    REQUIRE(outputDb > -20.0f);  // Should be boosted above raw input level
+    REQUIRE(outputDb < -1.0f);   // But not clipping
 }
 
 TEST_CASE("WetProcessor noise gate bypass", "[WetProcessor]")
@@ -90,8 +90,8 @@ TEST_CASE("WetProcessor gain clamp max", "[WetProcessor]")
     for (int i = 0; i < 96000; ++i)
         wp.processSample(outL, outR, quietLevel, quietLevel);
 
-    // Gain should be clamped at 3.0 max
-    float maxOutput = std::tanh(quietLevel) * 3.0f;
+    // Gain should be clamped at 1.5 max
+    float maxOutput = std::tanh(quietLevel) * 1.5f;
     REQUIRE(std::abs(outL) <= maxOutput + 0.001f);
 }
 
@@ -113,7 +113,7 @@ TEST_CASE("WetProcessor freeze transition fast release", "[WetProcessor]")
         wp.processSample(outL, outR, 0.8f, 0.8f);
 
     // Gain should have adapted — output level should be bounded
-    REQUIRE(std::abs(outL) < 3.1f);
+    REQUIRE(std::abs(outL) < 1.6f);
     REQUIRE(std::isfinite(outL));
 }
 

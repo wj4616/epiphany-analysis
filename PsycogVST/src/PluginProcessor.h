@@ -7,6 +7,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_dsp/juce_dsp.h>
+#include <atomic>
 #include "Parameters.h"
 #include "PresetManager.h"
 #include "modules/DryDelay.h"
@@ -50,6 +51,9 @@ public:
     void getStateInformation(juce::MemoryBlock&) override;
     void setStateInformation(const void*, int) override;
 
+    // Host bypass integration (returns the APVTS bypass parameter)
+    juce::AudioProcessorParameter* getBypassParameter() const override;
+
     juce::AudioProcessorValueTreeState apvts;
 
 private:
@@ -68,6 +72,9 @@ private:
 
     // Current preset index
     int currentProgramIndex = 0;
+
+    // Preset change flag — set on message thread, consumed on audio thread
+    std::atomic<bool> presetChangePending { false };
 
     // Temp buffers for signal routing
     juce::AudioBuffer<float> wetBuffer;

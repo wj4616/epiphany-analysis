@@ -36,7 +36,6 @@ private:
     double sampleRate = 48000.0;
     float phase = 0.0f;           // Current phase [0, 1)
     float phaseIncrement = 0.0f;  // Per-sample increment
-    float depth = 0.0f;           // Modulation depth [0, 1]
     PsycogConstants::LfoWaveform waveform = PsycogConstants::LfoWaveform::Sine;
 
     // Smoothed depth (20ms per spec)

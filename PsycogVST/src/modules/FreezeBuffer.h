@@ -11,8 +11,8 @@
 
   This ensures recording never overwrites audio being played back.
 
-  NOTE: Amplitude for threshold detection is measured at Wavefolder output,
-  NOT inside FreezeBuffer. See Wavefolder::getCurrentAmplitude().
+  Cooldown for Auto mode re-triggering is handled by ThresholdDetector (100ms),
+  NOT by FreezeBuffer. FreezeBuffer is pure storage + playback.
 */
 
 #pragma once
@@ -42,6 +42,10 @@ public:
     // sampleIndex wraps within buffer length.
     void readSampleAt(int sampleIndex, float& outL, float& outR) const;
 
+    // Linear-interpolated read at a fractional sample position.
+    // Used by the granular engine for smooth frozen playback at non-integer stretch rates.
+    void readSampleAtFractional(float position, float& outL, float& outR) const;
+
     // Get playback buffer length in samples (for position mapping)
     int getBufferLength() const { return bufferLength; }
 
@@ -68,10 +72,6 @@ private:
     // Crossfade state (10ms per spec)
     float crossfadeProgress = 1.0f;  // 1.0 = done
     int crossfadeLength = 0;
-
-    // Cooldown tracking
-    int cooldownRemaining = 0;
-    int cooldownLength = 0;
 
     // Hann window for crossfade
     std::vector<float> crossfadeWindow;

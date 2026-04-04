@@ -2,15 +2,12 @@
   PsycogVST - Interdimensional sound transformation plugin
   Phase 5: State Management - Factory presets implementation
 
-  Presets designed for PSYBIENT MUSIC with HEAVY PSYCHEDELIC TRANSFORMATION
-
-  Design Principles:
-  - foldAmount ≥ 0.5 for rich harmonic content
-  - threshold ≤ 0.3 for frequent freeze cascade layers
-  - lfoDepth ≥ 0.5 for dramatic modulation
-  - mix ≥ 0.85 for complete transformation
-  - Multi-target LFO for complex interweaving movement
-  - S&H and Square waveforms for glitchy psychedelic artifacts
+  20 presets with progressive intensity:
+  - Subtle (1-2): fold 0.30-0.35, mix 0.85
+  - Moderate (3-5): fold 0.30-0.35, mix 0.85-0.90
+  - Heavy (6-12): fold 0.35-0.40, mix 0.85-0.90
+  - Extreme (13-14): fold 0.50-0.55, mix 0.95-1.0
+  - Creative (15-19): fold 0.25-0.40, mix 0.50-0.95 (varied for specific character)
 */
 
 #include "PresetManager.h"
@@ -38,334 +35,429 @@ namespace Presets
     };
 
     // clang-format off
+    // Presets calibrated for synthesizer pads with long release.
+    // Fold amounts kept low (0.0-0.20) to avoid harshness on harmonically rich input.
+    // Mix blends dry pad underneath for body. Slow LFO rates for evolving textures.
     constexpr PresetParams factoryPresets[numPresets] = {
         // =====================================================================
-        // INDEX 0: Init (Default)
-        // Neutral starting point - NO TRANSFORMATION
+        // INDEX 0: Init
+        // Clean starting point — no effects, just passthrough
         // =====================================================================
         {
-            ParamDefaults::stretch,
-            ParamDefaults::position,
-            ParamDefaults::freezeMode,
-            ParamDefaults::threshold,
-            ParamDefaults::foldAmount,
-            ParamDefaults::foldOffset,
-            ParamDefaults::lfoRate,
-            ParamDefaults::lfoWaveform,
-            ParamDefaults::lfoDepth,
+            ParamDefaults::stretch,    // 0.5 normalized = 1.0x
+            ParamDefaults::position,   // 0.5
+            ParamDefaults::freezeMode, // Off
+            ParamDefaults::threshold,  // 0.3
+            ParamDefaults::foldAmount, // 0.0 — no folding
+            ParamDefaults::foldOffset, // 0.0
+            ParamDefaults::lfoRate,    // 0.5 normalized
+            ParamDefaults::lfoWaveform,// Sine
+            ParamDefaults::lfoDepth,   // 0.0 — no modulation
             ParamDefaults::lfoTargetStretch,
             ParamDefaults::lfoTargetPosition,
             ParamDefaults::lfoTargetFoldAmount,
             ParamDefaults::lfoTargetFoldOffset,
-            ParamDefaults::mix
+            ParamDefaults::mix         // 1.0
         },
 
         // =====================================================================
-        // INDEX 1: Turning Through Time (IMPROVED FOR HEAVY PSYBIENT)
-        // Character: Evolving morphing psychedelic pad with cascading freeze
-        // Heavy: fold=0.65, thresh=0.22, depth=0.55, mix=0.92
+        // INDEX 1: Turning Through Time
+        // Gentle granular shimmer — pad drifts slowly through grain position
         // =====================================================================
         {
-            0.349f,  // stretch: 0.5x - compressed granular
+            0.6f,    // stretch: ~1.6x — gentle expansion
             0.5f,    // position: center
-            2,       // freezeMode: Auto - cascades
-            0.22f,   // threshold: LOW for frequent freeze layers
-            0.65f,   // foldAmount: HIGH - rich harmonics
-            0.25f,   // foldOffset: asymmetry for stereo width
-            0.303f,  // lfoRate: ~0.1 Hz - slow drift
-            0,       // lfoWaveform: Sine - smooth
-            0.55f,   // lfoDepth: STRONG modulation
-            false,   // lfoTargetStretch
-            true,    // lfoTargetPosition - time movement
-            true,    // lfoTargetFoldAmount - harmonic evolution
-            false,   // lfoTargetFoldOffset
-            0.92f    // mix: 92% - heavy transformation
-        },
-
-        // =====================================================================
-        // INDEX 2: Golden Memories (IMPROVED FOR HEAVY PSYBIENT)
-        // Character: Warm keys TRANSFORM to aggressive psychedelic
-        // Heavy: fold=0.6, thresh=0.2, depth=0.6, mix=0.92
-        // =====================================================================
-        {
-            0.452f,  // stretch: 0.8x - warmth
-            0.5f,    // position: static
-            2,       // freezeMode: Auto - catches sustained notes
-            0.2f,    // threshold: LOW - frequent cascade
-            0.6f,    // foldAmount: HIGH - strong harmonics
-            0.15f,   // foldOffset: subtle asymmetry
-            0.212f,  // lfoRate: ~0.05 Hz - slow evolution
-            1,       // lfoWaveform: Triangle - smooth
-            0.6f,    // lfoDepth: STRONG
-            true,    // lfoTargetStretch - pitch warping
-            false,   // lfoTargetPosition
-            true,    // lfoTargetFoldAmount - harmonic evolution
-            false,   // lfoTargetFoldOffset
-            0.92f    // mix: 92% - transformed
-        },
-
-        // =====================================================================
-        // INDEX 3: Omnipotent Observers (IMPROVED FOR HEAVY PSYBIENT)
-        // Character: Thick fat psy pad with overlapping zones - HEAVY
-        // Heavy: fold=0.7, thresh=0.22, depth=0.55, mix=0.93
-        // =====================================================================
-        {
-            0.239f,  // stretch: 0.3x - strong compression
-            0.5f,    // position: center with LFO
-            2,       // freezeMode: Auto - frequent captures
-            0.22f,   // threshold: LOW for cascade
-            0.7f,    // foldAmount: HIGH harmonic content
-            0.45f,   // foldOffset: strong asymmetry for width
-            0.356f,  // lfoRate: ~0.15 Hz
+            0,       // freezeMode: Off
+            0.3f,    // threshold: unused
+            0.08f,   // foldAmount: just a touch of warmth
+            0.1f,    // foldOffset: subtle stereo widening
+            0.25f,   // lfoRate: ~0.035 Hz — very slow drift
             0,       // lfoWaveform: Sine
-            0.55f,   // lfoDepth: STRONG modulation
+            0.3f,    // lfoDepth: gentle movement
             false,   // lfoTargetStretch
-            true,    // lfoTargetPosition - time-scrubbing
-            true,    // lfoTargetFoldAmount - harmonic complexity
+            true,    // lfoTargetPosition — slow position drift
+            false,   // lfoTargetFoldAmount
             false,   // lfoTargetFoldOffset
-            0.93f    // mix: 93% - heavy transformation
+            0.7f     // mix: 70% — pad body preserved
         },
 
         // =====================================================================
-        // INDEX 4: Infinite Cogs (IMPROVED FOR HEAVY PSYBIENT)
-        // Character: Interlocking evolution - mechanical to organic HEAVY
-        // Heavy: fold=0.65, thresh=0.22, depth=0.5, mix=0.9
+        // INDEX 2: Golden Memories
+        // Warm stretched texture — pad expanded into soft granular cloud
         // =====================================================================
         {
-            0.389f,  // stretch: 0.6x - moderate compression
-            0.5f,    // position: center with LFO
-            2,       // freezeMode: Auto - catches transformation
-            0.22f,   // threshold: LOW for cascade
-            0.65f,   // foldAmount: HIGH harmonics
-            0.35f,   // foldOffset: moderate asymmetry
-            0.394f,  // lfoRate: ~0.2 Hz - mechanical rhythm
-            1,       // lfoWaveform: Triangle - smooth steps
-            0.5f,    // lfoDepth: STRONG modulation
-            false,   // lfoTargetStretch
-            true,    // lfoTargetPosition - cog rotation
-            true,    // lfoTargetFoldAmount - harmonic gears
-            false,   // lfoTargetFoldOffset
-            0.9f     // mix: 90% - transformed
-        },
-
-        // =====================================================================
-        // INDEX 5: Primordial Gear (IMPROVED FOR HEAVY PSYBIENT)
-        // Character: Deep drone awakening - HEAVY geological time
-        // Heavy: fold=0.55, depth=0.5, mix=0.95
-        // =====================================================================
-        {
-            0.75f,   // stretch: ~3x - extended drone
+            0.65f,   // stretch: ~2x — noticeable expansion
             0.5f,    // position: center
-            2,       // freezeMode: Auto - captures sustained input
-            0.2f,    // threshold: LOW for long note cascade
-            0.55f,   // foldAmount: HIGH harmonics (was 0.15)
-            0.08f,   // foldOffset: subtle asymmetry
-            0.15f,   // lfoRate: ~0.02 Hz - geological
-            0,       // lfoWaveform: Sine - smooth
-            0.5f,    // lfoDepth: STRONG (was 0.45)
-            true,    // lfoTargetStretch - time dilation
+            0,       // freezeMode: Off
+            0.3f,    // threshold: unused
+            0.1f,    // foldAmount: gentle harmonic enrichment
+            0.12f,   // foldOffset: stereo warmth
+            0.18f,   // lfoRate: ~0.03 Hz — glacial evolution
+            1,       // lfoWaveform: Triangle — smooth ramps
+            0.25f,   // lfoDepth: subtle
+            true,    // lfoTargetStretch — slow pitch drift
             false,   // lfoTargetPosition
-            true,    // lfoTargetFoldAmount - harmonic depth
+            false,   // lfoTargetFoldAmount
             false,   // lfoTargetFoldOffset
-            0.95f    // mix: 95% - deep immersion
+            0.7f     // mix: 70%
         },
 
         // =====================================================================
-        // INDEX 6: Observer's Gaze (ALREADY EXCELLENT - MINOR TWEAK)
-        // Character: Chaos mode - quantum jumps, heavy transformation
-        // Heavy: fold=0.65, thresh=0.1, depth=0.55, mix=0.92, S&H
+        // INDEX 3: Omnipotent Observers
+        // Auto-freeze layers — pad fragments captured and layered
         // =====================================================================
         {
-            0.3f,    // stretch: ~0.35x - compressed glitchy
-            0.5f,    // position: center
-            2,       // freezeMode: Auto - constant triggering
-            0.1f,    // threshold: VERY LOW - chaos mode
-            0.65f,   // foldAmount: HIGH harmonics
-            0.28f,   // foldOffset: strong asymmetry
-            0.5f,    // lfoRate: ~0.5 Hz
-            3,       // lfoWaveform: S&H - random jumps
-            0.55f,   // lfoDepth: STRONG
-            true,    // lfoTargetStretch - pitch jumps
-            true,    // lfoTargetPosition - position jumps
-            true,    // lfoTargetFoldAmount - harmonic jumps
-            false,   // lfoTargetFoldOffset
-            0.92f    // mix: 92% - heavy transformation
-        },
-
-        // =====================================================================
-        // INDEX 7: Golden Helix (IMPROVED FOR HEAVY PSYBIENT)
-        // Character: DNA spiral through frozen audio - HEAVY interweaving
-        // Heavy: fold=0.6, thresh=0.22, depth=0.58, mix=0.9
-        // =====================================================================
-        {
-            0.5f,    // stretch: 1.0x - neutral time
+            0.55f,   // stretch: ~1.3x — slightly expanded
             0.5f,    // position: center
             2,       // freezeMode: Auto
-            0.22f,   // threshold: LOW for cascade
-            0.6f,    // foldAmount: HIGH harmonics
-            0.38f,   // foldOffset: strong asymmetry for width
-            0.27f,   // lfoRate: ~0.04 Hz - slow spiral
-            1,       // lfoWaveform: Triangle - smooth helix
-            0.58f,   // lfoDepth: STRONG
-            true,    // lfoTargetStretch - vertical spiral
-            true,    // lfoTargetPosition - horizontal spiral
-            true,    // lfoTargetFoldAmount - harmonic spiral
+            0.5f,    // threshold: only louder passages trigger
+            0.06f,   // foldAmount: barely there — just grain texture
+            0.08f,   // foldOffset: subtle stereo
+            0.22f,   // lfoRate: ~0.04 Hz — slow sweep
+            0,       // lfoWaveform: Sine
+            0.3f,    // lfoDepth: gentle
+            false,   // lfoTargetStretch
+            true,    // lfoTargetPosition — drift through frozen layers
+            false,   // lfoTargetFoldAmount
             false,   // lfoTargetFoldOffset
-            0.9f     // mix: 90% - transformed
+            0.65f    // mix: 65% — dry pad anchors the layers
         },
 
         // =====================================================================
-        // INDEX 8: Infinite Recursion (ALREADY EXCELLENT - MINOR TWEAK)
-        // Character: Self-referential loops - HEAVY stepped recursion
-        // Heavy: fold=0.75, thresh=0.18, depth=0.65, mix=0.95, Square
+        // INDEX 4: Infinite Cogs
+        // Slow mechanical movement — triangle LFO on position
         // =====================================================================
         {
-            0.2f,    // stretch: ~0.25x - strong compression
+            0.5f,    // stretch: 1.0x — natural time
             0.5f,    // position: center
-            2,       // freezeMode: Auto
-            0.18f,   // threshold: LOW - frequent triggers
-            0.75f,   // foldAmount: VERY HIGH harmonics
-            0.48f,   // foldOffset: strong asymmetry
-            0.4f,    // lfoRate: ~0.16 Hz
-            2,       // lfoWaveform: Square - hard steps
-            0.65f,   // lfoDepth: STRONG
-            true,    // lfoTargetStretch - stepped pitch
-            true,    // lfoTargetPosition - stepped position
-            true,    // lfoTargetFoldAmount - stepped harmonics
-            false,   // lfoTargetFoldOffset
-            0.95f    // mix: 95% - complete recursion
-        },
-
-        // =====================================================================
-        // INDEX 9: Weaver's Dance (IMPROVED FOR HEAVY PSYBIENT)
-        // Character: Threads intertwining - HEAVY harmonic weaving
-        // Heavy: fold=0.65, thresh=0.22, depth=0.58, mix=0.92
-        // =====================================================================
-        {
-            0.45f,   // stretch: ~0.75x - slight compression
-            0.5f,    // position: center
-            2,       // freezeMode: Auto
-            0.22f,   // threshold: LOW for cascade
-            0.65f,   // foldAmount: HIGH harmonics
-            0.05f,   // foldOffset: LFO provides movement
-            0.33f,   // lfoRate: ~0.06 Hz - slow weave
-            1,       // lfoWaveform: Triangle - smooth
-            0.58f,   // lfoDepth: STRONG
+            0,       // freezeMode: Off
+            0.3f,    // threshold: unused
+            0.12f,   // foldAmount: light saturation
+            0.15f,   // foldOffset: stereo movement
+            0.303f,  // lfoRate: ~0.1 Hz — slow pulse
+            1,       // lfoWaveform: Triangle
+            0.35f,   // lfoDepth: noticeable movement
             false,   // lfoTargetStretch
             false,   // lfoTargetPosition
-            true,    // lfoTargetFoldAmount - harmonic weaving
-            true,    // lfoTargetFoldOffset - offset weaving
-            0.92f    // mix: 92% - transformed
+            false,   // lfoTargetFoldAmount
+            true,    // lfoTargetFoldOffset — stereo weaving
+            0.65f    // mix: 65%
         },
 
         // =====================================================================
-        // INDEX 10: Cog Within Cog (IMPROVED FOR HEAVY PSYBIENT)
-        // Character: Fractal machinery - HEAVY nested infinities
-        // Heavy: fold=0.7, thresh=0.2, depth=0.55, mix=0.94, 4 targets
+        // INDEX 5: Primordial Gear
+        // Deep granular drone — extreme stretch, no fold, immersive
         // =====================================================================
         {
-            0.35f,   // stretch: ~0.5x - compressed detail
+            0.75f,   // stretch: ~3x — deep expansion
+            0.5f,    // position: center
+            0,       // freezeMode: Off
+            0.3f,    // threshold: unused
+            0.0f,    // foldAmount: none — pure granular texture
+            0.0f,    // foldOffset: none
+            0.15f,   // lfoRate: ~0.02 Hz — glacial
+            0,       // lfoWaveform: Sine
+            0.2f,    // lfoDepth: slow breathing
+            true,    // lfoTargetStretch — stretch breathes 2x-4x
+            false,   // lfoTargetPosition
+            false,   // lfoTargetFoldAmount
+            false,   // lfoTargetFoldOffset
+            0.8f     // mix: 80% — deep but grounded
+        },
+
+        // =====================================================================
+        // INDEX 6: Observer's Gaze
+        // S&H position jumps on frozen pad — gentle glitch texture
+        // =====================================================================
+        {
+            0.55f,   // stretch: ~1.3x
             0.5f,    // position: center
             2,       // freezeMode: Auto
-            0.2f,    // threshold: LOW - frequent captures
-            0.7f,    // foldAmount: HIGH harmonics
-            0.35f,   // foldOffset: moderate asymmetry
+            0.45f,   // threshold: triggers on louder moments
+            0.05f,   // foldAmount: minimal — let the grains speak
+            0.1f,    // foldOffset: subtle stereo
+            0.394f,  // lfoRate: ~0.2 Hz — gentle random rhythm
+            3,       // lfoWaveform: S&H — random steps
+            0.25f,   // lfoDepth: moderate jumps
+            false,   // lfoTargetStretch
+            true,    // lfoTargetPosition — random position jumps in frozen buffer
+            false,   // lfoTargetFoldAmount
+            false,   // lfoTargetFoldOffset
+            0.6f     // mix: 60%
+        },
+
+        // =====================================================================
+        // INDEX 7: Golden Helix
+        // Spiraling stretch drift — pad slowly rises and falls in pitch
+        // =====================================================================
+        {
+            0.55f,   // stretch: ~1.3x — base slightly expanded
+            0.5f,    // position: center
+            0,       // freezeMode: Off
+            0.3f,    // threshold: unused
+            0.1f,    // foldAmount: light warmth
+            0.1f,    // foldOffset: subtle stereo
+            0.2f,    // lfoRate: ~0.04 Hz — slow spiral
+            0,       // lfoWaveform: Sine — smooth
+            0.3f,    // lfoDepth: stretch drifts between ~0.8x and ~2x
+            true,    // lfoTargetStretch — pitch spiral
+            false,   // lfoTargetPosition
+            false,   // lfoTargetFoldAmount
+            false,   // lfoTargetFoldOffset
+            0.75f    // mix: 75%
+        },
+
+        // =====================================================================
+        // INDEX 8: Infinite Recursion
+        // Square LFO steps between two stretch states — pad alternates
+        // =====================================================================
+        {
+            0.5f,    // stretch: 1.0x — center point
+            0.5f,    // position: center
+            0,       // freezeMode: Off
+            0.3f,    // threshold: unused
+            0.08f,   // foldAmount: touch of grit on transitions
+            0.0f,    // foldOffset: centered
+            0.356f,  // lfoRate: ~0.15 Hz — slow alternation
+            2,       // lfoWaveform: Square — hard steps
+            0.2f,    // lfoDepth: steps between ~0.7x and ~1.4x
+            true,    // lfoTargetStretch — stepped pitch
+            false,   // lfoTargetPosition
+            false,   // lfoTargetFoldAmount
+            false,   // lfoTargetFoldOffset
+            0.7f     // mix: 70%
+        },
+
+        // =====================================================================
+        // INDEX 9: Weaver's Dance
+        // Stereo offset weaving — fold offset LFO creates moving stereo field
+        // =====================================================================
+        {
+            0.55f,   // stretch: ~1.3x
+            0.5f,    // position: center
+            0,       // freezeMode: Off
+            0.3f,    // threshold: unused
+            0.15f,   // foldAmount: enough to make offset audible
+            0.0f,    // foldOffset: centered — LFO moves it
+            0.25f,   // lfoRate: ~0.035 Hz — slow weave
+            1,       // lfoWaveform: Triangle — smooth sweeps
+            0.3f,    // lfoDepth: offset sweeps gently
+            false,   // lfoTargetStretch
+            false,   // lfoTargetPosition
+            false,   // lfoTargetFoldAmount
+            true,    // lfoTargetFoldOffset — stereo field moves
+            0.7f     // mix: 70%
+        },
+
+        // =====================================================================
+        // INDEX 10: Cog Within Cog
+        // Dual modulation — position + offset move together, slow evolve
+        // =====================================================================
+        {
+            0.6f,    // stretch: ~1.6x
+            0.5f,    // position: center
+            0,       // freezeMode: Off
+            0.3f,    // threshold: unused
+            0.12f,   // foldAmount: light saturation
+            0.05f,   // foldOffset: subtle base offset
+            0.2f,    // lfoRate: ~0.04 Hz — slow
+            0,       // lfoWaveform: Sine
+            0.25f,   // lfoDepth: gentle
+            false,   // lfoTargetStretch
+            true,    // lfoTargetPosition — time movement
+            false,   // lfoTargetFoldAmount
+            true,    // lfoTargetFoldOffset — stereo movement
+            0.7f     // mix: 70%
+        },
+
+        // =====================================================================
+        // INDEX 11: Quantum Collapse
+        // S&H on stretch — random pitch fragments from frozen pad
+        // =====================================================================
+        {
+            0.5f,    // stretch: 1.0x base
+            0.5f,    // position: center
+            2,       // freezeMode: Auto
+            0.45f,   // threshold: triggers on louder passages
+            0.06f,   // foldAmount: minimal
+            0.08f,   // foldOffset: subtle
             0.45f,   // lfoRate: ~0.21 Hz
-            0,       // lfoWaveform: Sine - smooth gear rotation
-            0.55f,   // lfoDepth: STRONG
-            true,    // lfoTargetStretch - outer gear
-            true,    // lfoTargetPosition - inner gear
-            true,    // lfoTargetFoldAmount - harmonic gear
-            true,    // lfoTargetFoldOffset - offset gear (4TH TARGET)
-            0.94f    // mix: 94% - complete transformation
-        },
-
-        // =====================================================================
-        // INDEX 11: Quantum Collapse (ALREADY EXCELLENT - MINOR TWEAK)
-        // Character: Probability waves crystallizing - HEAVY chaos
-        // Heavy: fold=0.7, thresh=0.12, depth=0.7, mix=0.92, S&H, 4 targets
-        // =====================================================================
-        {
-            0.25f,   // stretch: ~0.28x - compressed quantum
-            0.5f,    // position: center
-            2,       // freezeMode: Auto - constantly collapsing
-            0.12f,   // threshold: VERY LOW - many observations
-            0.7f,    // foldAmount: HIGH harmonics
-            0.52f,   // foldOffset: strong asymmetry
-            0.6f,    // lfoRate: ~0.8 Hz - rapid jumps
-            3,       // lfoWaveform: S&H - random collapse
-            0.7f,    // lfoDepth: VERY STRONG
-            true,    // lfoTargetStretch
-            true,    // lfoTargetPosition - observation jumps
-            true,    // lfoTargetFoldAmount - harmonic collapse
-            true,    // lfoTargetFoldOffset - offset collapse
-            0.92f    // mix: 92% - transformed
-        },
-
-        // =====================================================================
-        // INDEX 12: Eternal Return (IMPROVED FOR HEAVY PSYBIENT)
-        // Character: Time folding back - HEAVY eternal cycling
-        // Heavy: fold=0.68, thresh=0.22, depth=0.6, mix=0.93, Square
-        // =====================================================================
-        {
-            0.55f,   // stretch: ~1.3x - slightly extended
-            0.5f,    // position: center
-            2,       // freezeMode: Auto
-            0.22f,   // threshold: LOW for cascade
-            0.68f,   // foldAmount: HIGH harmonics
-            0.18f,   // foldOffset: slight asymmetry
-            0.35f,   // lfoRate: ~0.14 Hz
-            2,       // lfoWaveform: Square - hard return points
-            0.6f,    // lfoDepth: STRONG
-            true,    // lfoTargetStretch - time cycling
-            true,    // lfoTargetPosition - position cycling
-            true,    // lfoTargetFoldAmount - harmonic cycling
+            3,       // lfoWaveform: S&H — random pitch fragments
+            0.2f,    // lfoDepth: moderate jumps
+            true,    // lfoTargetStretch — random pitch shifts
+            false,   // lfoTargetPosition
+            false,   // lfoTargetFoldAmount
             false,   // lfoTargetFoldOffset
-            0.93f    // mix: 93% - complete return
+            0.6f     // mix: 60% — keep dry pad as anchor
         },
 
         // =====================================================================
-        // INDEX 13: Mirror of Mirrors (IMPROVED FOR HEAVY PSYBIENT)
-        // Character: Infinite reflections - HEAVY hall of mirrors
-        // Heavy: fold=0.95, thresh=0.2, depth=0.65, mix=0.98, 3 targets
+        // INDEX 12: Eternal Return
+        // Auto-freeze with slow position sweep — looping through moments
         // =====================================================================
         {
-            0.3f,    // stretch: ~0.35x - compressed reflections
+            0.55f,   // stretch: ~1.3x
             0.5f,    // position: center
             2,       // freezeMode: Auto
-            0.2f,    // threshold: LOW for cascade
-            0.95f,   // foldAmount: NEAR MAXIMUM - intense harmonics
-            0.62f,   // foldOffset: strong asymmetry - reflection angle
-            0.4f,    // lfoRate: ~0.16 Hz
-            0,       // lfoWaveform: Sine - smooth reflection
-            0.65f,   // lfoDepth: STRONG
+            0.5f,    // threshold: only loud notes trigger
+            0.08f,   // foldAmount: light warmth
+            0.1f,    // foldOffset: subtle stereo
+            0.18f,   // lfoRate: ~0.03 Hz — glacial sweep
+            1,       // lfoWaveform: Triangle — smooth
+            0.35f,   // lfoDepth: wide position sweep through frozen content
             false,   // lfoTargetStretch
-            true,    // lfoTargetPosition - depth movement
-            true,    // lfoTargetFoldAmount - reflection harmonics
-            true,    // lfoTargetFoldOffset - angle shifting
-            0.98f    // mix: 98% - almost pure reflection
+            true,    // lfoTargetPosition — sweeps through frozen moment
+            false,   // lfoTargetFoldAmount
+            false,   // lfoTargetFoldOffset
+            0.7f     // mix: 70%
         },
 
         // =====================================================================
-        // INDEX 14: Omniscient Dawn (ALREADY EXCELLENT)
-        // Character: All observers seeing all - MAXIMUM CHAOS
-        // Heavy: fold=0.85, thresh=0.05, depth=0.8, mix=1.0, S&H, ALL targets
+        // INDEX 13: Mirror of Mirrors
+        // Higher fold — the "drive" preset, still controlled for pads
         // =====================================================================
         {
-            0.4f,    // stretch: ~0.6x - moderate compression
+            0.6f,    // stretch: ~1.6x
             0.5f,    // position: center
-            2,       // freezeMode: Auto - constant awakening
-            0.05f,   // threshold: MINIMUM - chaos, many triggers
-            0.85f,   // foldAmount: VERY HIGH - intense
-            0.45f,   // foldOffset: moderate asymmetry
-            0.55f,   // lfoRate: ~0.6 Hz - awakening pulse
-            3,       // lfoWaveform: S&H - omniscient randomness
-            0.8f,    // lfoDepth: VERY STRONG - full omniscience
-            true,    // lfoTargetStretch - time awakening
-            true,    // lfoTargetPosition - space awakening
-            true,    // lfoTargetFoldAmount - harmonic awakening
-            true,    // lfoTargetFoldOffset - offset awakening
-            1.0f     // mix: 100% - complete omniscience
+            0,       // freezeMode: Off
+            0.3f,    // threshold: unused
+            0.2f,    // foldAmount: noticeable saturation (but not harsh)
+            0.15f,   // foldOffset: stereo spread
+            0.22f,   // lfoRate: ~0.04 Hz
+            0,       // lfoWaveform: Sine
+            0.2f,    // lfoDepth: fold amount breathes
+            false,   // lfoTargetStretch
+            false,   // lfoTargetPosition
+            true,    // lfoTargetFoldAmount — harmonic breathing
+            false,   // lfoTargetFoldOffset
+            0.65f    // mix: 65%
+        },
+
+        // =====================================================================
+        // INDEX 14: Omniscient Dawn
+        // Multi-target slow evolution — everything drifts, gentle chaos
+        // =====================================================================
+        {
+            0.6f,    // stretch: ~1.6x
+            0.5f,    // position: center
+            2,       // freezeMode: Auto
+            0.45f,   // threshold: moderate
+            0.1f,    // foldAmount: light
+            0.1f,    // foldOffset: subtle stereo
+            0.15f,   // lfoRate: ~0.02 Hz — glacial
+            0,       // lfoWaveform: Sine
+            0.2f,    // lfoDepth: gentle
+            true,    // lfoTargetStretch — slow pitch drift
+            true,    // lfoTargetPosition — slow position drift
+            true,    // lfoTargetFoldAmount — subtle harmonic shift
+            true,    // lfoTargetFoldOffset — stereo shifts
+            0.7f     // mix: 70%
+        },
+
+        // =====================================================================
+        // INDEX 15: Frozen Cathedral
+        // MANUAL freeze — freeze a pad, it becomes vast ambient space
+        // Position LFO drifts through the frozen moment
+        // =====================================================================
+        {
+            0.6f,    // stretch: ~1.6x — slight pitch shift on frozen content
+            0.5f,    // position: center — LFO drifts through
+            1,       // freezeMode: Manual — user controls freeze
+            0.3f,    // threshold: unused in Manual mode
+            0.05f,   // foldAmount: barely there
+            0.1f,    // foldOffset: subtle stereo width
+            0.15f,   // lfoRate: ~0.02 Hz — slow cathedral drift
+            0,       // lfoWaveform: Sine
+            0.4f,    // lfoDepth: wide position sweep
+            false,   // lfoTargetStretch
+            true,    // lfoTargetPosition — drift through frozen moment
+            false,   // lfoTargetFoldAmount
+            false,   // lfoTargetFoldOffset
+            0.8f     // mix: 80%
+        },
+
+        // =====================================================================
+        // INDEX 16: Event Horizon
+        // Extreme stretch — pad becomes glacial drone, no fold needed
+        // =====================================================================
+        {
+            0.85f,   // stretch: ~6.3x — extreme time dilation
+            0.5f,    // position: center
+            0,       // freezeMode: Off — pure stretch
+            0.3f,    // threshold: unused
+            0.0f,    // foldAmount: none — pure granular
+            0.0f,    // foldOffset: none
+            0.12f,   // lfoRate: ~0.015 Hz — one cycle per ~67 seconds
+            0,       // lfoWaveform: Sine
+            0.15f,   // lfoDepth: stretch gently breathes
+            true,    // lfoTargetStretch — breathing between ~5x and ~8x
+            false,   // lfoTargetPosition
+            false,   // lfoTargetFoldAmount
+            false,   // lfoTargetFoldOffset
+            0.85f    // mix: 85% — immersive
+        },
+
+        // =====================================================================
+        // INDEX 17: Ghost Layer
+        // Low mix — granular ghost sits behind the dry pad
+        // =====================================================================
+        {
+            0.6f,    // stretch: ~1.6x — ghost is slightly expanded
+            0.5f,    // position: center
+            2,       // freezeMode: Auto — ghost captures fragments
+            0.5f,    // threshold: only louder notes trigger
+            0.05f,   // foldAmount: minimal
+            0.08f,   // foldOffset: ghost has subtle stereo
+            0.2f,    // lfoRate: ~0.04 Hz — slow haunting
+            0,       // lfoWaveform: Sine
+            0.25f,   // lfoDepth: gentle drift
+            false,   // lfoTargetStretch
+            true,    // lfoTargetPosition — ghost drifts through captured moment
+            false,   // lfoTargetFoldAmount
+            false,   // lfoTargetFoldOffset
+            0.4f     // mix: 40% — ghost barely there, behind dry pad
+        },
+
+        // =====================================================================
+        // INDEX 18: Temporal Rift
+        // Stretched + S&H position — pad tears into random fragments
+        // =====================================================================
+        {
+            0.7f,    // stretch: ~2.5x — expanded
+            0.5f,    // position: center
+            2,       // freezeMode: Auto
+            0.45f,   // threshold: moderate
+            0.08f,   // foldAmount: touch of texture
+            0.1f,    // foldOffset: subtle stereo
+            0.356f,  // lfoRate: ~0.15 Hz
+            3,       // lfoWaveform: S&H — random position tears
+            0.3f,    // lfoDepth: noticeable jumps
+            false,   // lfoTargetStretch
+            true,    // lfoTargetPosition — random position in frozen content
+            false,   // lfoTargetFoldAmount
+            false,   // lfoTargetFoldOffset
+            0.65f    // mix: 65%
+        },
+
+        // =====================================================================
+        // INDEX 19: Lucid Pulse
+        // MANUAL freeze + Square LFO — frozen pad pulses between states
+        // =====================================================================
+        {
+            0.5f,    // stretch: 1.0x — natural pitch
+            0.5f,    // position: center
+            1,       // freezeMode: Manual — user controls freeze
+            0.3f,    // threshold: unused
+            0.1f,    // foldAmount: light warmth
+            0.0f,    // foldOffset: centered
+            0.394f,  // lfoRate: ~0.2 Hz — slow pulse
+            2,       // lfoWaveform: Square — hard alternation
+            0.2f,    // lfoDepth: moderate pitch steps
+            true,    // lfoTargetStretch — pitch alternates between two states
+            false,   // lfoTargetPosition
+            false,   // lfoTargetFoldAmount
+            false,   // lfoTargetFoldOffset
+            0.7f     // mix: 70%
         }
     };
     // clang-format on
@@ -385,7 +477,12 @@ namespace Presets
         "Quantum Collapse",
         "Eternal Return",
         "Mirror of Mirrors",
-        "Omniscient Dawn"
+        "Omniscient Dawn",
+        "Frozen Cathedral",
+        "Event Horizon",
+        "Ghost Layer",
+        "Temporal Rift",
+        "Lucid Pulse"
     };
 
     juce::String getPresetName(int index)

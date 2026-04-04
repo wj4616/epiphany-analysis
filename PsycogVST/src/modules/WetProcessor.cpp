@@ -23,7 +23,8 @@ void WetProcessor::prepare(double sr, int /*maxSamples*/)
     attackCoeff = std::exp(-1.0f / (attackTime * static_cast<float>(sampleRate)));
 
     // Release coefficients
-    normalReleaseCoeff = std::exp(-1.0f / (1.0f * static_cast<float>(sampleRate)));    // 1000ms
+    float releaseTime = static_cast<float>(PsycogConstants::autoNormalizeReleaseMs) / 1000.0f;
+    normalReleaseCoeff = std::exp(-1.0f / (releaseTime * static_cast<float>(sampleRate)));
     fastReleaseCoeff = std::exp(-1.0f / (0.1f * static_cast<float>(sampleRate)));       // 100ms
 
     // RMS EMA coefficient (~300ms window)

@@ -30,9 +30,6 @@ void FreezeBuffer::prepare(double sr)
         crossfadeWindow[i] = 0.5f * (1.0f - std::cos(2.0f * juce::MathConstants<float>::pi * i / (crossfadeLength - 1)));
     }
 
-    // Cooldown (100ms per spec)
-    cooldownLength = static_cast<int>(PsycogConstants::autoTriggerCooldownMs * sampleRate / 1000.0);
-
     reset();
 }
 
@@ -123,13 +120,6 @@ void FreezeBuffer::read(float* leftOut, float* rightOut, int numSamples, float p
         rightOut[i] = rightSample;
     }
 
-    // Advance cooldown
-    if (cooldownRemaining > 0)
-    {
-        cooldownRemaining -= numSamples;
-        if (cooldownRemaining < 0)
-            cooldownRemaining = 0;
-    }
 }
 
 void FreezeBuffer::toggleFreeze()
@@ -156,21 +146,16 @@ void FreezeBuffer::toggleFreeze()
 
 void FreezeBuffer::triggerFreeze()
 {
-    // For Auto mode: trigger freeze if not in cooldown
-    if (cooldownRemaining <= 0)
-    {
-        // Swap playback buffer
-        bufferAIsPlayback = !bufferAIsPlayback;
-        frozen = true;
-        crossfadeProgress = 0.0f;
-        cooldownRemaining = cooldownLength;
+    // Swap playback buffer — cooldown is handled by ThresholdDetector
+    bufferAIsPlayback = !bufferAIsPlayback;
+    frozen = true;
+    crossfadeProgress = 0.0f;
 
-        // Reset the new recording buffer's write position
-        if (bufferAIsPlayback)
-            writePosB = 0;  // B is now recording
-        else
-            writePosA = 0;  // A is now recording
-    }
+    // Reset the new recording buffer's write position
+    if (bufferAIsPlayback)
+        writePosB = 0;  // B is now recording
+    else
+        writePosA = 0;  // A is now recording
 }
 
 void FreezeBuffer::readSampleAt(int sampleIndex, float& outL, float& outR) const
@@ -184,4 +169,27 @@ void FreezeBuffer::readSampleAt(int sampleIndex, float& outL, float& outR) const
 
     outL = playBuffer.getSample(0, idx);
     outR = playBuffer.getSample(1, idx);
+}
+
+void FreezeBuffer::readSampleAtFractional(float position, float& outL, float& outR) const
+{
+    // Linear interpolation between two adjacent samples for smooth frozen playback
+    const auto& playBuffer = bufferAIsPlayback ? bufferA : bufferB;
+
+    // Use floor (not truncation) so idx0 and frac agree for negative positions
+    float floored = std::floor(position);
+    int idx0 = static_cast<int>(floored) % bufferLength;
+    if (idx0 < 0) idx0 += bufferLength;
+
+    int idx1 = (idx0 + 1) % bufferLength;
+
+    float frac = position - floored;
+
+    float l0 = playBuffer.getSample(0, idx0);
+    float l1 = playBuffer.getSample(0, idx1);
+    float r0 = playBuffer.getSample(1, idx0);
+    float r1 = playBuffer.getSample(1, idx1);
+
+    outL = l0 + frac * (l1 - l0);
+    outR = r0 + frac * (r1 - r0);
 }

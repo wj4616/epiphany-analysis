@@ -53,7 +53,7 @@ TEST_CASE("FreezeBuffer write and freeze", "[FreezeBuffer]")
     REQUIRE(std::isfinite(outR));
 }
 
-TEST_CASE("FreezeBuffer cooldown enforcement", "[FreezeBuffer]")
+TEST_CASE("FreezeBuffer rapid re-trigger allowed", "[FreezeBuffer]")
 {
     auto fb = createPrepared();
 
@@ -65,17 +65,16 @@ TEST_CASE("FreezeBuffer cooldown enforcement", "[FreezeBuffer]")
     fb.triggerFreeze();
     REQUIRE(fb.isFrozen());
 
-    // Immediate re-trigger should be rejected (in cooldown)
-    fb.triggerFreeze();  // Should be no-op due to cooldown
-
-    // Advance through cooldown by reading with properly sized buffers
-    int cooldownSamples = static_cast<int>(100.0 * 48000.0 / 1000.0) + 100;  // 100ms + margin
-    std::vector<float> tmpL(cooldownSamples), tmpR(cooldownSamples);
-    fb.read(tmpL.data(), tmpR.data(), cooldownSamples, 0.5f);
-
-    // Now trigger should work
+    // Immediate re-trigger should succeed — cooldown is ThresholdDetector's job,
+    // not FreezeBuffer's. FreezeBuffer is pure storage.
     fb.triggerFreeze();
     REQUIRE(fb.isFrozen());
+
+    // Should still produce valid output
+    float outL, outR;
+    fb.readSampleAt(0, outL, outR);
+    REQUIRE(std::isfinite(outL));
+    REQUIRE(std::isfinite(outR));
 }
 
 TEST_CASE("FreezeBuffer toggle freeze", "[FreezeBuffer]")
@@ -176,16 +175,16 @@ TEST_CASE("FreezeBuffer rapid freeze cycling no crash", "[FreezeBuffer]")
     std::vector<float> audio(48000, 0.3f);
     fb.write(audio.data(), audio.data(), 48000);
 
-    // Trigger, read through cooldown, trigger again — 10 times
+    // Trigger 10 times rapidly — no cooldown in FreezeBuffer
     for (int cycle = 0; cycle < 10; ++cycle)
     {
         fb.triggerFreeze();
+        REQUIRE(fb.isFrozen());
 
-        // Read through cooldown with properly sized buffers
-        int cooldownSamples = static_cast<int>(100.0 * 48000.0 / 1000.0) + 100;
-        std::vector<float> tmpL(cooldownSamples), tmpR(cooldownSamples);
-        fb.read(tmpL.data(), tmpR.data(), cooldownSamples, 0.5f);
-
-        REQUIRE(std::isfinite(tmpL[0]));
+        // Verify readSampleAt still works after each swap
+        float outL, outR;
+        fb.readSampleAt(cycle * 100, outL, outR);
+        REQUIRE(std::isfinite(outL));
+        REQUIRE(std::isfinite(outR));
     }
 }

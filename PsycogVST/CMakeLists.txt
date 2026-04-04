@@ -60,6 +60,8 @@ target_sources(PsycogVST PRIVATE
     src/PluginEditor.cpp
     src/Parameters.cpp
     src/PresetManager.cpp
+    src/GUI/CustomLookAndFeel.cpp
+    src/GUI/PresetBar.cpp
     ${MODULE_SOURCES}
 )
 
@@ -108,22 +110,28 @@ add_executable(PsycogVSTTests
     tests/TestPresets.cpp
     tests/TestThresholdDetector.cpp
     tests/TestWetProcessor.cpp
+    tests/TestDryDelay.cpp
+    tests/TestMixer.cpp
+    tests/TestOutputProtection.cpp
+    tests/TestIntegration.cpp
     src/PluginProcessor.cpp
     src/PluginEditor.cpp
     src/Parameters.cpp
     src/PresetManager.cpp
+    src/GUI/CustomLookAndFeel.cpp
+    src/GUI/PresetBar.cpp
     ${TEST_MODULE_SOURCES}
 )
 
 target_link_libraries(PsycogVSTTests
     PRIVATE
         Catch2::Catch2WithMain
+        juce::juce_audio_utils
         juce::juce_audio_processors
         juce::juce_audio_basics
         juce::juce_dsp
 )
 
-# Don't need GUI for tests
 target_compile_definitions(PsycogVSTTests
     PRIVATE
         JUCE_WEB_BROWSER=0

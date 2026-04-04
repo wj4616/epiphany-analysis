@@ -64,9 +64,27 @@ bool PsycogAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) co
     return false;
 }
 
+juce::AudioProcessorParameter* PsycogAudioProcessor::getBypassParameter() const
+{
+    return apvts.getParameter(ParamIDs::bypass);
+}
+
 void PsycogAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
     juce::ScopedNoDenormals noDenormals;
+
+    // Bypass: pass audio through unprocessed
+    if (*apvts.getRawParameterValue(ParamIDs::bypass) > 0.5f)
+        return;
+
+    // Reset gain-sensitive modules on preset change to prevent screeching
+    // from stale auto-normalize gain or threshold detector state
+    if (presetChangePending.exchange(false))
+    {
+        wetProcessor.reset();
+        thresholdDetector.reset();
+        lastFreezeMode = PsycogConstants::FreezeMode::Off;
+    }
 
     auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
@@ -188,10 +206,9 @@ void PsycogAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
                   wetLeft, wetRight, dryLeft, dryRight,
                   numSamples, mix);
 
-    // === 7. Output protection (block-level) ===
-    outputProtection.process(buffer.getWritePointer(0), buffer.getWritePointer(1),
-                            buffer.getReadPointer(0), buffer.getReadPointer(1),
-                            numSamples);
+    // === 7. Output protection (block-level, in-place) ===
+    outputProtection.processInPlace(buffer.getWritePointer(0), buffer.getWritePointer(1),
+                                    numSamples);
 }
 
 juce::AudioProcessorEditor* PsycogAudioProcessor::createEditor()
@@ -235,6 +252,7 @@ void PsycogAudioProcessor::setCurrentProgram(int index)
     {
         currentProgramIndex = index;
         Presets::applyPreset(apvts, index);
+        presetChangePending.store(true);  // Audio thread will reset modules
     }
 }
 

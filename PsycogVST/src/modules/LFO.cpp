@@ -46,7 +46,6 @@ void LFO::setWaveform(PsycogConstants::LfoWaveform wf)
 
 void LFO::setDepth(float d)
 {
-    depth = d;
     depthSmoother.setTargetValue(d);
 }
 

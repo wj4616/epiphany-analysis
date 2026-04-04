@@ -19,10 +19,10 @@ namespace PsycogConstants
     // === Auto-Normalize ===
     constexpr double autoNormalizeTargetDb = -6.0;     // Target RMS level
     constexpr double autoNormalizeAttackMs = 300.0;   // Attack time
-    constexpr double autoNormalizeReleaseMs = 1000.0;  // Release time
+    constexpr double autoNormalizeReleaseMs = 300.0;   // Release time (was 1000ms — too slow, caused gain spikes)
     constexpr double noiseGateThresholdDb = -60.0;     // Bypass below this
     constexpr double gainMin = 0.1;                    // ~ -20dB max reduction
-    constexpr double gainMax = 3.0;                    // ~ +10dB max boost
+    constexpr double gainMax = 1.5;                    // ~ +3.5dB max boost (was 3.0 — too aggressive)
 
     // === Parameter Smoothing ===
     constexpr double smoothingTimeSeconds = 0.02;      // 20ms — JUCE SmoothedValue::reset() expects seconds
