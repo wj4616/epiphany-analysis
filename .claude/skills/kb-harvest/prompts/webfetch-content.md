@@ -1,0 +1,1 @@
+Extract all content about [topic]. Preserve all code blocks with their original formatting exactly as they appear. Include parameter values, implementation details, and technical explanations. Return as markdown.

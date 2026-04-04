@@ -1,0 +1,1 @@
+Extract specifically the code examples, parameter values, and implementation patterns about [topic]. Preserve exact code formatting. Include all code blocks with language tags.
