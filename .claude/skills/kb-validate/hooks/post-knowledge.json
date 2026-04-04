@@ -1,0 +1,39 @@
+{
+  "hook_name": "kb-validate-post-knowledge",
+  "description": "Auto-validate technical content from KB/firecrawl skills",
+  "trigger": {
+    "type": "post_skill",
+    "skills": [
+      "firecrawl-scrape",
+      "firecrawl-search",
+      "kb-harvest",
+      "kb-sync"
+    ]
+  },
+  "condition": {
+    "check": "skill_output_contains_technical_content",
+    "patterns": [
+      "*.json",
+      "*.md",
+      "code blocks",
+      "technical claims"
+    ]
+  },
+  "action": {
+    "command": "kb-validate --auto --source ${last_skill_output}",
+    "timeout_ms": 30000,
+    "on_failure": "log_warning",
+    "on_success": "update_session_cache"
+  },
+  "output": {
+    "format": "inline_validation",
+    "show_confidence": true,
+    "show_source": true
+  },
+  "notes": [
+    "Triggers after KB/firecrawl skills return content",
+    "Validates technical claims automatically",
+    "Updates session cache with results",
+    "Does not block on failure, logs warning instead"
+  ]
+}
