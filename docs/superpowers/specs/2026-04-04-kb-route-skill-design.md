@@ -40,7 +40,7 @@ kb-route Resolution Procedure
   ├─ Step 3: Cross-Reference Follow (if Step 2 found entries with cross_references[])
   │    Read entry-level cross-references → follow to other layers/KBs
   │
-  ├─ Step 4: Bridge Resolution (if bridge_descriptor= or bridge-eligible results)
+  ├─ Step 4: Bridge Resolution (if bridge_descriptor= provided)
   │    Find bridge entries → compose if multiple → check anti_patterns
   │
   ├─ Step 5: Confidence Filter (always, on collected results)
@@ -87,11 +87,11 @@ Single file. No subdirectories, no templates, no config files. All configuration
 
 ### Step 2: Concept Lookup *(skip if no `concept` parameter)*
 
-1. Use Grep to search across entry files in the relevant KB(s):
+1. For each layer listed in the master-index, use Grep to search entry files:
    ```
    Grep for concept term (case-insensitive, literal string) in *.json files
-   under <kb.path>/<layer>/<topic>/ directories.
-   Exclude infrastructure files: manifest.json, master-index.json, index.json.
+   recursively under <kb.path>/<layer>/.
+   Exclude infrastructure files: manifest.json, index.json.
    ```
    Grep is a coarse filter — it finds candidate files. The agent reads the actual files and evaluates relevance.
 2. Read up to 5 matching entry files. If Grep returns more than 5, prioritize using these criteria:
@@ -99,7 +99,7 @@ Single file. No subdirectories, no templates, no config files. All configuration
    - Match strength: concept in `title` (strong) > `tags` (medium) > `concepts[].name` (weak)
    - Higher `domain_relevance` score
    - If 20+ matches, note: "Many matches — showing top 5. Narrow concept term for more targeted results."
-4. For each entry, check `status`:
+3. For each entry, check `status`:
    - `curated` or `synced` → usable, proceed to Step 5
    - `harvested` → usable, proceed to Step 5 for confidence check
    - `placeholder` → invoke kb-harvest to fill:
@@ -111,7 +111,7 @@ Single file. No subdirectories, no templates, no config files. All configuration
 ### Step 2b: Explore *(skip if no `explore` parameter)*
 
 1. Read the manifest at `<kb.path>/<layer>/manifest.json`.
-2. List topics and their entries with status counts.
+2. List topics (or `categories` for bridge layers) and their entries with status counts.
 3. If manifest is missing or has empty entries, fall back to listing files in the layer directory via Glob.
 4. Return the overview — do not read individual entries unless asked.
 
@@ -127,11 +127,9 @@ Follows **entry-level** cross-references — links from one entry to a specific 
    ```
 2. Read the referenced entries. Locate by: Glob for `<kb.path>/<cross_ref.kb>/**/<entry_id>.json` (entry IDs match filenames). If Glob finds nothing, fall back to Grep for `"id": "<entry_id>"` in that layer directory.
 3. These are secondary results — include them but mark as cross-referenced.
-4. Also check `related_topics[]` — these are topic-name references within the same layer. If the agent needs broader context, Grep for entries in those topics.
+4. If entries have `related_topics[]`, note them in results as "Related topics: [list]". Do not auto-follow — the consumption skill decides whether to explore further.
 
-### Step 4: Bridge Resolution *(skip if no `bridge_descriptor` parameter AND Step 2/3 found no entries in bridge-eligible layers)*
-
-**Bridge-eligible** means: the master-index has `cross_layer_mappings` with `"relationship": "translates"` pointing to/from a bridge layer, OR the registry lists the source layer in `bridge_eligible_layers`.
+### Step 4: Bridge Resolution *(skip if no `bridge_descriptor` parameter)*
 
 1. Locate the bridge layer directory from `cross_layer_mappings` in the master-index.
 2. **Direct lookup**: Bridge filenames follow `bridge_{category}_{descriptor}.json`. Try reading `<kb.path>/bridge/*/bridge_*_<descriptor>.json` via Glob.
@@ -178,6 +176,18 @@ Differentiated by cause:
 | Entries found but all below confidence threshold | "Entries exist but all below confidence threshold" | "kb-harvest --kb <name> --auto --refresh" |
 
 **Do not auto-harvest.** The agent decides whether to harvest now or proceed with its own knowledge.
+
+### Result Summary
+
+After completing the procedure, the agent has collected results in working context. Summarize for the consumption skill:
+
+For each **concept result**: entry ID, title, status, confidence (or "unscored"), layer, KB name. If cross-referenced entries were followed, list them as secondary with their relationship type.
+
+For each **bridge result**: descriptor, parameters with value ranges, confidence, anti-patterns, combination notes (if composed).
+
+For **gaps**: the gap report message and suggested kb-harvest command.
+
+The consumption skill uses these results directly — kb-route does not format output into a specific structure. The results are in the agent's working context from having read the entry files during the procedure.
 
 ## 4. Edge Cases & Error Handling
 
@@ -237,7 +247,7 @@ Differentiated by cause:
 
 | Condition | Behavior |
 |---|---|
-| Both `concept` and `bridge_descriptor` provided | Run Steps 2 and 4. Return results grouped. Consumption skill reconciles. |
+| Both `concept` and `bridge_descriptor` provided | Steps 2 and 4 both run. Return results grouped. Consumption skill reconciles. |
 | Multiple registered KBs match | Return from all, grouped by KB. Order within each by status then domain_relevance. |
 | Entry version field varies | Currently one file per entry. If future append-only versioning creates multiple files, prefer highest version with best status. |
 
