@@ -336,7 +336,143 @@ The consumption skill uses these results directly — kb-route does not format o
 
 **Validation approach:** Manual walkthrough of Tests 1-6 after skill is written. Agent follows procedure, we verify each step.
 
-## 7. Deliverables
+## 7. Integration Points
+
+This section describes how existing consumption skills will change to use kb-route. These changes are **not part of the kb-route implementation** — they are documented here to guide the subsequent consumption skill rewrite project.
+
+### Current State (Pre-kb-route)
+
+| Skill | Current KB Access | Issues |
+|-------|-------------------|--------|
+| `sound-design-bridge` | Hardcoded paths, custom bridge lookup, no confidence handling | Duplicated logic, single KB only |
+| `dsp-implementation` | Ad-hoc Grep patterns, no placeholder handling | Inconsistent access, no fallback |
+| `ui-bridge` | Minimal KB use, custom format assumptions | Not following schema |
+| `plugin-spec` | Reads SPEC.md directly, no KB integration | No sound design translation |
+| `daw-testing` | Reads ground truth presets, no KB lookup | Manual validation criteria |
+
+### Target State (Post-kb-route)
+
+| Skill | Change | kb-route Integration |
+|-------|--------|----------------------|
+| `sound-design-bridge` | Replace bridge lookup with kb-route call | Pass `bridge_descriptor`, get parameters + anti-patterns |
+| `dsp-implementation` | Replace ad-hoc Grep with kb-route call | Pass `concept`, get entries + code blocks |
+| `ui-bridge` | Use kb-route for parameter→UI mappings | Pass `concept` for UI patterns |
+| `plugin-spec` | Use kb-route for sound design context | Pass `bridge_descriptor` during Phase 0 |
+| `daw-testing` | Use kb-route for validation criteria | Pass `concept` for expected behaviors |
+
+### Migration Pattern
+
+Each consumption skill follows this pattern:
+
+1. **Remove hardcoded paths** — Delete KB path constants and registry lookups
+2. **Remove custom Grep patterns** — Delete ad-hoc search logic
+3. **Add kb-route invocation** — "Read and follow Resolution Procedure in kb-route/SKILL.md"
+4. **Pass parameters** — Provide `concept`, `bridge_descriptor`, or `explore` as needed
+5. **Use results directly** — Entries are in agent working context; no output parsing needed
+6. **Handle gaps** — kb-route reports gaps; skill decides whether to harvest or proceed
+
+### Backward Compatibility
+
+- **Phase 1:** kb-route coexists with existing skills — both can be used
+- **Phase 2:** Skills migrated one at a time — each skill switches to kb-route
+- **Phase 3:** Remove duplicated logic from skills — clean migration
+
+No breaking changes to skill interfaces — kb-route is internal implementation detail.
+
+## 8. Performance Analysis
+
+### Latency Budget
+
+kb-route operates within agent execution time. The acceptable overhead is **under 2 seconds** for typical lookups, **under 5 seconds** for cross-KB queries.
+
+| Operation | Expected Time | Notes |
+|-----------|---------------|-------|
+| Step 1: Read registry + master-index | 50-150ms | Small JSON files, cached by OS |
+| Step 2: Grep for concept | 100-500ms | Depends on KB size, linear scan |
+| Step 3: Read cross-reference entries | 50-100ms | Typically 1-3 files |
+| Step 4: Bridge lookup | 50-150ms | Direct Glob, small files |
+| Step 5: Confidence filter | 0ms | In-memory, negligible |
+| Step 6: Gap detection | 0ms | In-memory, negligible |
+| **Total (single KB)** | **250-900ms** | Within budget |
+| **Total (cross-KB)** | **500ms-2s** | Parallelizable where possible |
+
+### Performance Mitigations
+
+| Concern | Mitigation |
+|---------|------------|
+| Large KB (1000+ entries) | Grep is efficient for text search; limit results to 5 |
+| Multiple KBs | Grep runs are independent; could parallelize |
+| Placeholder harvest triggered | Agent decides — can skip and proceed |
+| Cross-reference chains | Only one level deep; no recursive following |
+| Bridge composition | Limited to 2-3 descriptors typically; each is one file read |
+
+### Acceptable Overhead
+
+kb-route overhead is **acceptable** because:
+
+1. **Once per task** — Skills call kb-route once at the start of a task, not in a loop
+2. **Amortized** — Knowledge retrieved informs entire task; value exceeds cost
+3. **Avoids rework** — Confidence scoring prevents implementing incorrect approaches
+4. **Falls back fast** — Gap detection returns quickly; no blocking on harvest
+
+### Scaling Projections
+
+| KB Size | Lookup Time | Notes |
+|---------|-------------|-------|
+| 100 entries | 100-300ms | Current prototype scale |
+| 500 entries | 200-600ms | Expected after harvest |
+| 2000 entries | 400ms-1.5s | Would benefit from Python helper (deferred) |
+
+If latency exceeds 5 seconds consistently at scale, **Phase 2** adds a Python query helper as an escape hatch (documented in Out of Scope).
+
+## 9. Trade-offs
+
+### Decision 1: Single Skill vs. Skill Family
+
+| Option | Pros | Cons |
+|--------|------|------|
+| **Single kb-route skill** (chosen) | Simpler discovery, one file to maintain, consistent interface | Long file if all edge cases documented |
+| Skill family (kb-concept, kb-bridge, kb-explore) | Smaller files, specialized context | Coordination overhead, duplicate setup logic |
+
+**Chosen:** Single skill. The Resolution Procedure is linear with skip gates — one file is manageable. Skill families add coordination complexity without clear benefit.
+
+### Decision 2: Inline Reference vs. Separate Invocation
+
+| Option | Pros | Cons |
+|--------|------|------|
+| **Inline reference** (chosen) | No tool switching, results in working context, no output parsing | Consumption skill must read the procedure |
+| Separate invocation (kb-route as tool) | Cleaner separation, could cache results | Requires tool infrastructure, output format contract, context passing |
+
+**Chosen:** Inline reference. Consumption skills already read files; reading kb-route/SKILL.md is natural. Results stay in context without serialization.
+
+### Decision 3: Grep-based Search vs. Index-based
+
+| Option | Pros | Cons |
+|--------|------|------|
+| **Grep-based** (chosen) | Works immediately, no index maintenance, handles schema evolution | Linear scan, doesn't scale to 10K+ entries |
+| Index-based (master-index driven) | Faster for large KBs | Requires index to stay in sync, schema changes need index updates |
+
+**Chosen:** Grep-based. Current KB is small (<100 entries). Grep is fast enough. If scale demands indexing later, master-index already exists — can add index-driven search without changing the skill interface.
+
+### Decision 4: Auto-harvest vs. Signal-only
+
+| Option | Pros | Cons |
+|--------|------|------|
+| **Signal-only** (chosen) | Agent decides, no surprise latency, respects agent's own knowledge | Requires agent action to fill gaps |
+| Auto-harvest on placeholder | Fills gaps automatically | Latency spikes, agent context consumed by harvest, may not be needed |
+
+**Chosen:** Signal-only. kb-route reports gaps and suggests commands. Agent decides based on context — maybe it has its own knowledge, maybe harvest is worth the wait.
+
+### Decision 5: One-level Cross-references vs. Recursive
+
+| Option | Pros | Cons |
+|--------|------|------|
+| **One-level** (chosen) | Bounded latency, clear results | May miss transitive relationships |
+| Recursive (follow chains) | Complete relationship graph | Unbounded latency, context explosion, circular reference risk |
+
+**Chosen:** One-level. `related_topics[]` provides next-hop hints without auto-following. If agent needs more, it calls kb-route again with the related concept.
+
+## 10. Deliverables
 
 1. **`~/.claude/skills/kb-route/SKILL.md`** — The routing skill containing the Resolution Procedure, edge cases, and usage instructions for consumption skills.
 
@@ -350,7 +486,7 @@ The consumption skill uses these results directly — kb-route does not format o
    - Architecture diagram: how all components connect
    - Quick reference: common commands for each skill
 
-## 8. Out of Scope (Future Work)
+## 11. Out of Scope (Future Work)
 
 - **Consumption skill rewrites** — separate brainstorming/spec/plan cycle after kb-route is tested
 - **Python query helper** — escape hatch if KB scale eventually exceeds agent tool efficiency
