@@ -176,3 +176,48 @@ For each **bridge result**: descriptor, parameters with value ranges, confidence
 For **gaps**: the gap report message and suggested kb-harvest command.
 
 The consumption skill uses these results directly — kb-route does not format output into a specific structure. The results are in the agent's working context from having read the entry files during the procedure.
+
+## Cross-Cutting Edge Cases
+
+| Condition | Behavior |
+|---|---|
+| Both `concept` and `bridge_descriptor` provided | Steps 2 and 4 both run. Return results grouped. Consumption skill reconciles. |
+| Multiple registered KBs match | Return from all, grouped by KB. Order within each by status then domain_relevance. |
+| Entry version field varies | Currently one file per entry. If future append-only versioning creates multiple files, prefer highest version with best status. |
+| Multiple entries cover same concept | Return all, ordered by status (curated > synced > harvested) then `domain_relevance`. Consumption skill picks. |
+| Entry file is malformed JSON | Skip entry, warn: "Entry [filename] invalid JSON — run `kb-sync --verify`" |
+
+## Usage Instructions for Consumption Skills
+
+To use kb-route from a consumption skill, add this line to the skill's procedure:
+
+```
+Read and follow the Resolution Procedure in ~/.claude/skills/kb-route/SKILL.md
+with parameters: concept="<value>", bridge_descriptor="<value>", kb="<value>"
+```
+
+Provide only the parameters relevant to the current task. The Resolution Procedure will skip steps that don't apply.
+
+**Example — concept lookup:**
+```
+Read and follow the Resolution Procedure in ~/.claude/skills/kb-route/SKILL.md
+with parameters: concept="filter resonance"
+```
+
+**Example — bridge lookup:**
+```
+Read and follow the Resolution Procedure in ~/.claude/skills/kb-route/SKILL.md
+with parameters: bridge_descriptor="warm"
+```
+
+**Example — explore a layer:**
+```
+Read and follow the Resolution Procedure in ~/.claude/skills/kb-route/SKILL.md
+with parameters: explore=true, layer="bridge"
+```
+
+**Example — both concept and bridge:**
+```
+Read and follow the Resolution Procedure in ~/.claude/skills/kb-route/SKILL.md
+with parameters: concept="filter", bridge_descriptor="warm", kb="juce-agent-prototype"
+```
