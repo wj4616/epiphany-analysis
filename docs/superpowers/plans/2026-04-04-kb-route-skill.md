@@ -28,7 +28,7 @@
 
 - [ ] **Step 1: Write the SKILL.md with frontmatter, description, invocation, and input parameters section**
 
-```markdown
+````markdown
 ---
 name: kb-route
 description: Resolution Procedure for querying multi-layer Knowledge Bases. Consumption skills reference this inline to find concept entries, bridge translations, and explore KB contents. Not invoked directly by users.
@@ -58,7 +58,7 @@ Consumption skills provide whichever parameters apply to their current task:
 If both `concept` and `bridge_descriptor` are provided, Steps 2 and 4 both run. Results are returned grouped (concept results, then bridge results). The consumption skill reconciles — it has the domain context.
 
 ## Resolution Procedure
-```
+````
 
 - [ ] **Step 2: Verify the file was created correctly**
 
@@ -124,7 +124,7 @@ git commit -m "feat(kb-route): add Step 1 — Setup with registry resolution and
 
 Append after Step 1:
 
-```markdown
+````markdown
 
 ### Step 2: Concept Lookup *(skip if no `concept` parameter)*
 
@@ -141,14 +141,21 @@ Append after Step 1:
    - Higher `domain_relevance` score
    - If 20+ matches, note: "Many matches — showing top 5. Narrow concept term for more targeted results."
 3. For each entry, check `status`:
-   - `curated` or `synced` → usable, proceed to Step 5
+   - `curated` or `synced` �� usable, proceed to Step 5
    - `harvested` → usable, proceed to Step 5 for confidence check
    - `placeholder` → invoke kb-harvest to fill:
      ```
      kb-harvest --kb <kb_name> --auto --entry <entry_id> --batch 1
      ```
      Wait for completion. Re-read entry. If harvest fails or takes too long, note failure and continue with other results.
-```
+
+**Failures:**
+- Grep returns no matches across all layers → fall through to Step 6 (gap detection)
+- Entry file is malformed JSON → skip entry, warn: "Entry [filename] invalid JSON — run `kb-sync --verify`"
+- Placeholder harvest reports error → note: "Harvest failed for [entry_id]." Continue with other results.
+- Placeholder harvest appears to hang → agent uses own judgment. Note and continue — don't block indefinitely.
+- Multiple entries cover same concept → return all, ordered by status (curated > synced > harvested) then `domain_relevance`. Consumption skill picks.
+````
 
 - [ ] **Step 2: Verify**
 
@@ -173,7 +180,7 @@ git commit -m "feat(kb-route): add Step 2 — Concept Lookup with Grep search an
 
 Append after Step 2:
 
-```markdown
+````markdown
 
 ### Step 2b: Explore *(skip if no `explore` parameter)*
 
@@ -205,7 +212,7 @@ Follows **entry-level** cross-references — links from one entry to a specific 
 - `cross_references[]` target not found on disk → skip, note: "Cross-reference to [entry_id] not found"
 - `cross_references[]` target KB not in registry → skip, note: "Cross-reference to KB [name] — not registered"
 - Entry has no `cross_references` field → normal, skip Step 3 for that entry
-```
+````
 
 - [ ] **Step 2: Verify both sections present**
 
@@ -230,7 +237,7 @@ git commit -m "feat(kb-route): add Step 2b — Explore and Step 3 — Cross-Refe
 
 Append after Step 3:
 
-```markdown
+````markdown
 
 ### Step 4: Bridge Resolution *(skip if no `bridge_descriptor` parameter)*
 
@@ -254,7 +261,7 @@ Append after Step 3:
 - Bridge descriptor not found → continue without bridge data if concept results exist; otherwise fall to Step 6
 - Conflicting `anti_patterns` between composed bridges → return both, warn: "Conflicting anti_patterns between [A] and [B]: [details]. Review before combining."
 - Bridge entry confidence < 0.40 → exclude, note: "Bridge entry [id] excluded (confidence X.XX)."
-```
+````
 
 - [ ] **Step 2: Verify**
 
@@ -279,7 +286,7 @@ git commit -m "feat(kb-route): add Step 4 — Bridge Resolution with composition
 
 Append after Step 4:
 
-```markdown
+````markdown
 
 ### Step 5: Confidence Filter *(always runs on collected results)*
 
@@ -328,7 +335,7 @@ For each **bridge result**: descriptor, parameters with value ranges, confidence
 For **gaps**: the gap report message and suggested kb-harvest command.
 
 The consumption skill uses these results directly — kb-route does not format output into a specific structure. The results are in the agent's working context from having read the entry files during the procedure.
-```
+````
 
 - [ ] **Step 2: Verify all steps present**
 
@@ -353,7 +360,7 @@ git commit -m "feat(kb-route): add Steps 5-6 — Confidence Filter, Gap Detectio
 
 Append after Result Summary:
 
-```markdown
+````markdown
 
 ## Cross-Cutting Edge Cases
 
@@ -399,7 +406,7 @@ with parameters: explore=true, layer="bridge"
 Read and follow the Resolution Procedure in ~/.claude/skills/kb-route/SKILL.md
 with parameters: concept="filter", bridge_descriptor="warm", kb="juce-agent-prototype"
 ```
-```
+````
 
 - [ ] **Step 2: Count total lines to verify completeness**
 
@@ -415,50 +422,14 @@ git commit -m "feat(kb-route): add cross-cutting edge cases and consumption skil
 
 ---
 
-### Task 8: Validate kb-route SKILL.md Against Spec
-
-**Files:**
-- Read: `~/.claude/skills/kb-route/SKILL.md`
-- Read: `docs/superpowers/specs/2026-04-04-kb-route-skill-design.md`
-
-- [ ] **Step 1: Read the complete SKILL.md and verify against spec requirements**
-
-Read the full `~/.claude/skills/kb-route/SKILL.md` and check:
-1. All 6 steps (+ 2b) present with correct skip conditions
-2. Step 1: registry resolution handles both master-index formats
-3. Step 2: Grep search per-layer, infrastructure file exclusion, 5-entry cap, status-based prioritization, placeholder harvest
-4. Step 2b: manifest reading with `categories` fallback for bridge, Glob fallback
-5. Step 3: cross-reference follow with Glob then Grep fallback, related_topics noted not followed
-6. Step 4: skip condition is `bridge_descriptor` only (no auto-trigger), direct Glob lookup, Grep fallback, composition rules
-7. Step 5: confidence thresholds (0.60/0.40), unscored handling, ordering
-8. Step 6: 4 differentiated gap causes with specific suggestions
-9. Result Summary section present
-10. Cross-cutting edge cases table
-11. Usage instructions with 4 examples
-
-- [ ] **Step 2: Fix any gaps found**
-
-If any spec requirement is missing, add it to the appropriate section.
-
-- [ ] **Step 3: Commit fixes if any**
-
-```bash
-git add ~/.claude/skills/kb-route/SKILL.md
-git commit -m "fix(kb-route): spec validation — fill any gaps found during review"
-```
-
-Skip this step if no fixes needed.
-
----
-
-### Task 9: Create KB-SYSTEM-MANUAL.md — System Overview and Architecture
+### Task 8: Create KB-SYSTEM-MANUAL.md — System Overview and Architecture
 
 **Files:**
 - Create: `~/Documents/pbcpb/KB-SYSTEM-MANUAL.md`
 
 - [ ] **Step 1: Write the manual header and system overview sections**
 
-```markdown
+````markdown
 # KB System Manual
 
 Comprehensive operator's guide for the Knowledge Base infrastructure. Covers all KB skills, data structures, and operational procedures.
@@ -576,7 +547,7 @@ Cross-references entries across all layers. Two formats exist:
 ```
 
 kb-route auto-detects the format at Step 1.
-```
+````
 
 - [ ] **Step 2: Verify the file was created**
 
@@ -592,7 +563,7 @@ git commit -m "docs(kb-system): create manual — system overview, architecture,
 
 ---
 
-### Task 10: KB-SYSTEM-MANUAL.md — Entry Lifecycle and Confidence Scoring
+### Task 9: KB-SYSTEM-MANUAL.md — Entry Lifecycle, Confidence Scoring, and Bridge System
 
 **Files:**
 - Modify: `~/Documents/pbcpb/KB-SYSTEM-MANUAL.md`
@@ -601,7 +572,7 @@ git commit -m "docs(kb-system): create manual — system overview, architecture,
 
 Append to the manual:
 
-```markdown
+````markdown
 
 ## Entry Lifecycle
 
@@ -681,32 +652,13 @@ kb-validate scores claims using:
 5. **Internal consistency** — does it contradict other KB entries?
 
 These factors blend into `harvest_metadata.overall_confidence`.
-```
+````
 
-- [ ] **Step 2: Verify sections appended**
-
-Run: `grep -c "## Entry Lifecycle\|## Confidence Scoring" ~/Documents/pbcpb/KB-SYSTEM-MANUAL.md`
-Expected: `2`
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add ~/Documents/pbcpb/KB-SYSTEM-MANUAL.md
-git commit -m "docs(kb-system): add entry lifecycle and confidence scoring sections"
-```
-
----
-
-### Task 11: KB-SYSTEM-MANUAL.md — Bridge System
-
-**Files:**
-- Modify: `~/Documents/pbcpb/KB-SYSTEM-MANUAL.md`
-
-- [ ] **Step 1: Append Bridge System section**
+- [ ] **Step 2: Append Bridge System section**
 
 Append to the manual:
 
-```markdown
+````markdown
 
 ## Bridge System
 
@@ -780,23 +732,23 @@ The bridge layer uses `categories` (not `topics`) in its manifest:
 ### Bridge-Eligible Layers
 
 The registry's `bridge_eligible_layers[]` identifies which layers can participate in bridge translations. The master-index's `cross_layer_mappings` with `"relationship": "translates"` connects bridge layers to their source/target layers.
-```
+````
 
-- [ ] **Step 2: Verify**
+- [ ] **Step 3: Verify all data model sections present**
 
-Run: `grep -c "## Bridge System" ~/Documents/pbcpb/KB-SYSTEM-MANUAL.md`
-Expected: `1`
+Run: `grep -c "## Entry Lifecycle\|## Confidence Scoring\|## Bridge System" ~/Documents/pbcpb/KB-SYSTEM-MANUAL.md`
+Expected: `3`
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
 git add ~/Documents/pbcpb/KB-SYSTEM-MANUAL.md
-git commit -m "docs(kb-system): add bridge system documentation"
+git commit -m "docs(kb-system): add entry lifecycle, confidence scoring, and bridge system"
 ```
 
 ---
 
-### Task 12: KB-SYSTEM-MANUAL.md — All KB Skills Reference
+### Task 10: KB-SYSTEM-MANUAL.md — Skills Reference, How-To Guides, and Troubleshooting
 
 **Files:**
 - Modify: `~/Documents/pbcpb/KB-SYSTEM-MANUAL.md`
@@ -805,7 +757,7 @@ git commit -m "docs(kb-system): add bridge system documentation"
 
 Append to the manual:
 
-```markdown
+````markdown
 
 ## KB Skills Reference
 
@@ -874,32 +826,13 @@ with parameters: concept="filter resonance"
 **Steps:** Setup → Concept Lookup → Explore → Cross-Ref Follow → Bridge Resolution → Confidence Filter → Gap Detection → Result Summary
 
 See `~/.claude/skills/kb-route/SKILL.md` for the full procedure.
-```
+````
 
-- [ ] **Step 2: Verify**
-
-Run: `grep -c "### kb-harvest\|### kb-sync\|### kb-validate\|### kb-route" ~/Documents/pbcpb/KB-SYSTEM-MANUAL.md`
-Expected: `4`
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add ~/Documents/pbcpb/KB-SYSTEM-MANUAL.md
-git commit -m "docs(kb-system): add all KB skills quick reference"
-```
-
----
-
-### Task 13: KB-SYSTEM-MANUAL.md — How-To Guides and Troubleshooting
-
-**Files:**
-- Modify: `~/Documents/pbcpb/KB-SYSTEM-MANUAL.md`
-
-- [ ] **Step 1: Append How-To Guides and Troubleshooting sections**
+- [ ] **Step 2: Append How-To Guides and Troubleshooting sections**
 
 Append to the manual:
 
-```markdown
+````markdown
 
 ## How-To Guides
 
@@ -987,23 +920,23 @@ Entries progress: `placeholder` → `harvested` → `curated` → `synced`.
 | Cross-references point to missing entries | Entry deleted or renamed | Run `kb-sync --verify` then `kb-sync --repair` |
 | Bridge lookup returns nothing | Bridge entries not created for this descriptor | Create bridge entry or run `kb-harvest` targeting bridge layer |
 | "Harvest failed for [entry_id]" | Backend unavailable or rate-limited | Retry with different backend: `kb-harvest --kb <name> --backend websearch+webfetch --entry <id>` |
-```
+````
 
-- [ ] **Step 2: Verify all sections present**
+- [ ] **Step 3: Verify all operational sections present**
 
-Run: `grep -c "## How-To Guides\|## Troubleshooting" ~/Documents/pbcpb/KB-SYSTEM-MANUAL.md`
-Expected: `2`
+Run: `grep -c "## KB Skills Reference\|## How-To Guides\|## Troubleshooting" ~/Documents/pbcpb/KB-SYSTEM-MANUAL.md`
+Expected: `3`
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
 git add ~/Documents/pbcpb/KB-SYSTEM-MANUAL.md
-git commit -m "docs(kb-system): add how-to guides and troubleshooting"
+git commit -m "docs(kb-system): add skills reference, how-to guides, and troubleshooting"
 ```
 
 ---
 
-### Task 14: Validate Both Deliverables Against Spec
+### Task 11: Validate Both Deliverables Against Spec
 
 **Files:**
 - Read: `~/.claude/skills/kb-route/SKILL.md`
@@ -1059,17 +992,36 @@ Skip if no fixes needed.
 
 ---
 
-### Task 15: Run Manual Walkthrough — Test 1 (Concept Lookup, New KB) and Test 2 (Bridge Lookup)
+### Task 12: Run Manual Walkthrough — Tests 1, 2, and 4 (Concept, Bridge, Gap Detection)
 
 **Files:**
+- Modify: `~/.claude/kb-registry.json`
 - Read: `~/.claude/skills/kb-route/SKILL.md` (follow procedure)
-- Read: `~/.claude/kb-registry.json`
 - Read: `/home/myuser/playbooks/vst-product-lifecycle-playbook/kb/master-index.json`
 
-- [ ] **Step 1: Walkthrough Test 1 — concept="subtractive synthesis"**
+- [ ] **Step 1: Register the new KB (prerequisite for walkthroughs)**
+
+The new KB is not yet in the registry. Add it so walkthrough tests can find it. Read `~/.claude/kb-registry.json`, then add this entry to the `registries[]` array:
+
+```json
+{
+  "name": "vst-product-lifecycle",
+  "path": "/home/myuser/playbooks/vst-product-lifecycle-playbook/kb",
+  "schema_path": null,
+  "bridge_schema_path": null,
+  "master_index_path": "master-index.json",
+  "generated_by": "pbcpb",
+  "layers": ["technical", "sound-design", "ui-ux", "commercial", "reference", "bridge"],
+  "bridge_eligible_layers": ["sound-design"],
+  "default_backend": "ddg+webfetch",
+  "registered_at": "2026-04-04T00:00:00Z"
+}
+```
+
+- [ ] **Step 2: Walkthrough Test 1 — concept="subtractive synthesis"**
 
 Follow the kb-route Resolution Procedure manually:
-1. **Step 1:** Read registry → get vst-product-lifecycle KB path → read master-index → detect `kb_layers[]` format → extract layers: technical, sound-design, ui-ux, commercial, reference, bridge
+1. **Step 1:** Read registry → find vst-product-lifecycle KB → read master-index → detect `kb_layers[]` format → extract layers: technical, sound-design, ui-ux, commercial, reference, bridge
 2. **Step 2:** Grep for "subtractive synthesis" (case-insensitive) in `*.json` files under each layer directory, excluding manifest.json and index.json
    - Expected: finds `sound-design/synthesis-types/vst_sound-design_subtractive.json`
    - Read entry → status=harvested, no harvest_metadata → unscored
@@ -1081,7 +1033,7 @@ Follow the kb-route Resolution Procedure manually:
 
 Verify: does the procedure produce the expected output from spec Test 1?
 
-- [ ] **Step 2: Walkthrough Test 2 — bridge_descriptor="warm"**
+- [ ] **Step 3: Walkthrough Test 2 — bridge_descriptor="warm"**
 
 1. **Step 1:** Same registry/master-index read
 2. **Step 4:** `cross_layer_mappings` shows bridge layer with `translates` relationship. Glob for `bridge/*/bridge_*_warm.json` → finds `bridge/timbre/bridge_timbre_warm.json`. Read entry → 3 parameters, confidence 0.85, 2 anti_patterns, 1 combination.
@@ -1090,25 +1042,35 @@ Verify: does the procedure produce the expected output from spec Test 1?
 
 Verify: does the procedure produce the expected output from spec Test 2?
 
-- [ ] **Step 3: Document results**
+- [ ] **Step 4: Walkthrough Test 4 — concept="granular delay" (Gap Detection)**
 
-Note any issues found during walkthrough. If the procedure doesn't match expected output, fix the SKILL.md.
+1. **Step 1:** Read registry, read master-indexes for both KBs
+2. **Step 2:** Grep for "granular delay" across all layers in both KBs
+   - Expected: no matches (or only tangential)
+3. **Step 6:** Gap detection fires — "No entries found for 'granular delay' in [KB names]"
+   - Suggestion: `kb-harvest --kb <name> --topic <suggested_topic>`
 
-- [ ] **Step 4: Commit fixes if any**
+Verify: gap detection differentiates correctly (no matches → row 2 of gap table).
+
+- [ ] **Step 5: Document results and fix issues**
+
+Note any issues found during walkthroughs. If the procedure doesn't match expected output, fix the SKILL.md.
+
+- [ ] **Step 6: Commit**
 
 ```bash
-git add ~/.claude/skills/kb-route/SKILL.md
-git commit -m "fix(kb-route): fixes from manual walkthrough Tests 1-2"
+git add ~/.claude/kb-registry.json ~/.claude/skills/kb-route/SKILL.md
+git commit -m "test(kb-route): register new KB, walkthrough Tests 1, 2, and 4"
 ```
-
-Skip if no fixes needed.
 
 ---
 
-### Task 16: Run Manual Walkthrough — Test 3 (Prototype KB) and Test 5 (Explore)
+### Task 13: Run Manual Walkthrough — Tests 3, 5, and 6 (Prototype KB, Explore, Multiple KBs)
 
 **Files:**
 - Read: `~/.claude/skills/kb-route/SKILL.md` (follow procedure)
+
+**Prerequisite:** Task 12 must complete first (new KB registered in registry).
 
 - [ ] **Step 1: Walkthrough Test 3 — concept="reverb" against prototype KB**
 
@@ -1131,20 +1093,32 @@ Follow the procedure against new KB:
 
 Verify: procedure handles bridge manifest `categories` field and Glob fallback.
 
-- [ ] **Step 3: Document results and fix issues**
+- [ ] **Step 3: Walkthrough Test 6 — concept="filter" across multiple KBs**
 
-- [ ] **Step 4: Commit fixes if any**
+Both KBs are now registered (prototype + new). Follow the procedure:
+1. **Step 1:** Read registry → both KBs. Read both master-indexes (prototype = `knowledge_bases{}` format, new = `kb_layers[]` format).
+2. **Step 2:** Grep for "filter" across all layers in both KBs.
+   - Prototype KB: expected matches in `dsp-kb/filters/` and possibly `juce-kb/`
+   - New KB: expected match on `vst_technical_filter-design.json` (placeholder) and `vst_sound-design_subtractive.json` (tags include "filter")
+3. **Step 5:** Apply confidence filter to all results
+4. **Result Summary:** Results grouped by KB name. Within each KB, ordered by status then domain_relevance.
+
+Verify: results come from both KBs, grouped correctly.
+
+- [ ] **Step 4: Document results and fix issues**
+
+- [ ] **Step 5: Commit fixes if any**
 
 ```bash
 git add ~/.claude/skills/kb-route/SKILL.md
-git commit -m "fix(kb-route): fixes from manual walkthrough Tests 3 and 5"
+git commit -m "fix(kb-route): fixes from manual walkthrough Tests 3, 5, and 6"
 ```
 
 Skip if no fixes needed.
 
 ---
 
-### Task 17: Final Commit — Tag as Complete
+### Task 14: Final Commit — Tag as Complete
 
 **Files:**
 - Read: `~/.claude/skills/kb-route/SKILL.md`
@@ -1175,15 +1149,15 @@ Now let me verify completeness with the self-review checklist.
 **Self-Review:**
 
 **1. Spec coverage:**
-- Spec Section 1 (Overview) → covered by Task 1 frontmatter
-- Spec Section 2 (Architecture) → covered by Task 1 parameters, Task 7 usage instructions
+- Spec Section 1 (Overview) → Task 1 frontmatter
+- Spec Section 2 (Architecture) → Task 1 parameters, Task 7 usage instructions
 - Spec Section 3 (Resolution Procedure) → Tasks 2-6 cover all steps
 - Spec Section 4 (Edge Cases) → embedded in each step's Failures subsections + Task 7 cross-cutting
 - Spec Section 5 (Maintainability) → inherent in the design (registry-driven, no hardcoded paths)
-- Spec Section 6 (Testing) → Tasks 15-16 walkthrough Tests 1-3, 5
-- Spec Section 7 Deliverable 1 (SKILL.md) → Tasks 1-8
-- Spec Section 7 Deliverable 2 (KB-SYSTEM-MANUAL.md) → Tasks 9-13
-- Task 8 + Task 14 are explicit spec validation passes
+- Spec Section 6 (Testing) → Tasks 12-13 walkthrough Tests 1-6 (Test 7 skipped — requires file corruption)
+- Spec Section 7 Deliverable 1 (SKILL.md) → Tasks 1-7
+- Spec Section 7 Deliverable 2 (KB-SYSTEM-MANUAL.md) → Tasks 8-10
+- Task 11 is the spec validation pass for both deliverables
 
 **2. Placeholder scan:** No TBDs, TODOs, or "add appropriate..." in any task. All code blocks contain complete content.
 
