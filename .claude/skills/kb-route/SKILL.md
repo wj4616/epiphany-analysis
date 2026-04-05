@@ -74,3 +74,34 @@ If both `concept` and `bridge_descriptor` are provided, Steps 2 and 4 both run. 
 - Placeholder harvest reports error → note: "Harvest failed for [entry_id]." Continue with other results.
 - Placeholder harvest appears to hang → agent uses own judgment. Note and continue — don't block indefinitely.
 - Multiple entries cover same concept → return all, ordered by status (curated > synced > harvested) then `domain_relevance`. Consumption skill picks.
+
+### Step 2b: Explore *(skip if no `explore` parameter)*
+
+1. Read the manifest at `<kb.path>/<layer>/manifest.json`.
+2. List topics (or `categories` for bridge layers) and their entries with status counts.
+3. If manifest is missing or has empty entries, fall back to listing files in the layer directory via Glob: `<kb.path>/<layer>/**/*.json`.
+4. Return the overview — do not read individual entries unless asked.
+
+**Failures:**
+- Specified layer doesn't exist in master-index → list available layers: "Layer [name] not found. Available: [list]"
+- Manifest missing → report, fall back to Glob listing
+- Manifest exists but entries arrays empty → fall back to Glob, note: "Manifest out of date — run `kb-sync --repair`."
+
+### Step 3: Cross-Reference Follow *(skip if Step 2 was skipped or found no entries with `cross_references[]`)*
+
+Follows **entry-level** cross-references — links from one entry to a specific entry in another layer.
+
+1. For each entry found in Step 2, check its `cross_references[]` field:
+   ```json
+   "cross_references": [
+     { "kb": "technical", "entry_id": "vst_technical_filter-design", "relationship": "implements" }
+   ]
+   ```
+2. Read the referenced entries. Locate by: Glob for `<kb.path>/<cross_ref.kb>/**/<entry_id>.json` (entry IDs match filenames). If Glob finds nothing, fall back to Grep for `"id": "<entry_id>"` in that layer directory.
+3. These are secondary results — include them but mark as cross-referenced.
+4. If entries have `related_topics[]`, note them in results as "Related topics: [list]". Do not auto-follow — the consumption skill decides whether to explore further.
+
+**Failures:**
+- `cross_references[]` target not found on disk → skip, note: "Cross-reference to [entry_id] not found"
+- `cross_references[]` target KB not in registry → skip, note: "Cross-reference to KB [name] — not registered"
+- Entry has no `cross_references` field → normal, skip Step 3 for that entry
