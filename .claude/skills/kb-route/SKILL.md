@@ -128,3 +128,51 @@ Follows **entry-level** cross-references — links from one entry to a specific 
 - Bridge descriptor not found → continue without bridge data if concept results exist; otherwise fall to Step 6
 - Conflicting `anti_patterns` between composed bridges → return both, warn: "Conflicting anti_patterns between [A] and [B]: [details]. Review before combining."
 - Bridge entry confidence < 0.40 → exclude, note: "Bridge entry [id] excluded (confidence X.XX)."
+
+### Step 5: Confidence Filter *(always runs on collected results)*
+
+For each result entry, determine confidence:
+1. Check `harvest_metadata.overall_confidence` (present on harvested entries from kb-harvest)
+2. If absent, check top-level `confidence` field (present on bridge entries)
+3. If neither exists → **unscored** — usable with note "confidence unknown"
+
+Apply thresholds:
+
+| Confidence | Action |
+|---|---|
+| >= 0.60 | Use normally |
+| 0.40 - 0.59 | Use with warning: "Medium confidence (X.XX) — verify before relying on this" |
+| < 0.40 | Exclude. Note: "Entry [id] excluded (confidence X.XX)" |
+| Unscored | Use with note: "No confidence score available" |
+
+Order results: scored entries sorted by confidence descending, then unscored entries grouped after.
+
+**Edge cases:**
+- All results filtered out by confidence → fall to Step 6 with note
+- Mix of scored and unscored → return both, scored first by confidence descending, unscored after
+- `authority_score` present on some layers, absent on others → use where present for ordering, treat absent as equal priority
+
+### Step 6: Gap Detection *(runs if no usable results from any previous step)*
+
+Differentiated by cause:
+
+| Why no results | Report | Suggestion |
+|---|---|---|
+| No registered KB has layers relevant to the query | "No KB with relevant layers for [concept]" | "Register a KB covering this domain, or check with `kb-harvest --list`" |
+| KB exists, no entries match the concept | "No entries found for [concept] in [KB name]" | "`kb-harvest --kb <name> --topic <suggested_topic>`" |
+| Topic exists but all entries are placeholders and harvest failed | "Topic exists but content not yet harvested" | "`kb-harvest --kb <name> --auto --entry <id>`" |
+| Entries found but all below confidence threshold | "Entries exist but all below confidence threshold" | "`kb-harvest --kb <name> --auto --refresh`" |
+
+**Do not auto-harvest.** The agent decides whether to harvest now or proceed with its own knowledge.
+
+### Result Summary
+
+After completing the procedure, summarize collected results for the consumption skill:
+
+For each **concept result**: entry ID, title, status, confidence (or "unscored"), layer, KB name. If cross-referenced entries were followed, list them as secondary with their relationship type.
+
+For each **bridge result**: descriptor, parameters with value ranges, confidence, anti-patterns, combination notes (if composed).
+
+For **gaps**: the gap report message and suggested kb-harvest command.
+
+The consumption skill uses these results directly — kb-route does not format output into a specific structure. The results are in the agent's working context from having read the entry files during the procedure.
