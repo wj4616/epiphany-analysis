@@ -105,3 +105,26 @@ Follows **entry-level** cross-references — links from one entry to a specific 
 - `cross_references[]` target not found on disk → skip, note: "Cross-reference to [entry_id] not found"
 - `cross_references[]` target KB not in registry → skip, note: "Cross-reference to KB [name] — not registered"
 - Entry has no `cross_references` field → normal, skip Step 3 for that entry
+
+### Step 4: Bridge Resolution *(skip if no `bridge_descriptor` parameter)*
+
+1. Locate the bridge layer directory from `cross_layer_mappings` in the master-index (look for `"relationship": "translates"`). If no `cross_layer_mappings`, check if any layer is named `bridge` and use that.
+2. **Direct lookup**: Bridge filenames follow `bridge_{category}_{descriptor}.json`. Try Glob: `<kb.path>/bridge/*/bridge_*_<descriptor>.json`.
+3. **Grep fallback**: If direct lookup fails, Grep the bridge directory for the descriptor string in `"descriptor"` fields.
+4. Read matching bridge entry. Key fields:
+   - `parameters[]` — each with `parameter`, `value_range [min, max]`, `typical_default`, `notes`
+   - `confidence` — bridge-level confidence score (top-level field)
+   - `why` — human-readable rationale
+   - `anti_patterns[]` — each with `mistake` and `reason`
+   - `combinations[]` — each with `compatible_with`, `confidence_modifier`, `notes`
+5. **Composing multiple bridge entries** (e.g., "warm analog" = warm + analog):
+   - Read each bridge entry separately
+   - Check `combinations[]` for `compatible_with` references between them
+   - If compatible: merge parameter lists, apply `confidence_modifier`, intersection of `anti_patterns`
+   - If not listed as compatible: compose with lowered confidence (multiply each by 0.8), union of `anti_patterns`
+
+**Failures:**
+- No bridge layer in KB → skip Step 4 entirely (normal)
+- Bridge descriptor not found → continue without bridge data if concept results exist; otherwise fall to Step 6
+- Conflicting `anti_patterns` between composed bridges → return both, warn: "Conflicting anti_patterns between [A] and [B]: [details]. Review before combining."
+- Bridge entry confidence < 0.40 → exclude, note: "Bridge entry [id] excluded (confidence X.XX)."
