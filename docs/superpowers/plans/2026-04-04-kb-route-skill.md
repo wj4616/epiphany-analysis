@@ -1144,29 +1144,57 @@ git commit -m "feat(kb-route): complete kb-route skill and KB system manual"
 
 If everything is already committed, this step is a no-op.
 
-Now let me verify completeness with the self-review checklist.
+---
 
-**Self-Review:**
+## Audit Results
 
-**1. Spec coverage:**
-- Spec Section 1 (Overview) → Task 1 frontmatter
-- Spec Section 2 (Architecture) → Task 1 parameters, Task 7 usage instructions
-- Spec Section 3 (Resolution Procedure) → Tasks 2-6 cover all steps
-- Spec Section 4 (Edge Cases) → embedded in each step's Failures subsections + Task 7 cross-cutting
-- Spec Section 5 (Maintainability) → inherent in the design (registry-driven, no hardcoded paths)
-- Spec Section 6 (Testing) → Tasks 12-13 walkthrough Tests 1-6 (Test 7 skipped — requires file corruption)
-- Spec Section 7 Deliverable 1 (SKILL.md) → Tasks 1-7
-- Spec Section 7 Deliverable 2 (KB-SYSTEM-MANUAL.md) → Tasks 8-10
-- Task 11 is the spec validation pass for both deliverables
+**Audited:** 2026-04-04
 
-**2. Placeholder scan:** No TBDs, TODOs, or "add appropriate..." in any task. All code blocks contain complete content.
+### Spec Coverage
 
-**3. Type consistency:** Field names match across tasks: `kb_layers[]` / `knowledge_bases{}`, `cross_layer_mappings`, `cross_references[]`, `harvest_metadata.overall_confidence`, `categories` vs `topics` for bridge manifests — all consistent with actual JSON structures verified by reading the files.
+| Spec Section | Plan Coverage | Status |
+|--------------|---------------|--------|
+| Section 1: Overview | Task 1 frontmatter | ✅ |
+| Section 2: Architecture | Task 1 (params), Task 7 (usage) | ✅ |
+| Section 3: Steps 1-6 | Tasks 2-6 | ✅ |
+| Section 3: Result Summary | Task 6 | ✅ |
+| Section 4: Edge Cases | Tasks 2-7 (inline) | ✅ |
+| Section 6: Tests 1-6 | Tasks 12-13 | ✅ |
+| Section 6: Test 7 (Error Resilience) | — | ⚠️ Skipped |
+| Section 7: Deliverable 1 | Tasks 1-7 | ✅ |
+| Section 7: Deliverable 2 | Tasks 8-10 | ✅ |
 
-Plan complete and saved to `docs/superpowers/plans/2026-04-04-kb-route-skill.md`. Two execution options:
+### Placeholder Scan
 
-**1. Subagent-Driven (recommended)** - I dispatch a fresh subagent per task, review between tasks, fast iteration
+✅ No TBDs, TODOs, or incomplete content. All code blocks contain full content.
 
-**2. Inline Execution** - Execute tasks in this session using executing-plans, batch execution with checkpoints
+### Field Name Consistency
 
-Which approach?
+✅ All field names match spec: `kb_layers[]`, `knowledge_bases{}`, `cross_layer_mappings`, `cross_references[]`, `harvest_metadata.overall_confidence`, `categories` vs `topics`.
+
+### Edge Case Coverage
+
+✅ All 24 edge cases from spec Section 4 are covered in the plan (embedded in each step's Failures subsections).
+
+### Known Gaps
+
+1. **Test 7 (Error Resilience)** — Skipped because it requires corrupting a file. Error handling for malformed JSON is verified in Task 3 and Task 11 validation checklist.
+
+### Self-Review Checklist
+
+- [x] Spec Section 1 (Overview) → Task 1 frontmatter
+- [x] Spec Section 2 (Architecture) → Task 1 parameters, Task 7 usage instructions
+- [x] Spec Section 3 (Resolution Procedure) → Tasks 2-6 cover all steps
+- [x] Spec Section 4 (Edge Cases) → embedded in each step's Failures subsections + Task 7 cross-cutting
+- [x] Spec Section 5 (Maintainability) → inherent in the design (registry-driven, no hardcoded paths)
+- [x] Spec Section 6 (Testing) → Tasks 12-13 walkthrough Tests 1-6 (Test 7 skipped — requires file corruption)
+- [x] Spec Section 7 Deliverable 1 (SKILL.md) → Tasks 1-7
+- [x] Spec Section 7 Deliverable 2 (KB-SYSTEM-MANUAL.md) → Tasks 8-10
+- [x] Task 11 is the spec validation pass for both deliverables
+- [x] No TBDs, TODOs, or "add appropriate..." in any task
+- [x] All code blocks contain complete content
+- [x] Field names consistent with actual JSON structures
+
+---
+
+**Plan Status:** Ready for execution. 14 tasks, 73 steps.
