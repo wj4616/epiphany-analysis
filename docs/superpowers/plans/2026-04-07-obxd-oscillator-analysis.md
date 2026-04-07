@@ -235,7 +235,7 @@ stages:
 - [ ] **Step 2: Verify YAML parses**
 
 Run: `python -c "import yaml; d = yaml.safe_load(open('config/source-map.yaml')); print(list(d['stages'].keys()))"`
-Expected: prints a list of 13 stage keys (stages 6, 9, 10 are not in source-map by design).
+Expected: prints a list of 12 stage keys (stages 6, 9, 10 are not in source-map by design — they read artifacts, not source).
 
 - [ ] **Step 3: Commit**
 
@@ -278,6 +278,8 @@ def source_map_path():
 Add to `tests/test_preflight.py`:
 
 ```python
+import pathlib
+import pytest
 from orchestrator import preflight
 
 def test_load_config_returns_dict(config_path):
@@ -358,8 +360,8 @@ git commit -m "feat(obxd-analysis): add config + source-map loaders with tests"
 Append to `tests/test_preflight.py`:
 
 ```python
-# Required-stage table from design doc Section 4.3
-REQUIRED_ALWAYS = {"1_repo_map", "2_entry_trace", "3d_composite", "7_parameters", "10_synthesis"}
+# Required-stage table from design doc Section 4.3 / 4.4 step 6
+REQUIRED_ALWAYS = {"1_repo_map", "2_entry_trace", "3d_composite", "7_parameters", "9_review", "10_synthesis"}
 WAVEFORM_GROUP = {"3a_saw", "3b_pulse", "3c_triangle"}
 VOICE_GROUP = {"4a_voice_alloc", "4b_voice_routing", "4c_voice_wrapper"}
 
@@ -372,23 +374,31 @@ def test_validate_required_stages_passes_on_obxd(config_path, source_map_path):
 
 
 def test_validate_required_stages_fails_on_missing_required():
-    cfg = {"enabled_stages": ["1_repo_map", "2_entry_trace"]}  # missing 3d, 7, 10, etc.
+    cfg = {"enabled_stages": ["1_repo_map", "2_entry_trace"]}  # missing 3d, 7, 9, 10, etc.
     sm = {"stages": {}}
     errors = preflight.validate_required_stages(cfg, sm)
     assert any("3d_composite" in e for e in errors)
     assert any("7_parameters" in e for e in errors)
+    assert any("9_review" in e for e in errors)
     assert any("10_synthesis" in e for e in errors)
 
 
+def test_validate_required_stages_fails_on_missing_review():
+    cfg = {"enabled_stages": list(REQUIRED_ALWAYS - {"9_review"}) + list(WAVEFORM_GROUP) + list(VOICE_GROUP)}
+    sm = {"stages": {k: {"inputs": []} for k in cfg["enabled_stages"] if k not in {"10_synthesis"}}}
+    errors = preflight.validate_required_stages(cfg, sm)
+    assert any("9_review" in e for e in errors)
+
+
 def test_validate_required_stages_fails_on_no_waveform():
-    cfg = {"enabled_stages": list(REQUIRED_ALWAYS) + list(VOICE_GROUP) + ["9_review"]}
+    cfg = {"enabled_stages": list(REQUIRED_ALWAYS) + list(VOICE_GROUP)}
     sm = {"stages": {k: {"inputs": []} for k in cfg["enabled_stages"] if k not in {"9_review", "10_synthesis"}}}
     errors = preflight.validate_required_stages(cfg, sm)
     assert any("waveform" in e.lower() for e in errors)
 
 
 def test_validate_required_stages_fails_on_no_voice_management():
-    cfg = {"enabled_stages": list(REQUIRED_ALWAYS) + list(WAVEFORM_GROUP) + ["9_review"]}
+    cfg = {"enabled_stages": list(REQUIRED_ALWAYS) + list(WAVEFORM_GROUP)}
     sm = {"stages": {k: {"inputs": []} for k in cfg["enabled_stages"] if k not in {"9_review", "10_synthesis"}}}
     errors = preflight.validate_required_stages(cfg, sm)
     assert any("voice management" in e.lower() for e in errors)
@@ -404,12 +414,13 @@ Expected: FAIL with `AttributeError: validate_required_stages`.
 Append to `orchestrator/preflight.py`:
 
 ```python
-# Required-stage table — design doc Section 4.3 is canonical.
+# Required-stage table — design doc Section 4.3 / 4.4 step 6 is canonical.
 REQUIRED_ALWAYS = {
     "1_repo_map",
     "2_entry_trace",
     "3d_composite",
     "7_parameters",
+    "9_review",
     "10_synthesis",
 }
 WAVEFORM_GROUP = {"3a_saw", "3b_pulse", "3c_triangle"}
@@ -444,7 +455,7 @@ def validate_required_stages(cfg: dict, sm: dict) -> list[str]:
 - [ ] **Step 4: Run tests, verify they pass**
 
 Run: `python -m pytest tests/test_preflight.py -v`
-Expected: 6 passed (the 2 from Task 4 + 4 new ones).
+Expected: 7 passed (the 2 from Task 4 + 5 new ones).
 
 - [ ] **Step 5: Commit**
 
@@ -493,7 +504,7 @@ def test_validate_filesystem_paths_passes_on_existing_file(tmp_path):
     assert errors == []
 ```
 
-Note: import `pytest` at the top of `test_preflight.py` if not already.
+(`pytest` and `pathlib` are already imported at the top of the file from Task 4.)
 
 - [ ] **Step 2: Run tests, verify they fail**
 
@@ -528,7 +539,7 @@ def validate_filesystem_paths(cfg: dict, sm: dict) -> list[str]:
 - [ ] **Step 4: Run tests, verify they pass**
 
 Run: `python -m pytest tests/test_preflight.py -v`
-Expected: 9 passed (or 8 passed + 1 skipped if OB-Xd isn't checked out).
+Expected: 10 passed (or 9 passed + 1 skipped if OB-Xd isn't checked out).
 
 - [ ] **Step 5: Commit**
 
@@ -618,7 +629,7 @@ if __name__ == "__main__":
 - [ ] **Step 4: Run all tests, verify they pass**
 
 Run: `python -m pytest tests/test_preflight.py -v`
-Expected: 11 passed (or 9 passed + 2 skipped).
+Expected: 12 passed (or 10 passed + 2 skipped).
 
 - [ ] **Step 5: Smoke-run from CLI**
 
@@ -652,7 +663,7 @@ import pytest
 from orchestrator import repo_validate
 
 
-def test_enumerate_repo_files_returns_path_line_tuples(tmp_path):
+def test_enumerate_files_returns_path_line_tuples(tmp_path):
     (tmp_path / "a.h").write_text("line1\nline2\nline3\n")
     (tmp_path / "b.h").write_text("only one line\n")
     files = repo_validate.enumerate_files(tmp_path)
@@ -662,18 +673,21 @@ def test_enumerate_repo_files_returns_path_line_tuples(tmp_path):
 
 
 def test_parse_repo_map_returns_path_line_tuples(tmp_path):
+    # Stage 1 convention: paths in the Files table are relative to the scan
+    # directory (e.g., "SawOsc.h", not "Source/Engine/SawOsc.h"). See Stage 1
+    # prompt and schema 01.
     repo_map = tmp_path / "01-repo-map.md"
     repo_map.write_text(
         "# Repo Map\n\n"
         "## Files\n\n"
         "| File | Lines | Role |\n"
         "|---|---|---|\n"
-        "| Source/Engine/SawOsc.h | 128 | saw waveform generator |\n"
-        "| Source/Engine/PulseOsc.h | 194 | pulse waveform generator |\n"
+        "| SawOsc.h | 128 | saw waveform generator |\n"
+        "| PulseOsc.h | 194 | pulse waveform generator |\n"
     )
     parsed = repo_validate.parse_repo_map(repo_map)
-    assert ("Source/Engine/SawOsc.h", 128) in parsed
-    assert ("Source/Engine/PulseOsc.h", 194) in parsed
+    assert ("SawOsc.h", 128) in parsed
+    assert ("PulseOsc.h", 194) in parsed
 
 
 def test_validate_reuse_passes_when_unchanged(tmp_path):
@@ -740,6 +754,12 @@ Create `orchestrator/repo_validate.py`:
 Decides whether an existing 01-repo-map.md artifact in the working dir can be
 reused for a new run, by comparing its file list against the current target
 repo state. Per design doc Section 4.4 step 7.
+
+Path convention: the repo_root argument to validate_reuse is Stage 1's scan
+directory (e.g., ``~/synth/OB-Xd-2.19/Source/Engine``), and file paths in
+the repo map are expressed relative to that directory (``SawOsc.h``, not
+``Source/Engine/SawOsc.h``). See the Stage 1 subagent prompt + schema 01 for
+where that convention is declared.
 """
 from __future__ import annotations
 import dataclasses
@@ -852,6 +872,11 @@ Create `schemas/01-repo-map.schema.md`:
 - Scanned at: <commit hash if git, otherwise mtime>
 
 ## Files
+
+All `File` entries are paths **relative to the Source root above** (e.g.,
+`SawOsc.h` when the Source root is `.../Source/Engine`). Do not prefix with
+the source-root directory name. The reuse validator depends on this
+convention.
 
 | File | Lines | Role |
 |---|---|---|
@@ -1467,92 +1492,141 @@ Create `schemas/12-review.schema.md`:
 
 This is the entire final-spec schema from design doc Section 3.3, plus the BLOCKERS.md schema from 3.4. Create `schemas/13-final-spec.schema.md`:
 
-```markdown
+~~~markdown
 # Final Spec Schema (10-final-spec.md and BLOCKERS.md)
 
 This schema is the contract for the Stage 10 synthesis subagent's output.
 The synthesis subagent fills in this template; the orchestrator verifies
 all sections are present and dual citations exist where required.
+This file is the canonical transcription of design doc Section 3.3 and 3.4 —
+the Stage 10 subagent sees this content verbatim via the synthesis prompt.
 
 ## 10-final-spec.md template
 
+```markdown
 # {TARGET_SYNTH_NAME} Oscillator Subsystem — Portable Specification
 
 ## 1. Overview
 - One-paragraph sonic-character description
 - One-paragraph design-goals statement
-- Source attribution: {TARGET_SYNTH_NAME} {TARGET_VERSION}, {TARGET_LICENSE}
+- Source attribution: target synth name + version + license note from config
 
 ## 2. Architectural Diagram
 - ASCII block diagram of the per-voice oscillator signal path
-- Labeled interfaces to downstream systems
-- Parameterization markers: {VOICE_COUNT}, {OSCS_PER_VOICE}, {WAVEFORM_SET}, {UNISON_DEPTH}
+- Labeled interfaces to downstream systems (filter input, envelope, pan, mix bus)
+- Explicit parameterization markers: {VOICE_COUNT}, {OSCS_PER_VOICE},
+  {WAVEFORM_SET}, {UNISON_DEPTH}
 
 ## 3. Waveform Generators
-For each waveform: algorithm, pseudocode, formulas, constants table, anti-alias method,
-hard-sync behavior. Citation: artifact path + source file:line (dual).
+For each waveform (saw, pulse, triangle, ...):
+  - Algorithm summary
+  - Pseudocode
+  - Formulas
+  - Constants table
+  - Anti-alias method and where it inserts
+  - Hard-sync behavior (if applicable)
+  - Citation: artifact path + source file:line
 
 ## 4. Per-Voice Oscillator Composite
-Mix structure, cross-mod routing with delay compensation, hard sync routing, output gain.
-Citation: artifact path + source file:line.
+- Mix structure (osc1 + osc2 + sub + noise + xmod)
+- Cross-modulation routing and delay-line compensation
+- Hard sync routing (master → slave path)
+- Output gain stage
+- Citation: 03d artifact path + source file:line
 
 ## 5. Polyphony & Voice Architecture
-- Native voice count (config = expected, 04a canonical for observed; 04b/04c cross-checks; mismatch → BLOCKERS)
-- Native oscs-per-voice (04c canonical)
-- Voice allocation policy
+- Native voice count (config = expected, **04a is canonical** for observed;
+  04b/04c are cross-checks; any mismatch among config/04a/04b/04c →
+  DISAGREEMENT in BLOCKERS.md)
+- Native oscs-per-voice (same dual-source rule as voice count, with 04c as
+  canonical for the per-voice oscillator slot count)
+- Voice allocation policy (steal order, retrigger behavior)
 - Per-voice vs shared state inventory
-- Detune-across-voices model
-### Parameterization (cite-only at native size)
-### TODO — human step: scaling derivation
-- Goal, inputs the human needs
+- Detune-across-voices model (cite the per-voice random factors and dirt
+  injection from artifacts)
+- ### Parameterization (cite-only — describe what OB-Xd does at native size)
+  - Which structural values are hard-coded vs. configuration-driven
+  - Which per-voice state is independent vs. shared
+- ### TODO — human step: scaling derivation
+  - Goal: scaling guidance for {VOICE_COUNT} ≠ native, {OSCS_PER_VOICE} ≠ native
+  - Goal: worked example at 4 voices, 2 osc/voice
+  - Inputs the human will need:
+    - The per-voice state inventory above
+    - The detune-across-voices model
+    - Section 6 analog-character constants
+    - A target audio test that defines "preserves character"
 
 ## 6. Analog Character Inventory
-- Each technique with mechanism and constants
-- Looked-for-and-not-found list
-- Citation: artifact path + source file:line
-- If 06 DEFERRED: one-line statement, no fill-in
+- Each technique observed in the source: name, mechanism, where it lives
+- "Looked for and not found" sublist (explicit negative results)
+- Citation: 06 artifact path + source file:line
+- If 06 is DEFERRED: one line stating that, no fill-in
 
 ## 7. Parameters & Modulation
-- Every osc-affecting parameter with range, curve, default, source artifact
+- Every osc-affecting parameter: name, range, curve, default, source artifact
 - Modulation routing matrix
 - Tuning system summary
 
 ## 8. Critical Adjacent Systems
-For each: name, role (1–3 sentences), coupling, MUST-REPLICATE / JUCE-EQUIVALENT verdict,
-citation: artifact path + source file:line.
+For each system in 08-adjacent.md (filter, env, LFO, sat, mix, pan, output, ...):
+  - Name, role in 1–3 sentences
+  - Coupling to oscillator stage (what it receives/gives back)
+  - Verdict: MUST-REPLICATE-FOR-CHARACTER or JUCE-MODULE-EQUIVALENT-OK
+  - Citation: 08 artifact path + source file:line
 
 ## 9. Portability Guide
-- OB-Xd-specific vs reusable inventory
-- Required JUCE-host interfaces
-### Replacement categories (cite-only)
-- Categories only — no specific JUCE module names
-- Required parametric inputs ({ALL_CAPS} markers from section 2)
-### TODO — human step: module selection
-- Goal, inputs the human needs
+- What in this spec is OB-Xd-specific vs reusable
+- Required interfaces for dropping the oscillator engine into a different
+  JUCE host (AudioBuffer<float>, sample rate, MIDI note input, parameter API)
+- ### Replacement categories (cite-only)
+  - For each adjacent system marked JUCE-MODULE-EQUIVALENT-OK, list the
+    *category* of replacement needed (filter, envelope, LFO, saturator, ...)
+  - Do NOT name specific JUCE modules — that is a downstream human decision
+- Required parametric inputs (the {ALL_CAPS} markers from section 2)
+- ### TODO — human step: module selection
+  - Goal: choose specific JUCE / open-source modules per replacement category
+  - Inputs the human will need:
+    - The replacement category list above
+    - The MUST-REPLICATE verdicts from section 8
+    - The target host project's existing module dependencies
 
 ## 10. Scaling Guidance
-- Cross-reference to section 5's TODO
-- Cite-only material from section 11
+- Cross-reference to section 5's TODO — human step
+- Cite-only material: state which constants in section 11 are tied to voice
+  count vs. independent of it (only if any artifact says so explicitly)
 
 ## 11. Constants & Tuning Values
-- Single table; every row has dual citations (artifact path + source file:line)
-- Columns: name, value, artifact path, source file:line, role in the sound
+- Single table of every hard-coded numeric value that shapes the character
+- Each row: name, value, artifact path, source file:line, role in the sound
+- Dual citations are mandatory here — this table is the verification surface
 
 ## 12. Open Questions & Unknowns
-- DEFER-TO-SYNTHESIS items synthesis could resolve
-- Genuine unknowns (mutually exclusive with BLOCKERS.md per design rule 9)
+- Anything tagged DEFER-TO-SYNTHESIS that synthesis could resolve
+- Anything left genuinely unknown (this is a different list from BLOCKERS.md;
+  unknowns are gaps, blockers are conflicts; an item appears in exactly one
+  place)
 
 ## 13. Prototype Plan
-### Cite-only test surface
-### TODO — human step: audible criteria
+- ### Cite-only test surface
+  - Test cases derivable directly from artifacts (single voice playback,
+    waveform selection per Stage 3a/b/c, polyphony allocation per 4a,
+    hard sync routing per 3d, decimation toggle per 5)
+- ### TODO — human step: audible criteria
+  - Goal: define what "subtle inter-voice detuning for analog authenticity"
+    should sound like as audible test criteria
+  - Inputs the human will need:
+    - Section 6 analog-character techniques and constants
+    - Section 11 detune-related constants
+    - A reference recording or A/B target to compare against
 
 ## Appendix A. Artifact Provenance
-- Section → artifact mapping
-- Stage status table (PASS / PASS-WITH-NOTES / FAIL / DEFERRED)
-
+- Table mapping each spec section to the artifact(s) it cites
+- Stage status: PASS / PASS-WITH-NOTES / FAIL / DEFERRED for every input
+```
 
 ## BLOCKERS.md template
 
+```markdown
 # Synthesis Blockers
 
 ## Summary
@@ -1563,22 +1637,26 @@ citation: artifact path + source file:line.
 
 ## Disagreements
 For each:
-- Topic
-- Artifact A says (quote + path)
-- Artifact B says (quote + path)
-- Why I cannot adjudicate
-- Recommended human action
+  - Topic: <one line>
+  - Artifact A says: <quote + path>
+  - Artifact B says: <quote + path>
+  - Why I cannot adjudicate: <one line>
+  - Recommended human action: <one line>
 
 ## Unresolved Open Questions
+- Question (from artifact <path>)
+- Why other artifacts do not answer it
 
 ## Incomplete Spec Sections
+- Section name + which FAILED stage caused the gap
 
 ## Deferred Spec Sections
-
-
-If empty: file still starts with "# Synthesis Blockers" and contains "## No blockers"
-as its sole sub-header.
+- Section name + which DEFERRED stage caused it
 ```
+
+If there are no blockers, the file still starts with `# Synthesis Blockers`
+and contains only `## No blockers` as its sole sub-header.
+~~~
 
 - [ ] **Step 3: Commit**
 
@@ -1694,6 +1772,9 @@ Use schema: schemas/01-repo-map.schema.md
    includes, class declaration). Infer a one-line role label from the class
    name and includes — do NOT read further.
 4. Fill the schema's "Files" table with (path, lines, role).
+   **Path convention:** every file path in the Files table is expressed
+   **relative to the scan directory** (e.g., `SawOsc.h`, NOT
+   `Source/Engine/SawOsc.h`). The reuse validator depends on this convention.
 5. Any file > 1500 lines: add to "Files flagged READ-DECLARATION-ONLY".
 6. Fill "Inferred role labels" by mapping the roles to the canonical list
    in the schema. Use "not present" if you cannot find one.
@@ -1790,13 +1871,17 @@ Use schema: schemas/03-waveform.schema.md
 ## METHOD
 1. Read the entire source file once.
 2. Identify the public class.
-3. For each schema section (Algorithm, Phase accumulator, Anti-aliasing,
+3. Before filling the schema, substitute its template placeholders for this
+   instance:
+   - `{WAVEFORM_NAME}` → `Saw` / `Pulse` / `Triangle` (matching which of 3a/3b/3c you are)
+   - `{SOURCE_FILE_BASENAME}` → `SawOsc.h` / `PulseOsc.h` / `TriangleOsc.h`
+4. For each schema section (Algorithm, Phase accumulator, Anti-aliasing,
    Hard sync, Pseudocode, Formulas, Constants, Generalization notes),
    find the relevant code and fill the section with file:line citations.
-4. The Pseudocode section should reproduce the per-sample update in
+5. The Pseudocode section should reproduce the per-sample update in
    language-neutral form (Python-like is fine). Do not paraphrase comments;
    reproduce the algorithm.
-5. Anything unclear → Open Questions.
+6. Anything unclear → Open Questions.
 
 ## TOKEN BUDGET
 Soft guidance: 8–10k input, 5k output.
@@ -2633,13 +2718,18 @@ or trigger failure handling.
 
 ONLY run after 3d, 4a, 4b, 4c have all succeeded. If any of those is in
 FAILED state, mark Stage 6 as **DEFERRED** (do not run with gaps; analog
-character is the easiest section to fabricate). Write a marker:
+character is the easiest section to fabricate). Write a marker with the
+actual failed stage names substituted in:
 
 ```bash
+# The orchestrator determines FAILED_STAGES from its own tracking of which
+# of 3d/4a/4b/4c landed a FAILED-<stage>.md marker. Example: "4b_voice_routing".
+FAILED_STAGES="<actual comma-separated stage names the orchestrator saw fail>"
+
 cat > ~/synth-research/OB-Xd-oscillator-analysis/06-analog-character.md <<EOF
-## DEFERRED — depends on FAILED <stage(s)>
+## DEFERRED — depends on FAILED $FAILED_STAGES
 EOF
-./orchestrator/stage_commit.sh "stage 6" "DEFERRED"
+./orchestrator/stage_commit.sh "stage 6" "DEFERRED (blocked on $FAILED_STAGES)"
 ```
 
 Otherwise, dispatch Stage 6 subagent. It reads only artifacts (no source files).
@@ -2652,10 +2742,16 @@ parallel. Skipped artifacts (Stage 6 DEFERRED) get no reviewer.
 
 For each reviewer:
 1. Parse the extraction artifact's citations to extract a list of cited
-   file:line references.
+   file:line references. The orchestrator does this by reading the artifact
+   and extracting every substring matching the regex
+   `([A-Za-z_][\w/\.\-]+\.(?:h|cpp|hpp|c|cc)):(\d+)` — this catches the
+   citation format used throughout the extraction artifacts (e.g.,
+   `SawOsc.h:128`, `Source/Engine/PulseOsc.h:74`). The orchestrator
+   deduplicates by file path and discards the line numbers for allowlisting.
 2. Filter the file paths against `read_declaration_only` from
    `source-map.yaml`. Drop any matches.
 3. Build the reviewer's allowlist as the filtered set of unique file paths.
+   Resolve each to an absolute path using `config.yaml`'s `target_repo_path`.
 4. Read `prompts/stage-09-reviewer.md`, substitute `{ARTIFACT_PATH}`,
    `{ALLOWLISTED_PATHS}`, `{WORKING_DIR}`, `{ARTIFACT_BASENAME}`.
 5. Dispatch.
@@ -2695,6 +2791,10 @@ artifact set. Output: `10-final-spec.md` and `BLOCKERS.md`.
 1. Read `10-final-spec.md`. Verify:
    - All 13 numbered sections are present (1 through 13)
    - Appendix A is present and non-empty
+   - **Appendix A's stage-status table covers all input artifacts** (every
+     extraction artifact and every review that the orchestrator dispatched
+     has a row with PASS / PASS-WITH-NOTES / FAIL / DEFERRED). If any input
+     artifact is missing a row, surface as a verification error.
    - Sections 5, 9, 13 have their `## TODO — human step` sub-sections (or
      a one-line note that no human step is needed)
    - Section 11 (Constants) has dual citations on every row
@@ -2719,9 +2819,23 @@ or is missing:
    the prompt). If still failing, drop "Open Questions" too.
 2. If retry succeeds: commit and continue.
 3. If retry fails (second attempt): write `FAILED-<stage>.md` in the
-   working dir with the reason, commit it, and continue with downstream
-   stages that don't depend on this one. Do NOT run dependent stages with
-   gaps (see Stage 6 DEFERRED rule).
+   working dir with the reason, commit it with the FAILED tag pattern
+   from design Section 2.5, and continue with downstream stages that
+   don't depend on this one. Do NOT run dependent stages with gaps
+   (see Stage 6 DEFERRED rule). Example for a failed Stage 4b:
+
+   ```bash
+   cat > ~/synth-research/OB-Xd-oscillator-analysis/FAILED-4b_voice_routing.md <<EOF
+   ## FAILED — <one-line reason the orchestrator recorded>
+   Attempts: 2 (full scope, halved scope)
+   Final subagent output excerpt: <quote>
+   EOF
+   ./orchestrator/stage_commit.sh "stage 4b" "voice routing — FAILED"
+   ```
+
+   Per design 2.5: only the final outcome (success or FAILED) lands in
+   git; intermediate retry attempts overwrite the previous artifact in the
+   working dir and are not committed.
 
 ## What the orchestrator does NOT do
 
@@ -2857,12 +2971,15 @@ All 8 user requirements covered.
 
 **3. Type / signature consistency:**
 - `preflight.load_config(path) -> dict` — used in Task 4, 5, 6, 7 consistently
-- `preflight.validate_required_stages(cfg, sm) -> list[str]` — defined Task 5, used Task 7
+- `preflight.load_source_map(path) -> dict` — used in Task 4, 5, 6 consistently
+- `preflight.validate_required_stages(cfg, sm) -> list[str]` — defined Task 5 (REQUIRED_ALWAYS includes 9_review per design 4.4 step 6), used Task 7
 - `preflight.validate_filesystem_paths(cfg, sm) -> list[str]` — defined Task 6, used Task 7
 - `preflight.main(argv) -> int` — defined Task 7
 - `repo_validate.enumerate_files(path) -> list[tuple[str, int]]` — defined Task 8
 - `repo_validate.parse_repo_map(path) -> list[tuple[str, int]]` — defined Task 8
-- `repo_validate.validate_reuse(...) -> ReuseResult(reusable, reasons)` — defined Task 8
+- `repo_validate.validate_reuse(repo_map_path, repo_root) -> ReuseResult(reusable, reasons)` — defined Task 8
+- Stage 1 path convention: paths in `01-repo-map.md`'s Files table are relative to the scan directory (not `target_repo_path`). Declared in Stage 1 prompt (Task 16), schema 01 (Task 9), and runbook Step 2 (Task 25). `validate_reuse` receives the scan directory, not `target_repo_path`.
+- `REQUIRED_ALWAYS` set: `{1_repo_map, 2_entry_trace, 3d_composite, 7_parameters, 9_review, 10_synthesis}` — matches design Section 4.4 step 6
 - Schema filenames `01-...schema.md` through `13-...schema.md` consistent across Phase 5 and Phase 6 prompt references
 - Prompt template filenames `stage-01-...md` through `stage-10-...md` consistent across Phase 6 and the runbook in Task 25
 
