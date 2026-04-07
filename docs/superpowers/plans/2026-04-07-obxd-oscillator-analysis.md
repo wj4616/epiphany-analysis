@@ -4,7 +4,7 @@
 
 **Goal:** Build the runnable methodology specified in `docs/superpowers/specs/2026-04-07-obxd-oscillator-analysis-design.md` so a Claude Code orchestrator session can execute the 10-stage OB-Xd oscillator analysis pipeline.
 
-**Architecture:** A Python-validated, markdown-driven methodology package. Two small Python validators (pytest-tested) enforce pre-flight checks and Stage 1 reuse logic. YAML configs hold the OB-Xd target. 13 markdown schemas describe artifact shapes. 14 markdown prompt templates drive subagents. A markdown runbook tells the orchestrator (the main Claude session) what to do step by step. Setup and commit helpers are bash. The analysis output goes to a separate git repo at `~/synth-research/OB-Xd-oscillator-analysis/`, populated stage-by-stage at runtime.
+**Architecture:** A Python-validated, markdown-driven methodology package. Two small Python validators (pytest-tested) enforce pre-flight checks and Stage 1 reuse logic. YAML configs hold the OB-Xd target. 13 markdown schemas describe artifact shapes. 14 markdown prompt templates drive subagents. A markdown runbook tells the orchestrator (the main Claude session) what to do step by step. Setup and commit helpers are bash. The methodology package itself is a standalone git repo at `~/obxd-oscillator-analysis/`. The analysis runtime output goes to a separate (nested) git repo at `~/obxd-oscillator-analysis/runs/`, populated stage-by-stage at runtime.
 
 **Tech Stack:** Python 3 + pytest + PyYAML for validators; Bash for setup/commit helpers; Markdown for schemas, prompts, and runbook; Git for per-stage checkpointing.
 
@@ -12,10 +12,10 @@
 
 ## File Structure
 
-The methodology package lives at `~/agents/juce-agent/methodologies/obxd-oscillator-analysis/`. The analysis runtime output lives at `~/synth-research/OB-Xd-oscillator-analysis/` (separate git repo, created by the setup script).
+The methodology package lives at `~/obxd-oscillator-analysis/` and is its own standalone git repo (created by Task 1). The analysis runtime output lives at `~/obxd-oscillator-analysis/runs/` — a separate, nested git repo created by the setup script. The nested `runs/` directory is gitignored by the outer repo so the runtime artifacts don't pollute the methodology package's history.
 
 ```
-~/agents/juce-agent/methodologies/obxd-oscillator-analysis/
+~/obxd-oscillator-analysis/
 ├── README.md                           # how to run the methodology
 ├── config/
 │   ├── config.yaml                     # OB-Xd target config
@@ -63,7 +63,7 @@ The methodology package lives at `~/agents/juce-agent/methodologies/obxd-oscilla
 
 Working dir (created at runtime, populated stage-by-stage):
 ```
-~/synth-research/OB-Xd-oscillator-analysis/   # its own git repo
+~/obxd-oscillator-analysis/runs/   # its own git repo
 ├── 01-repo-map.md
 ├── 02-entry-trace.md
 ├── 03a-saw.md, 03b-pulse.md, 03c-triangle.md, 03d-osc-composite.md
@@ -81,39 +81,56 @@ Working dir (created at runtime, populated stage-by-stage):
 ### Task 1: Create project skeleton
 
 **Files:**
-- Create: `~/agents/juce-agent/methodologies/obxd-oscillator-analysis/` (and subdirs)
-- Create: `~/agents/juce-agent/methodologies/obxd-oscillator-analysis/README.md` (placeholder)
+- Create: `~/obxd-oscillator-analysis/` (and subdirs)
+- Create: `~/obxd-oscillator-analysis/README.md` (placeholder)
+- Create: `~/obxd-oscillator-analysis/.gitignore`
 
-- [ ] **Step 1: Create directory tree**
+- [ ] **Step 1: Create directory tree and git init**
 
 ```bash
-ROOT=~/agents/juce-agent/methodologies/obxd-oscillator-analysis
+ROOT=~/obxd-oscillator-analysis
 mkdir -p "$ROOT"/{config,orchestrator,schemas,prompts,tests}
+cd "$ROOT"
+git init -q
 ```
 
-- [ ] **Step 2: Add placeholder README**
+- [ ] **Step 2: Add .gitignore**
 
-Create `~/agents/juce-agent/methodologies/obxd-oscillator-analysis/README.md`:
+Create `~/obxd-oscillator-analysis/.gitignore`:
+
+```
+# Runtime working dir is its own nested git repo — exclude from methodology history
+runs/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+```
+
+- [ ] **Step 3: Add placeholder README**
+
+Create `~/obxd-oscillator-analysis/README.md`:
 
 ```markdown
 # OB-Xd Oscillator Analysis Methodology
 
 Runnable methodology that extracts OB-Xd 2.19's oscillator design into a portable spec.
-See `orchestrator/runbook.md` for usage. Design doc: `docs/superpowers/specs/2026-04-07-obxd-oscillator-analysis-design.md`.
+See `orchestrator/runbook.md` for usage. Design doc: `docs/2026-04-07-obxd-oscillator-analysis-design.md` (inside this repo).
 
 Dependencies: `pip install pyyaml pytest`
 ```
 
-- [ ] **Step 3: Verify structure**
+- [ ] **Step 4: Verify structure**
 
-Run: `find ~/agents/juce-agent/methodologies/obxd-oscillator-analysis -type d`
-Expected: 6 directories listed (root + 5 subdirs).
+Run: `find ~/obxd-oscillator-analysis -type d -not -path '*/.git*'`
+Expected: 6 directories listed (root + 5 subdirs: config, orchestrator, schemas, prompts, tests).
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-cd ~/agents/juce-agent
-git add methodologies/obxd-oscillator-analysis/
+cd ~/obxd-oscillator-analysis
+git add .
 git commit -m "scaffold(obxd-analysis): create methodology package skeleton"
 ```
 
@@ -124,7 +141,7 @@ git commit -m "scaffold(obxd-analysis): create methodology package skeleton"
 ### Task 2: Write config.yaml (OB-Xd target)
 
 **Files:**
-- Create: `~/agents/juce-agent/methodologies/obxd-oscillator-analysis/config/config.yaml`
+- Create: `~/obxd-oscillator-analysis/config/config.yaml`
 
 - [ ] **Step 1: Write config.yaml**
 
@@ -133,7 +150,7 @@ target_repo_path:        ~/synth/OB-Xd-2.19
 target_synth_name:       OB-Xd
 target_synth_version:    "2.19"
 target_synth_license:    GPLv2
-working_dir:             ~/synth-research/OB-Xd-oscillator-analysis/
+working_dir:             ~/obxd-oscillator-analysis/runs/
 git_track_artifacts:     true
 default_voice_count:     8
 default_oscs_per_voice:  2
@@ -166,7 +183,8 @@ Expected: prints a dict with all keys, no errors.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add methodologies/obxd-oscillator-analysis/config/config.yaml
+cd ~/obxd-oscillator-analysis
+git add config/config.yaml
 git commit -m "config(obxd-analysis): add OB-Xd target config"
 ```
 
@@ -175,7 +193,7 @@ git commit -m "config(obxd-analysis): add OB-Xd target config"
 ### Task 3: Write source-map.yaml (OB-Xd target)
 
 **Files:**
-- Create: `~/agents/juce-agent/methodologies/obxd-oscillator-analysis/config/source-map.yaml`
+- Create: `~/obxd-oscillator-analysis/config/source-map.yaml`
 
 - [ ] **Step 1: Write source-map.yaml**
 
@@ -240,7 +258,8 @@ Expected: prints a list of 12 stage keys (stages 6, 9, 10 are not in source-map 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add methodologies/obxd-oscillator-analysis/config/source-map.yaml
+cd ~/obxd-oscillator-analysis
+git add config/source-map.yaml
 git commit -m "config(obxd-analysis): add OB-Xd source-map.yaml"
 ```
 
@@ -297,7 +316,7 @@ def test_load_source_map_returns_dict(source_map_path):
 
 - [ ] **Step 3: Run test, verify it fails**
 
-Run: `cd ~/agents/juce-agent/methodologies/obxd-oscillator-analysis && python -m pytest tests/test_preflight.py -v`
+Run: `cd ~/obxd-oscillator-analysis && python -m pytest tests/test_preflight.py -v`
 Expected: FAIL with `ModuleNotFoundError: No module named 'orchestrator'` or `AttributeError: load_config`.
 
 - [ ] **Step 4: Implement preflight.py loaders**
@@ -2529,18 +2548,18 @@ chmod +x orchestrator/setup_workdir.sh
 ./orchestrator/setup_workdir.sh config/config.yaml
 ```
 
-Expected: prints `working dir initialized at /home/myuser/synth-research/OB-Xd-oscillator-analysis` (or similar). Re-run; should print `working dir already initialized at ...`.
+Expected: prints `working dir initialized at /home/myuser/obxd-oscillator-analysis/runs` (or similar). Re-run; should print `working dir already initialized at ...`.
 
 - [ ] **Step 3: Verify the working dir is a git repo**
 
-Run: `cd ~/synth-research/OB-Xd-oscillator-analysis && git log --oneline`
+Run: `cd ~/obxd-oscillator-analysis/runs && git log --oneline`
 Expected: shows the empty init commit.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-cd ~/agents/juce-agent
-git add methodologies/obxd-oscillator-analysis/orchestrator/setup_workdir.sh
+cd ~/obxd-oscillator-analysis
+git add orchestrator/setup_workdir.sh
 git commit -m "feat(obxd-analysis): add working dir setup script"
 ```
 
@@ -2600,12 +2619,12 @@ echo "committed: ${STAGE_TAG}: ${MESSAGE}"
 ```bash
 chmod +x orchestrator/stage_commit.sh
 # Create a fake artifact and commit it
-echo "# stub" > ~/synth-research/OB-Xd-oscillator-analysis/00-stub.md
+echo "# stub" > ~/obxd-oscillator-analysis/runs/00-stub.md
 ./orchestrator/stage_commit.sh "stage 0" "smoke test"
 # Re-run; should be a no-op
 ./orchestrator/stage_commit.sh "stage 0" "smoke test"
 # Clean up the stub
-rm ~/synth-research/OB-Xd-oscillator-analysis/00-stub.md
+rm ~/obxd-oscillator-analysis/runs/00-stub.md
 ./orchestrator/stage_commit.sh "stage 0" "remove stub"
 ```
 
@@ -2614,8 +2633,8 @@ Expected: first call commits, second prints `no changes to commit for stage 0`, 
 - [ ] **Step 3: Commit**
 
 ```bash
-cd ~/agents/juce-agent
-git add methodologies/obxd-oscillator-analysis/orchestrator/stage_commit.sh
+cd ~/obxd-oscillator-analysis
+git add orchestrator/stage_commit.sh
 git commit -m "feat(obxd-analysis): add per-stage commit helper"
 ```
 
@@ -2643,7 +2662,7 @@ in the parent context.
 ## Step 0 — Pre-flight
 
 ```bash
-cd ~/agents/juce-agent/methodologies/obxd-oscillator-analysis
+cd ~/obxd-oscillator-analysis
 python -m orchestrator.preflight config/config.yaml
 ```
 
@@ -2656,18 +2675,18 @@ launch any subagents.
 ./orchestrator/setup_workdir.sh config/config.yaml
 ```
 
-Idempotent. Working dir lives at `~/synth-research/OB-Xd-oscillator-analysis/`.
+Idempotent. Working dir lives at `~/obxd-oscillator-analysis/runs/`.
 
 ## Step 2 — Stage 1 (Repo Map), with reuse check
 
-If `~/synth-research/OB-Xd-oscillator-analysis/01-repo-map.md` exists:
+If `~/obxd-oscillator-analysis/runs/01-repo-map.md` exists:
 
 ```bash
 python -c "
 from orchestrator.repo_validate import validate_reuse
 import pathlib
 result = validate_reuse(
-    pathlib.Path('~/synth-research/OB-Xd-oscillator-analysis/01-repo-map.md').expanduser(),
+    pathlib.Path('~/obxd-oscillator-analysis/runs/01-repo-map.md').expanduser(),
     pathlib.Path('~/synth/OB-Xd-2.19/Source/Engine').expanduser(),
 )
 print('REUSE' if result.reusable else 'RERUN', result.reasons)
@@ -2726,7 +2745,7 @@ actual failed stage names substituted in:
 # of 3d/4a/4b/4c landed a FAILED-<stage>.md marker. Example: "4b_voice_routing".
 FAILED_STAGES="<actual comma-separated stage names the orchestrator saw fail>"
 
-cat > ~/synth-research/OB-Xd-oscillator-analysis/06-analog-character.md <<EOF
+cat > ~/obxd-oscillator-analysis/runs/06-analog-character.md <<EOF
 ## DEFERRED — depends on FAILED $FAILED_STAGES
 EOF
 ./orchestrator/stage_commit.sh "stage 6" "DEFERRED (blocked on $FAILED_STAGES)"
@@ -2825,7 +2844,7 @@ or is missing:
    (see Stage 6 DEFERRED rule). Example for a failed Stage 4b:
 
    ```bash
-   cat > ~/synth-research/OB-Xd-oscillator-analysis/FAILED-4b_voice_routing.md <<EOF
+   cat > ~/obxd-oscillator-analysis/runs/FAILED-4b_voice_routing.md <<EOF
    ## FAILED — <one-line reason the orchestrator recorded>
    Attempts: 2 (full scope, halved scope)
    Final subagent output excerpt: <quote>
@@ -2850,7 +2869,8 @@ or is missing:
 - [ ] **Step 2: Commit**
 
 ```bash
-git add methodologies/obxd-oscillator-analysis/orchestrator/runbook.md
+cd ~/obxd-oscillator-analysis
+git add orchestrator/runbook.md
 git commit -m "doc(obxd-analysis): add orchestrator runbook"
 ```
 
@@ -2880,7 +2900,7 @@ to any open-source JUCE synth via a config swap.
 A 10-stage subagent pipeline driven by the main Claude Code session
 ("the orchestrator"). Each stage is a bounded subagent task with its own
 INPUTS list, schema, and contract. Output is a portable oscillator spec at
-`~/synth-research/OB-Xd-oscillator-analysis/10-final-spec.md`.
+`~/obxd-oscillator-analysis/runs/10-final-spec.md`.
 
 ## Dependencies
 
@@ -2945,7 +2965,8 @@ Expected: all tests pass (or skip if OB-Xd source missing).
 - [ ] **Step 3: Commit**
 
 ```bash
-git add methodologies/obxd-oscillator-analysis/README.md
+cd ~/obxd-oscillator-analysis
+git add README.md
 git commit -m "doc(obxd-analysis): add full README"
 ```
 
