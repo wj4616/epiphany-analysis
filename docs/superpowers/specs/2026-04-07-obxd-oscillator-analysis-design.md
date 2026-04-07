@@ -60,29 +60,36 @@ The config is read by every stage. It is the *only* place OB-Xd-specific paths a
 ### Dependency graph (parallel fan-out)
 
 ```
-                   [Inputs: config.yaml]
-                            │
-                       [1 Repo Map]
-                            │
-                      [2 Entry Trace]
-                            │
-   ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
-   │     │     │     │     │     │     │     │     │
- [3a]  [3b]  [3c]  [3d]  [4a]  [4b]  [4c]  [5]   [7]   [8]
- saw  pulse  tri  comp  m/b  s/e  voice blep param adj
-   │     │     │   │     │     │     │     │     │     │
-   │     │     │   └──┬──┴─────┴─────┘     │     │     │
-   │     │     │      │                    │     │     │
-   │     │     │   [6 Analog Char]         │     │     │
-   │     │     │      │                    │     │     │
-   └──┬──┴──┬──┴──┬───┴──┬──┬──┬──┬──┬──┬──┴──┬──┴──┐
-      │     │     │      │  │  │  │  │  │     │     │
-   [9 reviewers — one per artifact, run in parallel]
-                          │
-                  [10 Final Synthesis]
+[Inputs: config.yaml]
+        │
+        ▼
+[1 Repo Map]
+        │
+        ▼
+[2 Entry Trace]
+        │
+        ▼
+┌────────────────────────────────────────────────────┐
+│ Parallel fan-out after Stage 2 (10 stages):        │
+│   3a Saw          3b Pulse         3c Triangle     │
+│   3d Composite    4a VoiceAlloc    4b VoiceRouting │
+│   4c VoiceWrap    5  AntiAlias     7  Parameters   │
+│   8  Adjacent                                      │
+└────────────────────────────────────────────────────┘
+        │
+        ▼
+[6 Analog Character]   (gated on 3d + 4a + 4b + 4c completing)
+        │
+        ▼
+[9 Reviewers]   (one per extraction artifact, parallel)
+        │
+        ▼
+[10 Final Synthesis]
 ```
 
-Stages 3a–c, 3d, 4a–c, 5, 7, 8 all fan out in parallel after Stage 2. Stage 6 is the only one that needs cross-artifact synthesis before review (it depends on 3d + all of 4a–c). Stage 9 dispatches one reviewer per extraction artifact, also in parallel.
+Ten stages fan out in parallel after Stage 2: 3a, 3b, 3c, 3d, 4a, 4b, 4c, 5, 7, 8. Stage 6 is the only one that needs cross-artifact synthesis before review (it depends on 3d + all of 4a–c). Stage 9 dispatches one reviewer per extraction artifact, also in parallel.
+
+> **Note on the diagram:** the graph above simplifies the post-fan-out flow. Stage 6 depends only on 3d + 4a + 4b + 4c; Stages 5, 7, and 8 feed Stage 9 (their own reviewers) directly without going through Stage 6. Likewise, each extraction artifact's reviewer can run as soon as that extraction completes — reviewers do not wait for Stage 6.
 
 ### Storage & git tracking
 
@@ -309,6 +316,10 @@ The orchestrator sees a subagent's final message and can scan the working direct
 
 **Reviewer disagreement:** if reviewer marks FAIL on an artifact, the orchestrator passes both the extraction and the review to Stage 10 (synthesis). Synthesis attempts to resolve. If it cannot, it writes the conflict into `BLOCKERS.md`. After Stage 10 returns, the orchestrator reads `BLOCKERS.md` and surfaces blockers to the user — synthesis itself cannot escalate mid-run.
 
+**Per-stage commits.** Each subagent's successful return triggers its own commit, even when stages run in parallel — so 3a/3b/3c each produce a separate commit when they finish, not a batched one. The orchestrator commits the working directory with a stage-tagged message (e.g., `stage 3a: saw extraction`). FAILED-marker artifacts are also committed, with a `FAILED` tag in the message (`stage 4b: voice routing — FAILED`), so the recovery checkpoint includes the failure record. Only intermediate retry attempts are uncommitted — each retry overwrites the previous in the working dir, and only the final outcome (success or FAILED) lands in git.
+
+This provides recovery checkpoints: if Stage N fails, all work from Stages 1..N-1 is already in git history. The user can `git diff` between stage commits to see exactly what each subagent produced. Stage 10's commit (described in 3.5) is the *final* commit, not the only one.
+
 ### 2.6 Universal forbidden actions (extraction and reviewer subagents)
 
 - Read any file not in INPUTS
@@ -329,6 +340,8 @@ This is Stage 10. Its job is to turn 13 extraction artifacts + 11 review files i
 **Note on reviewer authority (intentional design choice):** Rule 1 below makes reviewers authoritative over synthesis. This is deliberate — reviewers exist precisely so synthesis doesn't second-guess. A future reader should not try to "fix" this by adding an override path.
 
 ### 3.1 Synthesis subagent contract
+
+**Note:** when the orchestrator splits Stage 10 per Section 3.6, each of 10a and 10b receives a contract derived from this template with INPUTS, OUTPUT, and STOP CONDITIONS adjusted as described in 3.6. The conflict-resolution rules, citation policy, and forbidden actions stay identical across the split.
 
 ```
 ROLE
@@ -456,8 +469,8 @@ For each waveform (saw, pulse, triangle, ...):
 - Citation: 03d artifact path + source file:line
 
 ## 5. Polyphony & Voice Architecture
-- Native voice count (from config + 04a/04b/04c)
-- Native oscs-per-voice
+- Native voice count (config = expected, **04a is canonical** for observed; 04b/04c are cross-checks; any mismatch among config/04a/04b/04c → DISAGREEMENT in BLOCKERS.md)
+- Native oscs-per-voice (same dual-source rule as voice count, with 04c as canonical for the per-voice oscillator slot count)
 - Voice allocation policy (steal order, retrigger behavior)
 - Per-voice vs shared state inventory
 - Detune-across-voices model (cite the per-voice random factors and dirt
@@ -586,16 +599,17 @@ After the synthesis subagent returns, the orchestrator does the following — no
    - Sections 5, 9, and 13 contain their `## TODO — human step` sub-sections (or a one-line note that no human step is needed)
    - Appendix A's stage-status table covers all input artifacts
    - Section 11's constants table has dual citations (artifact + source line) on every row
-4. Commit the working directory: `git add ~/synth-research/OB-Xd-oscillator-analysis/ && git commit -m "synthesis stage <run-id>"`.
+4. **Final commit.** Per-stage commits (described in Section 2.5) have already captured each successful stage as it completed; this commit captures the synthesis output and any post-Stage-10 fixups. Run: `git add ~/synth-research/OB-Xd-oscillator-analysis/ && git commit -m "synthesis stage <run-id>"`.
 5. Report to the user: artifact path, blocker count, deferred section count, TODO-human-step count, and the next recommended action.
 
 ### 3.6 Split-synthesis fallback (10a / 10b)
 
 If the orchestrator's pre-dispatch sizing pass shows the synthesis input would exceed 150k tokens, it splits Stage 10:
 
-- **Stage 10a — Cite-only synthesis (spec sections 1–8 + 11):** receives all extraction and review artifacts, fills the cite-heavy sections, writes a partial `10-final-spec.md`.
-- **Stage 10b — Generalization synthesis (spec sections 9, 10, 12, 13 + Appendix A):** receives the partial spec from 10a + the generalization-relevant artifacts (06, 07, 08) + all reviews. Fills the remaining sections, including the TODO-human-step blocks.
-- BLOCKERS.md is the union of blockers from both. The orchestrator merges before reading.
+- **Stage 10a — Cite-only synthesis (spec sections 1–8 + 11):** receives all extraction and review artifacts, fills the cite-heavy sections, and writes a partial `10-final-spec.md` with **placeholder headers** for the sections 10b will fill (`## 9. Portability Guide [PENDING 10b]`, `## 10. Scaling Guidance [PENDING 10b]`, `## 12. Open Questions & Unknowns [PENDING 10b]`, `## 13. Prototype Plan [PENDING 10b]`, `## Appendix A. Artifact Provenance [PENDING 10b]`).
+- **Stage 10b — Generalization synthesis (spec sections 9, 10, 12, 13 + Appendix A):** receives the partial spec from 10a as its first INPUT (read first), plus the generalization-relevant artifacts (06, 07, 08) and all reviews. **Reads the partial file, fills in each placeholder section in place, and writes the complete file back to the same path.** Must not modify any of 10a's already-filled sections.
+- After 10b returns, the orchestrator verifies the merge as **structurally unchanged**: every section header from 10a is present in the merged file, every content line under those headers is present (no silent removals), every `[PENDING 10b]` placeholder is now resolved, and no stray placeholders remain. (Whitespace and trailing-newline normalization are tolerated; semantic content is not.)
+- BLOCKERS.md is built incrementally: 10a writes its blockers first; 10b reads the file and **appends** under a `## From Stage 10b` sub-header (does not overwrite). Orchestrator reads after 10b returns.
 
 This split is invisible to the user — same final deliverable, same post-actions in 3.5.
 
@@ -674,7 +688,7 @@ enabled_stages:
   - 6_analog_character     # omit to skip — Stage 6 reads only artifacts so source-map cannot skip it
   - 7_parameters
   - 8_adjacent
-  - 9_review               # implicit if any extraction stage runs
+  - 9_review               # required if any extraction stage runs — listed for clarity
   - 10_synthesis           # required
 ```
 
@@ -693,8 +707,8 @@ read_declaration_only:
 # Use when a target has files significantly larger or smaller than OB-Xd's.
 overrides:
   4b_voice_routing:
-    read_budget:  30k
-    write_budget: 8k
+    read_budget:  40k    # raise above the 30k default if your equivalent file is larger
+    write_budget: 10k    # raise above the 8k default for richer voice-routing extraction
 
 stages:
   1_repo_map:
@@ -789,8 +803,15 @@ The orchestrator checks `source-map.yaml` and `enabled_stages` against this tabl
 3. Write `source-map.yaml` mapping each role to the new file paths (relative to `target_repo_path`).
 4. Run Stage 1 (Repo Map) by itself first. It will report any source file over 1,500 lines as a candidate for `read_declaration_only`. Review the list and add legitimate large lookup tables (BlepData equivalents) to that block.
 5. Set `default_voice_count`, `default_oscs_per_voice`, and `worked_example_target` from the new synth's docs.
-6. Set `enabled_stages` in `config.yaml`. Include `6_analog_character`, `7_parameters`, `8_adjacent`, `9_review`, `10_synthesis` for a full run; omit any optional stage you want to skip.
-7. **Run the pipeline.** Concretely: open Claude Code, point it at `config.yaml`, and ask it to execute the methodology. The orchestrator (the main Claude session) reads the configs, pre-flights every source-map path against the filesystem, validates against the required-stage table in 4.3, and only then begins launching subagents. (The methodology described in this whole document becomes actual prompts and orchestration logic during the writing-plans → implementation phase that follows this brainstorming session.)
+6. Set `enabled_stages` in `config.yaml`:
+   - **Always include (required per 4.3):** `1_repo_map`, `2_entry_trace`, `3d_composite`, `7_parameters`, `9_review`, `10_synthesis`
+   - **Always include at least one of each group:** `3a_saw` / `3b_pulse` / `3c_triangle` (waveforms); `4a_voice_alloc` / `4b_voice_routing` / `4c_voice_wrapper` (voice management)
+   - **Optional — include or omit per target:** `5_antialias`, `6_analog_character`, `8_adjacent`
+7. **Run the pipeline.** Concretely: open Claude Code, point it at `config.yaml`, and ask it to execute the methodology. The orchestrator (the main Claude session) reads the configs, pre-flights every source-map path against the filesystem, validates against the required-stage table in 4.3, and only then begins launching subagents.
+
+   **Stage 1 reuse:** if `01-repo-map.md` already exists in the working dir from step 4's pre-run, the orchestrator validates it before reusing. The validation procedure: list every file under `target_repo_path` that Stage 1 was scoped to cover, then compare three things to what's recorded in `01-repo-map.md` — (a) the file count, (b) the set of file paths (any added or removed file fails validation), and (c) the per-file line counts. If all three match, reuse the existing artifact. If any differ, Stage 1 re-runs and the new artifact replaces the old one. Either way, downstream stages see a current Stage 1 artifact before they launch.
+
+   (The methodology described in this whole document becomes actual prompts and orchestration logic during the writing-plans → implementation phase that follows this brainstorming session.)
 
 Pre-flight failures abort the run with a clear error before any subagent launches. Typos in source-map paths surface immediately, not after a Stage 3a retry loop.
 
