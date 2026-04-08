@@ -1,14 +1,14 @@
-# genius-epiphany — Design Spec
+# epiphany-genius — Design Spec
 
 **Date:** 2026-04-08
 **Status:** Design approved through brainstorming; awaiting user spec review before writing-plans.
-**Skill location (target):** `~/.claude/skills/genius-epiphany/SKILL.md`
+**Skill location (target):** `~/.claude/skills/epiphany-genius/SKILL.md`
 
 ## Purpose & Context
 
-`genius-epiphany` is a reasoning amplifier that operationalizes research-backed genius-level cognitive techniques (Knowledge Organization/Chunking, DMN↔ECN network switching, Incubation, Cross-Domain Pattern Transfer, Combinatorial Play, plus Feynman's Algorithm, Einstein thought experiments, da Vinci's Observation-vs-Recognition + Nine-Stage Process, and Janusian Process) into a 4-phase AI-native pipeline. It is designed dual-purpose from the start: a **standalone thought-process enhancer** callable on any reasoning problem, and a **corporate enterprise brainstorming and planning tool** for high-stakes strategic decisions.
+`epiphany-genius` is a reasoning amplifier that operationalizes research-backed genius-level cognitive techniques (Knowledge Organization/Chunking, DMN↔ECN network switching, Incubation, Cross-Domain Pattern Transfer, Combinatorial Play, plus Feynman's Algorithm, Einstein thought experiments, da Vinci's Observation-vs-Recognition + Nine-Stage Process, and Janusian Process) into a 4-phase AI-native pipeline. It is designed dual-purpose from the start: a **standalone thought-process enhancer** callable on any reasoning problem, and a **corporate enterprise brainstorming and planning tool** for high-stakes strategic decisions.
 
-This spec is the **first of two analytical inputs**. A second report on professional corporate brainstorming techniques will be merged into the anchors defined in Section 6 without restructuring any section here.
+**This skill is fully self-contained.** It runs end-to-end on both standalone reasoning problems and corporate enterprise brainstorming/planning without depending on any other skill. A separate skill analyzing corporate brainstorming techniques may be developed in parallel; if so, a calling agent can invoke the two together explicitly as independent skills, or a third merged skill may be created later by analyzing both as inputs — but neither scenario is a prerequisite here. Every section below describes functionality that works in isolation.
 
 **Design discipline.** "Translate, don't transliterate." For each human mechanism, the design identifies what it is actually doing cognitively, then builds an AI-native equivalent that exploits computational strengths the brain lacks (parallel hypothesis exploration, large working memory, deterministic replay, no fatigue). Human-specific mechanisms with no AI analog (e.g., da Vinci Stage 2 Social Recognition / fame-seeking) are **explicitly excluded rather than faked**.
 
@@ -20,8 +20,8 @@ This spec is the **first of two analytical inputs**. A second report on professi
 
 | Field | Value |
 |---|---|
-| **Name** | `genius-epiphany` |
-| **Location** | `~/.claude/skills/genius-epiphany/SKILL.md` |
+| **Name** | `epiphany-genius` |
+| **Location** | `~/.claude/skills/epiphany-genius/SKILL.md` |
 | **One-line description** | A reasoning amplifier that frames a problem, explores solutions across parallel cognitive modes, stress-tests them against contradictions, and synthesizes a verified answer — mirroring how expert problem-solvers think, but running the steps in parallel where humans run them sequentially. |
 | **Category** | Thought-process enhancer (not domain-specific) |
 
@@ -31,8 +31,8 @@ This spec is the **first of two analytical inputs**. A second report on professi
 
 | Trigger | Behavior |
 |---|---|
-| `/genius-epiphany` | Activate immediately. If no problem statement, ask for one. |
-| User says "genius-epiphany" or "genius epiphany" | Activate. Ask for problem if not provided. |
+| `/epiphany-genius` | Activate immediately. If no problem statement, ask for one. |
+| User says "epiphany-genius" or "epiphany genius" | Activate. Ask for problem if not provided. |
 | User says "think harder" / "brainstorm" / "be creative" without naming the skill | Do NOT activate. |
 
 **No mode flags.** Depth is chosen automatically by the stakes assessment defined in Section 5.1 (low / medium / high), which reads the problem itself rather than an invocation flag. A user who wants a faster pass describes the problem as low-stakes or says "quick thinking, not a full pass"; a user who wants a deeper pass says "this is important, full treatment." Manual parameter override is possible if the user explicitly states values (e.g., "loop budget 4"), but is not exposed as a flag.
@@ -49,16 +49,16 @@ This spec is the **first of two analytical inputs**. A second report on professi
 SKILL.md skills have no runtime hooks, so "composable" cannot mean "intercept another skill's execution." It has to be a pattern the *calling agent* adopts. This design picks two concrete, low-coupling modes:
 
 **Mode A — Standalone invocation (primary).**
-User or agent runs `/genius-epiphany` directly with a problem statement. Output is a structured answer (frame → candidates → stress-tested finalist → rationale). This is the common case.
+User or agent runs `/epiphany-genius` directly with a problem statement. Output is a structured answer (frame → candidates → stress-tested finalist → rationale). This is the common case.
 
 **Mode B — Optional documented pre-step (secondary).**
-Any skill that benefits from stronger framing can tell its users: *"For novel or high-stakes problems, run `/genius-epiphany` first, then pass its output as context to this skill."* This is a **convention**, not a runtime coupling:
-- `genius-epiphany` does NOT import, reference, or modify any other skill
+Any skill that benefits from stronger framing can tell its users: *"For novel or high-stakes problems, run `/epiphany-genius` first, then pass its output as context to this skill."* This is a **convention**, not a runtime coupling:
+- `epiphany-genius` does NOT import, reference, or modify any other skill
 - No other skill needs to be edited to "support" it
 - The agent orchestrates the handoff in its own response flow
-- The calling skill consumes genius-epiphany's XML output as ordinary context
+- The calling skill consumes epiphany-genius's XML output as ordinary context
 
-**Why this works.** It keeps `genius-epiphany` a pure reasoning tool with one clear contract: *problem in → frame + verified solution out*. It gets composed by being *callable*, not by being *injected*. Any skill author who wants the benefit writes one sentence in their own SKILL.md pointing at this one.
+**Why this works.** It keeps `epiphany-genius` a pure reasoning tool with one clear contract: *problem in → frame + verified solution out*. It gets composed by being *callable*, not by being *injected*. Any skill author who wants the benefit writes one sentence in their own SKILL.md pointing at this one.
 
 **What this deliberately excludes.**
 - No "self-apply" mode (the skill does not recursively call itself on its own output)
@@ -607,10 +607,10 @@ The skill has two gate layers: the **Hard Gate** (pre-pipeline, Section 4) and t
 
 ### 5.4 XML output schema
 
-The skill's output is a single `<genius_epiphany_output>` block. Required elements always appear; optional elements appear only when the pipeline produced relevant content.
+The skill's output is a single `<epiphany_genius_output>` block. Required elements always appear; optional elements appear only when the pipeline produced relevant content.
 
 ```xml
-<genius_epiphany_output>
+<epiphany_genius_output>
 
   <!-- Required: the frame Phase 1 selected -->
   <frame>
@@ -689,7 +689,7 @@ The skill's output is a single `<genius_epiphany_output>` block. Required elemen
     </parameters>
   </provenance>
 
-</genius_epiphany_output>
+</epiphany_genius_output>
 ```
 
 **Why this schema, specifically.** Three design choices are worth noting:
@@ -705,7 +705,7 @@ The skill's output is a single `<genius_epiphany_output>` block. Required elemen
 
 Section 1 committed to Composition Model D: standalone invocation + documented "use as pre-step" pattern, with the XML output structured so the next skill can paste it as context. The schema above delivers on that commitment:
 
-- The XML is self-describing — a downstream skill can read `<frame>`, `<answer>`, `<tradeoffs>` without any genius-epiphany-specific parser.
+- The XML is self-describing — a downstream skill can read `<frame>`, `<answer>`, `<tradeoffs>` without any epiphany-genius-specific parser.
 - `<provenance>` lets the downstream skill decide how much to trust the output (a low-stakes first-pass is different from a high-stakes three-loop pass).
 - The `<escape_hatch>` block, when present, surfaces unresolved issues explicitly rather than hiding them in the answer.
 
@@ -713,9 +713,9 @@ No other skill needs to be modified to consume this. A human reader can read the
 
 ---
 
-## Design — Section 6 of 6 (revised): Corporate Enterprise Use & Merge Anchors for Second Report
+## Design — Section 6 of 6: Corporate Enterprise Use
 
-This is the final design section. It covers (a) how the existing pipeline handles corporate enterprise brainstorming and planning without adding new components, (b) the named anchor points where the second report (corporate brainstorming techniques) will be merged in, and (c) the SKILL.md skeleton the merge step will fill in.
+This is the final design section. It covers (a) how the existing pipeline handles corporate enterprise brainstorming and planning without adding new components, (b) how the four phases map to corporate vocabulary for readers coming from a corporate context, and (c) the final SKILL.md skeleton for the self-contained skill.
 
 ### 6.1 Corporate use: same pipeline, different trigger signals
 
@@ -745,55 +745,37 @@ No new components. Heavier use of existing ones.
 
 For readers coming from a corporate context rather than a cognitive-science context, the phases map to familiar language:
 
-| Phase | Cognitive-science name | Corporate-facing name | Maps to common corporate technique (placeholder for merge) |
-|---|---|---|---|
-| 1 | FRAME | Problem framing & success-criterion alignment | [anchor: second report fills this cell] |
-| 2 | DIVERGE | Structured ideation | [anchor: second report fills this cell] |
-| 3 | STRESS-TEST | Risk surfacing / critical review | [anchor: second report fills this cell] |
-| 4 | SYNTHESIZE | Decision framing / recommendation packaging | [anchor: second report fills this cell] |
-
-The last column is deliberately left empty. The second report's job is to identify which specific corporate brainstorming techniques (SWOT, Six Thinking Hats, Design Thinking, Premortems, Crawford Slip, etc.) map onto each phase, and those mappings get inserted into the empty cells at merge time.
-
-### 6.3 Merge anchors for the second report
-
-These are the named insertion points the second report (corporate brainstorming techniques analysis) will be merged into. Named anchors let the merge step know where content goes without restructuring any existing design.
-
-| Anchor ID | Location | What the second report adds here |
+| Phase | Cognitive-science name | Corporate-facing name |
 |---|---|---|
-| `§3.corporate-components` | A **new sibling table** inserted after Section 3's existing "Research finding → phase" completeness table, titled **"Corporate technique → phase,"** using the same columns. Does **not** modify the existing table. | Any corporate technique that qualifies as its own component (rare — most will collapse into existing components). If a corporate technique truly needs its own component, it lands here with the same collapse/merge rationale Section 3 uses. |
-| `§4.phase1.corporate-tools` | Section 4 Phase 1 (FRAME) instructions — added as additional LLM instructions at the end of the existing Phase 1 block. | Corporate framing tools that Phase 1 should invoke (e.g., stakeholder-alignment checklists, success-criterion explication techniques). Additions, not replacements. |
-| `§4.phase2.corporate-diverge-branches` | Section 4 Phase 2 (DIVERGE) instructions — added as additional branches alongside the three existing Diverge branches (associative, combinatorial, analogical — all DMN-mode; Phase 2 is DMN-only, ECN work lives in Phase 3). | Corporate ideation techniques that generate candidates alongside the existing branches. Each added technique is a new Diverge branch enumerated the same way. |
-| `§4.phase3.corporate-attacks` | Section 4 Phase 3 (STRESS-TEST) instructions — added to the existing three-attack list (contradiction-holding, limit-case, Bayesian-update). Gap detection is a Phase 4 operation, not a Phase 3 attack. | Corporate attack types (premortem, red-team, devil's advocate, assumption-audit) added to the existing attack list. Treated as attacks, not replacements. |
-| `§4.phase4.corporate-synthesis-formats` | Section 4 Phase 4 (SYNTHESIZE) instructions — added as output-shape options the existing Phase 4 instructions choose between. | Corporate decision packaging formats (RAPID / RACI callouts, decision memos, recommendation briefs). |
-| `§5.2.corporate-confidence-tiers` | Section 5.2 confidence table — added as additional rows at the bottom, following the same §6-canonical-source discipline. | Confidence tiers for any corporate technique that has research support. Techniques without quantitative support are added in the "case-study" paragraph. |
-| `§5.3.corporate-gates` | Section 5.3 Output Gate — inserted as G8, G9, … preserving the existing G1–G7 ordering. | Additional Output Gate checks specific to corporate output formats (e.g., "decision memo has a clear recommendation"). |
-| `§6.1.corporate-scenarios` | Section 6.1 corporate scenarios table — added as additional rows. | Additional scenarios the second report identifies. Same table shape — scenario, stakes classification, parameters. |
-| `§6.2.phase-mapping` | Section 6.2 phase-mapping table (rightmost column). | Fills in the four empty cells with specific technique names from the second report. |
+| 1 | FRAME | Problem framing & success-criterion alignment |
+| 2 | DIVERGE | Structured ideation |
+| 3 | STRESS-TEST | Risk surfacing / critical review |
+| 4 | SYNTHESIZE | Decision framing / recommendation packaging |
 
-**Merge discipline.** The second report's content goes *into* these anchors. It does not move existing content, rename existing sections, or change the 4-phase pipeline. If a corporate technique appears to require new phases or new backward edges in the loop graph, that is a signal to collapse it into an existing phase instead — Section 3's collapse/merge rationale applies to corporate techniques as strictly as to the genius-research techniques.
+This mapping is explanatory only — the skill runs the same pipeline regardless of whether a user calls it by cognitive-science terminology ("frame this problem") or corporate terminology ("I need to reframe this decision"). No functional branching on vocabulary.
 
-### 6.4 SKILL.md skeleton (final deliverable)
+### 6.3 SKILL.md skeleton (final deliverable)
 
-The skeleton below is what the merge step will populate. It reflects every decision approved in Sections 1–6. Section and element ordering is fixed; merge only fills in content at the named anchors from 6.3.
+This is the complete, self-contained skeleton for the skill's SKILL.md file. It reflects every decision approved in Sections 1–6 and requires no external content to function.
 
 ```markdown
 ---
-name: genius-epiphany
-description: Unified reasoning enhancer that applies research-backed genius-level problem-solving techniques (chunking, DMN↔ECN switching, incubation, cross-domain transfer, combinatorial play, Feynman/Einstein/da Vinci/Janusian methodologies) as a 4-phase pipeline with stakes-based calibration and an incubation loop. Invoked explicitly by name or via /genius-epiphany; composable as a documented pre-step for any other skill.
+name: epiphany-genius
+description: Unified reasoning enhancer that applies research-backed genius-level problem-solving techniques (chunking, DMN↔ECN switching, incubation, cross-domain transfer, combinatorial play, Feynman/Einstein/da Vinci/Janusian methodologies) as a 4-phase pipeline with stakes-based calibration and an incubation loop. Invoked explicitly by name or via /epiphany-genius; composable as a documented pre-step for any other skill.
 ---
 
-# Genius Epiphany
+# Epiphany Genius
 
 ## Trigger Conditions
 [From Section 1]
-- /genius-epiphany slash command
-- Explicit invocation by name ("use genius-epiphany on this")
+- /epiphany-genius slash command
+- Explicit invocation by name ("use epiphany-genius on this")
 - Never auto-activates, never intercepts other skills
 
 ## Composition Model
 [From Section 1 — Model D]
 - Standalone: runs end-to-end, emits structured XML output
-- Pre-step pattern: another skill's SKILL.md documents genius-epiphany as a pre-step; the host skill's instructions describe how to consume the XML output as context
+- Pre-step pattern: another skill's SKILL.md documents epiphany-genius as a pre-step; the host skill's instructions describe how to consume the XML output as context
 
 ## Hard Gate
 [From Section 4]
@@ -817,7 +799,6 @@ description: Unified reasoning enhancer that applies research-backed genius-leve
 - Observation vs. recognition (da Vinci)
 - Emit N_framings candidate frames
 - LLM-judgment selects the strongest candidate frame. Explanatory fit is a hard filter — a framing that fails it is out of contention regardless of other strengths. If all candidate framings fail the Explanatory fit filter, emit the least-bad and rely on Stress-Test's loop-back to Frame.
-- ANCHOR: §4.phase1.corporate-tools
 
 ### Phase 2: DIVERGE
 [From Section 4 Phase 2]
@@ -825,7 +806,6 @@ description: Unified reasoning enhancer that applies research-backed genius-leve
 - Associative branch (DMN — chain through associations from deep-structure principle)
 - Combinatorial branch (§1.5 + da Vinci Stage 8 — enumerate element combinations, including overinclusive)
 - Analogical branch (§1.4 + da Vinci Stage 4 — Cross-Domain Pattern Transfer)
-- ANCHOR: §4.phase2.corporate-diverge-branches
 - Deduplicate structurally equivalent candidates
 - Per-branch cap: N_candidates_per_branch. Total candidates entering Stress-Test = N_candidates_per_branch × 3 (active Diverge branches), after structural dedup.
 
@@ -835,16 +815,16 @@ description: Unified reasoning enhancer that applies research-backed genius-leve
 - Limit-case attack (Einstein thought experiments §2.2)
 - Bayesian-update attack (Feynman Bayesian + test-effect-strength §2.1)
 - Per-attack observation recorded, then absorption-based kill classification (Section 4 Phase 3)
-- ANCHOR: §4.phase3.corporate-attacks
 - Loop-back to Diverge if all candidates killed but frame still explains success criterion
 - Loop-back to Frame if failure pattern shows the frame itself was wrong
+- Loop-back to Diverge (default) when the root cause is indeterminate
+- Budget-exhausted path: forward the dead candidate with highest residual plausibility; Phase 4 routes to escape-hatch
 
 ### Phase 4: SYNTHESIZE
 [From Section 4 Phase 4]
-- Schema elaboration (da Vinci Stage 9)
-- Ranked set / single answer / runners-up selection
-- Gap scan (core or full)
-- ANCHOR: §4.phase4.corporate-synthesis-formats
+- Schema elaboration (da Vinci Stage 9) — skipped for the zero-survivors-budget-exhausted sub-case
+- Selection sub-cases: one survivor / multiple survivors with clear dominance / multiple survivors without clear dominance (ranked set) / zero survivors with budget exhausted (escape-hatch direct)
+- Gap scan (core or full) against frame
 - Gap-scan loop-backs per Section 2 loop table
 
 ## INCUBATE LOOP
@@ -864,37 +844,31 @@ description: Unified reasoning enhancer that applies research-backed genius-leve
 [From Section 5.2]
 - §6 corpus table canonical
 - Annotations fire only for Medium / Medium-High tiers when load-bearing on the emitted answer
-- ANCHOR: §5.2.corporate-confidence-tiers
 
 ## Output Gate
 [From Section 5.3 — application order G1 → G7, sequential, single-pass]
 - G1 Frame presence and completeness — hard fail
-- G2 Answer traces to a surviving candidate (internal state) — hard fail
+- G2 Answer traces to a pipeline candidate (survivor OR forwarded dead candidate in escape-hatch case) — hard fail
 - G3 Tradeoffs populated when Stress-Test produced them — inline fix
 - G4 Gap scan results reflected — if Phase 4's gap scan found gaps and loop budget was exhausted, verify that `<escape_hatch>` is present naming the unresolved gap — inline fix (emit Phase 4's escape-hatch). G4 does NOT loop; all looping is Phase 4's internal responsibility.
 - G5 No fabricated source attributions — remove candidate and attribution; hard fail if primary
 - G6 Frame and answer use the same success criterion — inline fix (re-anchor); hard fail if drift too large
 - G7 Escape hatch correctly populated when budget exhausted — inline fix
-- ANCHOR: §5.3.corporate-gates
 
 ## Output Schema
 [From Section 5.4]
-- <genius_epiphany_output> root
-- Required: <frame>, <answer>, <tradeoffs>, <provenance>
-- Optional: <confidence_notes>, <loop_history>, <escape_hatch>, <answer><runners_up|ranked_set>>
+- <epiphany_genius_output> root
+- Required: <frame>, <answer> (with <primary>), <tradeoffs>, <provenance>
+- Optional: <confidence_notes>, <loop_history>, <escape_hatch>, <answer><runners_up|ranked_set>> (mutually exclusive)
 
-## Corporate Scenario Triggers
-[From Section 6.1]
-- Scenario → stakes classification table
-- ANCHOR: §6.1.corporate-scenarios
-
-## Phase ↔ Corporate Vocabulary Mapping
-[From Section 6.2]
-- ANCHOR: §6.2.phase-mapping
+## Corporate Use
+[From Section 6 — same pipeline, no branching]
+- Corporate enterprise brainstorming and planning is handled by the existing stakes assessment classifying invocations as medium or high (strategic decisions, cross-functional planning, executive ideation, crisis response), not by a separate code path.
+- Phase ↔ corporate vocabulary mapping: Phase 1 = Problem framing & success-criterion alignment; Phase 2 = Structured ideation; Phase 3 = Risk surfacing / critical review; Phase 4 = Decision framing / recommendation packaging.
 ```
 
 ---
 
 ## Document status
 
-All six sections approved through brainstorming dialogue and verified for cross-section consistency (2026-04-08 integration pass). Ready for user review before advancing to writing-plans.
+All six sections approved through brainstorming dialogue, verified for cross-section consistency (2026-04-08 integration pass + two deep-audit passes), and made fully self-contained (no dependency on any planned second skill). Ready for user review before advancing to writing-plans.
