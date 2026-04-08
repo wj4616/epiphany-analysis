@@ -355,3 +355,17 @@ MINIMAL runs **only Black + Yellow + Green**. Drops opening Blue, White, Red, cl
 | **Architecture Decision Records** (KB §5.1) | Documentation format, not a brainstorming methodology; the skill's `<decision>` output section is ADR-influenced but ADRs themselves don't fit the pipeline stage model. |
 | **NASA Cross-Disciplinary Framework** (KB §6.1) | Team coordination framework for large multi-vendor projects; no team for a single agent to coordinate. |
 | **Architectures of Adaptive Integration (AAI)** (KB §6.2) | Same reason — team coordination for large collaborative projects. |
+
+## Validation Gates
+
+Multi-stage validation with multi-angle checks at every gate. The **five-angle framework** is: **consistency**, **fabrication**, **inventory completeness**, **technical integrity**, **contradiction detection**. Each gate runs the subset of angles applicable to its position in the pipeline — Gate 1 runs a reduced set because no brainstorming work has been produced yet; Gates 2 and 3 run the full five angles.
+
+| Gate | Position | Runs at scale | Checks |
+|---|---|---|---|
+| **Gate 1: Sufficiency** | Before any lens | All | Applies **contradiction detection** and **consistency** from the five-angle framework to the raw input: input has a discernible task, no internal contradiction, no oversized-context overflow, no blocking ambiguity. Fabrication / inventory completeness / technical integrity checks are not yet applicable because no work has been produced. |
+| **Gate 2: Mid-pipeline** | After all lenses, before synthesis | STANDARD, DEEP | All expected lens artifacts present; `<input_inventory>` still intact; no cross-lens pollution (firewalls held); no fabrication across lens outputs; no contradictions introduced. |
+| **Gate 3: Final verification** | After synthesis, decision, and all output assembly | All | Five-angle check across the entire output block: consistency / fabrication / inventory completeness / technical integrity / contradiction. |
+
+**Gate failure policy:** On failure, re-run the failing stage with tightened scope. Two consecutive failures on the same check → annotate `[REVIEW NEEDED — gate X check Y could not be fully resolved]` in `<process_notes>` and proceed. Never loop indefinitely.
+
+**MINIMAL path has 2 gates** (Sufficiency + Final). **STANDARD/DEEP paths have 3 gates** (Sufficiency + Mid-pipeline + Final).
