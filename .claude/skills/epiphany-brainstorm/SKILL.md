@@ -140,3 +140,30 @@ Structural markers override raw length — a 400-character input containing a co
 - `--standard` is accepted but never required; STANDARD is the default for ambiguous inputs.
 - When a forced path disagrees with auto-detection, `<meta><route_reason>` notes the override.
 - **Flag stripping and ZERO INFORMATION LOSS:** a flag stripped from first or last token is captured in `<meta><forced_by_flag>`. This satisfies Hard Gate 2 through the meta channel rather than `<input_inventory>`. Mid-body flag tokens are not stripped and are preserved in `<input_inventory>` like any other content.
+
+## Lens Firewall Mechanics (Segregation and Integration)
+
+Lenses run in a fixed layered sequence (S1 → S2 → S3 → S4 → S5). Each lens after the first may read prior lens outputs, but is protected by three firewalls plus a final verification.
+
+### The three firewalls
+
+1. **Fresh-read, generate, then compare.** Re-read the original input first. Generate findings in your own mode from that fresh-read. Only after that may you consult prior lens outputs — and only as context for gap detection, never as premises to reason from. *(Applies to S2 onward; S1 has no prior outputs.)*
+
+2. **Contradict freely.** You may disagree with prior lens outputs. Do not self-censor to agree with them. Consensus is not a goal; independent completeness is. *(Applies to S2 onward.)*
+
+3. **Stay in role.** If you find yourself writing content that belongs to another lens's scope, stop and emit `[OUT OF SCOPE — belongs to <lens name>]` instead of writing the off-scope content. *(Applies to every lens, including S1.)*
+
+### Verification before emitting
+
+Before emitting the lens artifact, the lens verifies it followed the applicable rules and fixes any violation. Two consecutive violations on the same rule → annotate `[REVIEW NEEDED — firewall <N> could not be fully resolved]` in `<process_notes>` and advance.
+
+### Protection coverage
+
+The three firewalls cover four distinct contamination modes:
+
+| Contamination mode | Protected by |
+|---|---|
+| Mode drift (framing import, vocabulary echo from prior lens) | Firewall 1 (generate in own mode from fresh-read) |
+| Anchoring (inheriting prior conclusions as given) | Firewall 1 (prior outputs are context, not premises) |
+| Consensus collapse (self-censoring to avoid disagreement) | Firewall 2 (contradict freely) |
+| Role leakage (writing another lens's content) | Firewall 3 (stay in role) |
