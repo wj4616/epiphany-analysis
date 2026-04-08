@@ -46,7 +46,7 @@ Two authoritative sources were fetched in full during the design phase:
 
 | # | Question | Answer | Rationale |
 |---|---|---|---|
-| Q1 | Primary use case? | Standalone problem explorer (originally C/hybrid, corrected to A during Section 1 review) | Skill is not a runtime feeder for `prompt-epiphany`. Logic is portable for future integration |
+| Q1 | Primary use case? | Standalone problem explorer | Skill is not a runtime feeder for `prompt-epiphany`. Logic is portable for future integration |
 | Q2 | Sequence strategy? | Fixed canonical: Blue → White → Red → Green → Yellow → Black → Blue | Goal-specific sequences drop hats; v1 uses the full six always |
 | Q3 | Trigger model? | Slash command + explicit name mention only | Matches `prompt-epiphany`; never auto-triggers on generic "analyze" phrases |
 | Q4 | Output format? | Semantic XML with per-hat tags | Matches house style; machine-consumable; human-readable with well-named tags |
@@ -59,7 +59,7 @@ Two authoritative sources were fetched in full during the design phase:
 - **Name:** `six-thinking-hats`
 - **Version:** 1.0.0
 - **File:** `~/.claude/skills/six-thinking-hats/SKILL.md`
-- **Description:** *"Runs user input through Edward de Bono's Six Thinking Hats method — opening Blue, White, Red, Green, Yellow, Black, closing Blue — producing disciplined multi-perspective analysis in semantic XML. ONLY on /six-thinking-hats or explicit name mention. Do NOT activate for generic 'analyze this' requests."*
+- **Description:** *"Runs user input through Edward de Bono's Six Thinking Hats method — opening Blue, White, Red, Green, Yellow, Black, closing Blue — producing disciplined multi-perspective analysis in semantic XML."* (Trigger conditions live in Section 14 and are not embedded in the frontmatter description.)
 
 ### Purpose
 
@@ -131,13 +131,15 @@ Per-hat scope statements are listed in Section 6.
 
 ### Step 10 — Verification (internal, 4 checks)
 
-All must pass:
+**Verification is detective, not retroactive.** Per R2 (NO BACKTRACKING), all hat content is immutable after its phase ends, including during this step. Step 10 does not modify the envelope; it only surfaces warnings.
+
+Run all four checks:
 1. **Scope fidelity per hat** — did any hat's content drift into another hat's lens?
 2. **Fact preservation** — facts explicitly stated in the input are represented in White hat, or White hat explicitly notes they were not captured.
 3. **Blue hats distinct** — Opening Blue does not synthesize; Closing Blue does not frame.
 4. **No fabrication** — every claim traces to the input, the Opening Blue framing, or is explicitly flagged as inference.
 
-Fail → fix the failing hat's content, re-verify. Same check fails twice → output with warning line after closing delimiter: *"Verification check [name] could not be fully resolved — review the [hat_name] section for potential drift."*
+For each failed check, append a warning line after the closing delimiter in the user-visible output (Section 8): *"Verification check [name] — review the [hat_name] section for potential drift."* Multiple failures produce multiple warning lines. If all four checks pass, no warnings appear.
 
 ### Step 11 — Output
 
@@ -259,7 +261,7 @@ Render the full XML envelope (schema in Section 7). No intermediate dialogue dur
 <closing_blue>
   <convergence>Where multiple hats agreed — bullets</convergence>
   <tensions>Where hats contradicted and the contradiction is unresolved — bullets</tensions>
-  <drift_notes>Any drift flags raised during Steps 4-8 — bullets, or one bullet stating none raised</drift_notes>
+  <drift_notes>Any drift flags raised during Steps 3-8 — bullets, or one bullet stating none raised</drift_notes>
   <recommended_direction>The suggested path forward, non-binding — bullets</recommended_direction>
   <next_steps>Concrete actions for the user to accept, modify, or reject — bullets</next_steps>
 </closing_blue>
@@ -385,7 +387,7 @@ All content is bullets throughout. Exception: Black's nested `<risk>`/`<mitigati
 **Pipeline invariants.** Enforced during execution. Five items.
 
 - **R1. NO HAT SKIPPING** — every hat appears in the envelope. May be empty (via `<no_significant_content>`) but never absent.
-- **R2. NO BACKTRACKING DURING THE PIPELINE** — during Steps 3–9, once a hat phase ends, its XML is immutable for the remainder of the pipeline. Drift flows to Closing Blue's `<drift_notes>`. The sole exception is Step 10 verification, which runs after all hats and may fix scope violations as a post-pipeline quality gate before rendering.
+- **R2. NO BACKTRACKING** — once a hat phase ends, its XML is immutable for the rest of the invocation. Drift detected mid-hat flows to Closing Blue's `<drift_notes>`; drift detected by Step 10 verification surfaces as a user-visible warning. No hat content is ever retroactively edited.
 - **R3. NO CROSS-HAT CONTAMINATION** — each content hat stays in its own mode. Only Closing Blue cross-references.
 - **R4. NO DECISION-MAKING AUTHORITY** — Closing Blue's recommendations are advisory. User decides.
 - **R5. RED HAT: NO JUSTIFICATION** — Red bullets never contain *because, since, as* (causal), *due to*. Lexical scan enforces.
@@ -411,8 +413,11 @@ All content is bullets throughout. Exception: Black's nested `<risk>`/`<mitigati
 ## 13. Anti-patterns
 
 - **Parallel hat execution** — breaks one-lens-at-a-time discipline. `dispatching-parallel-agents` exists for parallel work; this skill is sequential by design.
+- **Rapid hat-switching within a single hat phase** — jumping between lenses mid-phase loses the benefit of sustained single-mode focus. Stay in the current hat until its phase ends.
 - **Treating hats as personality labels** — hats are modes, not identities. Never personify.
 - **Letting Black hat dominate** — canonical sequence places Black near the end on purpose.
+- **Missing Blue structure** — skipping or thinning Opening or Closing Blue collapses the method into an unmanaged brain-dump. Both Blue hats are mandatory and produce their full sub-schemas.
+- **Gimmick treatment** — invoking the skill as performative "we did Six Hats" without genuine per-hat discipline produces output that looks structured but restates the input. Each hat must do real work in its own mode.
 - **Collapsing into a pros/cons list** — Yellow + Black is only 2 of 7 hats.
 - **Collapsing into a SWOT analysis** — different framework.
 - **Paraphrasing instead of analyzing** — applies to content hats (White–Black). A content hat that mostly restates the input is drift. Opening Blue's `<problem_statement>` is a preservation field and is exempt.
