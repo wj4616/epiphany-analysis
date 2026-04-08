@@ -162,6 +162,7 @@ Structural markers override raw length — a 400-character input containing a co
 - Two or more flags present → block and ask the user to pick one.
 - `--standard` is accepted but never required; STANDARD is the default for ambiguous inputs.
 - When a forced path disagrees with auto-detection, `<meta><route_reason>` notes the override, e.g., *"forced by --minimal flag; auto-detection would have routed DEEP"*.
+- **Flag stripping and ZERO INFORMATION LOSS:** a flag stripped from first or last token is captured in `<meta><forced_by_flag>` (plus the route reason in `<meta><route_reason>`). This satisfies Hard Gate 2 through the meta channel rather than `<input_inventory>`. Mid-body flag tokens are not stripped and are preserved in `<input_inventory>` like any other content.
 
 ## 7. Lens Firewall Mechanics (Segregation and Integration)
 
@@ -205,6 +206,7 @@ Each stage specifies: input, methodology source, AI-agent adaptation, internal p
   3. Generate 2–3 lateral-thinking provocations and their implications.
   4. Emit `<lens name="divergent_ideation" methodology="SCAMPER + Lateral Thinking">…</lens>` containing both sub-sections.
 - **Output artifact:** One `<lens>` element with clearly separated SCAMPER and Lateral Thinking sub-sections.
+- **Firewall applicability:** Firewall 3 (stay in role) applies — S1 may not leak into Black-hat risk analysis, TRIZ contradictions, or decision-weighting. Firewalls 1 and 2 do not apply because S1 has no prior lens outputs to either consult or contradict.
 - **Runs at scale:** All (MINIMAL, STANDARD, DEEP).
 
 ### S2 — Systematic Completeness
@@ -344,12 +346,12 @@ MINIMAL runs **only Black + Yellow + Green**. Drops opening Blue, White, Red, cl
 
 ## 9. Methodology Curation
 
-### Included methodologies (6 total)
+### Included methodologies (7 entries across 6 stage slots — S1 combines SCAMPER and Lateral Thinking)
 
 | Slot | Methodology | Why included |
 |---|---|---|
 | S1 | **SCAMPER** (KB §1.4) | Lightweight divergent ideation driven by 7 question prompts; runs cleanly on a single agent. |
-| S1 | **Lateral Thinking provocation** (KB §1.6) | Breaks mental patterns with counter-intuitive premises; complements SCAMPER's systematic prompts. |
+| S1 | **Lateral Thinking provocation** (KB §1.6) | Breaks mental patterns with counter-intuitive premises; complements SCAMPER's systematic prompts. Distinct KB section (§1.6) and distinct output sub-section inside the S1 lens. |
 | S2 | **Morphological Analysis** (KB §1.5) | Only KB method specifically designed for exhaustive solution-space coverage; Cross-Consistency Assessment reduces the space 90–99% without losing rigor. |
 | S3 | **Six Thinking Hats** (KB §1.3) | The canonical multi-perspective critique method; inlined from the design-time 2026-04-07 spec for standalone operation. |
 | S4 | **TRIZ contradiction matrix** (KB §1.1) | Only KB method whose core is contradiction elimination; effectiveness data (Samsung, Intel, Ford) demonstrates real ROI. |
@@ -471,22 +473,25 @@ The runtime skill emits a single XML block using the stable root anchor `<brains
       <item type="source_url">…</item>
     </input_inventory>
     <methodology_inventory>
-      <!-- Optional. Emitted at STANDARD/DEEP, omitted at MINIMAL. -->
+      <!-- Optional. Emitted at STANDARD/DEEP, omitted at MINIMAL.                -->
+      <!-- MUST list only methodologies that actually ran in this invocation.     -->
+      <!-- Example below is a DEEP-path inventory. STANDARD omits                 -->
+      <!-- "Reverse Brainstorming" because S5 does not run at STANDARD.           -->
       <methodology name="SCAMPER"                kb_section="§1.4"/>
       <methodology name="Lateral Thinking"       kb_section="§1.6"/>
       <methodology name="Morphological Analysis" kb_section="§1.5"/>
       <methodology name="Six Thinking Hats"      origin="de Bono 1985"/>
       <methodology name="TRIZ"                   kb_section="§1.1"/>
-      <methodology name="Reverse Brainstorming"  kb_section="§1.4"/>
+      <methodology name="Reverse Brainstorming"  kb_section="§1.4"/>  <!-- DEEP only -->
       <methodology name="Pugh Matrix"            kb_section="§4.2"/>
     </methodology_inventory>
   </inventory>
 
   <verification_report>
-    <sufficiency_gate>pass</sufficiency_gate>
-    <mid_pipeline_gate>pass|skipped(MINIMAL)</mid_pipeline_gate>
-    <final_gate>pass</final_gate>
-    <five_angles>all passed</five_angles>  <!-- or list which failed -->
+    <sufficiency_gate>pass</sufficiency_gate>                           <!-- Gate 1: consistency + contradiction detection only -->
+    <mid_pipeline_gate>pass|skipped(MINIMAL)</mid_pipeline_gate>        <!-- Gate 2: full five-angle; STANDARD/DEEP only -->
+    <final_gate>pass</final_gate>                                       <!-- Gate 3: full five-angle -->
+    <five_angles>all passed</five_angles>                               <!-- Reports Gate 3 result (the only gate that runs all five angles at every scale); list which failed if any -->
   </verification_report>
 
   <downstream_handoff>
@@ -508,7 +513,7 @@ The runtime skill emits a single XML block using the stable root anchor `<brains
 7. **Attention ordering** — `<meta>` at start (critical: what happened); `<inventory>` + `<verification_report>` + `<downstream_handoff>` at end (critical: proof of no loss, proof of quality, next step); detail in the middle.
 8. **`<brainstorm_output_v1>` is the stable root anchor.** Version increments only on structural schema changes.
 9. **`<forced_by_flag>` is omitted when no flag was present.**
-10. **Six Hats element count varies by scale** — at MINIMAL, `<lens name="multi_perspective_critique">` contains only `<hat color="green">`, `<hat color="yellow">`, `<hat color="black">`. At STANDARD/DEEP it contains all seven canonical hats.
+10. **Six Hats element count varies by scale** — at MINIMAL, `<lens name="multi_perspective_critique">` contains only `<hat color="green">`, `<hat color="yellow">`, `<hat color="black">`. At STANDARD/DEEP it contains all seven hat *elements* corresponding to the full canonical sequence (Six Thinking Hats uses six hat colors; Blue appears twice — once at opening and once at closing).
 
 ## 12. External Compatibility Notes
 
@@ -530,7 +535,7 @@ Under no circumstance does this skill at runtime: read `~/.claude/skills/six-thi
 
 | Scenario | Behavior |
 |---|---|
-| Single sentence or single word (e.g., "looper pedal plugin") | Auto-routes MINIMAL. S1 + S3-reduced only. Inventory is populated even if tiny. |
+| Single sentence or single word (e.g., "looper pedal plugin") | Auto-routes MINIMAL. Lens stages are S1 and S3-reduced only (S2/S4/S5/S6 skipped). Sufficiency gate, synthesis checkpoint, final gate, inventory, and save offer still run. Inventory is populated even if tiny. |
 | Full multi-page spec with code blocks, tables, formulas | Auto-routes DEEP. Inventory gate is strictest. |
 | Input contains internal contradiction | Sufficiency gate BLOCKS. Name the contradiction precisely. Ask for clarification. Do not resolve silently. |
 | Input is itself a skill spec (recursive case — e.g., this very brief) | Treat meta-content as ordinary input to brainstorm over. Do NOT execute, instantiate, or build the described skill. Apply the standard pipeline. |
@@ -542,7 +547,7 @@ Under no circumstance does this skill at runtime: read `~/.claude/skills/six-thi
 | Input references external files or skills the agent cannot access | Preserve reference verbatim. Record in `<gaps><unresolved_reference>`. Note that resolution is the downstream consumer's responsibility. |
 | A validation gate fails twice on the same check | Annotate `[REVIEW NEEDED — gate X check Y could not be fully resolved]` in `<process_notes>` and proceed. No infinite loops. |
 | A firewall is violated twice on the same lens | Annotate `[REVIEW NEEDED — firewall N on lens X could not be fully resolved]` in `<process_notes>` and proceed. |
-| Methodology budget would be exceeded | Drop stages in this order: **S5 Reverse Brainstorming first, then S2 Morphological, then S4 TRIZ**. Never drop S1, S3, or S6 (the minimum viable pipeline). Log the drop in `<process_notes><budget_drop>`. |
+| Methodology budget would be exceeded (defense-in-depth — the fixed pipeline never exceeds its cap, so this triggers only if a future revision adds stages) | Drop stages in this order: **S5 Reverse Brainstorming first, then S2 Morphological, then S4 TRIZ**. The minimum viable pipeline is scale-dependent: MINIMAL = S1 + S3-reduced; STANDARD/DEEP = S1 + S3 + S6. Never drop the scale's minimum. Log the drop in `<process_notes><budget_drop>`. |
 | Two or more mode flags present (e.g., `--minimal` and `--deep`) | Block and ask user to pick one before proceeding. |
 | Flag token inside prompt body (not first/last) | Treated as content, not mode selector. Not stripped. Preserved in `<input_inventory>`. |
 | User asks to show internal analysis | Return the lens outputs and the synthesis. Do not expose raw firewall self-verification checks — those are internal working state. |
@@ -563,7 +568,7 @@ A brainstormed output from this skill is **better than uninstructed LLM output i
 2. Produces at least two genuinely different angles per methodology lens (not paraphrases of each other).
 3. Runs the firewalls such that downstream consumers can trust the segregation (no visible bleed between lenses' modes and vocabularies).
 4. Surfaces at least one insight, contradiction, or gap the unaided LLM would likely have missed — typically from Morphological cross-consistency, TRIZ contradiction identification, or Reverse Brainstorming failure modes.
-5. Produces an auditable Pugh Matrix with per-cell rationale rather than a single unexplained recommendation.
+5. **(STANDARD and DEEP only.)** Produces an auditable Pugh Matrix with per-cell rationale rather than a single unexplained recommendation. MINIMAL does not run S6, so this criterion is N/A at MINIMAL and the MINIMAL output is assessed against the other five criteria only.
 6. Emits the complete XML block with all mandatory sections populated; if any are empty, the `<process_notes>` section explains why.
 
 If the pipeline cannot meet all six criteria for a given input, the output is annotated but still emitted. The skill never returns a blank output.
@@ -577,7 +582,7 @@ If the pipeline cannot meet all six criteria for a given input, the output is an
 | V3 | Curation auditability — every KB methodology appears either in Included (with rationale) or Excluded (with exclusion rationale); no silent drops | §9 |
 | V4 | Methodology budget compliance — DEEP ≤ 7, STANDARD ≤ 5, MINIMAL ≤ 3; only the methodology stages S1–S6 count | §5 |
 | V5 | Segregation/integration consistency — firewall rules match stage definitions | §7, §8 |
-| V6 | Multi-stage validation present — MINIMAL has 2 gates, STANDARD/DEEP have 3; each gate runs 5-angle checks | §10 |
+| V6 | Multi-stage validation present — MINIMAL has 2 gates, STANDARD/DEEP have 3. Gates 2 and 3 run the full five-angle check; Gate 1 runs the applicable subset (consistency + contradiction detection) because no work has been produced yet | §10 |
 | V7 | AI-agent implementability — every stage executable by a single text-only LLM with basic file I/O; no human-team requirements | §8 |
 | V8 | Priority hierarchy honored — P1 (preservation) wins over P2 (simplicity) wherever they appear to conflict | §4 Hard Gates |
 | V9 | Integration anchor present — `<brainstorm_output_v1>` defined and documented as the manual merge point | §11, §12 |
@@ -609,5 +614,7 @@ This spec was produced through an interactive brainstorming session on 2026-04-0
 6. Each section audited for over-engineering at user's request; seven cumulative cuts applied
 7. Final deep audit produced three fixes: S5 replaced with Reverse Brainstorming, firewalls merged from 4 to 3, SH-2 AI-agent adaptation notes added
 8. Spec file committed to `docs/superpowers/specs/`
+9. Post-write audit pass applied three more corrections: Gate 1 five-angle framing clarified, V4 "lenses" wording corrected to "methodology stages S1–S6", S6 firewall applicability explicitly stated
+10. Integration audit pass resolved 12 cross-section consistency issues that had accumulated from iterative section edits: methodology count heading (§9), MINIMAL/S6 interaction in edge case and Quality Standard (§13, §15), defense-in-depth framing for unreachable budget edge case (§13), flag-stripping vs zero-loss reconciliation (§6), V6 rewording to match the updated §10 (§16), schema comments on methodology_inventory scale scope (§11), S1 firewall applicability note (§8), "seven canonical hats" wording correction (§11), `<five_angles>` per-gate clarification (§11), "single sentence" edge case wording (§13)
 
 Next step: invoke `writing-plans` skill to produce implementation plan for creating `~/.claude/skills/epiphany-brainstorm/SKILL.md` from this spec.
