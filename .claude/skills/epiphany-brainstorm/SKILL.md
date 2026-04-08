@@ -113,3 +113,30 @@ A single `<brainstorm_output_v1>` XML block per invocation. No multi-turn dialog
 ```
 
 **Note:** The diagram shows the maximum (DEEP) lens sequence. At STANDARD, S5 is skipped and the mid-pipeline gate fires after S4. At MINIMAL, only S1 and S3-reduced run; the mid-pipeline gate is skipped entirely.
+
+## Scale Router
+
+**Priority order (highest wins):**
+
+1. **Explicit flag override** — `--minimal`, `--standard`, or `--deep` at first or last standalone token → force that path, skip auto-detection.
+2. **Automatic detection** — threshold table (length + structural markers).
+3. **Ambiguous fallback** — STANDARD.
+
+**Auto-detection thresholds:**
+
+| Path | Auto-trigger |
+|---|---|
+| **MINIMAL** | < 500 characters AND no code blocks AND no tables AND no explicit requirements or sections |
+| **STANDARD** | 500–5000 characters OR one code block OR one table OR explicit requirements/sections (but not multi-page spec) |
+| **DEEP** | > 5000 characters OR multiple code blocks OR multiple tables OR explicit multi-section specification structure |
+
+Structural markers override raw length — a 400-character input containing a code block routes to STANDARD, not MINIMAL.
+
+**Flag rules** (inherited from `prompt-epiphany` for consistency):
+
+- Flags detected only at first or last standalone token of the input. Flags mid-body are content, not mode selectors.
+- Detected flag is stripped from its detected position before processing. Preserved verbatim if mid-body.
+- Two or more flags present → block and ask the user to pick one.
+- `--standard` is accepted but never required; STANDARD is the default for ambiguous inputs.
+- When a forced path disagrees with auto-detection, `<meta><route_reason>` notes the override.
+- **Flag stripping and ZERO INFORMATION LOSS:** a flag stripped from first or last token is captured in `<meta><forced_by_flag>`. This satisfies Hard Gate 2 through the meta channel rather than `<input_inventory>`. Mid-body flag tokens are not stripped and are preserved in `<input_inventory>` like any other content.
