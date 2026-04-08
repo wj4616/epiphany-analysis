@@ -322,3 +322,36 @@ MINIMAL runs **only Black + Yellow + Green**. Drops opening Blue, White, Red, cl
 - **Output artifact:** `<decision>` element with baseline, alternatives, criteria, scoring matrix, and recommendation.
 - **Firewall applicability:** The lens firewalls do **not** apply to S6. S6 is designed to consume the synthesis checkpoint — which is a merged/comparative view of prior lens outputs — so the "fresh-read before consulting prior work" rule would defeat the stage's purpose. S6 reads synthesis directly and scores alternatives against criteria derived from the original input's explicit goals/constraints.
 - **Runs at scale:** STANDARD, DEEP.
+
+## Methodology Curation
+
+### Included methodologies (7 entries across 6 stage slots — S1 combines SCAMPER and Lateral Thinking)
+
+| Slot | Methodology | Why included |
+|---|---|---|
+| S1 | **SCAMPER** (KB §1.4) | Lightweight divergent ideation driven by 7 question prompts; runs cleanly on a single agent. |
+| S1 | **Lateral Thinking provocation** (KB §1.6) | Breaks mental patterns with counter-intuitive premises; complements SCAMPER's systematic prompts. Distinct KB section (§1.6) and distinct output sub-section inside the S1 lens. |
+| S2 | **Morphological Analysis** (KB §1.5) | Only KB method specifically designed for exhaustive solution-space coverage; Cross-Consistency Assessment reduces the space 90–99% without losing rigor. |
+| S3 | **Six Thinking Hats** (KB §1.3) | The canonical multi-perspective critique method; fully inlined for standalone operation. |
+| S4 | **TRIZ contradiction matrix** (KB §1.1) | Only KB method whose core is contradiction elimination; effectiveness data (Samsung, Intel, Ford) demonstrates real ROI. |
+| S5 | **Reverse Brainstorming** (KB §1.4, 87% effectiveness) | Distinct from Six Hats Black — the deliberate-failure framing uncovers root causes Black Hat misses. |
+| S6 | **Pugh Matrix** (KB §4.2) | Lightweight multi-criteria decision method; auditable per-cell rationale replaces group voting. |
+
+### Excluded or downgraded methodologies (with one-sentence rationale)
+
+| Methodology | Exclusion rationale |
+|---|---|
+| **Design Thinking** (KB §1.2) | Requires user research (Empathize / Prototype / Test) that a single AI agent cannot perform without live user interaction. |
+| **Brainwriting 6-3-5** (KB §1.4, 91% effectiveness) | Relies on multi-participant pass-around mechanics; single-agent simulation would add no value beyond SCAMPER + Lateral Thinking already in S1. |
+| **Nominal Group Technique** (KB §1.4, 89% effectiveness) | Multi-participant voting mechanic; single agent has nothing to vote on. |
+| **Round-Robin Brainstorming** (KB §1.4, 79%) | Multi-participant turn-taking mechanic; no parallel mechanism for a single agent. |
+| **Mind Mapping** (KB §1.4, 76%) | Visual output format incompatible with the skill's semantic XML output. |
+| **Starbursting** (KB §1.4, 83%) | 5W1H question expansion; overlaps with the Sufficiency Gate's questioning and Morphological Analysis's systematic dimensions. |
+| **McKinsey Brainsteering** (KB §1.4) | Describes facilitation process steps for human teams, not a single-agent analytical technique. |
+| **Analytic Hierarchy Process** (KB §4.1) | Heavyweight eigenvector math for subjective weights; Pugh Matrix covers the same multi-criteria decision need with far less ceremony. |
+| **V-Model** (KB §3.1) | Full systems engineering lifecycle framework; applicable as input-structure recognition for DEEP scale but not as a brainstorming pipeline stage. |
+| **INCOSE Handbook V5** (KB §3.2) | Reference material and lifecycle process documentation, not a pipeline stage. |
+| **GPU Architecture Specification Process** (KB §3.3) | Domain-specific case study, not a general methodology. |
+| **Architecture Decision Records** (KB §5.1) | Documentation format, not a brainstorming methodology; the skill's `<decision>` output section is ADR-influenced but ADRs themselves don't fit the pipeline stage model. |
+| **NASA Cross-Disciplinary Framework** (KB §6.1) | Team coordination framework for large multi-vendor projects; no team for a single agent to coordinate. |
+| **Architectures of Adaptive Integration (AAI)** (KB §6.2) | Same reason — team coordination for large collaborative projects. |
