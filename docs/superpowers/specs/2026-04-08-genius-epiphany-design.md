@@ -126,6 +126,8 @@ Candidates that survive all three attacks move forward, with the strongest survi
 2. **Trigger loop to DIVERGE** — all candidates died but the frame still explains the success criterion → the candidate pool was insufficient, generate more
 3. **Trigger loop to FRAME** — the failure pattern shows the frame itself was wrong (e.g., the same structural objection kills every candidate) → reframe
 
+(Section 4's loop-decision table adds two edge-case rows the narrative elides: when the failure root cause is **indeterminate** — neither frame-level nor candidate-specific — the default is to loop to Diverge first because Diverge is cheaper to retry than Frame; and when **loop budget is exhausted** with all candidates dead, Stress-Test forwards the dead candidate with the highest residual plausibility to Synthesize, which routes it through the escape-hatch branch.)
+
 **Collapses from research:** ECN-mode (§1.2), Janusian Process (§1.5, §2), Einstein thought experiments (§2), Feynman Bayesian update and test-effect-strength (§2.1), da Vinci Stages 5 and 6.
 
 **Phase 4 — SYNTHESIZE.** *"What's the answer, and what are we still missing?"* Combines surviving candidates into a single answer (or a small ranked set if genuine uncertainty remains), annotates it with the tradeoffs identified during Stress-Test, and runs a final **gap scan** against the original frame — asking which parts of the success criterion are still hand-waved, which candidate dimensions were never explored, and which boundary conditions were never attacked. If the gap scan finds a material hole, it triggers the INCUBATE LOOP to the appropriate upstream phase (see loop table). Otherwise it emits the XML output. **Collapses from research:** da Vinci Stage 9 (Schema Elaboration), Feynman gap detection (§2.1). ("Verification discipline" is *not* a Section-3 component — it was a synonym for the gap scan; the final output-check lives in Section 5.3 as a verification gate, not as a Phase 4 operation.)
@@ -353,7 +355,9 @@ Both gates pass → **stakes assessment** (Section 5.1 — classifies as low/med
 
    On genuine ties across all four criteria, prefer the framing with more items in the "Unknown" list — under-determined beats over-determined at this phase.
 
-   Emit the top-scoring framing as the selected frame.
+   **All candidates fail the Explanatory-fit hard filter.** If every candidate framing fails the hard filter, Phase 1 does not block or ask — it emits the **least-bad candidate** (the one whose deep-structure principle is closest to explaining the success criterion, even if imperfectly) and relies on Stress-Test's loop-to-Frame logic to catch the frame-level problem downstream. This preserves the "Phase 1 always emits" invariant below and lets the pipeline surface the failure through evidence rather than refusal.
+
+   Emit the top-scoring framing (or least-bad if all fail the hard filter) as the selected frame.
 
 3. **Emit the selected frame** as the phase output. (In the final XML: this becomes the `<frame>` block.)
 
@@ -441,7 +445,7 @@ Both gates pass → **stakes assessment** (Section 5.1 — classifies as low/med
    | **One survivor** | Emit it as the answer. Attach its Stress-Test annotations as stated tradeoffs. |
    | **Multiple survivors with a clear dominance order** | Pick the dominant one. Record runners-up as alternatives, with the specific reason each was preferred-against. |
    | **Multiple survivors without clear dominance** | Emit a ranked set of the top 2–3. State the grounds each excels on and the dimension along which genuine uncertainty remains. Phase 4 Step 1 still selects a `<primary>` (the rank-1 option) so downstream consumers and the Output Gate's answer-trace check (G2) always have a single anchor. |
-   | **Zero survivors, budget exhausted (Phase 3 forwarded a dead candidate with highest residual plausibility)** | Treat the forwarded dead candidate as the provisional answer. Attach its killing observation verbatim as the leading tradeoff (not an inline absorption). Mark the answer for the escape-hatch branch in Step 4 — this case always produces an `<escape_hatch>` block explaining that the answer is a forced best-available pick, not a survivor. Do NOT run Step 2 (schema elaboration) on a dead candidate — emit the candidate as-is with the killing observation as the unresolved issue in the escape-hatch. |
+   | **Zero survivors, budget exhausted (Phase 3 forwarded a dead candidate with highest residual plausibility)** | Treat the forwarded dead candidate as the provisional answer. Attach its killing observation verbatim as the leading tradeoff (not an inline absorption). This case **skips Steps 2, 3, and 4 entirely** and emits directly with an `<escape_hatch>` block naming the killing observation as the unresolved issue and stating that the answer is a forced best-available pick, not a survivor. Step 2 (schema elaboration) is skipped because elaborating a dead candidate is wasted work; Step 3 (gap scan) and Step 4 (loop-decision) are skipped because the loop-decision table's budget-exhausted row would route to the same escape-hatch anyway. |
 
 2. **Work out the details** *(da Vinci Stage 9 — Schema Elaboration)*. For the chosen answer(s), fill in the **structural detail** the frame's success criterion requires — steps, mechanisms, responsibilities, tradeoff notes. Structural detail means the answer's shape and relationships; implementation detail means the concrete code or config.
 
@@ -529,7 +533,7 @@ The pipeline exposes five parameters. All have defaults; all can be auto-tuned f
 | `bayesian_bar` | How easily the Bayesian attack kills a candidate (see semantics below) | medium | low / medium / high |
 | `gap_scan_depth` | How thorough Phase 4's gap scan is (which checks run) | full | core / full |
 
-**Canonical values.** Section 5 is canonical for all parameter values. The looser ranges stated inside Section 4 (e.g., "3–5 candidates per branch") describe the typical range observed across stakes levels, not the default for a single invocation.
+**Canonical values.** Section 5 is canonical for all parameter values. The ranges stated inside Section 4 (e.g., "range 2–5 candidates per branch") describe the full parameter range across stakes levels and manual override, not the default for a single invocation.
 
 **`gap_scan_depth` meaning.** `core` runs checks 1–3 only (success criterion, unknowns, naive questions). `full` runs all five (adds unexplored dimensions and unattacked boundaries). Used when a fast pass is wanted without skipping the pipeline entirely.
 
@@ -563,7 +567,7 @@ The research corpus assigns confidence tiers that modulate **how the skill annot
 | Research finding | Tier (§6) | How the skill treats it |
 |---|---|---|
 | Chunking (§1.1) | High | Frame operations emit without caveats |
-| DMN↔ECN network switching (§1.2) | High | Phase-separation architecture emits without caveats |
+| DMN↔ECN network switching (§1.2) | High | Architectural property of the pipeline (phase separation) — has no operational output to annotate, inherits the High tier structurally |
 | Incubation (§1.3) | Medium-High | INCUBATE LOOP emits with a `<confidence_note>` when loops fire: *"answer refined through N loop retries; loop mechanism has medium-high research support"* |
 | Cross-Domain Pattern Transfer (§1.4) | High | Analogical branch emits without caveats |
 | Combinatorial Play (§1.5) | Medium | Combinatorial branch candidates that become the primary answer carry a `<confidence_note>`: *"combinatorial-play generation — medium-confidence research support"* |
@@ -583,8 +587,8 @@ The skill has two gate layers: the **Hard Gate** (pre-pipeline, Section 4) and t
 
 | # | Check | Fail → |
 |---|---|---|
-| G1 | **Frame presence and completeness** — is there a `<frame>` block with all five required fields non-empty? | Hard fail — emit escape-hatch: *"frame generation produced an incomplete frame block"* |
-| G2 | **Answer traces to a surviving candidate** — does the `<answer>` content correspond to a candidate that appeared in Phase 3's survivor list? (Checked against internal pipeline state, not the emitted XML.) | Hard fail — emit escape-hatch: *"answer-candidate trace broken"* |
+| G1 | **Frame presence and completeness** — is there a `<frame>` block with all required child elements non-empty? Required: `<deep_structure_principle>`, `<success_criterion>`, `<known>`, `<unknown>`, `<assumed>`, `<naive_questions>` (with populated what/why/how sub-elements), `<observation_vs_recognition>` (with populated observed/recognized/divergence sub-elements). | Hard fail — emit escape-hatch: *"frame generation produced an incomplete frame block"* |
+| G2 | **Answer traces to a pipeline candidate** — does the `<answer><primary>` content correspond to (a) a candidate that appeared in Phase 3's survivor list, **or** (b) the dead candidate Phase 3 forwarded under the budget-exhausted-zero-survivors case (Phase 4 Step 1 sub-case 4) when the output also carries an `<escape_hatch>` block? (Checked against internal pipeline state, not the emitted XML.) | Hard fail — emit escape-hatch: *"answer-candidate trace broken"* |
 | G3 | **Tradeoffs populated when Stress-Test produced them** — if any survivor retained surviving objections from Stress-Test, do those objections appear in `<tradeoffs>`? | Fix inline (copy from Phase 3 internal state) |
 | G4 | **Gap scan results reflected** — if Phase 4's gap scan found gaps and the loop budget was exhausted, is there an `<escape_hatch>` block stating what wasn't resolved? | Fix inline (emit the escape-hatch from Phase 4's output) |
 | G5 | **No fabricated source attributions** — does any attribution (e.g., *"this analogy is from biology"*) match a Diverge branch lineage that was actually recorded? | Remove the offending candidate *and* its attribution. If it was the primary answer, hard fail with escape-hatch: *"analogical candidate with fabricated source domain removed; no clean fallback answer"* |
@@ -629,16 +633,20 @@ The skill's output is a single `<genius_epiphany_output>` block. Required elemen
 
   <!-- Required: the answer Phase 4 synthesized -->
   <answer>
-    <!-- Required: always present, even in the ranked-set case (= rank-1 option) and in the
-         budget-exhausted zero-survivor case (= the forced best-available candidate).
-         Output Gate G2 traces against this element. -->
+    <!-- Required: always present, even in the ranked-set case and in the budget-exhausted
+         zero-survivor case. <primary> holds the full textual statement of the chosen answer
+         (duplicated, not referenced) — in the ranked-set case, its content is the same string
+         as the <option rank="1"> content. Output Gate G2 traces against this element. -->
     <primary>...</primary>
-    <!-- Optional: appears only in the "multiple survivors with clear dominance" sub-case -->
+    <!-- Optional: appears only in the "multiple survivors with clear dominance" sub-case.
+         Mutually exclusive with <ranked_set> — exactly one of <runners_up> or <ranked_set>
+         may appear, or neither (single-survivor case). -->
     <runners_up>
       <alternative reason_preferred_against="...">...</alternative>
     </runners_up>
     <!-- Optional: appears only in the "multiple survivors without clear dominance" sub-case.
-         When present, <primary> is a pointer to the rank-1 option inside this block. -->
+         Mutually exclusive with <runners_up>. When present, the <option rank="1"> content
+         string equals the <primary> content string. -->
     <ranked_set>
       <option rank="1" grounds="...">...</option>
       <option rank="2" grounds="...">...</option>
@@ -675,6 +683,8 @@ The skill's output is a single `<genius_epiphany_output>` block. Required elemen
       <N_framings>...</N_framings>
       <N_candidates_per_branch>...</N_candidates_per_branch>
       <loop_budget>...</loop_budget>
+      <bayesian_bar>low|medium|high</bayesian_bar>
+      <gap_scan_depth>core|full</gap_scan_depth>
       <loops_used>...</loops_used>
     </parameters>
   </provenance>
