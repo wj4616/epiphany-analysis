@@ -49,7 +49,7 @@ This spec is the **first of two analytical inputs**. A second report on professi
 SKILL.md skills have no runtime hooks, so "composable" cannot mean "intercept another skill's execution." It has to be a pattern the *calling agent* adopts. This design picks two concrete, low-coupling modes:
 
 **Mode A — Standalone invocation (primary).**
-User or agent runs `/genius-epiphany` directly with a problem statement. Output is a structured answer (frame → candidates → stress-tested finalist → rationale). This is how 80% of use will happen.
+User or agent runs `/genius-epiphany` directly with a problem statement. Output is a structured answer (frame → candidates → stress-tested finalist → rationale). This is the common case.
 
 **Mode B — Optional documented pre-step (secondary).**
 Any skill that benefits from stronger framing can tell its users: *"For novel or high-stakes problems, run `/genius-epiphany` first, then pass its output as context to this skill."* This is a **convention**, not a runtime coupling:
@@ -128,7 +128,7 @@ Candidates that survive all three attacks move forward, with the strongest survi
 
 **Collapses from research:** ECN-mode (§1.2), Janusian Process (§1.5, §2), Einstein thought experiments (§2), Feynman Bayesian update and test-effect-strength (§2.1), da Vinci Stages 5 and 6.
 
-**Phase 4 — SYNTHESIZE.** *"What's the answer, and what are we still missing?"* Combines surviving candidates into a single answer (or a small ranked set if genuine uncertainty remains), annotates it with the tradeoffs identified during Stress-Test, and runs a final **gap scan** against the original frame — asking which parts of the success criterion are still hand-waved, which candidate dimensions were never explored, and which boundary conditions were never attacked. If the gap scan finds a material hole, it triggers the INCUBATE LOOP to the appropriate upstream phase (see loop table). Otherwise it emits the XML output. **Collapses from research:** da Vinci Stage 9, Feynman gap detection (§2.1), verification discipline.
+**Phase 4 — SYNTHESIZE.** *"What's the answer, and what are we still missing?"* Combines surviving candidates into a single answer (or a small ranked set if genuine uncertainty remains), annotates it with the tradeoffs identified during Stress-Test, and runs a final **gap scan** against the original frame — asking which parts of the success criterion are still hand-waved, which candidate dimensions were never explored, and which boundary conditions were never attacked. If the gap scan finds a material hole, it triggers the INCUBATE LOOP to the appropriate upstream phase (see loop table). Otherwise it emits the XML output. **Collapses from research:** da Vinci Stage 9 (Schema Elaboration), Feynman gap detection (§2.1). ("Verification discipline" is *not* a Section-3 component — it was a synonym for the gap scan; the final output-check lives in Section 5.3 as a verification gate, not as a Phase 4 operation.)
 
 ### The INCUBATE LOOP
 
@@ -169,24 +169,6 @@ This is where "parallel DMN+ECN execution rather than sequential switching" from
 
 ---
 
-All nine stages resolved. Here's what the corpus confirms:
-
-| Stage | From corpus | Where it lands |
-|---|---|---|
-| 1. Vision & Curiosity | "Intense motivation to understand" | Hard Gate (sufficiency check) — motivational driver, not a phase operation |
-| 2. Social Recognition | "Desire for fame fuels work" | **Not applicable to AI** — human fame-drive has no AI analog |
-| 3. Asking Questions | "What/why/how to identify gaps" | FRAME (already mapped) |
-| 4. Analogical Thinking | "If-then analogies across domains" | DIVERGE (analogical branch, already mapped) |
-| 5. Trial & Error | "Experimental testing" | STRESS-TEST (attacks, already mapped) |
-| 6. Abductive Reasoning | "Observe → propose explanations" | STRESS-TEST (explain why candidates died/survived = annotation step) |
-| 7. Incubation & Forgetting | "Rest allows unconscious work" | **INCUBATE LOOP** — redundant corpus mention of §1.3 Incubation, same mechanism |
-| 8. Overinclusive Thinking | "Unrelated thoughts → illumination" | DIVERGE (combinatorial branch, already mapped) |
-| 9. Schema Elaboration | "Work out details" | SYNTHESIZE (already mapped) |
-
-Now applying all six fixes.
-
----
-
 ## Design — Section 3 of 6: Component Map + Collapse/Merge Rationale (revised)
 
 The job of this section is to prove that **every research finding lands in exactly one place** — no duplication, no dropped findings, every non-obvious collapse or split justified, and every explicit AI-not-applicable exclusion named.
@@ -224,7 +206,7 @@ The job of this section is to prove that **every research finding lands in exact
 - *"Hard Gate"* means the finding lands on the pre-pipeline sufficiency check from Section 1 rather than inside the four-phase flow.
 - *"not applicable"* means the finding depends on a human-specific mechanism that has no AI analog and is explicitly excluded.
 
-**Confidence tiers** (High / Medium-High / Medium per §summary) are **not shown in this table**. They modulate *how aggressively each operation runs* rather than *where it lands*, and are therefore tracked in Section 5 (depth calibration & verification gates) — not here.
+**Confidence tiers** (High / Medium-High / Medium per §6 of the corpus — see Section 5.2 for canonical-source discipline) are **not shown in this table**. They modulate *how aggressively each operation runs and whether the skill annotates the output* rather than *where each finding lands*, and are therefore tracked in Section 5.2 — not here.
 
 ### By-phase summary (architecture view)
 
@@ -318,6 +300,7 @@ This table covers every **operation** in the completeness table. Purely structur
 | Feynman gap detection | Humans rely on felt unease ("something's off"). Agent runs a structured gap scan against the explicit frame |
 | da Vinci observation-vs-recognition | Humans' recognition filter is automatic and hard to suppress. Agent has no involuntary recognition attachment — observation-mode is just a prompt variant of frame generation |
 | da Vinci Stage 6 abductive annotation | Humans post-rationalize survival and death of candidates under hindsight bias. Agent annotates from the explicit attack record |
+| da Vinci Stage 9 schema elaboration (→ Synthesize) | Humans work out the details from memory under fatigue, risking inconsistencies with their own prior reasoning. Agent elaborates with the full frame, candidate set, and attack annotations in context — structural detail is checked against every earlier commitment in one pass |
 
 ---
 
@@ -419,7 +402,7 @@ Both gates pass → **stakes assessment** (Section 5.1 — classifies as low/med
    |---|---|---|
    | **Contradiction-holding** *(Janusian)* | Construct the strongest plausible negation of the candidate. Ask: in what respect are both the candidate *and* its negation true? | The respect (if any) in which the contradiction holds, and whether that respect touches the success criterion |
    | **Limit-case** *(Einstein)* | Construct the most adversarial boundary conditions — parameter extremes, degenerate inputs, adversarial edge cases, combinations outside the training distribution of the analogy (if analogical) | Which boundaries the candidate does and does not hold under |
-   | **Bayesian update** *(Feynman + test-effect-strength)* | Identify the strongest counterevidence available against the candidate. Starting from the initial plausibility, update confidence in the candidate under that counterevidence. State the updated confidence explicitly. | The updated confidence, and whether it has dropped below the "no longer credible" bar for this problem's stakes (LLM judgment; high-stakes problems use a stricter bar — tuned by depth calibration in Section 5) |
+   | **Bayesian update** *(Feynman + test-effect-strength)* | Identify the strongest counterevidence available against the candidate. Starting from the initial plausibility, update confidence in the candidate under that counterevidence. State the updated confidence explicitly. | The updated confidence, and whether it has dropped below the "no longer credible" bar — the bar's aggressiveness is set by the `bayesian_bar` parameter (Section 5.1; low = lenient killing, medium = kill below even odds, high = aggressive killing on any meaningful downward shift). |
 
 2. **Classify each candidate's outcome.** For each candidate, examine the three attack observations and decide:
 
@@ -451,13 +434,14 @@ Both gates pass → **stakes assessment** (Section 5.1 — classifies as low/med
 
 **What the LLM is instructed to do.**
 
-1. **Combine surviving candidates into the answer.** Three sub-cases:
+1. **Combine surviving candidates into the answer.** Four sub-cases:
 
    | Case | Action |
    |---|---|
    | **One survivor** | Emit it as the answer. Attach its Stress-Test annotations as stated tradeoffs. |
    | **Multiple survivors with a clear dominance order** | Pick the dominant one. Record runners-up as alternatives, with the specific reason each was preferred-against. |
-   | **Multiple survivors without clear dominance** | Emit a ranked set of the top 2–3. State the grounds each excels on and the dimension along which genuine uncertainty remains. |
+   | **Multiple survivors without clear dominance** | Emit a ranked set of the top 2–3. State the grounds each excels on and the dimension along which genuine uncertainty remains. Phase 4 Step 1 still selects a `<primary>` (the rank-1 option) so downstream consumers and the Output Gate's answer-trace check (G2) always have a single anchor. |
+   | **Zero survivors, budget exhausted (Phase 3 forwarded a dead candidate with highest residual plausibility)** | Treat the forwarded dead candidate as the provisional answer. Attach its killing observation verbatim as the leading tradeoff (not an inline absorption). Mark the answer for the escape-hatch branch in Step 4 — this case always produces an `<escape_hatch>` block explaining that the answer is a forced best-available pick, not a survivor. Do NOT run Step 2 (schema elaboration) on a dead candidate — emit the candidate as-is with the killing observation as the unresolved issue in the escape-hatch. |
 
 2. **Work out the details** *(da Vinci Stage 9 — Schema Elaboration)*. For the chosen answer(s), fill in the **structural detail** the frame's success criterion requires — steps, mechanisms, responsibilities, tradeoff notes. Structural detail means the answer's shape and relationships; implementation detail means the concrete code or config.
 
@@ -514,18 +498,20 @@ When any phase triggers a loop, it does not silently retry. It emits a **structu
 
 **Retry prompt addendum.** The upstream phase's retry prompt is the same as its first-pass prompt, with one sentence prepended: *"This phase has been retried because of the failure below. Apply the instruction_for_retry and produce output that addresses the stated failure cause, using the retry behavior specified for this phase."* Followed by the failure report verbatim.
 
-**Retry behavior per phase.** Retries are not uniform — each phase preserves or discards previous output based on what it produces.
+**Retry behavior per phase.** Retries are not uniform — each phase preserves or discards previous output based on what it produces. Retry behavior only applies to the *phase that is the loop target*. Downstream phases that run again after the loop are not in "retry mode" — they execute as first-pass over the retried upstream output (see control-flow note below).
 
-| Phase being retried | Retry behavior |
+| Phase being retried (loop target) | Retry behavior |
 |---|---|
-| FRAME | **Replace.** Generate fresh candidate framings informed by the failure report, then run selection again. The previously-selected frame is discarded — if it had been right, Stress-Test wouldn't have looped back. |
-| DIVERGE | **Extend.** Keep previously generated candidates. Generate *additional* candidates targeted at the failure report's instruction (e.g., "covering dimension Z"). Re-run de-dup across the full set. Previously-generated candidates remain available because they were not the reason for the loop — they were killed by candidate-specific failures, and their replacements will face the same attacks. |
-| STRESS-TEST | **Extend.** Keep surviving candidates and their existing attack annotations. Apply the failure report's additional attack (e.g., "attack boundary W") to each. Reclassify under the expanded attack set. |
+| FRAME | **Replace.** Generate fresh candidate framings informed by the failure report, then run selection again. The previously-selected frame is discarded — if it had been right, Stress-Test wouldn't have looped back. After a Frame retry, all downstream phases run first-pass over the new frame: Diverge generates fresh candidates (not extending the old set, because the old candidates were seeded from the wrong frame), Stress-Test attacks them fresh. |
+| DIVERGE | **Extend.** Keep previously generated candidates. Generate *additional* candidates targeted at the failure report's instruction (e.g., "covering dimension Z"). Re-run de-dup across the full set. After a Diverge retry, Stress-Test runs as a first-pass on the *new* candidates only — it does not re-attack the previously-classified ones. Existing survivors and their annotations are preserved; existing dead candidates stay dead. The result set forwarded to Synthesize is the union of prior survivors plus the newly-attacked additions. |
+| STRESS-TEST | **Extend.** Keep surviving candidates and their existing attack annotations. Apply the failure report's additional attack (e.g., "attack boundary W") to each. Reclassify under the expanded attack set — a candidate that survived three attacks may die under the fourth. This retry behavior fires only when Stress-Test is itself the loop target (Synthesize → Stress-Test, unattacked-boundary case). |
 | SYNTHESIZE | **Not a retry target.** All loops from Synthesize go upstream (to Frame, Diverge, or Stress-Test). When control eventually returns to Synthesize, it runs as a first-pass execution over the new upstream state, not as a retry. |
+
+**Post-retry control-flow note.** A loop costs one unit of `loop_budget` regardless of how many downstream phases subsequently run. Example: a Synthesize → Diverge loop consumes 1 unit; Diverge extends; Stress-Test runs first-pass on the new candidates (no additional budget cost); Synthesize runs first-pass on the expanded survivor set (no additional budget cost). If Synthesize then finds another gap and loops again, that consumes the *next* unit. Budget is per-loop-trigger, not per-phase-execution.
 
 **Why this beats human incubation.** A human waiting on unconscious association has no explicit memory of *why* the previous attempt failed — the incubation is stochastic and hope-driven. The AI retry has the failure cause stated in the prompt and an explicit instruction on what to do differently. The AI surpasses the human because the retry is *informed*, not blind — and because the per-phase retry behavior preserves good work (extend) where it exists rather than discarding everything (replace) the way a human "stepping away and coming back" effectively does.
 
-**Loop budget.** Global N retries per invocation (not per phase). Default N=2–3 (depth calibration, Section 5). Budget is consumed each time any phase triggers any loop. When exhausted, Synthesize is forced to the escape-hatch path. The budget prevents runaway loops; the escape-hatch prevents silent drops.
+**Loop budget.** Global N retries per invocation (not per phase). Section 5.1 is canonical: default `loop_budget=2`, range 0–4, set by stakes assessment (low=1, medium=2, high=3). Budget is consumed each time any phase triggers any loop. When exhausted, Synthesize is forced to the escape-hatch path. The budget prevents runaway loops; the escape-hatch prevents silent drops. `loop_budget=0` is a supported calibration — the pipeline runs as a pure forward pass with no retries, and any loop trigger falls straight through to the escape-hatch.
 
 ---
 
@@ -540,12 +526,17 @@ The pipeline exposes five parameters. All have defaults; all can be auto-tuned f
 | `N_framings` | How many candidate framings Phase 1 generates | 3 | 2–5 |
 | `N_candidates_per_branch` | How many candidates each Diverge branch generates | 3 | 2–5 |
 | `loop_budget` | Total retries allowed across the whole pipeline per invocation | 2 | 0–4 |
-| `bayesian_bar` | Strictness of the "no longer credible" threshold in the Bayesian attack | medium | low / medium / high |
+| `bayesian_bar` | How easily the Bayesian attack kills a candidate (see semantics below) | medium | low / medium / high |
 | `gap_scan_depth` | How thorough Phase 4's gap scan is (which checks run) | full | core / full |
 
 **Canonical values.** Section 5 is canonical for all parameter values. The looser ranges stated inside Section 4 (e.g., "3–5 candidates per branch") describe the typical range observed across stakes levels, not the default for a single invocation.
 
 **`gap_scan_depth` meaning.** `core` runs checks 1–3 only (success criterion, unknowns, naive questions). `full` runs all five (adds unexplored dimensions and unattacked boundaries). Used when a fast pass is wanted without skipping the pipeline entirely.
+
+**`bayesian_bar` meaning (explicit direction).** Higher values = *easier* to kill a candidate, not harder. The parameter tunes how aggressive the Bayesian-update attack is in marking a candidate "no longer credible" under the strongest counterevidence:
+- `low` — the attack is lenient. It only marks a candidate not credible if the counterevidence makes the candidate clearly unsupportable. Best for exploratory, low-stakes thinking where surviving a soft attack is acceptable.
+- `medium` (default) — the attack marks a candidate not credible if counterevidence brings its posterior confidence below roughly even odds.
+- `high` — the attack is aggressive. It marks a candidate not credible at any meaningful downward shift in confidence. Best for high-stakes decisions where you want to filter ruthlessly and accept that some acceptable candidates will be killed. High stakes → stricter standard for remaining credible → more kills → more likely to loop to Diverge for replacements → higher-integrity surviving set.
 
 **Auto-calibration from problem stakes.** Stakes assessment runs immediately after both Hard Gate checks (Section 4) pass, before Phase 1 begins. It is a separate short pass in the same pre-pipeline slot — no change to Section 4's Hard Gate itself. The LLM performs a single-pass judgment producing one of three labels:
 
@@ -578,7 +569,7 @@ The research corpus assigns confidence tiers that modulate **how the skill annot
 | Combinatorial Play (§1.5) | Medium | Combinatorial branch candidates that become the primary answer carry a `<confidence_note>`: *"combinatorial-play generation — medium-confidence research support"* |
 | Janusian Process (§1.5 / §2) | Medium | Contradiction-holding attack results that **change** a candidate's classification (kill → survive or vice versa) carry a `<confidence_note>`: *"classification driven by contradiction-holding attack — medium-confidence research support"* |
 
-**Genius methodologies (Feynman §2.1, Einstein §2.2, da Vinci Observation §2.3, da Vinci Nine-Stage §1.5):** The corpus treats these as documented case-study techniques and does not assign them quantitative confidence tiers in §6. The skill uses them in Frame and Stress-Test phases without `<confidence_note>` annotations. The §1.5 da Vinci Nine-Stage section does carry an "Evidence Quality: High" label (line 270) which is consistent with unannotated emission.
+**Genius methodologies (Feynman §2.1, Einstein §2.2, da Vinci Observation-vs-Recognition §2.3, da Vinci Nine-Stage Process §2.3):** The corpus treats these as documented case-study techniques and does not assign them quantitative confidence tiers in §6. The skill uses them in Frame, Stress-Test, and Synthesize phases without `<confidence_note>` annotations. The §2.3 da Vinci section carries an "Evidence Quality: High" label (line 270 of the corpus) which is consistent with unannotated emission.
 
 **Principle.** Annotations only fire for Medium and Medium-High tier findings, and only when those findings are *load-bearing* on the emitted answer — not every time the mechanism runs. A Combinatorial-Play-generated candidate that gets filtered out in Stress-Test and doesn't appear in the output needs no note; one that survives to become the answer gets the note.
 
@@ -638,12 +629,16 @@ The skill's output is a single `<genius_epiphany_output>` block. Required elemen
 
   <!-- Required: the answer Phase 4 synthesized -->
   <answer>
+    <!-- Required: always present, even in the ranked-set case (= rank-1 option) and in the
+         budget-exhausted zero-survivor case (= the forced best-available candidate).
+         Output Gate G2 traces against this element. -->
     <primary>...</primary>
-    <!-- Optional: appears only when Phase 4 produced multiple -->
+    <!-- Optional: appears only in the "multiple survivors with clear dominance" sub-case -->
     <runners_up>
       <alternative reason_preferred_against="...">...</alternative>
     </runners_up>
-    <!-- Optional: appears only when Phase 4 produced a ranked set -->
+    <!-- Optional: appears only in the "multiple survivors without clear dominance" sub-case.
+         When present, <primary> is a pointer to the rank-1 option inside this block. -->
     <ranked_set>
       <option rank="1" grounds="...">...</option>
       <option rank="2" grounds="...">...</option>
@@ -660,7 +655,9 @@ The skill's output is a single `<genius_epiphany_output>` block. Required elemen
     <note source="janusian|combinatorial|incubation">...</note>
   </confidence_notes>
 
-  <!-- Optional: only when loops fired -->
+  <!-- Optional: only when loops fired. One <loop> element per loop trigger, in order.
+       from/to = phase names, reason = classification string from the failure report,
+       pass = 1-indexed sequence counter (pass="1" for the first retry, pass="2" for the second). -->
   <loop_history>
     <loop from="..." to="..." reason="..." pass="1"/>
   </loop_history>
@@ -756,7 +753,7 @@ These are the named insertion points the second report (corporate brainstorming 
 | `§3.corporate-components` | A **new sibling table** inserted after Section 3's existing "Research finding → phase" completeness table, titled **"Corporate technique → phase,"** using the same columns. Does **not** modify the existing table. | Any corporate technique that qualifies as its own component (rare — most will collapse into existing components). If a corporate technique truly needs its own component, it lands here with the same collapse/merge rationale Section 3 uses. |
 | `§4.phase1.corporate-tools` | Section 4 Phase 1 (FRAME) instructions — added as additional LLM instructions at the end of the existing Phase 1 block. | Corporate framing tools that Phase 1 should invoke (e.g., stakeholder-alignment checklists, success-criterion explication techniques). Additions, not replacements. |
 | `§4.phase2.corporate-diverge-branches` | Section 4 Phase 2 (DIVERGE) instructions — added as additional branches alongside the three existing Diverge branches (associative, combinatorial, analogical — all DMN-mode; Phase 2 is DMN-only, ECN work lives in Phase 3). | Corporate ideation techniques that generate candidates alongside the existing branches. Each added technique is a new Diverge branch enumerated the same way. |
-| `§4.phase3.corporate-attacks` | Section 4 Phase 3 (STRESS-TEST) instructions — added to the existing attack list (contradiction, limit-case, Bayesian, gap-detection). | Corporate attack types (premortem, red-team, devil's advocate, assumption-audit) added to the existing attack list. Treated as attacks, not replacements. |
+| `§4.phase3.corporate-attacks` | Section 4 Phase 3 (STRESS-TEST) instructions — added to the existing three-attack list (contradiction-holding, limit-case, Bayesian-update). Gap detection is a Phase 4 operation, not a Phase 3 attack. | Corporate attack types (premortem, red-team, devil's advocate, assumption-audit) added to the existing attack list. Treated as attacks, not replacements. |
 | `§4.phase4.corporate-synthesis-formats` | Section 4 Phase 4 (SYNTHESIZE) instructions — added as output-shape options the existing Phase 4 instructions choose between. | Corporate decision packaging formats (RAPID / RACI callouts, decision memos, recommendation briefs). |
 | `§5.2.corporate-confidence-tiers` | Section 5.2 confidence table — added as additional rows at the bottom, following the same §6-canonical-source discipline. | Confidence tiers for any corporate technique that has research support. Techniques without quantitative support are added in the "case-study" paragraph. |
 | `§5.3.corporate-gates` | Section 5.3 Output Gate — inserted as G8, G9, … preserving the existing G1–G7 ordering. | Additional Output Gate checks specific to corporate output formats (e.g., "decision memo has a clear recommendation"). |
