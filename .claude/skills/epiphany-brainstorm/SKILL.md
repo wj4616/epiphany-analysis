@@ -369,3 +369,124 @@ Multi-stage validation with multi-angle checks at every gate. The **five-angle f
 **Gate failure policy:** On failure, re-run the failing stage with tightened scope. Two consecutive failures on the same check → annotate `[REVIEW NEEDED — gate X check Y could not be fully resolved]` in `<process_notes>` and proceed. Never loop indefinitely.
 
 **MINIMAL path has 2 gates** (Sufficiency + Final). **STANDARD/DEEP paths have 3 gates** (Sufficiency + Mid-pipeline + Final).
+
+## Output Format (runtime deliverable)
+
+The runtime skill emits a single XML block using the stable root anchor `<brainstorm_output_v1>`.
+
+### Schema
+
+```xml
+<brainstorm_output_v1>
+
+  <!-- ===== START (critical: what happened and why) ===== -->
+  <meta>
+    <scale>MINIMAL|STANDARD|DEEP</scale>
+    <stages_used>N/M</stages_used>                <!-- N = stages run; M = budget cap -->
+    <forced_by_flag>--minimal|--standard|--deep</forced_by_flag>  <!-- omit if no flag -->
+    <route_reason>one-sentence explanation; note override if any</route_reason>
+  </meta>
+
+  <!-- ===== MIDDLE (detail) ===== -->
+  <lens_outputs>
+    <lens name="divergent_ideation"         methodology="SCAMPER + Lateral Thinking">…</lens>
+    <lens name="systematic_completeness"    methodology="Morphological Analysis">…</lens>
+    <lens name="multi_perspective_critique" methodology="Six Thinking Hats (inlined)">
+      <hat color="blue_opening">…</hat>
+      <hat color="white">…</hat>
+      <hat color="red">…</hat>
+      <hat color="green">…</hat>
+      <hat color="yellow">
+        <best_case_scenario>…</best_case_scenario>
+        <vision>…</vision>
+      </hat>
+      <hat color="black">
+        <risk>
+          <description>…</description>
+          <mitigation>…</mitigation>
+        </risk>
+      </hat>
+      <hat color="blue_closing">…</hat>
+    </lens>
+    <lens name="contradiction_resolution"   methodology="TRIZ">…</lens>
+    <lens name="deep_risk_exploration"      methodology="Reverse Brainstorming">…</lens>
+  </lens_outputs>
+
+  <synthesis>
+    <agreement>…</agreement>
+    <disagreement>…</disagreement>
+    <uncovered>…</uncovered>
+  </synthesis>
+
+  <decision methodology="Pugh Matrix">
+    <baseline>…</baseline>
+    <alternatives>…</alternatives>
+    <criteria>…</criteria>
+    <matrix>…+1/0/-1 with per-cell rationale…</matrix>
+    <recommendation>…</recommendation>
+  </decision>
+
+  <gaps>
+    <placeholder>TBD / TODO / &lt;fill in&gt; — preserved verbatim</placeholder>
+    <unresolved_reference>external file or skill the agent could not read</unresolved_reference>
+  </gaps>
+
+  <process_notes>
+    <firewall_trip>lens X firewall N, action taken</firewall_trip>
+    <budget_drop>stage dropped, reason</budget_drop>
+    <annotation>[REVIEW NEEDED — gate/firewall Y]</annotation>
+  </process_notes>
+
+  <!-- ===== END (critical: proof of no loss + proof of quality + next step) ===== -->
+  <inventory>
+    <input_inventory>
+      <!-- Every input item preserved byte-for-byte. Mandatory at every scale. -->
+      <item type="code_block">…</item>
+      <item type="formula">…</item>
+      <item type="table">…</item>
+      <item type="named_entity">…</item>
+      <item type="numeric_value">…</item>
+      <item type="requirement">…</item>
+      <item type="constraint">…</item>
+      <item type="goal">…</item>
+      <item type="source_url">…</item>
+    </input_inventory>
+    <methodology_inventory>
+      <!-- Optional. Emitted at STANDARD/DEEP, omitted at MINIMAL. -->
+      <methodology name="SCAMPER"                kb_section="§1.4"/>
+      <methodology name="Lateral Thinking"       kb_section="§1.6"/>
+      <methodology name="Morphological Analysis" kb_section="§1.5"/>
+      <methodology name="Six Thinking Hats"      origin="de Bono 1985"/>
+      <methodology name="TRIZ"                   kb_section="§1.1"/>
+      <methodology name="Reverse Brainstorming"  kb_section="§1.4"/>  <!-- DEEP only -->
+      <methodology name="Pugh Matrix"            kb_section="§4.2"/>
+    </methodology_inventory>
+  </inventory>
+
+  <verification_report>
+    <sufficiency_gate>pass</sufficiency_gate>                           <!-- Gate 1: consistency + contradiction detection only -->
+    <mid_pipeline_gate>pass|skipped(MINIMAL)</mid_pipeline_gate>        <!-- Gate 2: full five-angle; STANDARD/DEEP only -->
+    <final_gate>pass</final_gate>                                       <!-- Gate 3: full five-angle -->
+    <five_angles>all passed</five_angles>                               <!-- Reports Gate 3 result -->
+  </verification_report>
+
+  <downstream_handoff>
+    <recommended_next_skill>prompt-epiphany|writing-plans|none</recommended_next_skill>
+    <usage_hint>one sentence on how to feed this forward</usage_hint>
+  </downstream_handoff>
+
+</brainstorm_output_v1>
+```
+
+### Schema rules
+
+1. **`<inventory>` is mandatory at every scale.** Empty-looking inputs still produce a populated `<input_inventory>`; the count may be small but the section exists.
+2. **`<methodology_inventory>` is optional** — emitted by default at STANDARD/DEEP, omitted at MINIMAL to stay terse.
+3. **`<stages_used>` format** — `N/M` where N is the actual stage count and M is the budget cap (e.g., `5/5`, `6/7`, `2/3`).
+4. **Absent-content tags are omitted entirely**, not left as empty tags — keeps the output clean.
+5. **`<process_notes>` collects firewall trips, budget drops, and gate annotations** in one place for auditability.
+6. **Code blocks, formulas, and tables inside `<input_inventory>`** are byte-identical to the input. The lenses may discuss them but may not modify them.
+7. **Attention ordering** — `<meta>` at start (critical: what happened); `<inventory>` + `<verification_report>` + `<downstream_handoff>` at end (critical: proof of no loss, proof of quality, next step); detail in the middle.
+8. **`<brainstorm_output_v1>` is the stable root anchor.** Version increments only on structural schema changes.
+9. **`<forced_by_flag>` is omitted when no flag was present.**
+10. **Six Hats element count varies by scale** — at MINIMAL, `<lens name="multi_perspective_critique">` contains only `<hat color="green">`, `<hat color="yellow">`, `<hat color="black">`. At STANDARD/DEEP it contains all seven hat *elements* (Blue appears twice — opening and closing).
