@@ -262,3 +262,63 @@ MINIMAL runs **only Black + Yellow + Green**. Drops opening Blue, White, Red, cl
 ```
 
 - **Runs at scale:** All (reduced at MINIMAL, full at STANDARD and DEEP).
+
+### S4 — Contradiction Resolution
+
+- **Input:** Original user input text (fresh-read) + prior lens outputs (S1, S2, S3) for gap detection only.
+- **Methodology source:** KB §1.1 TRIZ (Genrich Altshuller, 1946). Covers both technical and physical contradictions.
+- **AI-agent adaptation:** A human team looks up contradictions in the 39×39 contradiction matrix and applies one of the 40 inventive principles. The agent identifies contradictions directly (improving X worsens Y for technical; system needs opposing states for physical), then reasons about resolution via the separation principles (time, space, condition, scale) and the core inventive principles, without needing the physical matrix lookup.
+- **Internal process:**
+  1. Fresh-read the input.
+  2. Identify technical contradictions from the input and prior lenses: parameter pairs where improving one worsens the other.
+  3. Identify physical contradictions: cases where the system needs opposing states.
+  4. For each contradiction, propose a resolution using a separation principle and/or an inventive principle, explicitly named.
+  5. Emit `<lens name="contradiction_resolution" methodology="TRIZ">…</lens>` containing contradictions and proposed resolutions.
+- **Output artifact:** One `<lens>` element listing contradictions with resolution strategies.
+- **Runs at scale:** STANDARD, DEEP.
+
+### S5 — Deep Risk Exploration
+
+- **Input:** Original user input text (fresh-read) + prior lens outputs (S1, S2, S3, S4) for gap detection only.
+- **Methodology source:** KB §1.4 Reverse Brainstorming (87% effectiveness; "32% more root causes identified").
+- **AI-agent adaptation:** A human team runs a session asking "how could we deliberately make this fail?" and then inverts each failure mode into a constructive lesson. The agent generates failure modes systematically (cascading failures, second-order effects, low-probability-high-impact scenarios, unintended consequences), then inverts each into a constructive lesson or safeguard. Distinct from S3 Black Hat because Reverse Brainstorming starts from "how to fail" rather than "what could go wrong" — the deliberate-failure framing uncovers root causes Black Hat often misses.
+- **Internal process:**
+  1. Fresh-read the input.
+  2. Ask "how could we make this fail completely?" and enumerate failure mechanisms.
+  3. Ask "what cascading second-order failures could result?" and extend the list.
+  4. Ask "what low-probability-high-impact scenarios exist?" and extend further.
+  5. For each identified failure mode, invert into a constructive lesson, safeguard, or design requirement.
+  6. Optionally compare against S3 Black Hat output to identify new risks (not a re-run of Black Hat — a distinct failure-centric angle).
+  7. Emit `<lens name="deep_risk_exploration" methodology="Reverse Brainstorming">…</lens>`.
+- **Output artifact:** One `<lens>` element with `<failure_modes>` and `<inverted_lessons>` sub-sections.
+- **Runs at scale:** DEEP only.
+
+### Synthesis Checkpoint (not a methodology stage)
+
+- **Input:** All lens outputs (S1, S2, S3, optionally S4, optionally S5).
+- **Purpose:** Build a comparative view across lens outputs so that the Decision stage has integrated, comparable material to work with.
+- **Internal process:**
+  1. Read every lens output.
+  2. Identify points of agreement across lenses.
+  3. Identify points of disagreement and note one sentence on why each disagreement matters.
+  4. Identify topics no lens addressed.
+  5. Emit `<synthesis><agreement>…</agreement><disagreement>…</disagreement><uncovered>…</uncovered></synthesis>`.
+- **Does NOT count toward methodology budget.** It is a checkpoint that merges existing work, not a new methodology pass.
+- **Runs at scale:** All paths.
+
+### S6 — Decision Selection
+
+- **Input:** Synthesis checkpoint output (not raw lens outputs — decision reads the merged view).
+- **Methodology source:** KB §4.2 Pugh Decision Matrix (Stuart Pugh, University of Strathclyde).
+- **AI-agent adaptation:** A human team votes +1/0/-1 for each alternative vs a baseline on each criterion. The agent does a single-pass scoring, but with explicit per-cell rationale so the scores are auditable without a voting group. Weighted scoring (`Weighted Score = Σ(Score_i × Weight_i)`) is used when criteria have explicit weights; otherwise unweighted sum.
+- **Internal process:**
+  1. Read the synthesis checkpoint output.
+  2. Identify 2–5 alternatives from the synthesis (the divergent and systematic lenses should have produced multiple options).
+  3. Select a baseline — typically the original input's default approach or the most-mentioned option.
+  4. Identify 3–7 comparison criteria drawn from the input's explicit goals/constraints.
+  5. Score each alternative vs baseline on each criterion: +1 / 0 / -1, with a short rationale per cell.
+  6. Sum scores (weighted if criteria have weights) and identify the recommendation.
+  7. Emit `<decision methodology="Pugh Matrix">…</decision>`.
+- **Output artifact:** `<decision>` element with baseline, alternatives, criteria, scoring matrix, and recommendation.
+- **Firewall applicability:** The lens firewalls do **not** apply to S6. S6 is designed to consume the synthesis checkpoint — which is a merged/comparative view of prior lens outputs — so the "fresh-read before consulting prior work" rule would defeat the stage's purpose. S6 reads synthesis directly and scores alternatives against criteria derived from the original input's explicit goals/constraints.
+- **Runs at scale:** STANDARD, DEEP.
