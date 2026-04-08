@@ -167,3 +167,98 @@ The three firewalls cover four distinct contamination modes:
 | Anchoring (inheriting prior conclusions as given) | Firewall 1 (prior outputs are context, not premises) |
 | Consensus collapse (self-censoring to avoid disagreement) | Firewall 2 (contradict freely) |
 | Role leakage (writing another lens's content) | Firewall 3 (stay in role) |
+
+## Stage Specifications
+
+Each stage specifies: input, methodology source, AI-agent adaptation, internal process, output artifact, and which scales it runs at.
+
+### S1 — Divergent Ideation
+
+- **Input:** Original user input text.
+- **Methodology sources:** KB §1.4 SCAMPER (74% effectiveness), KB §1.6 Lateral Thinking (Edward de Bono).
+- **AI-agent adaptation:**
+  - **SCAMPER** — A human team runs a facilitated session around 7 prompts (Substitute / Combine / Adapt / Modify / Put-to-other-use / Eliminate / Reverse). The agent sequentially generates findings for each of the 7 prompts, producing a short list of ideas per prompt.
+  - **Lateral Thinking provocation** — A human team uses "PO" (provocative operation) statements to break mental patterns. The agent generates 2–3 intentionally counter-intuitive premises about the input, then reasons about what each premise would imply if taken seriously.
+- **Internal process:**
+  1. Read the input.
+  2. Run SCAMPER prompts in order, producing a short list per prompt.
+  3. Generate 2–3 lateral-thinking provocations and their implications.
+  4. Emit `<lens name="divergent_ideation" methodology="SCAMPER + Lateral Thinking">…</lens>` containing both sub-sections.
+- **Output artifact:** One `<lens>` element with clearly separated SCAMPER and Lateral Thinking sub-sections.
+- **Firewall applicability:** Firewall 3 (stay in role) applies — S1 may not leak into Black-hat risk analysis, TRIZ contradictions, or decision-weighting. Firewalls 1 and 2 do not apply because S1 has no prior lens outputs to either consult or contradict.
+- **Runs at scale:** All (MINIMAL, STANDARD, DEEP).
+
+### S2 — Systematic Completeness
+
+- **Input:** Original user input text (fresh-read) + S1 output (for gap detection only).
+- **Methodology source:** KB §1.5 Morphological Analysis (Zwicky Box, Caltech, 1940s).
+- **AI-agent adaptation:** A human team runs a whiteboard workshop enumerating parameters and values in a Zwicky box. The agent identifies the solution-space parameters (dimensions), enumerates candidate values per parameter, builds the matrix textually, and applies a textual Cross-Consistency Assessment (CCA) to strike combinations that contradict hard constraints from the input.
+- **Internal process:**
+  1. Fresh-read the input.
+  2. Identify 3–7 parameters (dimensions of the solution space).
+  3. For each parameter, list candidate values.
+  4. Build the morphological box as a markdown table.
+  5. Apply CCA — strike any row/combination that contradicts input constraints.
+  6. Optionally consult S1 output for gap detection (have any SCAMPER or lateral ideas revealed a missing parameter?).
+  7. Emit `<lens name="systematic_completeness" methodology="Morphological Analysis">…</lens>`.
+- **Output artifact:** One `<lens>` element containing the parameter list, the morphological box table, and CCA annotations.
+- **Runs at scale:** STANDARD, DEEP.
+
+### S3 — Multi-Perspective Critique (inlined Six Thinking Hats)
+
+- **Input:** Original user input text (fresh-read) + prior lens outputs (S1, S2) for gap detection only.
+- **Methodology source:** KB §1.3 Six Thinking Hats (Edward de Bono, 1985). Content fully inlined for standalone operation.
+- **AI-agent adaptation:** In a human team, "everyone wears the same hat simultaneously" — a facilitator manages hat transitions. A single AI agent cannot literally wear hats simultaneously, so the adaptation is sequential: the agent adopts each hat's mode one at a time, fully exits the hat before the next, and the firewalls replace the social ritual of facilitation.
+
+#### Canonical sequence at STANDARD and DEEP
+
+**Blue (opening) → White → Red → Green → Yellow → Black → Blue (closing)**
+
+#### Per-hat rules
+
+| Hat | Focus | Rules |
+|---|---|---|
+| **Blue (opening)** | Process, agenda | State session scope, what's in scope for this critique, what output format will be used. |
+| **White** | Facts, data | Neutral information only. Preserve numeric values and source URLs from input verbatim. No opinions. |
+| **Red** | Emotions, intuition | Gut reactions only. **No "because" clauses** — emotions don't justify themselves. One-line hits only. Red is never skipped even for "purely technical" inputs. |
+| **Green** | Creativity, alternatives | Generate new options. Provocations allowed. **No evaluation** — that's Black's job. |
+| **Yellow** | Benefits, optimism | Must produce **both** a `<best_case_scenario>` element **and** a `<vision>` element — de Bono's two documented techniques. Not allowed to skip either. Yellow is harder than Black; don't stop at one obvious upside. |
+| **Black** | Risks, caution | Thickest hat. For each identified risk, include a `<mitigation>` child element — Black is **protective, not pessimistic**. |
+| **Blue (closing)** | Process review | Summarize what each hat produced. Flag any hat that came up thin. **Only hat permitted to reference other hats' content.** Close the session. |
+
+#### Anti-patterns the lens must avoid
+
+1. Treating hats as fixed labels ("you're the risk person") — every hat is worn by the agent in sequence.
+2. Rapid hat-switching within one section — stay in-hat until done.
+3. Black-hat dominance — don't let risks drown Yellow/Green output.
+4. Missing Blue structure at STANDARD/DEEP — opening and closing Blue are mandatory.
+5. Treating the method as a gimmick — each hat has real discipline.
+
+#### MINIMAL reduction
+
+MINIMAL runs **only Black + Yellow + Green**. Drops opening Blue, White, Red, closing Blue. Rationale: at MINIMAL scale the input hasn't earned process management (Blue), neutral data gathering (White), or emotional assessment (Red). Black/Yellow/Green preserve what matters most: risks, benefits, alternatives.
+
+#### Output structure
+
+```xml
+<lens name="multi_perspective_critique" methodology="Six Thinking Hats (inlined)">
+  <hat color="blue_opening">…</hat>      <!-- STANDARD/DEEP only -->
+  <hat color="white">…</hat>              <!-- STANDARD/DEEP only -->
+  <hat color="red">…</hat>                <!-- STANDARD/DEEP only -->
+  <hat color="green">…</hat>              <!-- all paths -->
+  <hat color="yellow">
+    <best_case_scenario>…</best_case_scenario>
+    <vision>…</vision>
+  </hat>                                  <!-- all paths -->
+  <hat color="black">
+    <risk>
+      <description>…</description>
+      <mitigation>…</mitigation>
+    </risk>
+    …
+  </hat>                                  <!-- all paths -->
+  <hat color="blue_closing">…</hat>       <!-- STANDARD/DEEP only -->
+</lens>
+```
+
+- **Runs at scale:** All (reduced at MINIMAL, full at STANDARD and DEEP).
