@@ -490,3 +490,61 @@ The runtime skill emits a single XML block using the stable root anchor `<brains
 8. **`<brainstorm_output_v1>` is the stable root anchor.** Version increments only on structural schema changes.
 9. **`<forced_by_flag>` is omitted when no flag was present.**
 10. **Six Hats element count varies by scale** — at MINIMAL, `<lens name="multi_perspective_critique">` contains only `<hat color="green">`, `<hat color="yellow">`, `<hat color="black">`. At STANDARD/DEEP it contains all seven hat *elements* (Blue appears twice — opening and closing).
+
+## External Compatibility Notes
+
+> **These are descriptive, not operational.** The runtime skill never calls, invokes, or reads another skill. These notes describe how the user can **manually** compose this skill's output with other skills.
+
+### With `prompt-epiphany`
+
+The full `<brainstorm_output_v1>` block can be fed directly as input to `prompt-epiphany`. The outer XML structure means `prompt-epiphany`'s sufficiency gate sees structured content rather than raw text, and the `<input_inventory>` preserves original intent for it to enhance. No transformation needed between the two skills — `epiphany-brainstorm` output is a valid `prompt-epiphany` input out of the box. The user invokes `prompt-epiphany` manually on the saved file.
+
+### With the future "ultimate" combined skill
+
+The `<brainstorm_output_v1>` root element is the stable anchor for a future combined skill that will merge brainstorming output with a genius-mind research output (Einstein, da Vinci, etc.). The merge will be performed by that skill reading both blocks and producing an `<ultimate_synthesis_v1>` wrapper. The `_v1` version suffix on the anchor bumps only on structural schema changes; additions within existing structure do not bump. The `epiphany-brainstorm` skill emits its block unchanged and has no awareness of the future merging.
+
+### Clean-separation guarantee
+
+Under no circumstance does this skill at runtime: read `~/.claude/skills/six-thinking-hats/`, read any spec file in `docs/superpowers/specs/`, call `prompt-epiphany`, call `writing-plans`, call a "ultimate" combined skill, or make any network request. All brainstorming methodology content is inlined in this SKILL.md.
+
+## Edge Cases
+
+| Scenario | Behavior |
+|---|---|
+| Single sentence or single word (e.g., "looper pedal plugin") | Auto-routes MINIMAL. Lens stages are S1 and S3-reduced only (S2/S4/S5/S6 skipped). Sufficiency gate, synthesis checkpoint, final gate, inventory, and save offer still run. Inventory is populated even if tiny. |
+| Full multi-page spec with code blocks, tables, formulas | Auto-routes DEEP. Inventory gate is strictest. |
+| Input contains internal contradiction | Sufficiency gate BLOCKS. Name the contradiction precisely. Ask for clarification. Do not resolve silently. |
+| Input is itself a skill spec (recursive case — e.g., this very brief) | Treat meta-content as ordinary input to brainstorm over. Do NOT execute, instantiate, or build the described skill. Apply the standard pipeline. |
+| Already-brainstormed or already-enhanced input | Run the pipeline anyway. Expect many lenses to add little. Annotate in `<process_notes>`: *"Input was already comprehensive — pipeline added minimal new content."* |
+| Input contains code blocks | Code blocks are FROZEN. Byte-for-byte in `<input_inventory><item type="code_block">…</item>`. Lenses may discuss them but may NOT modify them. |
+| Input is in a non-English language | Run pipeline in the same language. Do not translate. Methodology terminology (TRIZ, Six Hats, Pugh Matrix, Morphological Analysis, SCAMPER, Reverse Brainstorming) remains in English for consistency. |
+| Input larger than the agent's effective working context | Sufficiency gate detects it. Annotate *"Input exceeds single-pass working context — recommend chunking"* and ask user how to proceed. Do NOT silently truncate. |
+| Input has placeholder text (`TODO`, `TBD`, `<fill in>`) | Preserve verbatim in `<input_inventory>`. Copy each to `<gaps><placeholder>` for downstream awareness. |
+| Input references external files or skills the agent cannot access | Preserve reference verbatim. Record in `<gaps><unresolved_reference>`. Note that resolution is the downstream consumer's responsibility. |
+| A validation gate fails twice on the same check | Annotate `[REVIEW NEEDED — gate X check Y could not be fully resolved]` in `<process_notes>` and proceed. No infinite loops. |
+| A firewall is violated twice on the same lens | Annotate `[REVIEW NEEDED — firewall N on lens X could not be fully resolved]` in `<process_notes>` and proceed. |
+| Methodology budget would be exceeded (defense-in-depth — the fixed pipeline never exceeds its cap, so this triggers only if a future revision adds stages) | Drop stages in this order: **S5 Reverse Brainstorming first, then S2 Morphological, then S4 TRIZ**. Rationale: S5 is DEEP-only and least broadly applicable; S2 adds systematic completeness but less value when input is already sparse; S4 provides contradiction resolution but the minimum viable pipeline can function without it. The minimum viable pipeline is scale-dependent: MINIMAL = S1 + S3-reduced; STANDARD/DEEP = S1 + S3 + S6. Never drop the scale's minimum. Log the drop in `<process_notes><budget_drop>`. |
+| Two or more mode flags present (e.g., `--minimal` and `--deep`) | Block and ask user to pick one before proceeding. |
+| Flag token inside prompt body (not first/last) | Treated as content, not mode selector. Not stripped. Preserved in `<input_inventory>`. |
+| User asks to show internal analysis | Return the lens outputs and the synthesis. Do not expose raw firewall self-verification checks — those are internal working state. |
+
+## File Save Behavior
+
+- **Location:** `~/prompts/brainstorm/<slug>.md`
+- **Slug derivation:** first 6 words of the input's first non-empty line, lowercased, non-alphanumeric characters stripped, joined by hyphens. If no identifiable content (e.g., input is pure code), use `brainstorm-<YYYY-MM-DD>`.
+- **Collision handling:** if target exists, append `-2`, `-3`, … until unique.
+- **Offer timing:** AFTER emitting the `<brainstorm_output_v1>` block, one-line prompt: *"Save to `~/prompts/brainstorm/<slug>.md`?"* Never auto-save.
+- **What is saved:** the full `<brainstorm_output_v1>` block, unchanged. Not wrapped in additional framing.
+
+## Quality Standard
+
+A brainstormed output from this skill is **better than uninstructed LLM output if and only if** it:
+
+1. Preserves every input detail byte-for-byte in `<input_inventory>` (non-negotiable — if any detail is missing, the output is worse than uninstructed).
+2. Produces at least two genuinely different angles per methodology lens (not paraphrases of each other).
+3. Runs the firewalls such that downstream consumers can trust the segregation (no visible bleed between lenses' modes and vocabularies).
+4. Surfaces at least one insight, contradiction, or gap the unaided LLM would likely have missed — typically from Morphological cross-consistency, TRIZ contradiction identification, or Reverse Brainstorming failure modes.
+5. **(STANDARD and DEEP only.)** Produces an auditable Pugh Matrix with per-cell rationale rather than a single unexplained recommendation. MINIMAL does not run S6, so this criterion is N/A at MINIMAL and the MINIMAL output is assessed against the other five criteria only.
+6. Emits the complete XML block with all mandatory sections populated; if any are empty, the `<process_notes>` section explains why.
+
+If the pipeline cannot meet all six criteria for a given input, the output is annotated but still emitted. The skill never returns a blank output.
