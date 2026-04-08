@@ -141,7 +141,7 @@ Fail → fix the failing hat's content, re-verify. Same check fails twice → ou
 
 ### Step 11 — Output
 
-Render the full XML envelope (schema in Section 7). No intermediate dialogue, no follow-up questions.
+Render the full XML envelope (schema in Section 7). No intermediate dialogue during analysis, no analytical follow-up questions. The terminal file-save offer (Section 8, Section 9) is not an analytical follow-up and is permitted.
 
 ## 6. Per-hat sub-schemas
 
@@ -385,7 +385,7 @@ All content is bullets throughout. Exception: Black's nested `<risk>`/`<mitigati
 **Pipeline invariants.** Enforced during execution. Five items.
 
 - **R1. NO HAT SKIPPING** — every hat appears in the envelope. May be empty (via `<no_significant_content>`) but never absent.
-- **R2. NO BACKTRACKING** — once a hat phase ends, its XML is immutable. Drift flows to Closing Blue's `<drift_notes>`.
+- **R2. NO BACKTRACKING DURING THE PIPELINE** — during Steps 3–9, once a hat phase ends, its XML is immutable for the remainder of the pipeline. Drift flows to Closing Blue's `<drift_notes>`. The sole exception is Step 10 verification, which runs after all hats and may fix scope violations as a post-pipeline quality gate before rendering.
 - **R3. NO CROSS-HAT CONTAMINATION** — each content hat stays in its own mode. Only Closing Blue cross-references.
 - **R4. NO DECISION-MAKING AUTHORITY** — Closing Blue's recommendations are advisory. User decides.
 - **R5. RED HAT: NO JUSTIFICATION** — Red bullets never contain *because, since, as* (causal), *due to*. Lexical scan enforces.
