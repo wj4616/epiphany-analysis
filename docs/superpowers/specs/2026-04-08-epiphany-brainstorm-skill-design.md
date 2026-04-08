@@ -339,6 +339,7 @@ MINIMAL runs **only Black + Yellow + Green**. Drops opening Blue, White, Red, cl
   6. Sum scores (weighted if criteria have weights) and identify the recommendation.
   7. Emit `<decision methodology="Pugh Matrix">…</decision>`.
 - **Output artifact:** `<decision>` element with baseline, alternatives, criteria, scoring matrix, and recommendation.
+- **Firewall applicability:** The §7 lens firewalls do **not** apply to S6. S6 is designed to consume the synthesis checkpoint — which is a merged/comparative view of prior lens outputs — so the "fresh-read before consulting prior work" rule would defeat the stage's purpose. S6 reads synthesis directly and scores alternatives against criteria derived from the original input's explicit goals/constraints.
 - **Runs at scale:** STANDARD, DEEP.
 
 ## 9. Methodology Curation
@@ -376,11 +377,11 @@ MINIMAL runs **only Black + Yellow + Green**. Drops opening Blue, White, Red, cl
 
 ## 10. Validation Gates
 
-Multi-stage validation with multi-angle checks at every gate. Each gate runs five checks: **consistency**, **fabrication**, **inventory completeness**, **technical integrity**, **contradiction detection**.
+Multi-stage validation with multi-angle checks at every gate. The **five-angle framework** is: **consistency**, **fabrication**, **inventory completeness**, **technical integrity**, **contradiction detection**. Each gate runs the subset of angles applicable to its position in the pipeline — Gate 1 runs a reduced set because no brainstorming work has been produced yet; Gates 2 and 3 run the full five angles.
 
 | Gate | Position | Runs at scale | Checks |
 |---|---|---|---|
-| **Gate 1: Sufficiency** | Before any lens | All | Input has discernible task; no internal contradiction; no oversized-context overflow; no blocking ambiguity. |
+| **Gate 1: Sufficiency** | Before any lens | All | Applies **contradiction detection** and **consistency** from the five-angle framework to the raw input: input has a discernible task, no internal contradiction, no oversized-context overflow, no blocking ambiguity. Fabrication / inventory completeness / technical integrity checks are not yet applicable because no work has been produced. |
 | **Gate 2: Mid-pipeline** | After all lenses, before synthesis | STANDARD, DEEP | All expected lens artifacts present; `<input_inventory>` still intact; no cross-lens pollution (firewalls held); no fabrication across lens outputs; no contradictions introduced. |
 | **Gate 3: Final verification** | After synthesis, decision, and all output assembly | All | Five-angle check across the entire output block: consistency / fabrication / inventory completeness / technical integrity / contradiction. |
 
@@ -574,7 +575,7 @@ If the pipeline cannot meet all six criteria for a given input, the output is an
 | V1 | Requirement coverage — every MH-1 through MH-10, SH-1 through SH-3, NR-1 through NR-3 addressed | All sections |
 | V2 | Inventory preservation in design — every methodology, numeric figure, formula, code block, and source URL from the KB that is cited is reproduced byte-for-byte | §9 Methodology Curation |
 | V3 | Curation auditability — every KB methodology appears either in Included (with rationale) or Excluded (with exclusion rationale); no silent drops | §9 |
-| V4 | Methodology budget compliance — DEEP ≤ 7, STANDARD ≤ 5, MINIMAL ≤ 3; only lenses count | §5 |
+| V4 | Methodology budget compliance — DEEP ≤ 7, STANDARD ≤ 5, MINIMAL ≤ 3; only the methodology stages S1–S6 count | §5 |
 | V5 | Segregation/integration consistency — firewall rules match stage definitions | §7, §8 |
 | V6 | Multi-stage validation present — MINIMAL has 2 gates, STANDARD/DEEP have 3; each gate runs 5-angle checks | §10 |
 | V7 | AI-agent implementability — every stage executable by a single text-only LLM with basic file I/O; no human-team requirements | §8 |
