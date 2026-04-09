@@ -1485,6 +1485,29 @@ Take the first 6 words of the source text, lowercase, strip non-alphanumeric cha
 
 ---
 
+## Post-Save Interaction
+
+Shown only if all 13 chunks completed successfully. Print in this exact order:
+
+```
+Saved: ~/epiphany/omnipotent/<filename>.xml
+⚠ Output is degraded — review XML before analysis.   ← only if status=degraded OR reasoning_status=shallow
+Analyze this XML with /epiphany-analysis? (yes / no)
+```
+
+**Affirmative responses** (case-insensitive): `yes`, `y`, `yeah`, `sure`, `ok`
+
+**All other responses:** treat as no, exit cleanly. The XML file is already saved.
+
+**If yes:** check if epiphany-analysis is available as a skill. If available, invoke `/epiphany-analysis <filepath>` with the saved file path. If not available, show this message instead of attempting invocation:
+
+```
+epiphany-analysis is not installed. To analyze this XML, install the
+epiphany-analysis skill and run: /epiphany-analysis <filepath>
+```
+
+---
+
 ## Integration Notes
 
 **With `epiphany-genius`:** This skill applies genius techniques (FRAME, DIVERGE, Evidence-Share Filter, Gap-Scan, VERIFY) at injection points throughout the brainstorming pipeline. Does not call epiphany-genius at runtime.
