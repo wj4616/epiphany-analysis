@@ -1516,9 +1516,9 @@ epiphany-analysis skill and run: /epiphany-analysis <filepath>
 
 **With `epiphany-context`:** This skill inlines the Context Gather logic. Does not call epiphany-context at runtime.
 
-**With `prompt-epiphany`:** Output can be fed directly to prompt-epiphany for enhancement. Input can be prompt-epiphany output. The XML structures are compatible.
+**With `prompt-epiphany`:** Input can be prompt-epiphany output; the XML structures are compatible for this direction.
 
-**With `writing-plans`:** Output's `<decision>` can inform implementation planning. Recommend as downstream skill when output is complete.
+**With `epiphany-analysis`:** XML saved to `~/epiphany/omnipotent/` is the primary input for epiphany-analysis. Does not call epiphany-analysis at runtime.
 
 ---
 
