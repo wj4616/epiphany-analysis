@@ -242,8 +242,11 @@ function detect_intent(input):
   # Step 7: Apply contradiction penalty
   if brainstorm_intent and planning_intent:
     # Both have signals - this is contradictory
-    higher_score = max(brainstorm_score, planning_score)
-    higher_score -= 0.2  # Contradiction penalty
+    if brainstorm_score > planning_score:
+      brainstorm_score -= 0.2  # Contradiction penalty to winner
+    elif planning_score > brainstorm_score:
+      planning_score -= 0.2  # Contradiction penalty to winner
+    # If equal, no penalty (already low confidence)
 
   # Step 8: Determine winner
   if brainstorm_score > planning_score:
@@ -455,6 +458,8 @@ function detect_intent(input):
 - If user picks option → re-run with that intent (confidence = 1.0)
 - If user says "just pick one" or "doesn't matter" → emit both deliverables (ambiguous)
 - If user provides more context → re-run intent detection with new input
+- If user gives partial response ("probably planning", "more like brainstorming") → use that intent with confidence = 0.8
+- If user gives unclear response → default to ambiguous (emit both deliverables)
 
 ---
 
@@ -763,7 +768,7 @@ output-{intent}-{YYYYMMDD}-{HHMM}.xml
 
 ---
 
-## 14. Backward Compatibility
+## 12. Backward Compatibility
 
 ### Output Version Migration
 
@@ -797,7 +802,7 @@ Add to SKILL.md trigger conditions:
 
 ---
 
-## 12. Distillation Rules
+## 13. Distillation Rules
 
 Map verbose XML fields to output fields:
 
@@ -844,7 +849,7 @@ When merging:
 
 ---
 
-## 13. Deliverable Generation Rules
+## 14. Deliverable Generation Rules
 
 ### Brainstorming Deliverable Generation
 
