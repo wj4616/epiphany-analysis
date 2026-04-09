@@ -1383,27 +1383,22 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
 
 ```xml
 <downstream_handoff>
-  <recommended_next_skill>prompt-epiphany|writing-plans|none</recommended_next_skill>
-  <matched_rule priority="1|2|3|4|5|6|7">brief rule name</matched_rule>
+  <recommended_next_skill>epiphany-analysis|none</recommended_next_skill>
+  <matched_rule priority="1|2">brief rule name</matched_rule>
   <usage_hint>One sentence on how to use this output</usage_hint>
 </downstream_handoff>
 ```
 
-The `<matched_rule>` element lets downstream consumers branch on which rule fired without parsing `<usage_hint>` natural language. Its `priority` attribute matches the rule numbers in the table below; its text content is the short rule name (e.g., "degraded_or_escape", "shallow_reasoning", "unresolved_gap", "prompt_epiphany_complete", "epiphany_context_complete", "complete_no_decision", "raw_complete"). The order in this list matches the priority order below — first match wins.
+The `<matched_rule>` element lets downstream consumers branch on which rule fired without parsing `<usage_hint>` natural language. Its `priority` attribute matches the rule numbers in the table below; its text content is the short rule name. The order in this list matches the priority order below — first match wins.
 
 **Handoff logic — first matching rule wins (top to bottom):**
 
-| Priority | Condition | Recommendation |
-|----------|-----------|----------------|
-| 1 | `<status>degraded</status>` OR any escape_hatch present | `none` — needs human review before any downstream skill |
-| 2 | `<reasoning_status>shallow</reasoning_status>` | `none` — runner self-flagged the output as cognitively shallow; re-run with deeper engagement, do not auto-pipeline |
-| 3 | `<gaps_from_frame>` contains any gap with `status="unresolved"` | `prompt-epiphany` — enhance the framing and iterate |
-| 4 | `input_pre_processing="prompt-epiphany"` AND status complete AND reasoning_status sound | `writing-plans` — input was already pre-enhanced; proceed to implementation |
-| 5 | `input_pre_processing="epiphany-context"` AND status complete AND reasoning_status sound | `writing-plans` — context was pre-gathered; proceed to implementation |
-| 6 | status complete but no actionable decision (e.g. exploratory only — `<decision_quality>` is `insufficient_alternatives` or `degraded`, OR `<decision>` is empty) | `prompt-epiphany` — refine into an actionable prompt |
-| 7 | status complete AND reasoning_status sound (raw text input) AND an actionable `<decision>` exists | `writing-plans` — proceed to implementation |
+| Priority | Condition | `recommended_next_skill` | `matched_rule` |
+|----------|-----------|--------------------------|----------------|
+| 1 | `status=degraded` OR any escape_hatch present OR `reasoning_status=shallow` | `none` | `degraded_shallow_or_escape` |
+| 2 | All other cases | `epiphany-analysis` | `epiphany_analysis_ready` |
 
-The `<recommended_next_skill>` value MUST be `prompt-epiphany`, `writing-plans`, or `none` (closed set). The `<matched_rule>` MUST be present and its `priority` attribute MUST match the rule number that fired. The `<usage_hint>` is human-facing prose; programmatic consumers should branch on `<matched_rule>` instead.
+The `<recommended_next_skill>` value MUST be `epiphany-analysis` or `none` (closed set). The `<matched_rule>` MUST be present and its `priority` attribute MUST match the rule number that fired (1 or 2). The `<usage_hint>` is human-facing prose; programmatic consumers should branch on `<matched_rule>` instead.
 
 ---
 
