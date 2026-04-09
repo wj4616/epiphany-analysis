@@ -82,7 +82,7 @@ redesign-auth-middleware-for-compliance-20260409-1430UTC-2.xml  ← collision
 
 ### Chunked Write Protocol
 
-The file MUST be written in sequential chunks. Do not write the entire XML in a single operation. Verify each chunk write before proceeding to the next.
+The file MUST be written in sequential chunks. Do not write the entire XML in a single operation. Verify each chunk write completed without error before proceeding to the next chunk.
 
 | Chunk | Content |
 |-------|---------|
@@ -130,10 +130,7 @@ Analyze this XML with /epiphany-analysis? (yes / no)
 
 **All other responses:** treat as no, exit cleanly. The XML file is already saved.
 
-**If yes and epiphany-analysis is installed:**
-Invoke `/epiphany-analysis <filepath>` with the saved file path.
-
-**If yes and epiphany-analysis is not installed:**
+**If yes:** check if epiphany-analysis is available as a skill. If available, invoke `/epiphany-analysis <filepath>` with the saved file path. If not available, show the not-installed message rather than attempting invocation:
 ```
 epiphany-analysis is not installed. To analyze this XML, install the
 epiphany-analysis skill and run: /epiphany-analysis <filepath>
