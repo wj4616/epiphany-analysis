@@ -30,7 +30,7 @@ When invoked in placeholder state, inform the user:
 ## Input Contract
 
 - **Input:** file path to a readable `.xml` file produced by `epiphany-omnipotent` v1.5.0+
-- **Location:** `~/epiphany/omnipotent/`
+- **Location:** `~/docs/epiphany/omnipotent/`
 - **Schema:** `<omnipotent_output_v1>` as defined in `~/.claude/skills/epiphany-omnipotent/SKILL.md` v1.4.3+
 - **Degraded inputs are valid:** `status=degraded`, `pg2_status=contaminated`, `reasoning_status=shallow` — handle gracefully, do not error on these states
 

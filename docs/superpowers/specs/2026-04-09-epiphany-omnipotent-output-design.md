@@ -46,10 +46,10 @@ The skill emits no in-conversation content during or after the pipeline except:
 ### Save Path
 
 ```
-~/epiphany/omnipotent/<filename>.xml
+~/docs/epiphany/omnipotent/<filename>.xml
 ```
 
-**Directory creation:** if `~/epiphany/omnipotent/` does not exist, create it (and `~/epiphany/` if missing) before writing. Use default user permissions.
+**Directory creation:** if `~/docs/epiphany/omnipotent/` does not exist, create it (and `~/docs/epiphany/` if missing) before writing. Use default user permissions.
 
 ### Filename Convention
 
@@ -121,7 +121,7 @@ The file MUST be written in sequential chunks. Do not write the entire XML in a 
 Print in this exact order:
 
 ```
-Saved: ~/epiphany/omnipotent/<filename>.xml
+Saved: ~/docs/epiphany/omnipotent/<filename>.xml
 ⚠ Output is degraded — review XML before analysis.   ← only if status=degraded OR reasoning_status=shallow
 Analyze this XML with /epiphany-analysis? (yes / no)
 ```
@@ -142,10 +142,10 @@ epiphany-analysis skill and run: /epiphany-analysis <filepath>
 
 | # | Location in SKILL.md | Change |
 |---|---|---|
-| 1 | File Save Behavior — Location | `~/prompts/omnipotent/` → `~/epiphany/omnipotent/` |
+| 1 | File Save Behavior — Location | `~/prompts/omnipotent/` → `~/docs/epiphany/omnipotent/` |
 | 2 | File Save Behavior — Extension | `.md` → `.xml` |
 | 3 | File Save Behavior — Save trigger | Remove opt-in prompt; save is mandatory and automatic after pipeline completes |
-| 4 | File Save Behavior — Emission | Remove in-conversation XML emission; disk-only; update pipeline diagram terminal label to: `OUTPUT: Saved to ~/epiphany/omnipotent/<filename>.xml` |
+| 4 | File Save Behavior — Emission | Remove in-conversation XML emission; disk-only; update pipeline diagram terminal label to: `OUTPUT: Saved to ~/docs/epiphany/omnipotent/<filename>.xml` |
 | 5 | File Save Behavior — Write method | Replace single-write with chunked write protocol (this spec §3) |
 | 6 | File Save Behavior — Slug derivation | Add structured-input slug rules: prompt-epiphany → from `<task>`; epiphany-context → from `<problem_statement>` (this spec §3) |
 | 7 | Downstream Handoff — logic table | Replace 7-rule table with 2-rule table (this spec §5.1) |
@@ -154,7 +154,7 @@ epiphany-analysis skill and run: /epiphany-analysis <filepath>
 | 10 | Downstream Handoff — closed-set prose note | Update to: "The `recommended_next_skill` value MUST be `epiphany-analysis` or `none`." |
 | 11 | Trigger Conditions table | Remove rows: `--brainstorm`, `--plan`, `--skip-clarification`, `--auto-save`, `--no-save` |
 | 12 | Post-save interaction | Add handoff prompt logic (this spec §4): save confirmation, degraded warning, yes/no prompt, not-installed message |
-| 13 | Integration Notes | Remove "With `writing-plans`" and "With `prompt-epiphany`" entries; add: "With `epiphany-analysis`: XML saved to `~/epiphany/omnipotent/` is the primary input. Does not call epiphany-analysis at runtime." |
+| 13 | Integration Notes | Remove "With `writing-plans`" and "With `prompt-epiphany`" entries; add: "With `epiphany-analysis`: XML saved to `~/docs/epiphany/omnipotent/` is the primary input. Does not call epiphany-analysis at runtime." |
 | 14 | Version | Bump `1.4.3` → `1.5.0` |
 
 ### 5.1 New Downstream Handoff Logic
@@ -180,7 +180,7 @@ Replaces the existing 7-rule priority table.
 
 | Field | Value |
 |-------|-------|
-| Input | File path to a readable `.xml` file at `~/epiphany/omnipotent/` |
+| Input | File path to a readable `.xml` file at `~/docs/epiphany/omnipotent/` |
 | Schema | `<omnipotent_output_v1>` as defined in SKILL.md v1.4.3+ |
 | Degraded inputs | Valid — `status=degraded`, `pg2_status=contaminated`, `reasoning_status=shallow` must be handled gracefully, not errored on |
 

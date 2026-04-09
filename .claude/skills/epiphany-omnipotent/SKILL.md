@@ -2,7 +2,7 @@
 name: epiphany-omnipotent
 version: 1.5.0
 last_modified: 2026-04-09
-description: "Unified reasoning-amplifier skill that runs a 5-lens brainstorming pipeline (SCAMPER, Morphological Analysis, Six Thinking Hats, TRIZ, Reverse Brainstorming → Pugh Matrix) with genius-level cognitive injections (FRAME, Diverge, Evidence-Share Filter, Gap-Scan, VERIFY) and holds the runner to both a structural and a reasoning standard. Invoked via /epiphany-omnipotent with optional --minimal / --standard / --deep flags; accepts raw text, prompt-epiphany output, or epiphany-context output and saves structured XML to disk at ~/epiphany/omnipotent/."
+description: "Unified reasoning-amplifier skill that runs a 5-lens brainstorming pipeline (SCAMPER, Morphological Analysis, Six Thinking Hats, TRIZ, Reverse Brainstorming → Pugh Matrix) with genius-level cognitive injections (FRAME, Diverge, Evidence-Share Filter, Gap-Scan, VERIFY) and holds the runner to both a structural and a reasoning standard. Invoked via /epiphany-omnipotent with optional --minimal / --standard / --deep flags; accepts raw text, prompt-epiphany output, or epiphany-context output and saves structured XML to disk at ~/docs/epiphany/omnipotent/."
 ---
 
 # Epiphany Omnipotent
@@ -352,7 +352,7 @@ This is the only place these parameters are defined. Other sections reference th
 │  └──────────┬──────────┘  └───────────────────────────────────────────── │
 │             │                                                            │
 │             ▼                                                            │
-│  OUTPUT: Saved to ~/epiphany/omnipotent/<filename>.xml                 │
+│  OUTPUT: Saved to ~/docs/epiphany/omnipotent/<filename>.xml            │
 │                                                                          │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
@@ -1435,9 +1435,9 @@ The reasoning standard is enforced by the runner, not the schema. A runner that 
 
 Save the full `<omnipotent_output_v1>` block to disk. **Do not emit it in-conversation.** Save is mandatory and automatic — no user prompt before writing.
 
-**Location:** `~/epiphany/omnipotent/<filename>.xml`
+**Location:** `~/docs/epiphany/omnipotent/<filename>.xml`
 
-**Directory creation:** If `~/epiphany/omnipotent/` does not exist, create it (and `~/epiphany/` if missing) before writing. Use default user permissions.
+**Directory creation:** If `~/docs/epiphany/omnipotent/` does not exist, create it (and `~/docs/epiphany/` if missing) before writing. Use default user permissions.
 
 **Filename convention:** `<slug>-<YYYYMMDD>-<HHMM>UTC.xml`
 
@@ -1490,7 +1490,7 @@ Take the first 6 words of the source text, lowercase, strip non-alphanumeric cha
 Shown only if all 13 chunks completed successfully. Print in this exact order:
 
 ```
-Saved: ~/epiphany/omnipotent/<filename>.xml
+Saved: ~/docs/epiphany/omnipotent/<filename>.xml
 ⚠ Output is degraded — review XML before analysis.   ← only if status=degraded OR reasoning_status=shallow
 Analyze this XML with /epiphany-analysis? (yes / no)
 ```
@@ -1518,14 +1518,14 @@ epiphany-analysis skill and run: /epiphany-analysis <filepath>
 
 **With `prompt-epiphany`:** Input can be prompt-epiphany output; the XML structures are compatible for this direction.
 
-**With `epiphany-analysis`:** XML saved to `~/epiphany/omnipotent/` is the primary input for epiphany-analysis. Does not call epiphany-analysis at runtime.
+**With `epiphany-analysis`:** XML saved to `~/docs/epiphany/omnipotent/` is the primary input for epiphany-analysis. Does not call epiphany-analysis at runtime.
 
 ---
 
 ## Document Status
 
 Version 1.5.0 (2026-04-09): Output persistence and handoff redesign — XML-only output, mandatory chunked disk write, epiphany-analysis handoff. No pipeline changes.
-- **Output goes disk-only.** `<omnipotent_output_v1>` is no longer emitted in-conversation; it is written to `~/epiphany/omnipotent/<filename>.xml` automatically after every run.
+- **Output goes disk-only.** `<omnipotent_output_v1>` is no longer emitted in-conversation; it is written to `~/docs/epiphany/omnipotent/<filename>.xml` automatically after every run.
 - **Chunked write protocol.** File written in 13 sequential chunks (one per top-level XML section, with `<lens_outputs>` split one lens per chunk) to prevent write failures on large outputs. Each chunk verified before proceeding.
 - **Mandatory save.** The opt-in "Save to file?" prompt is removed. Save always happens.
 - **Downstream handoff simplified.** 7-rule table replaced with 2-rule table: degraded/shallow/escape → `none`; all other cases → `epiphany-analysis`. `writing-plans` and `prompt-epiphany` removed from recommendation set.
