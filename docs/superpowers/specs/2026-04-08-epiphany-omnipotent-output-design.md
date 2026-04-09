@@ -729,6 +729,7 @@ output-{intent}-{YYYYMMDD}-{HHMM}.xml
 | Distillation fails to extract required field | Emit verbose XML with error note in `<process_notes>`; set status = degraded |
 | Intent detection error or exception | Default to ambiguous; emit both deliverables |
 | File save fails (permissions, disk full) | Report error; continue session; do not block output |
+| Both `--brainstorm` and `--plan` flags present | Ask user to pick one; if no response, default to ambiguous |
 
 ---
 
@@ -799,6 +800,7 @@ Add to SKILL.md trigger conditions:
 | `/epiphany-omnipotent --skip-clarification` | If confidence < 0.3, default to ambiguous (both deliverables) instead of asking |
 | `/epiphany-omnipotent --auto-save` | Skip save prompt; always save verbose XML |
 | `/epiphany-omnipotent --no-save` | Skip save prompt; never save verbose XML |
+| Both `--brainstorm` and `--plan` flags | Ask user to pick one; if no response, default to ambiguous |
 
 ---
 
