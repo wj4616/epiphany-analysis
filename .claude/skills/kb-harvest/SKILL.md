@@ -115,8 +115,14 @@ For any command requiring `--kb`:
 3. If not found: list all registered KB names and ask user to choose, or offer to register a new KB
 4. From the matched registry entry, resolve paths:
    - `kb_path` = `entry.path` (absolute path to KB root)
-   - `schema_path` = `kb_path + "/" + entry.schema_path` if entry.schema_path is not null, else use `templates/entry-schema-default.json` from this skill
-   - `bridge_schema_path` = `kb_path + "/" + entry.bridge_schema_path` if not null
+   - `schema_path`:
+     - If `entry.schema_path` is not null → `kb_path + "/" + entry.schema_path`
+     - Else auto-probe: check `kb_path + "/../architecture/entry-schema.json"` (PBCPB standard location). If found, use it and log: "Auto-detected schema at [path]"
+     - Else fall back to `templates/entry-schema-default.json` from this skill
+   - `bridge_schema_path`:
+     - If `entry.bridge_schema_path` is not null → `kb_path + "/" + entry.bridge_schema_path`
+     - Else auto-probe: check `kb_path + "/../architecture/bridge-schema.json"`. If found, use it.
+     - Else null (bridge detection skipped)
    - `master_index_path` = `kb_path + "/" + entry.master_index_path`
    - `layers` = `entry.layers`
    - `bridge_eligible_layers` = `entry.bridge_eligible_layers` (default `[]`)
@@ -440,10 +446,20 @@ BATCH COMPLETE (N entries written)
 │
 ├── 4. MASTER-INDEX UPDATE
 │     Read <kb_path>/master-index.json
-│     Update knowledge_bases[kb_name]:
+│     Detect format:
+│       New format (PBCPB): top-level "kb_layers" array present
+│       Prototype format: top-level "knowledge_bases" object present
+│
+│     New format — for each layer in this batch, find the matching entry in kb_layers[]:
+│       entry_count: recount from layer manifest.json
+│       topics[]: add any new topic strings from the written entries
+│       (authority_score and display_name are architecture decisions — do not overwrite)
+│
+│     Prototype format — update knowledge_bases[kb_name]:
 │       file_count: recount from manifests
 │       topics[]: add any new topics
 │       status: "ready" if has harvested entries, "building" if only placeholders
+│
 │     Write master-index.json
 │     Mark step 4 "done" in journal
 │

@@ -77,7 +77,15 @@
     "related_topics": { "type": "array", "items": { "type": "string" } },
     "cross_references": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "object",
+        "required": ["kb", "entry_id", "relationship"],
+        "properties": {
+          "kb": { "type": "string", "description": "Target KB layer name" },
+          "entry_id": { "type": "string", "description": "Target entry ID" },
+          "relationship": { "type": "string", "description": "e.g. implements, extends, see-also, contradicts" }
+        }
+      },
       "description": "Populated by kb-sync --repair, not during harvest"
     },
     "difficulty": { "type": "string", "enum": ["beginner", "intermediate", "advanced"] },

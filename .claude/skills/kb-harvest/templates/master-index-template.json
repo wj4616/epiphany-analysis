@@ -1,7 +1,6 @@
 {
-  "kb_name": "master-index",
   "version": "1.0.0",
-  "knowledge_bases": {},
-  "cross_references": {},
-  "last_updated": ""
+  "last_updated": "",
+  "kb_layers": [],
+  "cross_layer_mappings": []
 }
