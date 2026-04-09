@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "resume_state_schema.json",
+  "title": "Resume State",
+  "description": "Schema for cache/resume state",
+  "type": "object",
+  "required": ["can_resume", "last_completed_pass", "next_pass", "intermediate_files"],
+  "properties": {
+    "can_resume": { "type": "boolean" },
+    "last_completed_pass": { "type": "integer", "minimum": 0, "maximum": 4 },
+    "next_pass": { "type": "integer", "minimum": 1, "maximum": 4 },
+    "cache_age_seconds": { "type": "integer", "minimum": 0 },
+    "input_fingerprint": {
+      "type": "object",
+      "properties": {
+        "playbook_hash": { "type": "string" },
+        "session_hash": { "type": "string" },
+        "knowledge_dir_hash": { "type": "string" }
+      }
+    },
+    "intermediate_files": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "exists": { "type": "boolean" },
+          "size_bytes": { "type": "integer", "minimum": 0 },
+          "modified": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "timing": {
+      "type": "object",
+      "properties": {
+        "pass_1_duration_ms": { "type": "integer" },
+        "pass_2_duration_ms": { "type": "integer" },
+        "pass_3_duration_ms": { "type": "integer" },
+        "pass_4_duration_ms": { "type": "integer" },
+        "total_elapsed_ms": { "type": "integer" }
+      }
+    }
+  }
+}

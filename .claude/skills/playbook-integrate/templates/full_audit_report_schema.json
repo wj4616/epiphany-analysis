@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "full_audit_report_schema.json",
+  "title": "Full Audit Report",
+  "description": "Schema for consolidated audit across all passes",
+  "type": "object",
+  "required": ["audit_report"],
+  "properties": {
+    "audit_report": {
+      "type": "object",
+      "required": ["session_id", "playbook_version", "timestamp", "status", "passes", "summary"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "playbook_version": {
+          "type": "object",
+          "required": ["before", "after"],
+          "properties": {
+            "before": { "type": "integer" },
+            "after": { "type": "integer" }
+          }
+        },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "total_duration_ms": { "type": "integer", "minimum": 0 },
+        "status": { "type": "string", "enum": ["integrated", "partial", "blocked", "audit_complete"] },
+        "passes": {
+          "type": "object",
+          "properties": {
+            "pass_1": {
+              "type": "object",
+              "required": ["status", "duration_ms"],
+              "properties": {
+                "status": { "type": "string", "enum": ["complete", "partial", "failed", "skipped"] },
+                "duration_ms": { "type": "integer" },
+                "extractions": { "type": "object" },
+                "warnings": { "type": "integer" },
+                "errors": { "type": "integer" }
+              }
+            },
+            "pass_2": {
+              "type": "object",
+              "required": ["status", "duration_ms"],
+              "properties": {
+                "status": { "type": "string", "enum": ["complete", "partial", "failed", "skipped"] },
+                "duration_ms": { "type": "integer" },
+                "matched": { "type": "integer" },
+                "unmatched": { "type": "integer" },
+                "warnings": { "type": "integer" },
+                "errors": { "type": "integer" }
+              }
+            },
+            "pass_3": {
+              "type": "object",
+              "required": ["status", "duration_ms"],
+              "properties": {
+                "status": { "type": "string", "enum": ["complete", "partial", "failed", "skipped"] },
+                "duration_ms": { "type": "integer" },
+                "validations_passed": { "type": "integer" },
+                "validations_failed": { "type": "integer" },
+                "warnings": { "type": "integer" },
+                "errors": { "type": "integer" }
+              }
+            },
+            "pass_4": {
+              "type": "object",
+              "required": ["status", "duration_ms"],
+              "properties": {
+                "status": { "type": "string", "enum": ["complete", "partial", "failed", "skipped"] },
+                "duration_ms": { "type": "integer" },
+                "items_added": { "type": "integer" },
+                "indexes_rebuilt": { "type": "integer" },
+                "warnings": { "type": "integer" },
+                "errors": { "type": "integer" }
+              }
+            }
+          }
+        },
+        "summary": {
+          "type": "object",
+          "required": ["total_warnings", "total_errors", "items_integrated", "items_blocked"],
+          "properties": {
+            "total_warnings": { "type": "integer" },
+            "total_errors": { "type": "integer" },
+            "items_integrated": { "type": "integer" },
+            "items_blocked": { "type": "integer" },
+            "human_resolution_needed": { "type": "integer" }
+          }
+        },
+        "data_lineage": {
+          "type": "object",
+          "properties": {
+            "failures": { "type": "array", "items": { "type": "object" } },
+            "decisions": { "type": "array", "items": { "type": "object" } },
+            "workflow_patterns": { "type": "array", "items": { "type": "object" } }
+          }
+        },
+        "integrity_checks": {
+          "type": "object",
+          "properties": {
+            "cross_references_valid": { "type": "boolean" },
+            "ids_unique": { "type": "boolean" },
+            "phases_valid": { "type": "boolean" },
+            "no_orphan_references": { "type": "boolean" }
+          }
+        }
+      }
+    }
+  }
+}

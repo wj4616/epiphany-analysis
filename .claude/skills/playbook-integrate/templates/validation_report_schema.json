@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "validation_report_schema.json",
+  "title": "Validation Report",
+  "description": "Schema for Pass 3 Integrity Validation output",
+  "type": "object",
+  "required": ["source", "validation_timestamp", "cross_references", "id_assignments", "integration_plan"],
+  "properties": {
+    "source": { "type": "string", "const": "correlated_extractions.json" },
+    "validation_timestamp": { "type": "string", "format": "date-time" },
+    "cross_references": {
+      "type": "object",
+      "required": ["total_proposed", "valid", "invalid"],
+      "properties": {
+        "total_proposed": { "type": "integer", "minimum": 0 },
+        "valid": { "type": "integer", "minimum": 0 },
+        "invalid": { "type": "integer", "minimum": 0 },
+        "invalid_details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["proposed_reference", "error", "resolution"],
+            "properties": {
+              "proposed_reference": {
+                "type": "object",
+                "properties": {
+                  "from": { "type": "string" },
+                  "to": { "type": "string" },
+                  "relationship": { "type": "string" }
+                }
+              },
+              "error": { "type": "string" },
+              "resolution": { "type": "string", "enum": ["blocked", "fixed", "skipped"] }
+            }
+          }
+        }
+      }
+    },
+    "id_assignments": {
+      "type": "object",
+      "required": ["proposed_new_ids", "next_available_ids"],
+      "properties": {
+        "proposed_new_ids": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["type", "proposed_id", "status"],
+            "properties": {
+              "type": { "type": "string" },
+              "proposed_id": { "type": "string" },
+              "status": { "type": "string", "enum": ["available", "conflict", "reserved"] }
+            }
+          }
+        },
+        "conflicts_resolved": { "type": "array", "items": { "type": "object" } },
+        "next_available_ids": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "contradictions": {
+      "type": "object",
+      "required": ["total", "by_severity"],
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "by_severity": {
+          "type": "object",
+          "properties": {
+            "minor": { "type": "integer", "minimum": 0 },
+            "major": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "severity", "playbook_content", "session_evidence", "resolution"],
+            "properties": {
+              "id": { "type": "string" },
+              "severity": { "type": "string", "enum": ["minor", "major"] },
+              "playbook_content": { "type": "string" },
+              "session_evidence": { "type": "string" },
+              "resolution": { "type": "string", "enum": ["auto_resolved", "blocked"] },
+              "action_needed": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "kb_validation": {
+      "type": "object",
+      "properties": {
+        "references_checked": { "type": "integer", "minimum": 0 },
+        "valid": { "type": "integer", "minimum": 0 },
+        "invalid": { "type": "integer", "minimum": 0 },
+        "invalid_details": { "type": "array", "items": { "type": "object" } }
+      }
+    },
+    "structural_integrity": {
+      "type": "object",
+      "required": ["phases_valid", "checklists_valid", "failure_modes_valid"],
+      "properties": {
+        "phases_valid": { "type": "boolean" },
+        "checklists_valid": { "type": "boolean" },
+        "failure_modes_valid": { "type": "boolean" },
+        "cccs_valid": { "type": "boolean" },
+        "missing_required_fields": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "integration_plan": {
+      "type": "object",
+      "required": ["ready_for_integration", "blocked", "needs_human_resolution"],
+      "properties": {
+        "ready_for_integration": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["extraction_id", "type"],
+            "properties": {
+              "extraction_id": { "type": "string" },
+              "type": { "type": "string" },
+              "proposed_id": { "type": "string" }
+            }
+          }
+        },
+        "blocked": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["extraction_id", "reason"],
+            "properties": {
+              "extraction_id": { "type": "string" },
+              "reason": { "type": "string" },
+              "action": { "type": "string" }
+            }
+          }
+        },
+        "needs_human_resolution": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["contradiction_id", "reason"],
+            "properties": {
+              "contradiction_id": { "type": "string" },
+              "reason": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "integration_report_schema.json",
+  "title": "Integration Report",
+  "description": "Schema for Pass 4 Playbook Generation output",
+  "type": "object",
+  "required": ["status", "playbook_version", "session_info", "summary"],
+  "properties": {
+    "status": { "type": "string", "enum": ["integrated", "partial", "blocked"] },
+    "playbook_version": {
+      "type": "object",
+      "required": ["before", "after"],
+      "properties": {
+        "before": { "type": "integer", "minimum": 1 },
+        "after": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "session_info": {
+      "type": "object",
+      "required": ["session_id", "session_file", "timestamp"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "session_file": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "message_count": { "type": "integer", "minimum": 0 },
+        "tool_uses": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["extractions_processed", "matched_to_phases", "unmatched", "items_added"],
+      "properties": {
+        "extractions_processed": { "type": "integer", "minimum": 0 },
+        "matched_to_phases": { "type": "integer", "minimum": 0 },
+        "unmatched": { "type": "integer", "minimum": 0 },
+        "contradictions_found": { "type": "integer", "minimum": 0 },
+        "human_resolution_needed": { "type": "integer", "minimum": 0 },
+        "items_added": {
+          "type": "object",
+          "properties": {
+            "failure_modes": { "type": "integer", "minimum": 0 },
+            "workflow_patterns": { "type": "integer", "minimum": 0 },
+            "decisions": { "type": "integer", "minimum": 0 },
+            "checklist_items": { "type": "integer", "minimum": 0 },
+            "compilation_updates": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "integration_details": {
+      "type": "object",
+      "properties": {
+        "failure_modes_added": { "type": "array", "items": { "type": "object" } },
+        "failure_modes_updated": { "type": "array", "items": { "type": "object" } },
+        "checklist_items_added": { "type": "array", "items": { "type": "object" } },
+        "compilation_blocks_updated": { "type": "array", "items": { "type": "object" } },
+        "phase_handoffs_updated": { "type": "array", "items": { "type": "object" } },
+        "cross_references_added": { "type": "array", "items": { "type": "object" } }
+      }
+    },
+    "session_evidence_citations": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "gap_analysis": {
+      "type": "object",
+      "properties": {
+        "phases_with_thin_coverage": { "type": "array", "items": { "type": "object" } },
+        "missing_validation_steps": { "type": "array", "items": { "type": "string" } },
+        "questions_to_fill_holes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "contradictions": { "type": "array", "items": { "type": "object" } },
+    "unmatched_items": { "type": "array", "items": { "type": "object" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "audit_files": {
+      "type": "object",
+      "properties": {
+        "pass_1_audit": { "type": "string" },
+        "pass_2_audit": { "type": "string" },
+        "pass_3_audit": { "type": "string" },
+        "pass_4_audit": { "type": "string" }
+      }
+    },
+    "blocked_reason": { "type": "string" }
+  }
+}
