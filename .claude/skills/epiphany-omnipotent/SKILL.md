@@ -352,7 +352,7 @@ This is the only place these parameters are defined. Other sections reference th
 │  └──────────┬──────────┘  └───────────────────────────────────────────── │
 │             │                                                            │
 │             ▼                                                            │
-│  OUTPUT: <omnipotent_output_v1>                                        │
+│  OUTPUT: Saved to ~/epiphany/omnipotent/<filename>.xml                 │
 │                                                                          │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
