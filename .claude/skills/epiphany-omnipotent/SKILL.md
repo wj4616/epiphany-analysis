@@ -1,6 +1,6 @@
 ---
 name: epiphany-omnipotent
-version: 1.5.0
+version: 1.6.0
 last_modified: 2026-04-09
 description: "Unified reasoning-amplifier skill that runs a 5-lens brainstorming pipeline (SCAMPER, Morphological Analysis, Six Thinking Hats, TRIZ, Reverse Brainstorming → Pugh Matrix) with genius-level cognitive injections (FRAME, Diverge, Evidence-Share Filter, Gap-Scan, VERIFY) and holds the runner to both a structural and a reasoning standard. Invoked via /epiphany-omnipotent with optional --minimal / --standard / --deep flags; accepts raw text, prompt-epiphany output, or epiphany-context output and saves structured XML to disk at ~/docs/epiphany/omnipotent/."
 ---
@@ -92,16 +92,20 @@ Three gates execute **during** the pipeline (distinct from the IV1–IV4 input v
 - Re-runs IV1 against post-gather input (gathered context may have changed sufficiency).
 - Fail → block: "Sufficiency lost after context gather: [reason]."
 - Pass → proceed to FRAME.
+- **No-op when Context Gather is skipped** (e.g., input is `<epiphany_context>` already, or no external references detected — see Context Edge Cases row "No external references detected"). In these cases the post-gather input is identical to the IV1-validated pre-gather input, so re-running IV1 would be redundant. Record `<pg1_status>no_op_gather_skipped</pg1_status>` in `<process_notes>` and proceed to FRAME. PG1 still runs in the non-skipped path whenever Context Gather actually executed.
 
 **PG2 — Lens Coherence.** Position: after Synthesis Checkpoint, before S6.
+- **Cross-gate check convention.** Two checks in PG2 — the Diverge branch count check and the Green hat pool-additive check — are *early-catch* versions of PG3's **V5a** and **V4h** respectively. They run the same test at two gates: PG2 catches violations during the pipeline (cheap recovery via lens re-run, capped by `fix_budget`), PG3 catches them at final verification (expensive recovery via Fix-Compare-Select). When this spec writes "PG2 V5a FAIL" or "PG2 V4h FAIL" in prose, it refers to the early-catch version of the same check — not a separate check. Recovery semantics are the gate's, not the check's: at PG2, recovery is lens re-run; at PG3, recovery is Fix-Compare-Select.
 - Checks for cross-lens contamination: does any lens output contain vocabulary or claims that should belong to a different lens (e.g., S1 generates Black-hat risks, S3 Black hat generates new alternatives). **Exception:** dialectical alternatives added to `alternatives_pool` by the Synthesis Checkpoint carry `source="synthesis_dialectic"` and are exempt from this check — the dialectical move is *designed* to cross lens boundaries by synthesising S1+S2 material, so flagging them as contamination would trip PG2 on its own output.
 - Checks lens completeness: all 5 lens elements in `<lens_outputs>` are present and non-empty (or have a documented `<lens_skipped>` reason).
 - Checks `framing_context.success_criterion` is referenced by at least one lens.
+- **Diverge branch count check:** verifies `count(<lens name="divergent_ideation">//genius_diverge/branch/candidate) ≥ 3 × N_candidates_per_branch`, and verifies every `<branch>` element has a `candidate_count` attribute equal to its actual child count. A branch with `candidate_count < N_candidates_per_branch` and no `<branch_thin reason="..."/>` marker is a FAIL — re-run S1 (Injection 2 Diverge sub-component).
+- **Green hat pool-additive check:** verifies `<hat color="green">` contains no `<new_alternative>`, `<alternative>`, `<a_id>`, or any element that writes to `alternatives_pool`. Green hat may emit `<provocation>` and `<direction>` only. A pool-additive child inside any hat is a cross-lens contamination FAIL — re-run S3 Green.
 - Fail → re-run the failing lens once. **Because Synthesis already consumed the previous lens output, any successful lens re-run invalidates Synthesis: re-run the Synthesis Checkpoint (Injection 4 included) against the new lens output, then re-run PG2 against the refreshed lens outputs.** If the same lens fails twice, annotate `<pg2_status>contaminated</pg2_status>` in process_notes, leave Synthesis as it was, and proceed.
 - **Global re-run cap:** the total number of PG2-triggered lens re-runs across all lenses in a single pipeline invocation is capped at `fix_budget` (from the Canonical Parameter Table). If the cap is reached before PG2 is clean, annotate `<pg2_status>contaminated</pg2_status>` with reason `fix_budget_exhausted` and proceed to S6 with the last lens state.
 - Pass → proceed to S6.
 
-**PG3 — Final Verification.** Position: after S6. Runs Injection 5 (V1–V4 verification suite).
+**PG3 — Final Verification.** Position: after S6. Runs Injection 5 (V1–V5 verification suite).
 - Fail with critical failures and `fix_budget` exhausted → emit with `<status>degraded</status>` and `<escape_hatch stage="verify">`.
 - Pass → emit final output.
 
@@ -225,7 +229,7 @@ This is the only place these parameters are defined. Other sections reference th
 |---|---|---|---|---|---|---|---|---|---|---|
 | `N_framings` | scale × stakes | 2 | 2 | 3 | 2 | 3 | 4 | 2 | 3 | 4 |
 | `N_candidates_per_branch` | scale only | 2 | 2 | 2 | 3 | 4 | 5 | 5 | 6 | 8 |
-| `evidence_share_bar` | stakes only | 0.20 | 0.40 | 0.60 | 0.20 | 0.40 | 0.60 | 0.20 | 0.40 | 0.60 |
+| `evidence_share_bar` | stakes only | 0.25 | 0.50 | 0.75 | 0.25 | 0.50 | 0.75 | 0.25 | 0.50 | 0.75 |
 | `gap_scan_depth` | scale only | core | core | core | full | full | full | full | full | full |
 | `fix_budget` | scale only | 1 | 1 | 1 | 2 | 2 | 2 | 3 | 3 | 3 |
 | `verification_depth` | scale only | core | core | core | full | full | full | full | full | full |
@@ -236,12 +240,12 @@ This is the only place these parameters are defined. Other sections reference th
 |---|---|---|
 | `N_framings` | Candidate framings FRAME generates before selecting one | 2–4 |
 | `N_candidates_per_branch` | Candidates each Diverge branch generates | 2–8 |
-| `evidence_share_bar` | Evidence-share threshold to kill alternative in S4 (see Injection 3) | 0.20 / 0.40 / 0.60 |
+| `evidence_share_bar` | Evidence-share threshold to kill alternative in S4 (see Injection 3) | 0.25 / 0.50 / 0.75 |
 | `gap_scan_depth` | `core` = run Gap-Scan checks 1–3 only; `full` = all 5 | core / full |
 | `fix_budget` | Fix-Compare-Select iterations available in PG3 | 1–3 |
-| `verification_depth` | `core` = V1a–c, V2a, V3a, V4a–b; `full` = all V1–V4 checks | core / full |
+| `verification_depth` | `core` = V1a–c, V2a, V3a, V4a–b, V5b, V5c (V5b and V5c are cheap sanity checks and run at every depth); `full` = all V1–V5 checks (including V4e–h for S6 selection and V5a, V5d, V5e for additional cross-validation) | core / full |
 
-**Note on `evidence_share_bar` thresholds:** With 5 evidence sources (see Injection 3), achievable evidence-share values are {0.0, 0.2, 0.4, 0.6, 0.8, 1.0}. The bars 0.20 / 0.40 / 0.60 are chosen to give three distinct kill bands: low kills only "no support", medium kills "≤1 supporter", high kills "≤2 supporters". This parameter is **stakes-only** — scale has no effect on the kill threshold; `MINIMAL+high` uses the same `0.60` bar as `DEEP+high`. Scale affects breadth (`N_candidates_per_branch`, `gap_scan_depth`, `verification_depth`) but not the rigor of the filter itself.
+**Note on `evidence_share_bar` thresholds:** With 4 evidence sources (see Injection 3), achievable evidence-share values are {0.0, 0.25, 0.5, 0.75, 1.0}. The bars 0.25 / 0.50 / 0.75 are chosen to give three distinct kill bands: low kills only "no support", medium kills "≤1 supporter", high kills "≤2 supporters". This parameter is **stakes-only** — scale has no effect on the kill threshold; `MINIMAL+high` uses the same `0.75` bar as `DEEP+high`. Scale affects breadth (`N_candidates_per_branch`, `gap_scan_depth`, `verification_depth`) but not the rigor of the filter itself. (Prior to v1.6.0 this table used a 5-source denominator and 0.20 / 0.40 / 0.60 bars; the denominator dropped when `s4_triz` was removed from the signal list — see Injection 3 note.)
 
 ---
 
@@ -298,7 +302,7 @@ This is the only place these parameters are defined. Other sections reference th
 │             │                                                            │
 │             ▼                                                            │
 │  ┌─────────────────────┐                                                │
-│  │ S3: Multi-Perspective│  Six Thinking Hats (7 hats, all scales)     │
+│  │ S3: Multi-Perspective│  Six Thinking Hats (6 colors, 7 passes)     │
 │  │ Critique            │  Blue(Open) → White → Red → Green → Yellow    │
 │  │                     │    → Black → Blue(Close)                      │
 │  └──────────┬──────────┘                                                │
@@ -346,7 +350,8 @@ This is the only place these parameters are defined. Other sections reference th
 │  │                     │  │ V1: Content Preservation (6 checks)    │ │
 │  │                     │  │ V2: Knowledge & Claim (5 checks)        │ │
 │  │                     │  │ V3: Logic Consistency (6 checks)        │ │
-│  │                     │  │ V4: Output Format (4 checks)            │ │
+│  │                     │  │ V4: Output Format (8 checks, incl V4e-h)│ │
+│  │                     │  │ V5: Cross-Validation (5 checks, v1.5.1) │ │
 │  │                     │  │                                         │ │
 │  │                     │  │ Output: <verification_report>           │ │
 │  └──────────┬──────────┘  └───────────────────────────────────────────── │
@@ -473,11 +478,14 @@ This is the only place these parameters are defined. Other sections reference th
    - **Associative:** "What else is governed by this principle?"
    - **Combinatorial:** Combine Known/Unknown/Assumed elements
    - **Analogical:** Map to structurally similar domains
-3. Generate N candidates per branch (N from stakes)
-4. De-duplicate across branches
-5. Merge with SCAMPER and Lateral Thinking outputs
+3. Generate **exactly `N_candidates_per_branch`** candidates per branch (N from the Canonical Parameter Table). Any branch that emits fewer than `N_candidates_per_branch` is a PG2 V5a FAIL — the runner must re-generate the short branch before proceeding. Padding is not allowed: if a branch cannot produce `N` distinct candidates after a good-faith re-try, emit `<branch_thin reason="..."/>` and proceed; a thin branch with a reason is allowed, a silently-short branch is not.
+4. **Emit raw branch output** with explicit `candidate_count` attribute per branch, BEFORE any de-duplication. The raw emission is the audit trail that proves `N_candidates_per_branch` was honored — it is not optional.
+5. De-duplicate across branches (this step does not reduce `candidate_count` — it only filters what enters `alternatives_pool` downstream). If de-duplication drops candidates, record how many in `<branch_dedup_dropped>`. The raw `candidate_count` stays as originally emitted.
+6. Merge the surviving de-duplicated candidates with SCAMPER and Lateral Thinking outputs into `alternatives_pool`.
 
-**Output:** Contributes to `<alternatives_pool>` in S1 lens output
+**Important — "merge" is emission order, not count reduction:** S1 step 4 (see S1 process below) uses the word "merge" to describe how SCAMPER + Lateral + Diverge outputs are interleaved into `alternatives_pool`. It does NOT authorize the runner to reduce per-branch candidate counts below `N_candidates_per_branch`. Each branch must independently meet the count before merging happens.
+
+**Output:** Emits raw `<branch>` elements (with `candidate_count` attribute) AND contributes de-duplicated survivors to `<alternatives_pool>` in S1 lens output.
 
 **Firewall:** Follows S1 lens rules — stay in generative role, contradict freely
 
@@ -491,35 +499,43 @@ This is the only place these parameters are defined. Other sections reference th
 
 **Mechanism:**
 1. Take the current `alternatives_pool` (S1 + S2 contributions).
-2. Count this alternative's signals across the **5 evidence sources** below.
-3. Compute `evidence_share = supporting_signals / 5`.
+2. Count this alternative's signals across the **4 evidence sources** below.
+3. Compute `evidence_share = supporting_signals / 4`.
 4. Identify the strongest counterevidence.
 5. Classify: **Survived** if `evidence_share ≥ evidence_share_bar`, otherwise **Killed**.
 6. Annotate survivors with strongest surviving objection.
 7. Emit `<survivors_pool>` and `<killed_pool>`.
 
-**The 5 evidence sources** (each contributes 0 or 1 to the numerator):
+**The 4 evidence sources** (each contributes 0 or 1 to the numerator). **Every signal worth 1 MUST carry an inline citation pointing to the specific element in the prior lens output that supports it.** A signal asserted as 1 with no citation is scored as 0 and the runner must re-score. The citation is emitted as a `cite=` attribute on the signal (see schema for `<signals>`).
 
-| # | Source | Contributes 1 if… |
-|---|--------|------------------|
-| 1 | S1 plausibility | alternative is rated `plausibility=high` or `medium` in S1 alternatives_pool |
-| 2 | S2 CCA | alternative passes Cross-Consistency Assessment (no struck combinations involve it) |
-| 3 | S3 Yellow hat | alternative is referenced positively or implicitly supported by Yellow hat best-case |
-| 4 | S3 Black hat | Black hat identified a mitigation for risks against this alternative (not just unmitigated risks) |
-| 5 | S4 TRIZ | TRIZ produced a workable resolution for any contradictions blocking this alternative (or no contradictions exist) |
+| # | Source | Contributes 1 if… | Citation shape |
+|---|--------|------------------|----------------|
+| 1 | S1 plausibility | alternative is rated `plausibility=high` or `medium` in S1 alternatives_pool | `cite="alternatives_pool/alternative[@id='Aₙ']/plausibility"` |
+| 2 | S2 CCA | alternative passes Cross-Consistency Assessment (no struck combinations involve it) | `cite="cross_consistency_assessment"` with zero strikes naming Aₙ |
+| 3 | S3 Yellow hat | alternative is **explicitly** referenced positively by Yellow hat best-case or vision. Implicit support is not enough — the Yellow hat must name the alternative or a mechanism specific to it | `cite="hat[@color='yellow']/best_case_scenario"` with text quoting the relevant phrase |
+| 4 | S3 Black hat | Black hat identified **a mitigation for a risk that would otherwise kill this alternative** (not a mitigation for risks against some other alternative, and not just "risks exist with no mitigation") | `cite="hat[@color='black']/risk/mitigation"` with text quoting the mitigation |
 
-Achievable values (binary mode): {0.0, 0.2, 0.4, 0.6, 0.8, 1.0}.
+**Note on `s4_triz` removal (v1.6.0).** Earlier versions (v1.4.x–v1.5.x) included a fifth signal sourced from S4 TRIZ. An empirical audit of two sample runs (`design-rag-kb-route-20260409` and `design-rag-multi-layer-20260409`) showed that `s4_triz` never changed a survive/kill outcome across 19 alternatives: it was redundant with s1/s2 when TRIZ found resolutions (alternatives already survived), and silent when TRIZ found none (every signal scored 0). In sample 2, alternative A6 was killed at `evidence_share = 0.2` despite `s4_triz = 1` being its lone supporter — TRIZ's vote was outnumbered 4-to-1 by the other sources. The signal was load-free noise in the filter. It has been removed; TRIZ outputs still feed Synthesis and S6 via the `<triz>` block, but no longer participate in the Evidence-Share vote. The `evidence_share` denominator is now 4, not 5, and the kill bands have been recalibrated accordingly.
+
+Achievable values (binary mode): {0.0, 0.25, 0.5, 0.75, 1.0}.
+
+**Sanity check on low kill rates (canonical trigger — referenced by V5b).** After scoring, the runner MUST inspect the aggregate kill rate. The trigger fires when **any** of the following hold for the pool that entered the Evidence-Share Filter (i.e. `alternatives_pool` at the moment of S4 scoring, before partition into `survivors_pool`/`killed_pool`):
+
+- **Trigger A (zero-kill):** zero alternatives were killed AND `evidence_share_bar ≥ 0.50` AND the pool contains ≥ 6 alternatives. Catches the case where the filter failed to kill anything it should have.
+- **Trigger B (high-survival):** all alternatives in a pool of ≥ 6 survived with `evidence_share ≥ 0.75`. Catches the case where surviving scores are suspiciously uniform even if one token kill happened.
+
+Either trigger is prima facie evidence the runner rubber-stamped the signals. Required action: re-score **the two alternatives with the weakest justifications** (fixed floor; if the pool has only 2 survivors, re-score both) using strict citation discipline (no implicit support, no free points). The count is deliberately fixed at two regardless of pool size — re-scoring scales linearly with pool size would make the sanity check cost-prohibitive at pool=10+, and the two weakest are the most informative sample for detecting rubber-stamping. Emit `<kill_rate_audit>` with the re-score outcome and the citations examined. V5b in PG3 enforces this check and emits a WARNING when either trigger fires.
 
 **Kill bands** (from Canonical Parameter Table):
-- `evidence_share_bar = 0.20` (low stakes) → kill only at 0.0 (no support)
-- `evidence_share_bar = 0.40` (medium) → kill at 0.0 and 0.2 (≤1 supporter)
-- `evidence_share_bar = 0.60` (high) → kill at 0.0, 0.2, 0.4 (≤2 supporters)
+- `evidence_share_bar = 0.25` (low stakes) → kill only at 0.0 (no support)
+- `evidence_share_bar = 0.50` (medium) → kill at 0.0 and 0.25 (≤1 supporter)
+- `evidence_share_bar = 0.75` (high) → kill at 0.0, 0.25, 0.50 (≤2 supporters)
 
 **Output emits the numeric bar**, not the qualitative label, so downstream consumers see the same number used for the kill decision.
 
 **If all alternatives killed:** Proceed with the highest-`evidence_share` alternative as provisional, include `<escape_hatch stage="evidence_share">All alternatives below kill threshold; provisional selection for downstream review</escape_hatch>`.
 
-**Graded mode (stakes=high only — recommended for capable runners):** Instead of binary 0/1 per source, score each source as **0 (none) / 0.5 (partial or qualified) / 1.0 (full)**. Sum and divide by 5. This produces achievable values {0.0, 0.1, 0.2, …, 1.0} — twice the resolution. Apply the same `evidence_share_bar` thresholds. Two extra rules apply in graded mode:
+**Graded mode (stakes=high only — recommended for capable runners):** Instead of binary 0/1 per source, score each source as **0 (none) / 0.5 (partial or qualified) / 1.0 (full)**. Sum and divide by 4. This produces achievable values {0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0} — twice the resolution of binary mode. Apply the same `evidence_share_bar` thresholds. Two extra rules apply in graded mode:
 - **Counterevidence weighting:** If the strongest counterevidence is severe (would invalidate the alternative entirely if true), subtract 0.2 from the final score before comparing to the bar. Document the subtraction in `<counterevidence_penalty>` so the kill decision is auditable.
 - **Confidence floor:** If the runner cannot honestly distinguish 0.5 from 1.0 for a particular source (genuine uncertainty), record 0.5 and add a `<low_confidence_signal source="..."/>` marker. Two or more low-confidence markers on the same alternative force `<escape_hatch stage="evidence_share">low-resolution evidence — manual review recommended</escape_hatch>`.
 
@@ -557,46 +573,73 @@ Achievable values (binary mode): {0.0, 0.2, 0.4, 0.6, 0.8, 1.0}.
 
 **Position:** Within PG3 Final Verification
 
-**Mechanism:** Run four verification categories:
+> **Evidence is mandatory.** A verification check that only contains narrative prose ("all items preserved", "no contradictions found") is a rubber-stamp, not a check. Every check **must** emit enumerated `<evidence>` entries that cite the specific output elements examined. A check with zero `<evidence>` children is a FAIL regardless of its `result` attribute. This is the single most important rule in Injection 5 — it exists because a runner that is allowed to summarise will always summarise, and a summary never catches the bug it wants to hide.
 
-**V1: Content Preservation**
-| Check | Description |
-|-------|-------------|
-| V1a | Detail inventory — all items from input preserved |
-| V1b | Constraint preservation — every constraint addressed |
-| V1c | Requirement completeness — every requirement addressed |
-| V1d | Code integrity — code blocks byte-identical |
-| V1e | Formula preservation — formulas exact |
-| V1f | Technical term fidelity — terms not substituted |
+**Mechanism:** Run five verification categories (V1–V4 per-output, V5 cross-validation). For every check, the runner must:
+1. Enumerate the output elements being examined (not a summary — the actual list).
+2. Emit one `<evidence>` child per element examined, with an `element=` attribute (xpath-style pointer or element name + id) and a `verdict` attribute (`match|mismatch|missing`).
+3. Set the check's `result` to `pass` only if every `<evidence>` entry has `verdict="match"`. A single `mismatch` or `missing` forces `result="fail"`.
+4. If the check has nothing to examine (e.g. V1d on an input with no code blocks), emit one `<evidence element="n/a" verdict="not_applicable"/>` child with a one-line reason. Empty `<evidence>` lists are never valid.
 
-**V2: Knowledge & Claim**
-| Check | Description |
-|-------|-------------|
-| V2a | Claim traceability — every claim traces to evidence |
-| V2b | Tradeoff justification — every tradeoff has source |
-| V2c | Confidence annotation accuracy — confidence matches evidence |
-| V2d | Source attribution validity — attributions match lineage |
-| V2e | Assumption awareness — every Assumed validated/deferred/marked |
+**V1: Content Preservation** (per-item evidence)
+| Check | Description | Evidence shape |
+|-------|-------------|----------------|
+| V1a | Detail inventory — all items from input preserved | One `<evidence>` per `<item>` in `<input_inventory>`, citing where it appears downstream |
+| V1b | Constraint preservation — every constraint addressed | One `<evidence>` per constraint from input, citing where it is honored |
+| V1c | Requirement completeness — every requirement addressed | One `<evidence>` per requirement from input |
+| V1d | Code integrity — code blocks byte-identical | One `<evidence>` per code block, citing byte-match |
+| V1e | Formula preservation — formulas exact | One `<evidence>` per formula |
+| V1f | Technical term fidelity — terms not substituted | One `<evidence>` per technical term |
 
-**V3: Logic Consistency**
-| Check | Description |
-|-------|-------------|
-| V3a | Internal consistency — no contradictions within output |
-| V3b | Frame alignment — output addresses success criterion |
-| V3c | Tradeoff-accountability match — tradeoffs match stress-tests |
-| V3d | Gap resolution — gaps resolved/deferred/documented |
-| V3e | Edge case coverage — boundary conditions addressed |
-| V3f | Reasoning chain validity — each step follows from previous |
+**V2: Knowledge & Claim** (per-claim evidence)
+| Check | Description | Evidence shape |
+|-------|-------------|----------------|
+| V2a | Claim traceability — every claim traces to evidence | One `<evidence>` per load-bearing claim, citing its source |
+| V2b | Tradeoff justification — every tradeoff has source | One `<evidence>` per tradeoff in synthesis/decision |
+| V2c | Confidence annotation accuracy — confidence matches evidence | One `<evidence>` per confidence-annotated element |
+| V2d | Source attribution validity — attributions match lineage | One `<evidence>` per `source=` attribute in alternatives_pool |
+| V2e | Assumption awareness — every Assumed validated/deferred/marked | One `<evidence>` per `<assumed>` element |
 
-**V4: Output Format**
-| Check | Description |
-|-------|-------------|
-| V4a | Required elements present and non-empty |
-| V4b | Element ordering correct |
-| V4c | Attribute completeness — required attributes present |
-| V4d | Optional element logic — optional elements have justification |
+**V3: Logic Consistency** (per-relationship evidence)
+| Check | Description | Evidence shape |
+|-------|-------------|----------------|
+| V3a | Internal consistency — no contradictions within output | One `<evidence>` per lens-pair checked, citing the pair |
+| V3b | Frame alignment — output addresses success criterion | One `<evidence>` per success-criterion element, citing where it is addressed |
+| V3c | Tradeoff-accountability match — tradeoffs match stress-tests | One `<evidence>` per tradeoff, citing its stress-test |
+| V3d | Gap resolution — gaps resolved/deferred/documented | One `<evidence>` per gap in `<gaps_from_frame>` |
+| V3e | Edge case coverage — boundary conditions addressed | One `<evidence>` per edge case |
+| V3f | Reasoning chain validity — each step follows from previous | One `<evidence>` per reasoning step transition |
 
-**Depth and `fix_budget` by scale:** see the Canonical Parameter Table in **Stakes Assessment**. `verification_depth` controls which V1–V4 checks run (`core` = V1a–c, V2a, V3a, V4a–b; `full` = all). `fix_budget` controls how many Fix-Compare-Select iterations are available.
+**V4: Output Format** (per-element evidence)
+| Check | Description | Evidence shape |
+|-------|-------------|----------------|
+| V4a | Required elements present and non-empty | One `<evidence>` per required top-level element |
+| V4b | Element ordering correct | One `<evidence>` per sibling pair checked |
+| V4c | Attribute completeness — required attributes present | One `<evidence>` per element with required attributes |
+| V4d | Optional element logic — optional elements have justification | One `<evidence>` per optional element present |
+| V4e | Pugh selection — ≤5 alternatives in `<matrix>`, selection_rationale documents Phase A/B selections | One `<evidence>` per row in `<matrix>` citing its Phase A/B source; FAIL if total rows + baseline > 5 |
+| V4f | Baseline priority — follows (a)-(c) order (see S6 step 3); if ambiguous case, documented in selection_rationale | One `<evidence>` per priority level evaluated |
+| V4g | `<selection_rationale>` present and non-empty inside `<decision>`, and naming both Phase A (dialectical slots) and Phase B (evidence_share fill) | One `<evidence>` per phase cited; FAIL if element missing, empty, or only names one phase |
+| V4h | Green hat contains no `<new_alternative>` or pool-additive child (enforces Firewall 3 for Green mode); Red hat contains no rationale clauses; White hat contains no inferences | One `<evidence>` per hat checked, citing the specific children examined |
+
+**V5: Cross-Validation** (relational sanity — NEW in v1.5.1)
+| Check | Description | Evidence shape |
+|-------|-------------|----------------|
+| V5a | Diverge candidate count — `count(<lens name="divergent_ideation">//genius_diverge/branch/candidate)` ≥ `3 × N_candidates_per_branch` (3 branches × N). FAIL if any branch has `candidate_count` attribute < `N_candidates_per_branch` | One `<evidence>` per branch, citing its `candidate_count` vs the parameter |
+| V5b | Evidence-share kill-rate sanity — if the kill-rate audit trigger (see Injection 3) fires, emit a WARNING (not FAIL) pointing at the likelihood the runner stamped all signals without citation. Required action: re-score **the two alternatives with the weakest justifications** (same count as Injection 3 — not one, not three) with per-signal citations and re-emit into `<kill_rate_audit>` | One `<evidence>` citing the kill rate and the re-score outcome |
+| V5c | Pugh matrix size — total alternatives in `<decision>/<alternatives>` + baseline ≤ 5. FAIL, not warning. This is the V4e check's relational form | One `<evidence>` citing the count |
+| V5d | Reasoning self-assessment honesty — if all 8 `<reasoning_self_assessment>` criteria are `passed` AND any structural check failed OR any escape_hatch is present, emit a WARNING: the runner likely rubber-stamped the reasoning standard. Required action: re-audit the two criteria most adjacent to the structural failure (e.g. structural `V4e` fail → re-audit `honest_insight` + `mode_switching`) | One `<evidence>` per re-audited criterion |
+| V5e | Forced-flag enum honesty — `<forced_by_flag>` value matches the actual flag processing (if `none`, no `--minimal/--standard/--deep` was seen at first or last token) | One `<evidence>` citing the detected flag state |
+
+**Depth and `fix_budget` by scale:** see the Canonical Parameter Table in **Stakes Assessment**. `verification_depth` controls which checks run:
+- `core` = V1a–c, V2a, V3a, V4a–b, **V5b, V5c** (both cross-validation checks are cheap and load-bearing: V5b catches silent filter rubber-stamping at any scale, V5c catches Pugh-matrix-size violations at any scale. Promoting them to core costs ~two grep-style counts per run and eliminates the bug class that produced the v1.5.0 sample failures.)
+- `full` = all V1–V5 checks, including V4e–h and the remaining cross-validation checks (V5a diverge-count, V5d reasoning-honesty, V5e forced-flag-honesty)
+
+When `verification_depth=full`, the runner **must** emit a `<check>` element for every V4e–h and V5a–e check — absence is a FAIL. A `<check>` emitted with zero `<evidence>` children is also a FAIL.
+
+**V4e ⇌ V5c dual-path contract.** V4e and V5c must never disagree on Pugh matrix size: both enforce "total rows + baseline ≤ 5" against the same `<decision>/<matrix>` element. V4e is the structural form (counts rows directly in the matrix), V5c is the relational form (counts alternatives referenced from `<decision>/<alternatives>`). If V4e passes but V5c fails (or vice versa) in the same run, that is itself a meta-FAIL: the matrix and the alternatives list have drifted out of sync. Recovery: re-emit the `<decision>` block so both counts agree, then re-run V4e and V5c. This is a defensive dual-path — the duplication is intentional, not accidental.
+
+**Fix-Compare-Select escalation:** If V5b or V5d emit a WARNING, the runner must execute the "Required action" in the check row within the current `fix_budget`. A WARNING that is acknowledged but not acted on degrades the output to `<status>degraded</status>` even if all FAIL checks pass.
 
 **Fix-Compare-Select:** If critical failures, generate fix candidates (one Fix-Compare-Select cycle per `fix_budget` unit), compare, select the optimal fix, re-run verification.
 
@@ -616,12 +659,14 @@ Achievable values (binary mode): {0.0, 0.2, 0.4, 0.6, 0.8, 1.0}.
 
 **Methodologies:** SCAMPER, Lateral Thinking, Genius Diverge
 
+**Diversity seeding (v1.5.1):** Before generating, pick 2–3 **diversity seeds** — vocabulary, domain, or stance anchors deliberately far from the framing's native language. Use them to bias at least one candidate per Diverge branch toward unfamiliar territory. Seeds are a *hint*, not a constraint: if a seed produces nothing useful, drop it and record why in `<diversity_seeds_used>`. The goal is to catch framings where every "divergent" candidate still speaks the input's dialect — the failure mode is candidates that are surface variations, not genuinely different moves.
+
 **Process:**
 1. SCAMPER: Generate ideas for each of 7 prompts (Substitute, Combine, Adapt, Modify, Put to other use, Eliminate, Reverse).
 2. Lateral Thinking: Generate 2–3 provocations, explore implications.
-3. Genius Diverge: Generate `N_candidates_per_branch` candidates per branch (Associative, Combinatorial, Analogical). See Canonical Parameter Table.
-4. Merge all outputs.
-5. De-duplicate structurally equivalent alternatives. Assign sequential IDs `A1, A2, A3…`.
+3. Genius Diverge: Generate **exactly** `N_candidates_per_branch` candidates per branch (Associative, Combinatorial, Analogical). See Canonical Parameter Table. Each branch is independently required to meet this count — a short branch is a PG2 V5a FAIL. Emit raw `<branch candidate_count="N">` output as an audit trail (see Injection 2).
+4. **Merge all outputs into `alternatives_pool`.** "Merge" here means **interleave into a single pool in emission order**, not "reduce counts". SCAMPER contributes ~7 candidates, Lateral 2–3, Diverge `3 × N_candidates_per_branch`. The pool size before de-duplication is the sum of those. If the pool is smaller than the sum minus structurally-equivalent duplicates, a branch under-produced — re-run it.
+5. De-duplicate structurally equivalent alternatives. Assign sequential IDs `A1, A2, A3…`. Record how many duplicates were dropped in `<dedup_dropped>` so the branch counts remain auditable.
 6. Emit `<alternatives_pool>`.
 
 **Firewalls:**
@@ -669,7 +714,7 @@ Achievable values (binary mode): {0.0, 0.2, 0.4, 0.6, 0.8, 1.0}.
 | Blue (opening) | Process meta-awareness | State scope, format. Only hat permitted to reference other lenses or hats. | Skipping straight into content; no scope statement |
 | White | Pure data witness | Neutral data only. Preserve numbers/URLs verbatim. No opinions, no inferences. | Sentences containing "because", "important", "should" |
 | Red | Unfiltered gut | Gut reactions only. One-line. **No "because" clauses, no rationale, no defense.** | Any sentence longer than ~12 words |
-| Green | Generative provocation | Generate *new* alternatives, provocations allowed. No evaluation. **May not reference S1 alternatives** — those are already on the table. | Restating S1 ideas with new vocabulary |
+| Green | Generative provocation | Generate **provocations** and **directions** — NOT new alternatives for the pool. Green hat explores *how to think differently* about the problem; it never writes to `alternatives_pool`. The only place outside S1/S2 that may add to `alternatives_pool` is the Synthesis Checkpoint dialectical move (`source="synthesis_dialectic"`). **Prohibited:** `<new_alternative>`, `<alternative>`, `<a_id>`, or any element that extends the pool. **Allowed:** `<provocation><statement>...</statement><implication>...</implication></provocation>` and `<direction>...</direction>`. **May not reference S1 alternatives by id** — those are already on the table. Pool-additive children trigger a PG2 FAIL (see Pipeline Gates). | Restating S1 ideas with new vocabulary; emitting `<new_alternative>` or similar |
 | Yellow | Disciplined optimism | Best-case scenario AND vision. Both required. Must be falsifiable (a Yellow case that "could not fail" is not a Yellow case). | Vague benefits ("would be great") |
 | Black | Protective skepticism | Risks WITH mitigations. Protective, not pessimistic. A Black risk with no mitigation attempt is a half-finished thought. | Risks listed with no mitigation attempt |
 | Blue (closing) | Process retrospective | Summarize, flag thin hats. Identify which hats produced *real* mode-switching versus which produced filler. | Just restating each hat's content |
@@ -690,26 +735,42 @@ Achievable values (binary mode): {0.0, 0.2, 0.4, 0.6, 0.8, 1.0}.
 **Output:** `survivors_pool` + `killed_pool`
 **Transforms:** `alternatives_pool` → `survivors_pool` (via Evidence-Share filtering)
 
-**Methodology:** TRIZ + Evidence-Share Confidence Filter (Injection 3)
+**Methodology:** TRIZ (IFR + separation/inventive principles) + Evidence-Share Confidence Filter (Injection 3)
 
-**The cognitive move:** TRIZ's value is forcing you to *name* the contradiction instead of working around it. A contradiction made explicit is half-resolved. Resist the urge to skip to "balance both sides" — that is the failure mode TRIZ exists to prevent.
+**The cognitive move:** TRIZ's value is forcing you to *name* the contradiction instead of working around it. A contradiction made explicit is half-resolved. Resist the urge to skip to "balance both sides" — that is the failure mode TRIZ exists to prevent. Real TRIZ distinguishes sharply between technical contradictions (tradeoffs, answered by inventive principles) and physical contradictions (simultaneity paradoxes, answered by separation). This skill honours that distinction: the wrong palette on the wrong contradiction type is a category error, not a resolution.
 
 **Process:**
 1. Fresh-read input.
 2. Identify **technical contradictions** in the form: "to improve X, we currently have to worsen Y." Write them in this exact form. If you cannot, you have not found the contradiction yet — what you have is a tradeoff, which is weaker.
-3. Identify **physical contradictions** in the form: "the system must be A and not-A at the same time, in the same place, for the same purpose." If the contradiction collapses when you change *time*, *place*, or *purpose*, you already have your separation principle (see step 4).
-4. Propose resolutions using one or more of the **5 separation principles** by name. Pick the principle, then explain the move, then state the resolution:
+3. Identify **physical contradictions** in the form: "the system must be A and not-A at the same time, in the same place, for the same purpose." A physical contradiction is a special case that TRIZ handles differently from technical contradictions — separation is the answer for physical, inventive principles are the answer for technical. Mis-tagging a contradiction's type will route it to the wrong palette in step 5.
+4. **Ideal Final Result (IFR) — write one line per contradiction before proposing any resolution.** State the IFR in this form: *"The contradiction dissolves when [X happens / Y is true], with no added cost or harm."* The IFR is aspirational — it need not be achievable. Its job is to force the resolution toward a specific mechanism instead of a generic compromise. If the IFR you write is a bare restatement of "balance both sides", rewrite it: IFRs name a mechanism, not a goal.
+5. **Resolution — branch on contradiction type:**
+
+   **For physical contradictions**, apply one or more of the **5 separation principles** by name. Pick the principle, then explain the move, then state the resolution:
    - **Separation in time:** the system has property A at time t1 and not-A at time t2.
    - **Separation in space:** the system has property A in region r1 and not-A in region r2.
    - **Separation between system and component:** the whole has property A; a component has not-A (or vice versa).
    - **Separation by condition:** the system has property A under condition c1 and not-A under condition c2.
    - **Separation by scale:** the system has property A at one level of granularity and not-A at another.
-   If none of the five fit, label the contradiction `<unresolved_contradiction>` rather than forcing a fake resolution. An honest unresolved contradiction is more useful downstream than a fake one.
-5. Evidence-Share Filter (Injection 3): for each alternative in `alternatives_pool`, count signals from the 5 evidence sources, compute `evidence_share`, classify Survived/Killed against `evidence_share_bar`, record surviving objections.
-6. Emit `<survivors_pool>` and `<killed_pool>`.
+
+   **For technical contradictions**, apply one or more of the **10 portable inventive principles** by name. Pick the principle, then explain the move, then state the resolution. Separation principles are NOT the right tool here — they solve "A and not-A" simultaneity problems, while technical contradictions are "improve X, worsen Y" tradeoff problems that want a structural change.
+   - **Segmentation:** divide the object into independent parts so one part can change without constraining the others.
+   - **Asymmetry:** replace a symmetric form, treatment, or distribution with an asymmetric one to gain a property the symmetric version cannot have.
+   - **Nesting:** place one object or process inside another so the outer absorbs cost the inner cannot.
+   - **Preliminary action:** perform the required change in advance so the runtime step does not have to pay for it.
+   - **Cushioning / prior counteraction:** introduce a countermeasure in advance to neutralise the worsening side before it appears.
+   - **"Blessing in disguise":** turn the harmful factor into a resource. If X's worsening is unavoidable, make the worsening itself useful.
+   - **Feedback:** introduce a measurement that drives corrective action so the worsening side self-regulates instead of being tuned manually.
+   - **Intermediary:** introduce a mediating object, layer, or process that absorbs the tradeoff instead of the two endpoints.
+   - **Self-service:** make the system perform the corrective action on itself (no external operator required).
+   - **Parameter change:** change a physical or logical parameter (state, concentration, degree, timescale) so the tradeoff dissolves at the new parameter value.
+
+   If none of the relevant principles fit the contradiction at hand, label it `<unresolved_contradiction>` rather than forcing a fake resolution. An honest unresolved contradiction is more useful downstream than a fake one. **Do not cross-use palettes:** a separation principle applied to a technical contradiction (or an inventive principle applied to a physical contradiction) is a category error and is treated as `<unresolved_contradiction>`. See the Category Mismatch row in S4/S5 Edge Cases.
+6. Evidence-Share Filter (Injection 3): for each alternative in `alternatives_pool`, count signals from the 4 evidence sources, compute `evidence_share`, classify Survived/Killed against `evidence_share_bar`, record surviving objections.
+7. Emit `<survivors_pool>` and `<killed_pool>`.
 
 **Firewalls:**
-- Firewall 1: Generate TRIZ contradictions from fresh read. Consult prior lens outputs only for the filtering step (5).
+- Firewall 1: Generate TRIZ contradictions from fresh read. Consult prior lens outputs only for the filtering step (6).
 - Firewall 3: Stay in contradiction-resolution role.
 
 ---
@@ -770,16 +831,31 @@ Achievable values (binary mode): {0.0, 0.2, 0.4, 0.6, 0.8, 1.0}.
 
 **Methodology:** Pugh Matrix
 
+> ### ⚑ HARD CAP — PUGH MATRIX CONTAINS AT MOST 5 ALTERNATIVES TOTAL ⚑
+>
+> The Pugh Matrix includes **the baseline plus at most 4 non-baseline alternatives — 5 rows maximum**. This cap is enforced by V4e and V5c in PG3; a matrix with more than 5 alternatives is a FAIL, not a warning.
+>
+> **Culling when `survivors_summary` has more than 5 entries:**
+> 1. Run the Phase A / Phase B selection rule below to pick the top 5.
+> 2. Every survivor that did not make the cut goes into `<decision>/<culled_from_matrix>` with its `alternative_id`, `evidence_share`, and a one-line `<culled_reason>` (e.g. `"Phase B: below evidence_share cutoff"` or `"Phase A: third dialectical, Phase A cap is 2"`).
+> 3. The `<culled_from_matrix>` block is mandatory whenever `survivors_summary` had more than 5 entries; its absence is a V4e FAIL.
+>
+> **Why this matters:** the cap exists because a Pugh Matrix with 9+ alternatives is noise, not a decision — the runner cannot meaningfully discriminate at that scale, and the per-cell rationales degrade into rubber-stamps. If you catch yourself writing a 6th row, stop and cull.
+
 **Process:**
 1. Read `synthesis.survivors_summary` to get the candidate alternatives. If empty, see edge case "single survivor" / "no alternatives".
-2. Select **at most 5** alternatives using this two-phase rule so dialectical output is never silently dropped:
-   - **Phase A — reserve dialectical slots.** Every entry with `unfiltered="true"` (i.e. `source="synthesis_dialectic"`) is auto-included, up to a maximum of 2 such slots. If more than 2 dialectical alternatives exist, keep the 2 with the most specific `<dialectical_move>` rationale (runner judgement).
-   - **Phase B — fill remaining slots by evidence_share.** Fill the remaining `5 − reserved` slots from the non-dialectical survivors in descending `evidence_share` order.
-   - If `survivors_summary` has ≤5 entries total, include all of them and skip the ranking.
-3. Select baseline using **single priority order**:
-   - (1) original input's explicit default if present
-   - (2) survivor most-mentioned in `synthesis.agreement` points
-   - (3) first alternative in survivors_summary order (if tie or no signal)
+2. Select **exactly** the top alternatives using this two-phase rule, capped at 5 total, so dialectical output is never silently dropped:
+   - **Phase A — reserve dialectical slots.** Every entry with `unfiltered="true"` (i.e. `source="synthesis_dialectic"`) is auto-included, up to a maximum of 2 such slots. If more than 2 dialectical alternatives exist, keep the 2 with the most specific `<how_it_honors_both>` rationale (runner judgement).
+   - **Phase B — fill remaining slots by evidence_share.** Fill the remaining `5 − reserved` slots from the non-dialectical survivors in descending `evidence_share` order. On ties, use `survivors_summary` order (first listed wins, preserving creation sequence).
+   - **Tie-breaking for Phase B:** When evidence_share ties occur among non-dialectical survivors, select in `survivors_summary` order — first listed wins. This preserves the ID assignment sequence which reflects creation order from S1 → S2 → S3.
+   - If `survivors_summary` has ≤5 entries total, include all of them and note `<selection_note>all_survivors_included</selection_note>` in process_notes.
+   - **Output:** Emit `<selection_rationale>` element documenting Phase A and Phase B selections.
+3. Select baseline from the alternatives selected for Pugh Matrix (steps 1-2), using priority order:
+   - (a) original input's explicit default if present AND in selected alternatives
+   - (b) selected alternative with the most explicit ID references (count `<alternative_ref>` and `<alternative id="...">`) in `synthesis.agreement` points
+   - (c) selected alternative with highest `evidence_share`; on tie, first in `survivors_summary` order
+   <!-- v1.5.2: lettered to avoid collision with the numbered S6 process steps (1, 2, 3, 4…). V4f references these as (a)-(c). -->
+
 4. Identify 3–7 criteria from: input's goals/constraints + framing_context.success_criterion + key disagreements in `synthesis.disagreement`.
 5. Score each non-baseline alternative vs baseline: `+1` / `0` / `-1` with one-line rationale per cell.
 6. Sum weighted scores (default weight = 1.0 unless input specifies criterion priorities).
@@ -821,14 +897,15 @@ Achievable values (binary mode): {0.0, 0.2, 0.4, 0.6, 0.8, 1.0}.
 | Condition | Behavior |
 |-----------|----------|
 | All alternatives killed | Proceed with highest-`evidence_share` alternative as provisional, include `<escape_hatch stage="evidence_share">` |
-| Only 1 alternative survives | S6 cannot run a Pugh Matrix (needs baseline + ≥1 comparator). Emit `<decision_quality>insufficient_alternatives</decision_quality>` and use the lone survivor as the recommendation; populate `<runners_up>` from `killed_pool` with the next-highest `evidence_share` and a note that they were killed |
+| Only 1 alternative survives | S6 cannot run a Pugh Matrix (needs baseline + ≥1 comparator). Emit `<decision_quality>insufficient_alternatives</decision_quality>` and use the lone survivor as the recommendation; populate `<runners_up source="killed_pool">` from `killed_pool` with the next-highest `evidence_share` and a `<killed_note>` that they were killed at Injection 3. See `<runners_up>` schema for the `source` attribute contract. |
 
 ### S4/S5 Methodology Edge Cases
 
 | Condition | Behavior |
 |-----------|----------|
-| TRIZ finds zero contradictions of either type | Note `<no_contradictions>true</no_contradictions>`, skip steps 3–4, proceed to Evidence-Share filter (step 5). Use this only when the input genuinely contains no technical or physical contradictions — not as an escape from a hard contradiction. |
-| TRIZ identifies a contradiction but no separation principle resolves it | Emit `<unresolved_contradiction>` per step 4 (with the contradiction stated in canonical form), then proceed to Evidence-Share filter. An honest unresolved contradiction is more useful downstream than a fake resolution. The two outcomes are mutually exclusive: zero contradictions found → `<no_contradictions>`; contradictions found but unresolvable → `<unresolved_contradiction>`. |
+| TRIZ finds zero contradictions of either type | Note `<no_contradictions>true</no_contradictions>`, skip steps 4–5, proceed to Evidence-Share filter (step 6). Use this only when the input genuinely contains no technical or physical contradictions — not as an escape from a hard contradiction. |
+| TRIZ identifies a contradiction but no principle in the legal palette resolves it | Emit `<unresolved_contradiction>` per step 5 (with the contradiction stated in canonical form and its IFR preserved), then proceed to Evidence-Share filter. An honest unresolved contradiction is more useful downstream than a fake resolution. The two outcomes are mutually exclusive: zero contradictions found → `<no_contradictions>`; contradictions found but unresolvable by any separation principle (physical) or inventive principle (technical) → `<unresolved_contradiction>`. |
+| Category mismatch — `principle_palette="separation"` on a `type="technical"` contradiction, or `principle_palette="inventive"` on a `type="physical"` contradiction | Category error. Separation principles answer "A and not-A" simultaneity problems (physical contradictions); inventive principles answer "improve X, worsen Y" tradeoff problems (technical contradictions). Runner may re-attempt once with the correct palette; if still no fit, emit `<unresolved_contradiction>`. A mismatched `<resolution>` is treated as if it were `<unresolved_contradiction>` regardless of its text — the palette-type pairing is the structural gate. |
 | Reverse Brainstorming finds no failures | Note `<no_failure_modes>true</no_failure_modes>`, `<inverted_lessons>` empty |
 
 ### Output Edge Cases
@@ -878,9 +955,13 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
 | Condition | Behavior |
 |-----------|----------|
 | No criteria available | Use synthesis disagreement points as criteria, minimum 3 |
-| No explicit baseline in input | Apply S6 step-3 priority skipping (1): use survivor most-mentioned in `synthesis.agreement`; on tie, first alternative in `survivors_summary` order |
+| No explicit baseline in input | Apply S6 step-3 priority: (a) check for explicit default in input, (b) count ID references in synthesis.agreement, (c) highest evidence_share among selected alternatives |
 | `survivors_summary` empty | Block: "All alternatives eliminated. No candidates for Pugh Matrix." |
 | `survivors_summary` has only 1 entry | Apply "Only 1 alternative survives" — see Evidence-Share Filter Edge Cases |
+| `survivors_summary` has >5 entries | Apply Phase A/B selection: reserve dialectical slots (max 2), fill remaining by evidence_share, cap at 5 total |
+| Baseline not in selected alternatives | Re-select baseline from selected alternatives using step-3 priority |
+| More than 2 dialectical alternatives | Keep 2 with most specific `<how_it_honors_both>` rationale (runner judgement) |
+| evidence_share ties in Phase B | Use survivors_summary order — first listed wins |
 
 ### Gap-Scan Edge Cases
 
@@ -924,13 +1005,16 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
   <parameters>
     <N_framings>2|3|4</N_framings>
     <N_candidates_per_branch>2|3|4|5|6|8</N_candidates_per_branch>
-    <evidence_share_bar>0.20|0.40|0.60</evidence_share_bar>
+    <evidence_share_bar>0.25|0.50|0.75</evidence_share_bar>
     <gap_scan_depth>core|full</gap_scan_depth>
     <fix_budget>1|2|3</fix_budget>
     <verification_depth>core|full</verification_depth>
   </parameters>
   <injections_used>0,1,2,3,4,5</injections_used>
-  <forced_by_flag>--minimal|--standard|--deep</forced_by_flag>
+  <forced_by_flag>none|--minimal|--standard|--deep</forced_by_flag>
+  <!-- `none` = Scale Router auto-detected (no flag at first/last token).
+       The three flag values indicate which explicit flag forced the scale.
+       V5e cross-validates this field against actual flag processing. -->
   <route_reason>one-sentence explanation</route_reason>
 </meta>
 ```
@@ -976,14 +1060,46 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
       </provocation>
     </lateral_thinking>
     <genius_diverge>
-      <branch name="associative">
+      <!-- Each branch MUST emit `candidate_count` as the raw count BEFORE
+           de-duplication. PG2 V5a verifies candidate_count >= N_candidates_per_branch
+           from the Canonical Parameter Table. A branch that cannot produce enough
+           must emit <branch_thin reason="..."/> as a sibling — do not silently
+           under-produce. -->
+      <branch name="associative" candidate_count="4">
         <candidate id="A1">...</candidate>
+        <candidate id="A2">...</candidate>
+        <!-- ... -->
       </branch>
-      <branch name="combinatorial">...</branch>
-      <branch name="analogical">...</branch>
+      <branch name="combinatorial" candidate_count="4">...</branch>
+      <branch name="analogical" candidate_count="4">...</branch>
+      <branch_dedup_dropped>0</branch_dedup_dropped>
+      <!-- Number of candidates removed by cross-branch de-duplication. The raw
+           candidate_count per branch is preserved above; this element records how
+           many never made it into alternatives_pool. -->
     </genius_diverge>
+    <dedup_dropped>0</dedup_dropped>
+    <!-- Total structurally-equivalent duplicates dropped during S1 step 5 merge
+         (across SCAMPER + Lateral + Diverge). Auditable so downstream consumers
+         can verify branch counts were honored. -->
     <alternatives_pool>
-      <!-- source values (closed set):
+      <!-- **Canonical mutable pool.** Although this element is physically nested
+           inside <lens name="divergent_ideation">, it is the single mutable
+           canonical source for all alternatives across the pipeline:
+             - S1 emits the initial children (scamper, lateral, diverge_*).
+             - S2 appends morphological combinations here (its own <alternatives_added>
+               block is a redundant audit view for easy S2-specific inspection).
+             - Synthesis Checkpoint (step 4) appends dialectical options here with
+               source="synthesis_dialectic"; the <dialectical_options> block in
+               <synthesis> is the canonical rationale location (carries
+               <how_it_honors_both>) and this pool entry is the reference.
+             - S4 Evidence-Share Filter partitions this pool into survivors/killed
+               but does NOT remove entries from here — partition lives in
+               <survivors_pool>/<killed_pool> siblings inside the S4 lens.
+           Physical nesting is for file ordering only; logically this pool spans
+           the pipeline. Downstream consumers should read from this one location
+           for the full alternatives set.
+
+           source values (closed set):
              scamper | lateral | diverge_associative | diverge_combinatorial | diverge_analogical | morphological | synthesis_dialectic
            lineage values:
              for scamper: one of Substitute|Combine|Adapt|Modify|PutToOtherUse|Eliminate|Reverse
@@ -991,6 +1107,18 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
              for diverge_*: branch_seed_1|branch_seed_2|... (free-form per branch)
              for morphological: comma-separated parameter:value pairs
              for synthesis_dialectic: lens1+lens2 (the two lens positions integrated)
+
+           v1.5.2 note on source/lineage asymmetry:
+             SCAMPER is the only S1 sub-method whose source enum is collapsed — all 7
+             operators share source="scamper" and are disambiguated only by the
+             `lineage` column. The diverge_* family gets 3 distinct source values
+             because each of the three Diverge branches has its own V5a count check
+             (one per branch). SCAMPER's 7 operators are NOT count-checked
+             individually, so collapsing them into one source keeps the enum small
+             without losing any validation leverage. If you ever need per-operator
+             counts for SCAMPER, add a scamper_operator enum to lineage rather than
+             expanding source — source is the partition key that V5 relational
+             checks join on, and expanding it would require updating every V5 query.
       -->
       <alternative id="A1" source="scamper" lineage="Substitute">
         <statement>...</statement>
@@ -1004,6 +1132,16 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
          <lens_skipped reason="..."/> element. Same convention applies to any lens. -->
     <parameters>...</parameters>
     <morphological_box>...</morphological_box>
+    <cross_consistency_assessment>
+      <!-- Required. Output of the Cross-Consistency Assessment step (S2 step 5).
+           Each <strike> records one parameter-value combination that was eliminated
+           as impossible, with a one-line reason. Zero strikes is allowed but must
+           be explicit: emit <strike_count>0</strike_count> inside this block so
+           downstream consumers can distinguish "no strikes" from "CCA not run". -->
+      <strike_count>3</strike_count>
+      <strike combination="param1:valueA, param2:valueB">one-line reason this combination is impossible</strike>
+      <!-- ... zero or more <strike> children ... -->
+    </cross_consistency_assessment>
     <alternatives_added>...</alternatives_added>
     <!-- Set to true and emit no <alternatives_added> if Cross-Consistency Assessment
          struck every combination. See "Morphological Edge Cases". -->
@@ -1011,38 +1149,125 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
   </lens>
   
   <lens name="multi_perspective_critique" methodology="Six Thinking Hats (inlined)">
-    <hat color="blue_opening">...</hat>
-    <hat color="white">...</hat>
-    <hat color="red">...</hat>
-    <hat color="green">...</hat>
+    <!-- Each hat has a defined internal schema. A hat that ignores its schema
+         (e.g. Green emits <new_alternative>, Red emits a rationale clause) is
+         a PG2 V4h FAIL. A hat that cannot genuinely produce content emits
+         <thin reason="..."/> as its only child instead. -->
+
+    <hat color="blue_opening">
+      <!-- Process meta-awareness. ONLY hat permitted to reference other lenses/hats. -->
+      <scope>One paragraph stating what this S3 pass will examine and which lens outputs it may reference</scope>
+      <format>One paragraph stating the output shape the runner commits to for this pass</format>
+    </hat>
+
+    <hat color="white">
+      <!-- Pure data witness. Neutral data only. No inferences, no "because" clauses. -->
+      <data_point source="input|framing_context|S1|S2">verbatim data, numbers/URLs preserved</data_point>
+      <!-- ... one or more <data_point> children. A White hat with fewer than 2
+           data points on a non-trivial input is a thin hat — emit <thin> instead. -->
+    </hat>
+
+    <hat color="red">
+      <!-- Unfiltered gut reaction. One line per reaction, no rationale, no "because". -->
+      <gut_reaction>Short sentence, ~12 words max. No justification clauses.</gut_reaction>
+      <!-- ... one or more <gut_reaction> children. If any contains "because",
+           "since", "due to", "therefore" — it's a V4h FAIL. -->
+    </hat>
+
+    <hat color="green">
+      <!-- Generative provocation. Provocations and directions ONLY.
+           MUST NOT emit <new_alternative>, <alternative>, or any pool-additive
+           element. May not reference S1 alternatives by id. See Firewall 3 /
+           S3 process / PG2 Green-hat pool-additive check. -->
+      <provocation>
+        <statement>The provocative move, stated as a question or reversal</statement>
+        <implication>What it would mean for how we think about the problem (NOT a new alternative)</implication>
+      </provocation>
+      <direction>A direction worth exploring further — a vector, not an alternative</direction>
+      <!-- ... zero or more <provocation> and <direction> children. -->
+    </hat>
+
     <hat color="yellow">
-      <best_case_scenario>...</best_case_scenario>
-      <vision>...</vision>
+      <!-- Disciplined optimism. Best case AND vision, both required, both falsifiable. -->
+      <best_case_scenario>One paragraph, concrete, ends with a measurable outcome</best_case_scenario>
+      <vision>One paragraph describing what success looks like at horizon</vision>
+      <falsifiability>One sentence naming the conditions under which this Yellow case would be proven wrong. A Yellow case that "could not fail" fails V4h.</falsifiability>
     </hat>
+
     <hat color="black">
+      <!-- Protective skepticism. Risks WITH mitigations. A risk without a
+           mitigation attempt is a half-finished thought. -->
       <risk>
-        <description>...</description>
-        <mitigation>...</mitigation>
+        <description>The risk, stated concretely (not "something might go wrong")</description>
+        <mitigation>The protective move, stated concretely (not "be careful")</mitigation>
       </risk>
+      <!-- ... one or more <risk> children. A Black hat with zero mitigations
+           across all risks is a V4h FAIL. -->
     </hat>
-    <hat color="blue_closing">...</hat>
+
+    <hat color="blue_closing">
+      <!-- Process retrospective. May reference other hats by name. -->
+      <summary>One paragraph summarizing what this S3 pass produced</summary>
+      <thin_hats>
+        <!-- Zero or more flagged hats that produced padding instead of real
+             mode-switching. Include the color + a one-line diagnosis. -->
+        <hat_flagged color="..." reason="..."/>
+      </thin_hats>
+    </hat>
   </lens>
   
-  <lens name="contradiction_resolution" methodology="TRIZ + Evidence-Share Filter">
+  <lens name="contradiction_resolution" methodology="TRIZ (IFR + separation/inventive principles) + Evidence-Share Filter">
     <triz>
+      <!-- v1.6.0: <contradiction> now carries <ideal_final_result> before <resolution>,
+           and <resolution> gains principle_palette + principle_name attributes so the
+           palette-contradiction-type pairing is mechanically checkable.
+           principle_palette="separation" requires type="physical".
+           principle_palette="inventive" requires type="technical".
+           Any other pairing is a category error and must be emitted as
+           <unresolved_contradiction> instead of <resolution> (see S4 Edge Cases). -->
       <contradiction type="technical|physical">
         <improving>...</improving>
         <worsening>...</worsening>
-        <resolution>...</resolution>
+        <ideal_final_result>One line — the state in which the contradiction dissolves. Names a specific mechanism, not a generic compromise.</ideal_final_result>
+        <resolution principle_palette="separation|inventive" principle_name="...">
+          <!-- principle_name for palette="separation":
+                 separation_in_time | separation_in_space | separation_system_component
+                 | separation_by_condition | separation_by_scale
+               principle_name for palette="inventive":
+                 segmentation | asymmetry | nesting | preliminary_action | cushioning
+                 | blessing_in_disguise | feedback | intermediary | self_service
+                 | parameter_change -->
+          The resolution text itself.
+        </resolution>
       </contradiction>
+      <!-- Zero or more <unresolved_contradiction> siblings, used when no principle in the
+           legal palette fits. Carries the canonical form + IFR for downstream consumers. -->
+      <unresolved_contradiction type="technical|physical">
+        <improving>...</improving>
+        <worsening>...</worsening>
+        <ideal_final_result>...</ideal_final_result>
+        <reason>Why no principle in the legal palette resolved this — one line.</reason>
+      </unresolved_contradiction>
     </triz>
     <evidence_share_filter>
       <filter_mode>binary|graded</filter_mode>
-      <bar>0.20|0.40|0.60</bar>
+      <bar>0.25|0.50|0.75</bar>
       <alternative id="A1" status="survived|killed" evidence_share="0.X">
         <!-- Binary mode: each signal is 0 or 1.
-             Graded mode (stakes=high opt-in): each signal is 0, 0.5, or 1.0. -->
-        <signals s1="0|0.5|1" s2="0|0.5|1" s3_yellow="0|0.5|1" s3_black="0|0.5|1" s4_triz="0|0.5|1"/>
+             Graded mode (stakes=high opt-in): each signal is 0, 0.5, or 1.0.
+             Every signal scored ≥0.5 MUST carry an inline `cite=` attribute
+             pointing to the specific element in the prior lens output that
+             supports it. A signal with a nonzero value and no citation is
+             rescored as 0 during PG3 V2a / V5b. -->
+        <signals>
+          <!-- v1.6.0: 4 signal sources, not 5. `s4_triz` was removed after empirical
+               audit showed it never changed a survive/kill outcome. See Injection 3
+               "Note on s4_triz removal". Denominator for evidence_share is 4. -->
+          <signal source="s1" value="0|0.5|1" cite="xpath-like-pointer-or-element-name"/>
+          <signal source="s2" value="0|0.5|1" cite="..."/>
+          <signal source="s3_yellow" value="0|0.5|1" cite="..."/>
+          <signal source="s3_black" value="0|0.5|1" cite="..."/>
+        </signals>
         <counterevidence>...</counterevidence>
         <!-- Graded-mode only: subtract from final score when strongest counterevidence
              would invalidate the alternative entirely. Absent in binary mode. -->
@@ -1050,9 +1275,23 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
         <!-- Graded-mode only: zero or more, one per source the runner could not honestly
              distinguish 0.5 from 1.0 for. Two or more on the same alternative force an
              escape_hatch (see Injection 3). -->
-        <low_confidence_signal source="s1|s2|s3_yellow|s3_black|s4_triz"/>
+        <low_confidence_signal source="s1|s2|s3_yellow|s3_black"/>
         <surviving_objection>...</surviving_objection>
       </alternative>
+      <kill_rate_audit>
+        <!-- Emitted whenever the aggregate kill rate looks suspicious (zero kills
+             with ≥6 alternatives at evidence_share_bar ≥ 0.50). Records the two
+             re-scored alternatives, the citations examined, and the outcome.
+             Absent when not triggered. See Injection 3 "Sanity check on low
+             kill rates" and PG3 V5b. -->
+        <trigger_reason>...</trigger_reason>
+        <rescored_alternative id="...">
+          <original_evidence_share>0.X</original_evidence_share>
+          <rescored_evidence_share>0.X</rescored_evidence_share>
+          <citations_examined>...</citations_examined>
+          <outcome>confirmed|downgraded|killed</outcome>
+        </rescored_alternative>
+      </kill_rate_audit>
     </evidence_share_filter>
     <survivors_pool>
       <alternative_ref>A1</alternative_ref>
@@ -1168,6 +1407,23 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
 ```xml
 <decision methodology="Pugh Matrix">
   <decision_quality>complete|insufficient_alternatives|degraded</decision_quality>
+  <selection_rationale>
+    <!-- REQUIRED. Must explicitly name both Phase A (dialectical slots) and
+         Phase B (evidence_share fill) — even if one phase contributed zero.
+         A missing or single-phase <selection_rationale> is a V4g FAIL in PG3. -->
+    Phase A: [X] dialectical slots ([IDs], or "none" if no dialectical alternatives in survivors_summary).
+    Phase B: [Y] slots by evidence_share rank ([IDs], or "none" if Phase A filled all slots).
+    Total: [Z] alternatives in Pugh Matrix (≤ 5, including baseline).
+  </selection_rationale>
+  <culled_from_matrix>
+    <!-- REQUIRED when survivors_summary had more than 5 entries.
+         Lists survivors that did not make the 5-row Pugh Matrix cut. Absence
+         when survivors > 5 is a V4e / V5c FAIL. Empty element (or omission)
+         is allowed only when survivors ≤ 5. -->
+    <culled alternative_id="A9" evidence_share="0.4">
+      <culled_reason>Phase B: below evidence_share cutoff; 3 non-dialectical slots filled by A3, A4, A7</culled_reason>
+    </culled>
+  </culled_from_matrix>
   <baseline alternative_id="A1">...</baseline>
   <alternatives>
     <alternative id="A2">...</alternative>
@@ -1189,8 +1445,17 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
       <statement>The selected alternative, restated for downstream consumers without reaching back into alternatives_pool.</statement>
       <rationale>One sentence on why this beat the runners-up — the dominant criterion or weighted-score margin.</rationale>
     </primary>
-    <runners_up>
-      <!-- Zero or more, in descending weighted-score order. Each is a structured ref, not bare text. -->
+    <runners_up source="non_selected_survivors">
+      <!-- v1.5.2: `source` attribute disambiguates two overloaded semantics.
+           source="non_selected_survivors" (normal case): 2-3 alternatives with highest weighted_score
+             among survivors that did NOT make the Pugh Matrix selection. Shows broader landscape beyond
+             the selected recommendation. `<alternative_ref>` children carry `weighted_score`.
+           source="killed_pool" (edge case, "Only 1 alternative survives"): the lone survivor is the
+             recommendation, but the runner still surfaces the next-highest `evidence_share` entries
+             from `killed_pool` for downstream visibility. `<alternative_ref>` children carry
+             `evidence_share` instead of `weighted_score`, and a sibling `<killed_note>` records why
+             they were eliminated at Injection 3.
+           Exactly one `source` value per emission — never mix survivor and killed entries. -->
       <alternative_ref id="A3" weighted_score="1.0"/>
       <alternative_ref id="A4" weighted_score="0.5"/>
     </runners_up>
@@ -1271,13 +1536,22 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
   <!-- Renamed from <status> in v1.4.3 to eliminate the collision with the
        top-level <process_notes><status>complete|degraded</status>. Downstream
        consumers should branch on <verification_result> for verification-suite
-       outcome, and on <process_notes><status> for the structural standard. -->
+       outcome, and on <process_notes><status> for the structural standard.
+
+       EVERY <check> element MUST contain at least one <evidence> child. A
+       check with zero <evidence> children is a FAIL regardless of its `result`
+       attribute — narrative-only checks are rubber-stamps. See Injection 5. -->
   
   <v1_content_preservation>
     <check id="V1a" name="detail_inventory" result="pass|fail">
-      <detail>All items from input preserved</detail>
+      <evidence element="input_inventory/item[1]" verdict="match">
+        One line citing where this item appears in the downstream output
+      </evidence>
+      <!-- one <evidence> per item examined; minimum one -->
     </check>
-    <check id="V1b" name="constraint_preservation" result="pass|fail">...</check>
+    <check id="V1b" name="constraint_preservation" result="pass|fail">
+      <evidence element="..." verdict="match|mismatch|missing|not_applicable">...</evidence>
+    </check>
     <check id="V1c" name="requirement_completeness" result="pass|fail">...</check>
     <check id="V1d" name="code_integrity" result="pass|fail">...</check>
     <check id="V1e" name="formula_preservation" result="pass|fail">...</check>
@@ -1285,7 +1559,9 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
   </v1_content_preservation>
   
   <v2_knowledge_claim>
-    <check id="V2a" name="claim_traceability" result="pass|fail">...</check>
+    <check id="V2a" name="claim_traceability" result="pass|fail">
+      <evidence element="..." verdict="match|mismatch|missing">...</evidence>
+    </check>
     <check id="V2b" name="tradeoff_justification" result="pass|fail">...</check>
     <check id="V2c" name="confidence_annotation_accuracy" result="pass|fail">...</check>
     <check id="V2d" name="source_attribution_validity" result="pass|fail">...</check>
@@ -1293,7 +1569,9 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
   </v2_knowledge_claim>
   
   <v3_logic_consistency>
-    <check id="V3a" name="internal_consistency" result="pass|fail">...</check>
+    <check id="V3a" name="internal_consistency" result="pass|fail">
+      <evidence element="..." verdict="match|mismatch|missing">...</evidence>
+    </check>
     <check id="V3b" name="frame_alignment" result="pass|fail">...</check>
     <check id="V3c" name="tradeoff_accountability" result="pass|fail">...</check>
     <check id="V3d" name="gap_resolution" result="pass|fail">...</check>
@@ -1302,11 +1580,63 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
   </v3_logic_consistency>
   
   <v4_output_format>
-    <check id="V4a" name="required_elements" result="pass|fail">...</check>
+    <check id="V4a" name="required_elements" result="pass|fail">
+      <evidence element="..." verdict="match|missing">...</evidence>
+    </check>
     <check id="V4b" name="element_ordering" result="pass|fail">...</check>
     <check id="V4c" name="attribute_completeness" result="pass|fail">...</check>
     <check id="V4d" name="optional_element_logic" result="pass|fail">...</check>
+    <!-- V4e-V4h MUST be emitted when verification_depth=full (all STANDARD and DEEP
+         runs). Absence at full depth is a verification FAIL. -->
+    <check id="V4e" name="pugh_selection_size_and_rationale" result="pass|fail">
+      <!-- Counts rows in <decision>/<matrix> and verifies ≤ 5 total including baseline.
+           Also verifies <selection_rationale> documents Phase A/B. -->
+      <evidence element="decision/matrix" verdict="match|mismatch">Row count and rationale citation</evidence>
+    </check>
+    <check id="V4f" name="baseline_priority_order" result="pass|fail">
+      <evidence element="decision/baseline" verdict="match|mismatch">Which priority level applied</evidence>
+    </check>
+    <check id="V4g" name="selection_rationale_present" result="pass|fail">
+      <!-- FAIL if <decision>/<selection_rationale> is missing, empty, or names
+           only one phase. -->
+      <evidence element="decision/selection_rationale" verdict="match|missing">Phase A and Phase B both cited</evidence>
+    </check>
+    <check id="V4h" name="hat_schema_compliance" result="pass|fail">
+      <!-- Verifies Green hat has no pool-additive children, Red has no rationale
+           clauses, White has no inferences. One evidence per hat checked. -->
+      <evidence element="hat[@color='green']" verdict="match|mismatch">...</evidence>
+      <evidence element="hat[@color='red']" verdict="match|mismatch">...</evidence>
+      <evidence element="hat[@color='white']" verdict="match|mismatch">...</evidence>
+    </check>
   </v4_output_format>
+
+  <v5_cross_validation>
+    <!-- NEW in v1.5.1. Relational sanity checks across output sections. V5b and
+         V5c run at every depth (core + full); V5a, V5d, V5e run at full depth
+         only (STANDARD/DEEP). See Injection 5. -->
+    <check id="V5a" name="diverge_candidate_count" result="pass|fail">
+      <evidence element="branch[@name='associative']" verdict="match|mismatch">candidate_count vs N_candidates_per_branch</evidence>
+      <evidence element="branch[@name='combinatorial']" verdict="match|mismatch">...</evidence>
+      <evidence element="branch[@name='analogical']" verdict="match|mismatch">...</evidence>
+    </check>
+    <check id="V5b" name="kill_rate_sanity" result="pass|warning">
+      <!-- Emits WARNING (not FAIL) when zero alternatives killed and
+           evidence_share_bar >= 0.50 and pool size >= 6. Required action:
+           re-score weakest alternatives with strict citation discipline. -->
+      <evidence element="evidence_share_filter" verdict="match|mismatch">Kill rate and re-score outcome</evidence>
+    </check>
+    <check id="V5c" name="pugh_matrix_size" result="pass|fail">
+      <evidence element="decision/alternatives" verdict="match|mismatch">Row count ≤ 5 including baseline</evidence>
+    </check>
+    <check id="V5d" name="reasoning_self_assessment_honesty" result="pass|warning">
+      <!-- Emits WARNING when all 8 reasoning criteria pass but structural
+           checks failed or an escape_hatch is present. -->
+      <evidence element="reasoning_self_assessment" verdict="match|mismatch">Re-audited criteria and outcome</evidence>
+    </check>
+    <check id="V5e" name="forced_flag_enum_honesty" result="pass|fail">
+      <evidence element="meta/forced_by_flag" verdict="match|mismatch">Flag detected vs flag reported</evidence>
+    </check>
+  </v5_cross_validation>
   
   <failures>
     <failure check="V#" severity="critical|warning">
@@ -1318,7 +1648,7 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
 </verification_report>
 ```
 
-**Verification depth by scale:** controlled by `verification_depth` in the Canonical Parameter Table (Stakes Assessment section). `core` = V1a–c, V2a, V3a, V4a–b. `full` = all V1–V4 checks.
+**Verification depth by scale:** controlled by `verification_depth` in the Canonical Parameter Table (Stakes Assessment section). `core` = V1a–c, V2a, V3a, V4a–b, V5b, V5c (both cross-validation sanity checks run at every depth). `full` = all V1–V5 checks (including V4e–h for S6 selection validation and V5a, V5d, V5e for additional cross-validation). Every emitted `<check>` MUST contain at least one `<evidence>` child; empty evidence lists are a FAIL.
 
 ### Process Notes Section
 
@@ -1334,6 +1664,15 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
        Downstream consumers should branch on this value, not on input_format. -->
   
   <context_gather_status>skipped|completed|failed</context_gather_status>
+
+  <selection_note>all_survivors_included|survivors_culled|none</selection_note>
+  <!-- v1.5.1: records how S6 handled the survivors_summary population of the Pugh
+       Matrix. `all_survivors_included` = survivors_summary had ≤5 entries, every
+       one made the matrix (no Phase A/B culling needed). `survivors_culled` =
+       survivors_summary had >5 entries; see <decision>/<culled_from_matrix> for the
+       cull list. `none` = S6 did not run (e.g. single-survivor edge case).
+       Referenced by S6 step 2 (the "≤5 entries" branch); V4e consults this field
+       when deciding whether <culled_from_matrix> absence is legal. -->
 
   <!-- killed_pool lives only in <lens name="contradiction_resolution"> as the canonical source.
        Downstream consumers that need it should read from there, not from process_notes,
@@ -1352,7 +1691,16 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
     <!-- Runner's honest answer to the Reasoning Standard checks. ALL 8 criteria are
          always present so downstream consumers can audit pass/fail uniformly. The
          element body is empty when status="passed" and contains a one-line failure
-         reason when status="failed". -->
+         reason when status="failed".
+
+         HONESTY RULE (v1.5.1): if ANY structural check in <verification_report>
+         returned FAIL, or any <escape_hatch> is present, the runner MUST flag
+         at least one reasoning criterion as `failed` — specifically the criterion
+         most adjacent to the structural failure (e.g. a V4e Pugh-size FAIL
+         forces either `honest_insight` or `mode_switching` to fail, because
+         a 9-row Pugh Matrix is never a sign of genuine cognition). An output
+         where all structural checks failed but all 8 reasoning criteria passed
+         is a V5d FAIL and the runner must re-audit. -->
     <criterion name="non_trivial_framing" status="passed|failed">empty if passed; reason if failed</criterion>
     <criterion name="mode_switching" status="passed|failed">empty if passed; reason if failed</criterion>
     <criterion name="real_contradictions" status="passed|failed">empty if passed; reason if failed</criterion>
@@ -1362,6 +1710,19 @@ IDs are never reassigned or reused. If A3 is killed in Evidence-Share filter, A3
     <criterion name="calibrated_confidence" status="passed|failed">empty if passed; reason if failed</criterion>
     <criterion name="honest_insight" status="passed|failed">empty if passed; reason if failed</criterion>
   </reasoning_self_assessment>
+
+  <surprise_check>
+    <!-- v1.5.1: runner's one-paragraph honest answer to the question:
+         "Did this run produce something I did not already know at the start?"
+         If yes, name the specific finding (alternative id, synthesis observation,
+         risk) and explain in one sentence why it was surprising. If no, say so
+         plainly — that is a thin run and downstream consumers should know. A
+         <surprise_check> body of "yes, comprehensive analysis produced" is a
+         rubber-stamp and fails the V5d audit. -->
+    <did_surprise>yes|no</did_surprise>
+    <what>Specific finding (with id/reference), or "nothing — the output is rearrangement of the input"</what>
+    <why>One sentence on why it was surprising, or why the run was thin</why>
+  </surprise_check>
 
   <!-- Two independent status axes. Both are always present. -->
   <status>complete|degraded</status>
@@ -1487,19 +1848,30 @@ Take the first 6 words of the source text, lowercase, strip non-alphanumeric cha
 
 ## Post-Save Interaction
 
-Shown only if all 13 chunks completed successfully. Print in this exact order:
+Shown only if all 13 chunks completed successfully. The exact output branches on the `<downstream_handoff>/<recommended_next_skill>` value emitted by the handoff rule table:
+
+**Branch 1 — `recommended_next_skill=epiphany-analysis`** (handoff rule 2 fired: the output is structurally complete, reasoning sound, no escape hatches). Print:
 
 ```
 Saved: ~/docs/epiphany/omnipotent/<filename>.xml
-⚠ Output is degraded — review XML before analysis.   ← only if status=degraded OR reasoning_status=shallow
 Analyze this XML with /epiphany-analysis? (yes / no)
 ```
 
-**Affirmative responses** (case-insensitive): `yes`, `y`, `yeah`, `sure`, `ok`
+**Branch 2 — `recommended_next_skill=none`** (handoff rule 1 fired: `status=degraded` OR any `escape_hatch` present OR `reasoning_status=shallow`). Print:
 
-**All other responses:** treat as no, exit cleanly. The XML file is already saved.
+```
+Saved: ~/docs/epiphany/omnipotent/<filename>.xml
+⚠ Output is degraded — handoff rule 1 recommends manual review rather than automated analysis.
+Proceed to /epiphany-analysis anyway? (y / N)  ← default is No
+```
 
-**If yes:** check if epiphany-analysis is available as a skill. If available, invoke `/epiphany-analysis <filepath>` with the saved file path. If not available, show this message instead of attempting invocation:
+**Default must be No** in Branch 2: the handoff logic already decided automated analysis is not appropriate, and the prompt only exists so a user who knows what they're looking for can override it. A bare Enter keypress, ambiguous response, or any non-affirmative answer MUST be treated as No. This prevents the Post-Save interaction from contradicting the `<downstream_handoff>` block that was just written to disk.
+
+**Affirmative responses** (case-insensitive): `yes`, `y`, `yeah`, `sure`, `ok`. In Branch 2 the bar is the same but the default flips: silence is No.
+
+**All non-affirmative responses:** exit cleanly. The XML file is already saved.
+
+**If yes in either branch:** check if epiphany-analysis is available as a skill. If available, invoke `/epiphany-analysis <filepath>` with the saved file path. If not available, show this message instead of attempting invocation:
 
 ```
 epiphany-analysis is not installed. To analyze this XML, install the
@@ -1523,6 +1895,45 @@ epiphany-analysis skill and run: /epiphany-analysis <filepath>
 ---
 
 ## Document Status
+
+Version 1.6.0 (2026-04-09): TRIZ rework + Evidence-Share recalibration. Driven by an empirical audit of two v1.5.x sample runs (`design-rag-kb-route-20260409` and `design-rag-multi-layer-20260409`) that showed (a) the `s4_triz` voting signal never changed a survive/kill outcome across 19 alternatives, and (b) all 6 technical contradictions in the samples misapplied separation principles — which belong to physical contradictions in real TRIZ. This is a **minor version bump** because the Evidence-Share Filter denominator changes from 5 to 4 and the kill bands shift; downstream consumers reading `evidence_share` numeric values will see different distributions. The contradiction-framing discipline (which the audit confirmed was load-bearing) is unchanged.
+- **TRIZ process split by contradiction type.** S4 step 5 now branches: physical contradictions take the **5 separation principles** (unchanged); technical contradictions take a new **10 portable inventive principle palette** (segmentation, asymmetry, nesting, preliminary action, cushioning, blessing-in-disguise, feedback, intermediary, self-service, parameter change). Cross-palette application (separation on technical, or inventive on physical) is a category error and must be emitted as `<unresolved_contradiction>` instead of `<resolution>`. The two sample runs used separation principles for all 6 contradictions regardless of type — the palette-type pairing is now a structural gate in the schema, not runner judgement.
+- **Ideal Final Result (IFR) added as a pre-resolution step** (new S4 step 4). One line per contradiction stating the mechanism in which the contradiction dissolves, aspirational but specific. Its job is to force resolutions toward named mechanisms instead of "balance both sides" compromises. Emitted in the schema as `<ideal_final_result>` child of `<contradiction>` and preserved on `<unresolved_contradiction>` entries so the cognitive work isn't lost when a contradiction can't be resolved.
+- **`s4_triz` signal removed from the Evidence-Share Filter.** Across 19 alternatives in the two sample runs, the `s4_triz` signal was decisive zero times: redundant with s1/s2 when TRIZ found resolutions (alternatives already survived), and silent when TRIZ found none (every signal scored 0). In sample 2, A6 was killed at `evidence_share = 0.2` despite `s4_triz = 1` being its lone supporter — TRIZ's vote was outnumbered 4-to-1 by the other sources. The signal was load-free noise. The filter now consumes **4 sources** instead of 5, and the `evidence_share` denominator is 4. TRIZ outputs still feed Synthesis and S6 via the `<triz>` block — only the voting role is removed.
+- **Kill bands recalibrated 0.20 / 0.40 / 0.60 → 0.25 / 0.50 / 0.75.** With 4 sources, achievable binary values are {0.0, 0.25, 0.5, 0.75, 1.0}. The new bars preserve the three-distinct-kill-bands property (low kills only "no support", medium kills "≤1 supporter", high kills "≤2 supporters") at the new denominator. Trigger A's `evidence_share_bar ≥ 0.40` clause now reads `≥ 0.50`; Trigger B's `evidence_share ≥ 0.8` threshold now reads `≥ 0.75`.
+- **Schema updates.** `<bar>` enum changed from `0.20|0.40|0.60` to `0.25|0.50|0.75`. `<signals>` block has 4 children (s4_triz removed). `<low_confidence_signal>` source enum drops `s4_triz`. `<contradiction>` gains `<ideal_final_result>` child. `<resolution>` gains `principle_palette="separation|inventive"` and `principle_name="..."` attributes with the full principle_name enum documented inline. `<unresolved_contradiction>` is now a declared sibling of `<contradiction>` inside `<triz>` (previously referenced in prose only).
+- **Edge cases updated.** S4/S5 Edge Cases table: step numbering bumped (skip steps 4–5, proceed to step 6). The "no separation principle resolves it" row now reads "no principle in the legal palette resolves it" and references both separation (physical) and inventive (technical) principles. New row added for the category-mismatch case (wrong palette → retry once, then `<unresolved_contradiction>`).
+- **Graded mode denominator updated** from `divide by 5` to `divide by 4`. Achievable graded values are {0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0} — still twice the resolution of binary mode.
+- **Empirical audit evidence preserved.** The removal of `s4_triz` and the palette split are not speculative — they target two specific failure modes observed in the 2026-04-09 sample runs. Sample 1 (kb-route, 10 alternatives): `s4_triz` fired 6/10 times, all 10 alternatives survived regardless. Sample 2 (multi-layer, 9 alternatives): `s4_triz` fired 3/9 times; A6 was killed despite `s4_triz=1` being its lone supporter. All 6 technical contradictions across both samples used separation principles (a category error that the new schema gate prevents). Framing discipline was working: 6/6 contradictions were in strict canonical form with concrete, actionable resolutions — that is why the discipline stays.
+
+Version 1.5.2 (2026-04-09): Deep-audit consistency release. 17 findings surfaced by a second-pass rigorous audit of v1.5.1 that went beyond the initial 10-finding sweep. All fixes target internal consistency, schema disambiguation, and cross-gate contracts — no pipeline or verification-suite changes. Bundles with the end of the v1.5.1 schema-discipline work.
+- **Pipeline ASCII art refreshed** to show all 5 V-check categories (V1–V5), the correct "6 colors, 7 passes" count for Six Thinking Hats, and the current V5b/V5c promotion to core depth. Three stale overview references corrected in one pass.
+- **V5b re-score count aligned with Injection 3.** V5b said "re-score the lowest-`evidence_share` alternative" (singular); Injection 3 required re-scoring "the two alternatives with the weakest justifications" (plural). V5b now says "the two alternatives with the weakest justifications (same count as Injection 3 — not one, not three)". The sanity check and its trigger procedure now agree on the sample size.
+- **Injection 3 trigger canonicalised into two explicit forms.** Previously the audit trigger was described narratively, so runners could interpret "suspiciously high survival" loosely. Now: **Trigger A (zero-kill):** zero killed AND `evidence_share_bar ≥ 0.40` AND pool ≥ 6. **Trigger B (high-survival):** all alternatives in pool ≥ 6 survived with `evidence_share ≥ 0.8`. Either triggers the re-score. Codified so V5b and S4 prose reference the same two conditions.
+- **PG2/PG3 V-code overlap documented as a dual-gate convention.** Two checks in PG2 (Diverge branch count, Green hat pool-additive) are now labelled as *early-catch* versions of PG3's V5a and V4h respectively. PG2 catches during the pipeline (cheap recovery via lens re-run, capped by `fix_budget`); PG3 catches at final verification (expensive recovery via Fix-Compare-Select). Prose references like "PG2 V5a FAIL" now unambiguously mean the early-catch version.
+- **V4e ⇌ V5c dual-path contract.** V4e (structural) and V5c (relational) both enforce the ≤5 Pugh matrix cap against the same `<decision>` element. If they ever disagree in the same run, that's a meta-FAIL — the matrix and alternatives list have drifted out of sync. Recovery: re-emit `<decision>` so both counts agree. The duplication is intentional.
+- **`<selection_note>` schema element added to `<process_notes>`** with enum `all_survivors_included|survivors_culled|none`. Records how S6 handled survivors_summary selection. Previously the spec referenced the element in prose ("note `<selection_note>all_survivors_included</selection_note>` in process_notes") without declaring it in the schema.
+- **Post-Save Interaction split into two branches** by recommended_next_skill. Branch 1 (`epiphany-analysis`) uses the standard yes/no handoff prompt. Branch 2 (`none`) shows a degraded-warning: "⚠ Output is degraded — handoff rule 1 recommends manual review..." with `(y / N)` default No, requiring explicit override. Previously the section assumed the `epiphany-analysis` path regardless of handoff rule, contradicting the two-rule handoff table.
+- **V5b promoted to core verification depth** (in addition to V5c). Both cross-validation sanity checks now run at every depth. Canonical Parameter Table, Injection 5 depth description, v5_cross_validation schema comment, and the "Verification depth by scale" paragraph all updated to say `core = V1a–c, V2a, V3a, V4a–b, V5b, V5c`. Rationale: V5b catches silent filter rubber-stamping which is cheaper to detect at core than at full.
+- **`<alternatives_pool>` declared the canonical mutable pool.** The schema comment now explicitly documents that S1 emits initial entries, S2 appends morphological combinations, and the Synthesis Checkpoint appends dialectical options with `source="synthesis_dialectic"`. S4 Evidence-Share Filter partitions the pool into survivors/killed but does NOT remove entries. The `<dialectical_options>` block in `<synthesis>` is the canonical *rationale* location (carries `<how_it_honors_both>`); the pool entry is the reference. Physical XML nesting inside `<lens name="divergent_ideation">` is for file ordering only.
+- **S6 step-3 baseline priority relabelled (1)(2)(3) → (a)(b)(c).** Previously collided with the numbered S6 process steps (step 1, step 2, step 3…). V4f's "(1)-(3) order" reference and the "No explicit baseline in input" edge case row both updated to the lettered form.
+- **PG1 no-op behaviour documented.** When Context Gather is skipped (input is `<epiphany_context>` already, or no external references detected), PG1 would otherwise re-run IV1 against unchanged input. PG1 now records `<pg1_status>no_op_gather_skipped</pg1_status>` in process_notes and proceeds without re-running IV1 in those cases.
+- **`<runners_up>` `source` attribute added** to disambiguate two overloaded semantics. `source="non_selected_survivors"` (normal case) carries `weighted_score`; `source="killed_pool"` (only-1-survivor edge case) carries `evidence_share` and a sibling `<killed_note>`. Exactly one source value per emission — never mix.
+- **Injection 3 "two alternatives" count documented as a fixed floor.** The re-score count is deliberately fixed at two regardless of pool size — linear scaling would make the sanity check cost-prohibitive at pool=10+, and the two weakest are the most informative sample for detecting rubber-stamping. Edge case noted: if the pool has only 2 survivors, re-score both.
+- **`alternatives_pool` source/lineage asymmetry documented.** SCAMPER collapses 7 operators into one `source="scamper"` value and disambiguates via `lineage`; Diverge expands into 3 distinct source values because each branch has its own V5a count check. SCAMPER operators are not count-checked individually, so collapsing them into one source keeps the enum small without losing validation leverage. Future per-operator SCAMPER counts should expand `lineage`, not `source` — `source` is the partition key that V5 relational checks join on.
+
+Version 1.5.1 (2026-04-09): Schema-discipline release. 10 fixes surfaced by a direct audit of two STANDARD+medium sample runs that rubber-stamped a 9-row and 11-row Pugh Matrix, claimed 100% survival, and passed all 8 reasoning criteria on the same runs. Every fix targets verifiability — the spec now forces the runner to emit citations and audit trails that make the common failure modes mechanically detectable. No pipeline changes; all edits are to gates, schemas, and verification.
+- **Verification rubber-stamping eliminated.** Every `<check>` in `<verification_report>` now MUST contain at least one `<evidence>` child with `element=` and `verdict=` attributes. Narrative-only checks ("all items preserved") are a FAIL regardless of the stated result. Empty evidence lists are also a FAIL. The v1.5.0 samples passed V1–V4 with one-line narratives — that loophole is now closed.
+- **V5 Cross-Validation category added.** New V5a–e checks cross-reference output sections against each other: V5a (Diverge branch candidate_count ≥ N_candidates_per_branch), V5b (kill-rate sanity warning when zero kills with ≥ 6 alternatives and bar ≥ 0.40), V5c (Pugh matrix size ≤ 5, mandatory at every depth), V5d (reasoning_self_assessment honesty vs structural failures), V5e (forced_by_flag enum vs actual flag processing). V5c is the relational form of V4e and runs at `core` depth as well as `full`.
+- **Pugh Matrix 5-cap promoted to a bold box at the top of S6** with explicit culling procedure. Both v1.5.0 samples had 9 and 11 alternatives in the matrix because the cap was buried in step 2. A new `<culled_from_matrix>` schema element is mandatory whenever `survivors_summary` had more than 5 entries; absence is a V4e/V5c FAIL.
+- **`<selection_rationale>` promoted from optional prose to a required multi-line element** that must explicitly name both Phase A and Phase B (even if one phase contributed zero). V4g FAIL if missing, empty, or single-phase. Both samples dropped the element entirely.
+- **Diverge candidate_count now mandatory and audited.** Injection 2 prose tightened to require *exactly* `N_candidates_per_branch` per branch and to emit raw `<branch candidate_count="N">` before de-duplication as an audit trail. S1 step 4 "merge" clarified as interleave-into-pool, NOT count-reduction. Both samples produced one candidate per Diverge branch in STANDARD+medium (should have been 4); the new PG2 V5a check catches this.
+- **Green hat pool-pollution prohibited.** S3 Green hat rule rewritten: generates *provocations and directions*, NOT new alternatives. Prohibited schema children: `<new_alternative>`, `<alternative>`, any pool-additive element. Allowed: `<provocation>` (with `<statement>` + `<implication>`) and `<direction>`. PG2 Green-hat pool-additive check added. Both samples had Green hat adding to `alternatives_pool` via `<new_alternative>` — the Synthesis Checkpoint dialectical move is now the *only* place outside S1/S2 that may extend the pool.
+- **All 6 Six Hats now have internal schemas.** Previously only Yellow and Black had defined children. Added White (`<data_point source=...>`), Red (`<gut_reaction>`), Green (`<provocation>` + `<direction>`), Blue opening/closing (`<scope>`/`<format>` and `<summary>`/`<thin_hats>`). Yellow gains `<falsifiability>`. Black's existing `<risk>`/`<mitigation>` structure retained. V4h check added to enforce schema compliance.
+- **`<forced_by_flag>` enum extended to `none|--minimal|--standard|--deep`.** Both samples emitted `<forced_by_flag>false</forced_by_flag>`, which is not a valid enum value. `none` is the correct value for Scale Router auto-detection. V5e cross-validates this against actual flag processing.
+- **Evidence-Share signals require inline citations.** Every signal scored ≥ 0.5 must carry a `cite=` attribute pointing to the specific element in the prior lens output that supports it. A signal with no citation is re-scored as 0. The S4 TRIZ "free point" clause is removed: "no contradictions exist" now scores 0 on source 5, not 1 — the v1.5.0 samples had 100% survival partly because the TRIZ free point pushed every alternative above bar. New `<kill_rate_audit>` element records re-scoring when V5b fires.
+- **`<cross_consistency_assessment>` added to the S2 lens schema** with required `<strike_count>` and zero-or-more `<strike>` children. Both samples emitted a `<cross_consistency_assessment>` element that was not in the schema; now it is.
+- **Diversity seeding and `<surprise_check>`** added to S1 and `<process_notes>` respectively. Diversity seeds bias Diverge candidates toward unfamiliar vocabulary before generation. The `<surprise_check>` asks the runner to name specifically what it learned during the run, or to admit "nothing — this was rearrangement." Honesty rule added to `<reasoning_self_assessment>`: if any structural check failed, at least one reasoning criterion must fail too. Both samples passed all 8 reasoning criteria on runs that violated half the structural spec — V5d now catches this.
 
 Version 1.5.0 (2026-04-09): Output persistence and handoff redesign — XML-only output, mandatory chunked disk write, epiphany-analysis handoff. No pipeline changes.
 - **Output goes disk-only.** `<omnipotent_output_v1>` is no longer emitted in-conversation; it is written to `~/docs/epiphany/omnipotent/<filename>.xml` automatically after every run.
