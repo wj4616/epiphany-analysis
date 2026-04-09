@@ -1,7 +1,7 @@
 ---
 name: epiphany-omnipotent
-version: 1.4.3
-last_modified: 2026-04-08
+version: 1.5.0
+last_modified: 2026-04-09
 description: "Unified reasoning-amplifier skill that runs a 5-lens brainstorming pipeline (SCAMPER, Morphological Analysis, Six Thinking Hats, TRIZ, Reverse Brainstorming → Pugh Matrix) with genius-level cognitive injections (FRAME, Diverge, Evidence-Share Filter, Gap-Scan, VERIFY) and holds the runner to both a structural and a reasoning standard. Invoked via /epiphany-omnipotent with optional --minimal / --standard / --deep flags; accepts raw text, prompt-epiphany output, or epiphany-context output and emits structured XML."
 ---
 
@@ -1523,6 +1523,15 @@ epiphany-analysis skill and run: /epiphany-analysis <filepath>
 ---
 
 ## Document Status
+
+Version 1.5.0 (2026-04-09): Output persistence and handoff redesign — XML-only output, mandatory chunked disk write, epiphany-analysis handoff. No pipeline changes.
+- **Output goes disk-only.** `<omnipotent_output_v1>` is no longer emitted in-conversation; it is written to `~/epiphany/omnipotent/<filename>.xml` automatically after every run.
+- **Chunked write protocol.** File written in 13 sequential chunks (one per top-level XML section, with `<lens_outputs>` split one lens per chunk) to prevent write failures on large outputs. Each chunk verified before proceeding.
+- **Mandatory save.** The opt-in "Save to file?" prompt is removed. Save always happens.
+- **Downstream handoff simplified.** 7-rule table replaced with 2-rule table: degraded/shallow/escape → `none`; all other cases → `epiphany-analysis`. `writing-plans` and `prompt-epiphany` removed from recommendation set.
+- **Post-Save Interaction section added.** Defines save confirmation, degraded warning, and epiphany-analysis handoff prompt with yes/no behavior and not-installed fallback.
+- **Integration Notes updated.** `writing-plans` entry removed. `prompt-epiphany` entry scoped to input direction only. `epiphany-analysis` entry added.
+- **epiphany-analysis placeholder created** at `~/.claude/skills/epiphany-analysis/SKILL.md` as a forward dependency with a defined input contract.
 
 Version 1.4.3 (2026-04-08): Second project-audit pass — 24 findings across consistency, schema validity, runnability, documentation, and hypothetical security concerns. No new features.
 - **README Reasoning Standard table corrected.** The v1.4.2 README rewrite invented 8 criterion names ("Framing depth", "Divergent breadth", etc.) that did not match the authoritative 8 in SKILL.md or the XML slugs emitted in `<reasoning_self_assessment>`. README table replaced verbatim with the SKILL.md criteria and slugs.
