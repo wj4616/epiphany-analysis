@@ -2,7 +2,7 @@
 name: epiphany-omnipotent
 version: 1.5.0
 last_modified: 2026-04-09
-description: "Unified reasoning-amplifier skill that runs a 5-lens brainstorming pipeline (SCAMPER, Morphological Analysis, Six Thinking Hats, TRIZ, Reverse Brainstorming → Pugh Matrix) with genius-level cognitive injections (FRAME, Diverge, Evidence-Share Filter, Gap-Scan, VERIFY) and holds the runner to both a structural and a reasoning standard. Invoked via /epiphany-omnipotent with optional --minimal / --standard / --deep flags; accepts raw text, prompt-epiphany output, or epiphany-context output and emits structured XML."
+description: "Unified reasoning-amplifier skill that runs a 5-lens brainstorming pipeline (SCAMPER, Morphological Analysis, Six Thinking Hats, TRIZ, Reverse Brainstorming → Pugh Matrix) with genius-level cognitive injections (FRAME, Diverge, Evidence-Share Filter, Gap-Scan, VERIFY) and holds the runner to both a structural and a reasoning standard. Invoked via /epiphany-omnipotent with optional --minimal / --standard / --deep flags; accepts raw text, prompt-epiphany output, or epiphany-context output and saves structured XML to disk at ~/epiphany/omnipotent/."
 ---
 
 # Epiphany Omnipotent
