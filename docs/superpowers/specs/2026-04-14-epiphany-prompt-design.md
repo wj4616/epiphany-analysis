@@ -43,7 +43,11 @@ modules/*.md          Stage protocols. Each spawned as an isolated Agent
 
 stages/ (session)     File-based state. Each subagent reads declared
                       input files from stages/, writes one output file.
-                      Orchestrator never reads stage files directly.
+                      Orchestrator never reads stage files during pipeline
+                      execution for routing decisions — it reads module
+                      return values instead. Exception: stage introspection
+                      reads and displays stage files on user request after
+                      a wave completes (display-only, not for routing).
 ```
 
 Session directories: `~/docs/epiphany/prompts/.sessions/{session_id}/stages/`
@@ -68,8 +72,8 @@ Session directories: `~/docs/epiphany/prompts/.sessions/{session_id}/stages/`
 | Flag | Scale | Spawns (normal mode) |
 |------|-------|----------------------|
 | `--minimal` | FAST | 4 agents |
-| *(default)* | STANDARD | 5 agents (6 if repair) |
-| `--verbose` | DEEP | 7 agents (8 if repair) |
+| *(default)* | STANDARD | 5 agents (7 if W4 repair: +M3 +M4) |
+| `--verbose` | DEEP | 7 agents (+2 per repair loop; max 11 if both W4+W6 repair) |
 
 `--quiet` is display-only — does not affect scale or wave plan.
 
@@ -161,6 +165,7 @@ W5: M5-Output                   W5: M5-Output
 ```
 stages/00-config.md         mode, scale, flags { quiet }, date (DD-MM),
                             session_id, input_type (A/B/C),
+                            filename_slug (generated inline at STEP 2),
                             contract_schema: v1  [write-once by orchestrator]
 
 stages/00-input.md          processed original input (flags stripped,
@@ -171,7 +176,9 @@ stages/01-inventory.md      INVENTORY checklist only — extracted from
                             01-analysis, standalone preservation checklist
 
 stages/02-ideation.md       enhancement contracts (see schema below)
-stages/03-synthesis.md      enhanced prompt draft (overwritten on repair)
+stages/03-synthesis.md      enhanced prompt draft
+                            (STANDARD repair: overwritten in place;
+                             DEEP repair: saved as 03-synthesis-failed.md first)
 stages/04-verification.md   12-check results (see schema below)
 stages/05-expansion.md      DEEP only — gap scan findings + expanded output
 stages/06-verification-2.md DEEP only — M4 re-run against expansion output
@@ -202,9 +209,10 @@ stages/plan-04-verify.md    MPLAN-4 output: gap audit + 9 checks
 |--------|-------|
 | M1 Analysis | `00-config` + `00-input` |
 | M2 Ideation | `00-config` + `00-input` + `01-analysis` |
-| M3 Synthesis | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` |
+| M3 Synthesis (FAST) | `00-config` + `00-input` + `01-analysis` + `01-inventory` |
+| M3 Synthesis (STANDARD/DEEP initial) | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` |
 | M3 Synthesis (STANDARD repair) | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` + `04-verification` (no failed draft) |
-| M3 Synthesis (DEEP repair) | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` + `03-synthesis` (failed) + `04-verification` |
+| M3 Synthesis (DEEP repair) | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` + `03-synthesis-failed` + `04-verification` |
 | M4 Verification | `00-config` + `00-input` + `01-inventory` + `03-synthesis` |
 | M4 Verification (W6 DEEP) | `00-config` + `00-input` + `01-inventory` + `05-expansion` |
 | M5 Expansion | `00-config` + `00-input` + `01-inventory` + `03-synthesis` (latest) |
@@ -254,9 +262,21 @@ Per check:
   repair_target: "[section or XML tag to fix]"
 }
 
-Summary:
+Summary (normal mode):
 {
   preservation_counts: { urls: N, paths: N, tech_version: N, ... },
+  overall: pass | fail | pass-with-notes
+}
+
+Summary (specification mode):
+{
+  coverage_counts: { requirements: N, shall: N, should: N, may: N, gaps: N },
+  overall: pass | fail | pass-with-notes
+}
+
+Summary (plan mode):
+{
+  coverage_counts: { steps: N, dependencies_mapped: N, safeguards: N, gaps: N },
   overall: pass | fail | pass-with-notes
 }
 ```
@@ -302,7 +322,7 @@ Summary:
 
 - Fresh eyes on verified synthesis — no memory of synthesis reasoning
 - Runs against verified output (post-M4), not raw synthesis — expands content already known to be preservation-complete
-- Clean no-op path: if gap scan finds nothing thin, passes through with note; M6-Verification runs unchanged
+- Clean no-op path: if gap scan finds nothing thin, passes through with note; W6 M4-Verification runs unchanged against the pass-through output
 - Gap scan findings written to `05-expansion.md` — inspectable via stage introspection
 
 ### Spec and Plan modules — what isolation enables
@@ -330,8 +350,12 @@ STEP 0 — FLAG DETECTION
 STEP 1 — INPUT ROUTING + SUFFICIENCY (inline, no spawn)
   Detect input type:
     A — raw text (default)
-    B — prompt-epiphany XML → extract <task>, <context>, <constraints>
-    C — prior epiphany-prompt output → extract original input, start fresh
+    B — prompt-epiphany XML → root element contains <prompt> or <enhanced_prompt>
+        with no <meta source="epiphany-prompt"/> marker
+        → extract <task>, <context>, <constraints>
+    C — prior epiphany-prompt output → contains <meta source="epiphany-prompt"/>
+        → extract original input section, start fresh pipeline
+        (Note: epiphany-prompt output includes this marker to enable type C detection)
   Sufficiency check: discernible task? If not → BLOCK.
   Emit one line: "Sufficient — [reason]"
   Mode routing signal (no flag given):
@@ -340,13 +364,16 @@ STEP 1 — INPUT ROUTING + SUFFICIENCY (inline, no spawn)
     either → suggest full pipeline chain
 
 STEP 2 — SESSION INIT
-  session_id = YYYYMMDD-[topic-slug]
-    slug: lowercase, strip punctuation, remove stop words,
-    first 3–5 tokens joined with hyphens
-  Collision: if session_dir already exists, append -2, -3, etc. until unique
+  Generate topic_slug: lowercase first 3–5 meaningful words of input,
+    joined with hyphens (stop words: a, an, the, is, for, to, of, in, ...)
+  session_id = YYYYMMDD-{topic_slug}
+  Collision: if session_dir already exists, append -2, -3, etc. to
+    both session_id and topic_slug until unique
+    (e.g., build-prompt-skill → build-prompt-skill-2)
+  filename_slug = topic_slug  [same value, stored in 00-config for M5-Output]
   session_dir = ~/docs/epiphany/prompts/.sessions/{session_id}/stages/
   Write 00-config.md: mode, scale, flags, date (DD-MM),
-    session_id, input_type, contract_schema: v1  [write-once]
+    session_id, input_type, filename_slug, contract_schema: v1  [write-once]
   Write 00-input.md: processed input
 
 STEP 3 — ANNOUNCE
@@ -368,6 +395,10 @@ STEP 4 — WAVE EXECUTION
       "VERIFICATION: FAIL — [summary]". Orchestrator reads the Agent return
       message to decide whether to trigger repair. Orchestrator never reads
       04-verification.md directly (three-layer rule).
+    MSPEC-4 / MPLAN-4 return value: same contract — "VERIFICATION: PASS"
+      or "VERIFICATION: FAIL — [summary]". No repair loop for spec/plan modes.
+      On FAIL: orchestrator passes the failure summary to M5-Output as context;
+      output is delivered with flagged gaps noted in the summary line.
   After each wave, check for stage introspection request:
     "show me [analysis/ideation/synthesis/expansion/verification]"
       → display corresponding stages/*.md, then continue
@@ -404,7 +435,8 @@ STEP 6 — EXPANSION (DEEP normal mode only)
 STEP 7 — OUTPUT
   Spawn M5-Output with scale-appropriate inputs (see dependency table)
   M5-Output:
-    Generates filename slug from 00-input.md
+    Reads filename_slug from 00-config.md (generated by orchestrator at STEP 2)
+    Assembles target_filename: DD-MM-{filename_slug}.md
     Writes target_filename to stages/output-meta.md (write-once; does not
       modify 00-config.md — that file is orchestrator-owned)
     Non-quiet: display output in --- delimiters, print summary line,
@@ -432,13 +464,43 @@ M5-Output is shared across all modes but receives different input files per mode
 
 First-class feature enabled by file-based state. After any wave completes, the orchestrator responds to:
 
+**Normal mode:**
+
 | Request | Displays |
 |---------|----------|
 | "show me the analysis" | `01-analysis.md` |
+| "show me the inventory" | `01-inventory.md` |
 | "show me ideation" | `02-ideation.md` |
 | "show me synthesis" | `03-synthesis.md` |
-| "show me verification" | `04-verification.md` |
+| "show me verification" | Most recent: `06-verification-2.md` if it exists, else `04-verification.md` |
+| "show me first verification" | `04-verification.md` |
+| "show me expansion verification" | `06-verification-2.md` (DEEP only) |
 | "show me expansion" | `05-expansion.md` (DEEP only) |
+
+**Specification mode:**
+
+| Request | Displays |
+|---------|----------|
+| "show me domain analysis" | `spec-01-domain.md` |
+| "show me requirements" | `spec-02-requirements.md` |
+| "show me specification" / "show me spec synthesis" | `spec-03-synthesis.md` |
+| "show me spec verification" | `spec-04-verify.md` |
+
+**Plan mode:**
+
+| Request | Displays |
+|---------|----------|
+| "show me goal analysis" | `plan-01-analysis.md` |
+| "show me plan design" / "show me dependencies" | `plan-02-design.md` |
+| "show me plan synthesis" | `plan-03-synthesis.md` |
+| "show me plan verification" | `plan-04-verify.md` |
+
+**Debug (all modes):**
+
+| Request | Displays |
+|---------|----------|
+| "show me config" | `00-config.md` |
+| "show me input" | `00-input.md` |
 | "show me [anything]" | Corresponding stage file if it exists |
 
 More powerful than prompt-epiphany's "show me the analysis" — any stage is inspectable independently.
@@ -462,11 +524,13 @@ More powerful than prompt-epiphany's "show me the analysis" — any stage is ins
 ### Must add
 - 14 module files with explicit input_dependencies frontmatter
 - Orchestrator pseudocode in SKILL.md
-- 00-config.md schema
+- 00-config.md schema (fields: mode, scale, flags, date, session_id, input_type, filename_slug, contract_schema)
+- output-meta.md schema (field: target_filename — written by M5-Output)
 - Enhancement contract schema (v1)
-- Verification report schema
-- Stage introspection feature
+- Verification report schema with mode-appropriate summary (preservation_counts / coverage_counts)
+- Stage introspection feature (normal + spec + plan stage names, dual-verification disambiguation)
 - Scale-aware module protocols (FAST/STANDARD/DEEP variants where applicable; spec/plan modules always run STANDARD)
+- `<meta source="epiphany-prompt"/>` marker in all output XML (enables type C input detection)
 
 ### Must not
 - Increase spawn count beyond what scale requires
