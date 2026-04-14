@@ -74,6 +74,9 @@ if [[ -f "$SKILL_DIR/SKILL.md" ]]; then
     assert_grep '^## Stage Introspection' "$SKILL_DIR/SKILL.md" "stage introspection section"
     assert_grep 'YYYYMMDD-\{topic_slug\}-plan' "$SKILL_DIR/SKILL.md" "plan session suffix"
     assert_grep 'show me the analysis' "$SKILL_DIR/SKILL.md" "introspection mapping"
+    assert_grep 'Quick Analysis inline' "$SKILL_DIR/SKILL.md" "FAST quick analysis"
+    assert_grep 'Zero subagent spawns' "$SKILL_DIR/SKILL.md" "FAST zero spawns"
+    assert_grep 'prompt-epiphany --minimal' "$SKILL_DIR/SKILL.md" "FAST minimal technique subset ref"
 fi
 
 # All 11 module files + frontmatter

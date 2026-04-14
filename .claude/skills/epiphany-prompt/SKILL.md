@@ -421,3 +421,23 @@ When the user passes `--specification --plan` and confirms sequential run in STE
 | "show me [anything]" | Corresponding stage file if it exists |
 
 More powerful than prompt-epiphany's "show me the analysis" — any stage is inspectable independently.
+
+## FAST Inline Pipeline
+
+**Activated by `--minimal` flag.** Complete pipeline runs in the orchestrator's context window. Zero subagent spawns. No session directory, no stage files. Stage introspection unavailable (tradeoff accepted for speed).
+
+**Quality floor:** identical to `prompt-epiphany --minimal`. No regression.
+
+**Pipeline:**
+
+1. **Quick Analysis inline:** extract intent + INVENTORY (abbreviated form of the 6-dimension analysis — Intent block + full INVENTORY checklist only, no structural/constraint/technique/weakness dimensions).
+2. **Synthesis inline:** apply same technique subset as `prompt-epiphany --minimal` mode. Consult `~/.claude/skills/prompt-epiphany/SKILL.md` for the exact list (see its **Minimal Mode** section — typically T1 Role, T2 Structure, T3 Constraints, T5 Explicit Task, T7 Output Format). Do not hardcode the list here; this prevents drift when the source skill evolves.
+3. **12-check verification inline** — run checks 6a–6l against the draft. See **Verification Checks** section below for the full list.
+4. **Format output XML.** Insert `<meta source="epiphany-prompt"/>` as the first child of the root element (`<prompt>`).
+5. **Save path:** `~/docs/epiphany/prompts/DD-MM-{filename_slug}.md`. Before writing, `mkdir -p ~/docs/epiphany/prompts/`. Collision: append `-v2`, `-v3`, ... (same rule as STEP 7).
+   - Non-quiet: display in `---` delimiters; ASK "Save to file? (y/n)". If yes → save using the above path + collision rule.
+   - Quiet: save directly using the above path + collision rule.
+
+**Limitation:** FAST shares context window with the existing conversation. Long inputs or long sessions may produce lower quality due to competing context. Use STANDARD for complex prompts.
+
+**Documented three-layer rule deviation:** FAST does not use stage files at all. The "orchestrator never does stage work" rule does not apply here because there is no subagent layer. The FAST path is intentionally monolithic for latency.
