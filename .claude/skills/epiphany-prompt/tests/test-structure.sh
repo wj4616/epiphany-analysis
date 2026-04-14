@@ -77,6 +77,10 @@ if [[ -f "$SKILL_DIR/SKILL.md" ]]; then
     assert_grep 'Quick Analysis inline' "$SKILL_DIR/SKILL.md" "FAST quick analysis"
     assert_grep 'Zero subagent spawns' "$SKILL_DIR/SKILL.md" "FAST zero spawns"
     assert_grep 'prompt-epiphany --minimal' "$SKILL_DIR/SKILL.md" "FAST minimal technique subset ref"
+    for t in T1 T2 T3 T4 T5 T6 T7 T8 T9 T10 T11 T12 T13; do
+        assert_grep "\\b$t\\b" "$SKILL_DIR/SKILL.md" "technique $t"
+    done
+    assert_grep 'Application order' "$SKILL_DIR/SKILL.md" "technique ordering"
 fi
 
 # All 11 module files + frontmatter
