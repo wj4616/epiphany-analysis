@@ -67,3 +67,68 @@ After any wave completes (STANDARD/DEEP/spec/plan only — FAST has no session d
 
 Worked examples (pedagogical, not methodology): `~/.claude/skills/prompt-epiphany/examples.md`. Read for concrete before/after illustrations of T1–T13 and mode outputs. Not duplicated here; epiphany-prompt's methodology is authoritative in this file.
 
+## Preservation Methodology
+
+**Critical for technical specification quality.** The enhanced prompt must preserve every detail from the original so completely that it could serve as a technical specification for implementation.
+
+### Mandatory Preservation Categories
+
+During analysis, explicitly catalog items in these categories. EVERY item in EVERY category MUST appear in the output, unchanged in substance:
+
+| Category | Examples | Preservation Rule |
+|----------|----------|-------------------|
+| **URLs** | `https://example.com/docs`, `http://localhost:3000/api` | Full URL preserved verbatim, including query strings and fragments |
+| **File Paths** | `~/project/src/file.py`, `/etc/config.json`, `./lib/module.js` | Full path preserved, including `~`, `.`, `..`, and extensions |
+| **Technology + Version** | `React 18.2.0`, `Python 3.11`, `Node.js v20.10.0`, `JUCE 7.0.5` | Both name AND version number preserved together |
+| **Version Specifications** | `v2.3.1`, `version 5.0`, `release 2024.01` | Full version string preserved |
+| **Code Blocks** | Any fenced or inline code | Preserved exactly, character-for-character, including all whitespace and indentation |
+| **API References** | `GET /users/{id}`, `functionName(param1, param2)` | Full signature preserved |
+| **Named Entities** | Product names, library names, tool names | Preserved exactly as written, including case |
+| **Numeric Specifications** | Dimensions, quantities, thresholds | Preserved with units if present |
+| **Embedded Directives** | "crawl this URL", "fetch content from", "inspect docs at" | The instruction AND its target preserved together |
+| **Quoted Strings** | Any text in quotes | Preserved exactly as quoted |
+| **Technical Specifications** | Dependencies, configurations, parameters | Full specification preserved |
+
+### Preservation Verification Protocol
+
+**Before synthesis begins**, the INVENTORY must be complete. During synthesis:
+
+1. **Place preservation items first** — Start writing the enhanced prompt by placing all preservation-critical items in appropriate sections
+2. **Enhance around preservation items** — Add structure, constraints, context AROUND the preserved content, never replacing it
+3. **Quote when in doubt** — If an item might be paraphrased, use direct quotes instead
+
+**The enhanced prompt is NOT a summary.** It is the original prompt, restructured and enhanced, with EVERY detail intact.
+
+### Handling Overlapping Categories
+
+Items may belong to multiple categories. **Preserve once, in the most specific context.**
+
+| Overlap | Resolution |
+|---------|------------|
+| URL + Directive target | Count once (in URL category), preserve in context where directive is mentioned |
+| Technology + Named Entity | Count in Technology+Version if version present; otherwise count in Named Entities |
+| Code Block + API Reference | Preserve in both categories if they're distinct items; count separately |
+| Path in code block | Preserve the code block character-for-character; path is embedded within |
+
+**Example:** If input contains "fetch https://example.com/api for the latest data":
+- `https://example.com/api` → URL category (count 1)
+- "fetch ... for the latest data" → Embedded Directive category (count 1)
+- Both appear in output: URL in context/section, directive in constraints
+
+### Handling Malformed Items
+
+| Issue | Resolution |
+|-------|------------|
+| Typo in URL (`htp://` vs `https://`) | Preserve verbatim, add Note in flagged issues: "URL appears malformed, preserved as-is" |
+| Non-existent path (`~/does-not-exist/`) | Preserve verbatim, do not verify existence |
+| Incomplete version (`React 18.` without patch) | Preserve verbatim, do not complete |
+| Ambiguous directive ("check the thing") | Preserve verbatim, may add context clarifying "thing" from other prompt content |
+| Duplicate URL in input | Preserve at least once; preserve in each location if contextually different |
+| Very long URLs/paths (>500 chars) | Preserve verbatim, no truncation. Long content is acceptable. |
+| URLs with special characters | Preserve verbatim including query strings, fragments, encoded characters |
+| Case sensitivity in URLs | Preserve exact case. URLs are case-sensitive in path and query portions. |
+| Whitespace in code blocks | Preserve exactly — all indentation, newlines, and spacing are significant. |
+| Empty categories in INVENTORY | List category name with "(none)" or omit from count in summary. |
+
+---
+
