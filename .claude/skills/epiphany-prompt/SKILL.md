@@ -272,3 +272,94 @@ The module protocol uses the **Read tool** to load every declared input from `se
 **Spec/plan failure policy:** MSPEC4M5 / MPLAN4M5 have no repair loop. On verification failures, the module returns PASS-WITH-NOTES (best-effort output + flagged gaps summary) rather than FAIL. The orchestrator displays/saves the output as if passed, with failure summary surfaced in the displayed note.
 
 **After each wave:** check for stage introspection request ("show me [stage]" → display corresponding `stages/*.md`). FAST: unavailable — no stage files.
+
+### STEP 6 — REPAIR LOOPS
+
+**STANDARD — W3 (M4M5 failure):**
+
+```
+repair_count_std = 0
+On M4M5 FAIL (W3):
+  repair_count_std++
+  If repair_count_std > 1:
+    Go to STEP 7 — double-failure output path. No further spawns.
+  Else:
+    Spawn M3-Synthesis fresh (no failed draft input)
+    Overwrite 03-synthesis.md
+    Respawn M4M5-Verify-Output against new synthesis
+    (M4M5 overwrites 04-verification.md)
+```
+
+**DEEP — W3 (M4 standalone failure):**
+
+```
+repair_count_w3 = 0
+On M4 FAIL (W3):
+  repair_count_w3++
+  If repair_count_w3 > 1:
+    SKIP W4 + W5 (do not expand unverified content)
+    Go to STEP 7 — double-failure output path (source = 03-synthesis.md).
+    No further spawns.
+  Else:
+    Rename 03-synthesis.md → 03-synthesis-failed.md
+    Spawn M3-Synthesis targeted (reads 03-synthesis-failed + 04-verification)
+    Overwrite 03-synthesis.md
+    Respawn M4-Verification; overwrite 04-verification.md
+```
+
+**DEEP — W5 (M4M5 failure):**
+
+```
+repair_count_w5 = 0
+On M4M5 FAIL (W5):
+  repair_count_w5++
+  If repair_count_w5 > 1:
+    Go to STEP 7 — double-failure output path (source = 05-expansion.md).
+    No further spawns.
+  Else:
+    Rename 05-expansion.md → 05-expansion-failed.md
+    Respawn M5-Expansion targeted (reads 05-expansion-failed + 06-verification-2)
+    Overwrite 05-expansion.md
+    Respawn M4M5-Verify-Output against new expansion
+    (M4M5 overwrites 06-verification-2.md)
+```
+
+**Spec/plan:** no repair loop. MSPEC4M5 / MPLAN4M5 return PASS-WITH-NOTES on failed checks; orchestrator treats as PASS (displays/saves best-effort output with embedded `<note>` block).
+
+### STEP 7 — OUTPUT
+
+**PASS path** (verify+output module returned output XML in return message):
+- Parse Agent return message: verification header line, blank line, output XML body.
+- Non-quiet: display XML body in `---` delimiters; ASK "Save to file? (y/n)". If yes → save.
+- Quiet: save directly.
+- Save path: `~/docs/epiphany/prompts/DD-MM-{filename_slug}.md`
+- **Ensure parent directory exists** before writing: `mkdir -p ~/docs/epiphany/prompts/`. On a fresh install this directory may not exist.
+- **Output file collision handling:** if file exists, append `-v2`, `-v3`, ... until unique. Never overwrite existing files without explicit user confirmation.
+- On save: print `Saved to [full path]`.
+
+**PASS-WITH-NOTES path** (spec/plan with failed checks): same as PASS path. The `<note>` block describing failed checks is embedded inside the output XML by the verify+output module itself.
+
+**Double-failure output-with-note path:**
+- Source file depends on branch:
+  - STANDARD W3 double-fail → source = `stages/03-synthesis.md` (last draft)
+  - DEEP W3 double-fail → source = `stages/03-synthesis.md` (last draft)
+  - DEEP W5 double-fail → source = `stages/05-expansion.md` (last draft)
+- **Documented three-layer rule exception:** on double-failure no module produced output XML in its return message, so the orchestrator reads the latest synthesis/expansion stage content to produce a best-effort fallback.
+- Wrap source content in output XML format:
+
+```xml
+<prompt>
+  <meta source="epiphany-prompt"/>
+  [source content, wrapped in appropriate sub-sections]
+  <note>Verification incomplete — [last verification failure summary]. Output delivered without final verification pass.</note>
+</prompt>
+```
+
+- Apply same display/save + collision logic as PASS path.
+
+### STEP 8 — SESSION ARTIFACTS
+
+- Stage files remain in `.sessions/{session_id}/` after run.
+- Not auto-deleted — available for stage introspection on request.
+- Next session creates a new `session_id` directory.
+- No auto-cleanup. Users may delete old session directories manually.

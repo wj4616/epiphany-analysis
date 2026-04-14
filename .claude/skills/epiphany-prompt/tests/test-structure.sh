@@ -59,7 +59,17 @@ if [[ -f "$SKILL_DIR/SKILL.md" ]]; then
     assert_grep 'VERIFICATION: PASS-WITH-NOTES' "$SKILL_DIR/SKILL.md" "PASS-WITH-NOTES contract"
     assert_grep 'Three-layer rule' "$SKILL_DIR/SKILL.md" "three-layer rule"
     assert_grep 'subagent_type.*general-purpose' "$SKILL_DIR/SKILL.md" "subagent type"
+    assert_grep 'STEP 6 — REPAIR LOOPS' "$SKILL_DIR/SKILL.md" "STEP 6"
+    assert_grep 'STANDARD — W3' "$SKILL_DIR/SKILL.md" "standard repair"
+    assert_grep 'DEEP — W3' "$SKILL_DIR/SKILL.md" "deep W3 repair"
+    assert_grep 'DEEP — W5' "$SKILL_DIR/SKILL.md" "deep W5 repair"
     assert_grep 'STEP 7 — OUTPUT' "$SKILL_DIR/SKILL.md" "STEP 7"
+    assert_grep 'Double-failure' "$SKILL_DIR/SKILL.md" "double-failure path"
+    assert_grep 'DD-MM-\{filename_slug\}.md' "$SKILL_DIR/SKILL.md" "save path pattern"
+    assert_grep 'append .*v2' "$SKILL_DIR/SKILL.md" "collision suffix v2"
+    assert_grep '.v3.' "$SKILL_DIR/SKILL.md" "collision suffix v3"
+    assert_grep 'mkdir -p ~/docs/epiphany/prompts' "$SKILL_DIR/SKILL.md" "save path mkdir"
+    assert_grep 'STEP 8 — SESSION ARTIFACTS' "$SKILL_DIR/SKILL.md" "STEP 8"
 fi
 
 # All 11 module files + frontmatter
