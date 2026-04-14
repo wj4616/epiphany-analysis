@@ -91,6 +91,14 @@ if [[ -f "$SKILL_DIR/SKILL.md" ]]; then
     for c in P9a P9b P9c P9d P9e P9f P9g P9h P9i; do
         assert_grep "\\b$c\\b" "$SKILL_DIR/SKILL.md" "check $c"
     done
+    assert_grep '^## Specification Mode Pipeline' "$SKILL_DIR/SKILL.md" "spec pipeline section"
+    assert_grep '^## Plan Mode Pipeline' "$SKILL_DIR/SKILL.md" "plan pipeline section"
+    for s in S1 S2 S3 S4 S5 S6 S7; do
+        assert_grep "\\bStep $s\\b" "$SKILL_DIR/SKILL.md" "pipeline step $s"
+    done
+    for p in P1 P2 P3 P4 P5 P6 P7 P8 P9; do
+        assert_grep "\\bStep $p\\b" "$SKILL_DIR/SKILL.md" "pipeline step $p"
+    done
 fi
 
 # All 11 module files + frontmatter

@@ -596,3 +596,405 @@ Plan: N steps across M phases | Verification tests: N | Safeguards: J | Open que
 ```
 
 **Loop:** All pass → output. Any fail → re-examine the entire affected phase or section from scratch — do not make minimal corrections. Regenerate with harder thinking until the check passes. Same check fails twice despite genuine re-examination → output with note: "Plan check [name] could not be fully resolved — review flagged area."
+
+## Specification Mode Pipeline
+
+The spec mode pipeline executes S1 (sufficiency, in orchestrator) → S2+S3+S4 (MSPEC12) → S5 (MSPEC3) → S6+S7 (MSPEC4M5). Each step's protocol is defined verbatim below.
+
+### Step S1: Sufficiency Check (Specification)
+
+**Hard gate.** Do not proceed until input passes.
+
+**Sufficient:** Identifiable concept, problem, system, or domain. Vague inputs are acceptable — specification mode's purpose is to make them precise. Output one line: "Sufficient — [reason]"
+
+**Insufficient:** No identifiable concept, no domain context, or a single word with no meaning. Explain what's missing, block until resolved.
+
+**Note:** Specification mode ACCEPTS vague or partial inputs. Vagueness is expected — ambiguities become Open Questions in the output.
+
+**Specification Type Detection (Step S1b):**
+After passing sufficiency, detect the input type to determine processing mode:
+
+| Input Type | Detection Criteria | Processing Mode |
+|------------|---------------------|-----------------|
+| **Workflow/Process Spec** | Contains phases, steps, or sequential instructions with conditions (if/then, loop until, iterate) | Preserve structure, audit for gaps, append OQs |
+| **Requirements Spec** | Contains FR/NFR format, SHALL/SHOULD statements, verification criteria | Audit completeness, preserve format, surface gaps as OQs |
+| **Concept/Idea** | Describes what without how, lacks implementation detail, no phases/steps | Full transformation to spec |
+| **Already Complete** | Has scope, phases/steps, constraints, output format, verification criteria, AND no obvious gaps | Pass-through with gap analysis appended |
+
+**Already-Complete Detection:**
+An input is "already complete" if it has ALL of:
+- Defined scope (included/excluded)
+- Sequential structure (phases, steps, or ordered instructions)
+- Constraints or rules (DO/DO NOT, SHALL/SHOULD, if/then)
+- Output format or deliverables specification
+- Verification or success criteria
+
+When detected as already complete:
+1. **Do NOT restructure** — preserve the original format entirely
+2. **Audit for gaps** — identify missing error handling, edge cases, resumability
+3. **Surface gaps as Open Questions** — append to the end without restructuring
+4. **Preserve all structural elements** — phases, steps, tier definitions, conditional logic
+
+**Workflow/Process Spec Preservation:**
+When input is a workflow spec (phases, steps, conditional logic):
+- Preserve ALL phase names and step numbers
+- Preserve ALL tier definitions, classification criteria
+- Preserve ALL conditional logic (if/then, loop until, when X do Y)
+- Preserve ALL defaults and edge case handling sections
+- Audit each phase for: missing error handling, undefined terms, implicit assumptions
+- Surface gaps as Open Questions at the END, not by restructuring
+
+### Step S2: Domain Analysis (internal — not shown to user)
+
+Analyze the input's domain and scope:
+
+```
+DOMAIN:
+  Field: [software / hardware / product / process / other]
+  Stakeholders: [who uses or is affected — name each role]
+  Scope — Included: [what this spec covers]
+  Scope — Excluded: [what this spec explicitly does not cover]
+  Existing constraints: [limitations stated or implied]
+  Success criteria: [what "done" looks like for this concept]
+```
+
+### Step S3: Concept Decomposition (internal — not shown to user)
+
+**CRITICAL: This is the completeness checklist. Every item here MUST appear in the specification.**
+
+Exhaustively decompose the input concept into ALL constituent elements. Think recursively — for each element, ask "what does this require?" until atomic. No element may be omitted because it seems obvious.
+
+```
+DECOMPOSITION:
+  Core Elements:
+    - [Element: what it is, what it requires]
+  Functional Requirements:
+    - [What the system/solution must DO]
+  Non-Functional Requirements:
+    - [Performance, quality, reliability, compatibility, security]
+  Interface Requirements:
+    - [External systems, APIs, users, data sources it must interact with]
+  Data Requirements:
+    - [Data consumed, produced, or transformed — format, volume, schema]
+  Edge Cases:
+    - [Boundary conditions, failure modes, special inputs]
+  Open Questions:
+    - [Anything ambiguous or unknown in the input — flag, do not guess]
+  Technical Details:
+    URLs:
+      - [All URLs from input, verbatim — including query strings and fragments]
+    File Paths:
+      - [All file paths from input, verbatim — including ~, .., extensions]
+    Technology + Version:
+      - [All tech+version pairs, verbatim — BOTH name AND version number together]
+    Code Blocks:
+      - [All code blocks, character-for-character including whitespace]
+    Numeric Specifications:
+      - [All quantities, measurements, thresholds, counts — with units]
+    Named Entities:
+      - [All product names, library names, tool names without versions]
+    Version Specifications:
+      - [All standalone version strings — v2.3.1, release 2024.01, etc.]
+    Quoted Strings:
+      - [All text in quotes from input, verbatim]
+    API References:
+      - [All API signatures, endpoint references, function signatures]
+    Embedded Directives:
+      - [All instructions with their full targets — action AND target together]
+    Phase/Step Structure:
+      - [All phase names and step numbers — preserve structure entirely]
+      - [Count: N phases, M total steps]
+    Tier/Classification Definitions:
+      - [Complete tier/classification criteria blocks]
+      - [Preserve entire definition blocks verbatim]
+    Conditional Logic:
+      - [All if/then rules, when X do Y blocks]
+      - [Preserve complete conditional blocks]
+    Iteration/Loop Rules:
+      - [All loop until X, iterate N times, max passes rules]
+      - [Preserve with termination conditions]
+    Verification Criteria:
+      - [All success criteria, validation rules, check conditions]
+    Edge Case Definitions:
+      - [All edge case names and handling rules]
+    Defaults/Fallbacks:
+      - [All default values and fallback behaviors]
+    Other Technical Items:
+      - [Any other precision-critical content not captured above]
+```
+
+**All items must appear in the specification. Technical Details are the precision-preservation checklist for S7i — every item must appear verbatim in the output. For workflow specs, structural elements (phases, steps, tier definitions, etc.) are the precision-preservation checklist for S7k.**
+
+### Step S4: Requirement Extraction (internal — not shown to user)
+
+For each Decomposition item, write a formal requirement using IEEE 29148 quality criteria.
+
+**Requirement forms:**
+- Mandatory: "The system SHALL [do X]" — must be verifiable, must have a verification criterion
+- Recommended: "The system SHOULD [do Y]" — best practice but not hard requirement
+- Optional: "The system MAY [do Z]" — allowed but not required
+
+**Quality test for every requirement:**
+
+| Criterion | Test | Fail → |
+|-----------|------|--------|
+| Necessary | Would removing it leave a gap? | Keep |
+| Unambiguous | Could it be read two ways? | Rewrite until one interpretation |
+| Verifiable | Can it be tested or measured? | Add metric or rewrite |
+| Consistent | Does it contradict another requirement? | Flag as conflict |
+| Traceable | Does it trace back to the Decomposition? | Discard if not |
+
+Requirements that fail Consistent or cannot pass Unambiguous → move to Open Questions.
+
+**Domain gap detection:** After writing requirements from the Decomposition, apply your domain knowledge of this type of system to identify standard requirements that are absent. Ask: "What does every [type of system] need that this spec hasn't addressed?" Add each gap as either an NFR (if the answer is well-understood) or an OQ (if it depends on user decisions), and tag it `[domain-inferred]`. This step exists because humans describe what they want, not what they assumed — common omissions include security/auth, error handling strategy, logging, versioning, rollback, and performance limits.
+
+### Step S5: Specification Synthesis (internal — not shown to user)
+
+**CRITICAL: Choose synthesis mode based on Specification Type Detection (Step S1b).**
+
+**Mode A: Workflow/Process Spec (phases, steps, conditional logic detected)**
+
+PRESERVE the original structure. Do NOT convert to FR/NFR format.
+
+**Synthesis order for workflow specs:**
+1. **Original Structure** — Preserve all phases, steps, tier definitions, conditional logic verbatim
+2. **Preserved Elements** — Include all: phases (with step counts), tier definitions (complete criteria blocks), conditional logic (if/then rules), iteration rules (loop until X), verification criteria, edge case definitions, defaults/fallbacks
+3. **Gap Analysis** — For each phase, identify: missing error handling, undefined terms, implicit assumptions
+4. **Open Questions** — Surface all identified gaps at the end, numbered OQ-N
+
+**Writing rules for workflow specs:**
+- Preserve exact phase names and step numbering
+- Preserve complete tier definition blocks (do not summarize)
+- Preserve complete conditional logic blocks (if/then, when X do Y)
+- Preserve complete iteration rules with termination conditions
+- Do NOT paraphrase, summarize, or restructure any operational detail
+- Add Open Questions ONLY at the end — do not insert them mid-structure
+- Count all preserved elements for the preservation summary
+
+**Mode B: Requirements Spec (FR/NFR format detected)**
+
+Preserve the FR/NFR structure, audit for completeness, surface gaps.
+
+**Synthesis order for requirements specs:**
+1. **Scope** — Included and excluded. Explicit, no ambiguity.
+2. **Context** — Domain, stakeholders, background
+3. **Functional Requirements** — Numbered FR-N, each with verification criterion
+4. **Non-Functional Requirements** — Numbered NFR-N, each with metric
+5. **Interface Requirements** — Numbered IR-N
+6. **Data Requirements** — Numbered DR-N
+7. **Constraints** — Hard limits that SHALL NOT be violated
+8. **Open Questions** — Every ambiguity that could not be resolved. Numbered OQ-N.
+
+**Mode C: Concept/Idea (no structure detected)**
+
+Full transformation to specification format.
+
+**Synthesis order for concepts:**
+1. **Scope** — Included and excluded. Explicit, no ambiguity.
+2. **Context** — Domain, stakeholders, background
+3. **Functional Requirements** — Numbered FR-N, each with verification criterion
+4. **Non-Functional Requirements** — Numbered NFR-N, each with metric
+5. **Interface Requirements** — Numbered IR-N
+6. **Data Requirements** — Numbered DR-N
+7. **Constraints** — Hard limits that SHALL NOT be violated
+8. **Open Questions** — Every ambiguity from Decomposition that could not be resolved. Numbered OQ-N. Required before implementation can begin.
+
+**Universal writing rules (all modes):**
+- Every SHALL requirement has a verification criterion: "Verification: [observable test]"
+- No "TBD", "to be determined", or "as appropriate" without a corresponding Open Question entry
+- Every requirement is atomic — one requirement, one thing
+- Contradictions BLOCK synthesis — flag and ask user before continuing. If contradiction is unresolvable after one user consultation, convert it to an Open Question and continue — do not re-block at S7d for the same contradiction.
+- **For workflow specs**: Preserve ALL structural elements verbatim — this takes precedence over format preferences
+
+### Step S6: Completeness Audit (internal — not shown to user)
+
+**Trace every Decomposition item to at least one requirement or Open Question in the specification.**
+
+Audit protocol:
+1. Take every item from DECOMPOSITION
+2. Find its corresponding requirement(s) or OQ in the synthesis
+3. Missing → add requirement or open question
+4. Contradicted → flag conflict, add to Open Questions
+
+After audit, tally:
+- Requirements: N functional, M non-functional, K interface, J data, L constraints
+- Open Questions: X items
+- Coverage: complete / gaps resolved / gaps remaining (list any)
+
+### Step S7: Specification Verification
+
+The 11 checks S7a–S7k are defined verbatim in the **Verification Checks** section above (see `Specification mode — 11 checks (S7a–S7k)`). That section is authoritative and used by MSPEC4M5.
+
+## Plan Mode Pipeline
+
+The plan mode pipeline executes P1 (sufficiency, in orchestrator) → P2+P3+P4+P5 (MPLAN12) → P6+P7 (MPLAN3) → P8+P9 (MPLAN4M5). Each step's protocol is defined verbatim below.
+
+### Step P1: Sufficiency Check (Plan)
+
+**Hard gate.** Do not proceed until input passes.
+
+**Sufficient:** A clear goal, specification, or problem statement with enough definition that concrete steps can be designed. Output one line: "Sufficient — [reason]"
+
+**Insufficient:** Goal is too vague to plan — no outcome, no constraints, no scope. Explain what's missing, block until provided.
+
+**Specificity threshold:** "Build an app" → insufficient. "Build a REST API with JWT authentication, PostgreSQL persistence, and 80% test coverage" → sufficient.
+
+### Step P2: Goal Analysis (internal — not shown to user)
+
+Decompose the goal into sub-goals and prerequisites:
+
+```
+GOAL_ANALYSIS:
+  End state: [Precisely what does success look like? Observable criteria.]
+  Sub-goals:
+    - [Intermediate outcome 1 — what must be achieved]
+    - [Intermediate outcome 2]
+  Prerequisites:
+    - [What must be true / in place BEFORE any step begins]
+  Constraints:
+    - [What must not happen during execution]
+  Resources required:
+    - [Tools, access, information, dependencies needed]
+  Risks:
+    - [What could go wrong at each sub-goal level]
+  Technical Details:
+    URLs:
+      - [All URLs from input, verbatim — including query strings and fragments]
+    File Paths:
+      - [All file paths from input, verbatim — including ~, .., extensions]
+    Technology + Version:
+      - [All tech+version pairs, verbatim — BOTH name AND version number together]
+    Code Blocks:
+      - [All code blocks, character-for-character including whitespace]
+    Numeric Specifications:
+      - [All quantities, measurements, thresholds, counts — with units]
+    Named Entities:
+      - [All product names, library names, tool names without versions]
+    Version Specifications:
+      - [All standalone version strings — v2.3.1, release 2024.01, etc.]
+    Quoted Strings:
+      - [All text in quotes from input, verbatim]
+    API References:
+      - [All API signatures, endpoint references, function signatures]
+    Embedded Directives:
+      - [All instructions with their full targets — action AND target together]
+    Other Technical Items:
+      - [Any other precision-critical content not captured above]
+```
+
+**Technical Details are the precision-preservation checklist for P9i — every item must appear verbatim in the plan output.**
+
+### Step P3: Action Decomposition (internal — not shown to user)
+
+**CRITICAL: This is the completeness checklist. Every action here MUST appear in the plan.**
+
+Break every sub-goal into atomic, verifiable actions. An action is atomic when:
+- It produces exactly one observable output and has exactly one "done" state
+- An AI agent (Claude Code) can execute it as a single operation or a bounded sequence with a single observable result
+- It does not require branching logic to complete (branching → split into separate actions)
+
+```
+ACTION_DECOMPOSITION:
+  Phase 1: [Name]
+    Action 1.1: [Specific, atomic action] — Done when: [observable outcome]
+    Action 1.2: [Specific, atomic action] — Done when: [observable outcome]
+    Checkpoint: [Observable proof Phase 1 is complete before Phase 2 begins]
+  Phase 2: [Name]
+    Action 2.1: ...
+  Dependencies:
+    - Action X must precede Action Y because [reason]
+  Destructive/Irreversible Actions:
+    - [List any actions that cannot be undone — must have safeguards]
+```
+
+**Every action here MUST appear in the plan. This is the authoritative checklist for Step P8.**
+
+### Step P4: Dependency Mapping (internal — not shown to user)
+
+For each action pair where order matters:
+
+```
+DEPENDENCY_MAP:
+  Hard dependencies (B cannot start until A completes):
+    - [A] → [B]: [reason]
+  Soft dependencies (B should follow A but may overlap):
+    - [A] → [B]: [reason]
+  Parallelizable (no dependency):
+    - [A] and [B] can run simultaneously
+  Critical path: [longest chain of hard dependencies]
+  Conflicts: [any circular dependencies — BLOCK and ask user]
+```
+
+### Step P5: Safeguard Design (internal — not shown to user)
+
+For every action and every phase checkpoint:
+
+- **Verification test:** Observable outcome proving this action succeeded
+- **Failure recovery:** Exact steps to take if this action fails
+- **Rollback procedure:** How to undo this action if it makes things worse (required for all destructive/irreversible actions)
+- **Escalation trigger:** When failure is severe enough to stop the plan entirely and reassess
+
+**Safeguard rules:**
+- Destructive or irreversible actions MUST have a rollback or explicit escalation procedure — no exceptions
+- Every phase MUST have a checkpoint (observable proof before proceeding)
+- Safeguards must be as specific as the actions they guard — "retry" is not a safeguard
+
+### Step P6: Plan Synthesis (internal — not shown to user)
+
+Write the full plan from Action Decomposition, Dependency Mapping, and Safeguard Design.
+
+**Structure (in order):**
+1. **Goal** — Precise end state. What success looks like, observable.
+2. **Prerequisites** — What must be true before Step 1. Numbered.
+3. **Phases** — Numbered phases with numbered steps
+4. **Dependency Notes** — Where non-obvious ordering requirements exist
+5. **Completion Criteria** — Observable checklist confirming the entire plan succeeded
+
+**Writing rules for each step:**
+- Start with an imperative verb: "Create", "Run", "Configure", "Verify", "Install"
+- One action per step — never "do X and Y"
+- Include exact commands, file names, or configurations where possible
+- Every step has: `Verify: [observable outcome]`
+- Destructive/risky steps additionally have: `Recovery: [what to do if this fails]`
+
+### Step P7: Execution Simulation (internal — not shown to user)
+
+**Mentally walk through the plan as if executing it, step by step.**
+
+For each step, test:
+1. Is everything this step needs available at this point in the plan?
+2. Does this step produce what the next step requires?
+3. Would someone following only this plan's text succeed at this step?
+
+**Simulation log — record every gap and resolution:**
+
+| Gap found | Resolution |
+|-----------|------------|
+| [Missing prerequisite for Step X] | [Added Step Y before X / Added to Prerequisites] |
+| [Step X produces wrong output for Step Y] | [Added intermediate step / Rewrote Step X] |
+| [Ambiguous instruction at Step X] | [Rewrote with exact command/path/value] |
+
+If a gap cannot be resolved without user input → flag as Open Question (do not guess).
+
+### Step P8: Gap Audit (internal — not shown to user)
+
+**Every action from Action Decomposition must appear in the plan. No extra actions may exist in the plan without being in the decomposition.**
+
+Audit protocol:
+1. Take every action from ACTION_DECOMPOSITION
+2. Find its corresponding step in the plan
+3. Missing → add step to plan
+4. Order wrong given dependency mapping → reorder
+5. Checkpoint missing → add checkpoint after phase
+6. Safeguard missing for destructive step → add safeguard
+
+After audit, tally:
+- Total steps: N across M phases
+- Verification tests: K (must equal N)
+- Safeguards: J (must equal count of destructive/risky steps)
+- Open questions: X (steps that could not be made concrete without user input)
+- Coverage: complete / gaps resolved / gaps remaining (list any)
+
+### Step P9: Plan Verification
+
+The 9 checks P9a–P9i are defined verbatim in the **Verification Checks** section above (see `Plan mode — 9 checks (P9a–P9i)`). That section is authoritative and used by MPLAN4M5.
