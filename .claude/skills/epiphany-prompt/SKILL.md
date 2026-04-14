@@ -215,3 +215,60 @@ Example: input "Build a VST plugin with reverb" → meaningful words `[build, vs
 - Write `00-config.md`: mode, scale, flags { quiet }, date (DD-MM), session_id, input_type (A/B/C), filename_slug, contract_schema: v1 [write-once by orchestrator; modules read only].
 - Write `00-input.md`: processed input (flags stripped; extracted content for type B; original input section for type C).
 
+
+### STEP 5 — WAVE EXECUTION
+
+If FAST: run **FAST Inline Pipeline** (below — separate `## FAST Inline Pipeline` section). Skip STEPs 6–7 in the orchestrator; go to STEP 8.
+
+Else: select wave plan from the **Mode × Scale matrix**:
+
+| | FAST | STANDARD | DEEP |
+|---|---|---|---|
+| **normal** | inline pipeline | M12→M3→M4M5 | M12→M3→M4→M5-exp→M4M5 |
+| **specification** | → STANDARD | MSPEC12→MSPEC3→MSPEC4M5 | → STANDARD |
+| **plan** | → STANDARD | MPLAN12→MPLAN3→MPLAN4M5 | → STANDARD |
+| **spec then plan** | → STANDARD both | spec pipeline → save spec output → plan pipeline (spec output as input) | → STANDARD both |
+| **+ `--quiet`** | display suppressed, file saved | same | same |
+
+**Pre-spawn validation** (once, before first wave):
+
+For every module file referenced in the selected wave plan, verify `~/.claude/skills/epiphany-prompt/modules/{module_file}` exists and has valid YAML frontmatter (all 8 required keys present: `name`, `stage_id`, `input_dependencies`, `output_files`, `scale_variants`, `kb_sources`, `activation`, `return_contract`). Missing file or malformed frontmatter → HALT:
+
+> [HALT] Module file not found or invalid: {file}. Check installation at ~/.claude/skills/epiphany-prompt/modules/.
+
+**Per wave:**
+
+- **Single-stage wave:** spawn `Agent(subagent_type="general-purpose", prompt=...)` with the constructed prompt (see **Module Invocation Mechanism** below). Wait for return. Validate all declared `output_files` from the module's frontmatter now exist in `session_dir` and are non-empty. Missing/empty → HALT:
+
+  > [HALT] {module}: output file(s) missing or empty. Check session_dir path and module output instructions.
+
+- **Multi-stage wave:** spawn all Agents in one message (parallel), wait for all to return, validate all output_files. HALT on any missing/empty. (Note: current wave design has no parallel stages — reserved for future expansion.)
+
+**Module invocation mechanism:**
+
+Every STANDARD/DEEP wave spawns a subagent via the `Agent` tool with:
+
+1. `subagent_type`: `"general-purpose"` (the module protocol file is referenced by path in the prompt, not loaded as a built-in agent type).
+2. `prompt` (constructed inline): contains
+   - Path to the module protocol file (`~/.claude/skills/epiphany-prompt/modules/{module_file}`) with instruction to read and follow it.
+   - Absolute `session_dir` path.
+   - Explicit list of stage files the module must read (per dependency table in spec — may be the primary set or a repair-path variant).
+   - Explicit list of output files the module must write.
+   - Variant hints if applicable (e.g., "DEEP repair path — failed draft is at `03-synthesis-failed.md`").
+
+The module protocol uses the **Read tool** to load every declared input from `session_dir` and the **Write tool** to write declared outputs. The orchestrator never passes stage content inline — only paths.
+
+**Return value contracts:**
+
+| Module group | PASS format | FAIL format | Orchestrator action |
+|---|---|---|---|
+| Verify+output (M4M5, MSPEC4M5, MPLAN4M5) | `VERIFICATION: PASS\n\n<output XML>` | `VERIFICATION: FAIL — [summary]` (normal mode only) | Parse header + blank line + XML body; display/save per quiet flag |
+| Verify+output — spec/plan | `VERIFICATION: PASS-WITH-NOTES — [summary]\n\n<output XML>` | *(never FAIL — always deliver)* | Same as PASS — `<note>` block is embedded inside XML by the module |
+| M4 standalone (DEEP W3) | `VERIFICATION: PASS` | `VERIFICATION: FAIL — [summary]` | PASS → proceed to W4; FAIL → repair (STEP 6) |
+| Non-verify (M12, M3, M5, MSPEC12, MSPEC3, MPLAN12, MPLAN3) | `[Module] complete. Wrote: [file list].` | *(success via output file presence, not return text)* | Validate output files; proceed to next wave |
+
+**Three-layer rule:** orchestrator reads Agent return messages only; never reads stage files for routing decisions. Exceptions: stage introspection (display only, after wave completes) and double-failure fallback (STEP 7).
+
+**Spec/plan failure policy:** MSPEC4M5 / MPLAN4M5 have no repair loop. On verification failures, the module returns PASS-WITH-NOTES (best-effort output + flagged gaps summary) rather than FAIL. The orchestrator displays/saves the output as if passed, with failure summary surfaced in the displayed note.
+
+**After each wave:** check for stage introspection request ("show me [stage]" → display corresponding `stages/*.md`). FAST: unavailable — no stage files.

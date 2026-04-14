@@ -52,6 +52,13 @@ if [[ -f "$SKILL_DIR/SKILL.md" ]]; then
     assert_grep '00-config.md' "$SKILL_DIR/SKILL.md" "00-config"
     assert_grep '00-input.md' "$SKILL_DIR/SKILL.md" "00-input"
     assert_grep 'mkdir -p \{session_dir\}' "$SKILL_DIR/SKILL.md" "session dir mkdir"
+    assert_grep 'STEP 5 — WAVE EXECUTION' "$SKILL_DIR/SKILL.md" "STEP 5"
+    assert_grep 'Pre-spawn validation' "$SKILL_DIR/SKILL.md" "pre-spawn validation"
+    assert_grep 'VERIFICATION: PASS' "$SKILL_DIR/SKILL.md" "PASS contract"
+    assert_grep 'VERIFICATION: FAIL' "$SKILL_DIR/SKILL.md" "FAIL contract"
+    assert_grep 'VERIFICATION: PASS-WITH-NOTES' "$SKILL_DIR/SKILL.md" "PASS-WITH-NOTES contract"
+    assert_grep 'Three-layer rule' "$SKILL_DIR/SKILL.md" "three-layer rule"
+    assert_grep 'subagent_type.*general-purpose' "$SKILL_DIR/SKILL.md" "subagent type"
     assert_grep 'STEP 7 — OUTPUT' "$SKILL_DIR/SKILL.md" "STEP 7"
 fi
 
