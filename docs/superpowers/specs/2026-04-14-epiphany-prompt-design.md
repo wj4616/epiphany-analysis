@@ -11,11 +11,11 @@
 Build `epiphany-prompt` — a modular, subagent-orchestrated prompt enhancement skill that retains the complete `prompt-epiphany` methodology (all 5 modes, all 13+ techniques, all verification gates, zero-information-loss guarantee) but restructures delivery as a modular pipeline with swappable stage files, scale-aware depth, and per-stage specialization that produces meaningfully better output than the monolithic version.
 
 **What makes it better than prompt-epiphany:**
-- Each stage runs in an isolated Agent subagent with full context budget for its specific task
-- Stages are swappable — replace `modules/m2-ideation.md` with a better version, nothing else changes
+- STANDARD/DEEP stages run as isolated Agent subagents with full context budget per task
+- Merged stages (M12, M4M5, MSPEC12, etc.) combine naturally adjacent tasks — fewer spawns without losing critical isolation
 - Three depth scales (FAST/STANDARD/DEEP) map to existing flags, each unlocking genuinely different capabilities
 - Formal document handoffs (enhancement contracts, verification reports) create explicit quality gates between stages
-- Stage introspection: any stage's output is inspectable on request
+- Stage introspection: any stage's output is inspectable on request (STANDARD/DEEP only)
 
 **What does not change:**
 - All 13+ enhancement techniques (T1–T13) with triggers, ordering, application rules
@@ -34,26 +34,31 @@ Three layers:
 SKILL.md              Orchestrator only. Parses flags, detects mode + scale,
                       runs sufficiency check inline, spawns wave agents,
                       manages repair loops, routes output.
-                      Never runs stage logic inline.
+                      Exception: FAST scale runs the complete pipeline
+                      inline (0 spawns). Documented deviation for speed.
 
 modules/*.md          Stage protocols. Each spawned as an isolated Agent
-                      subagent. One file per stage. Replace the file to
-                      upgrade the stage. Declares input_dependencies in
-                      frontmatter.
+                      subagent. One file per stage or merged stage. Replace
+                      a file to upgrade it. Declares input_dependencies in
+                      frontmatter. Merged modules write one output file per
+                      logical stage they cover (may be 2–3 files total).
 
 stages/ (session)     File-based state. Each subagent reads declared
-                      input files from stages/, writes one output file.
+                      input files from stages/ and writes its output file(s).
                       Orchestrator never reads stage files during pipeline
                       execution for routing decisions — it reads module
                       return values instead. Exception: stage introspection
                       reads and displays stage files on user request after
                       a wave completes (display-only, not for routing).
+                      FAST scale: no session directory — all processing is
+                      inline, no stage files persist, introspection N/A.
 ```
 
 Session directories: `~/docs/epiphany/prompts/.sessions/{session_id}/stages/`
 - `session_id = YYYYMMDD-[topic-slug]`
 - Stage files persist after run (available for stage introspection)
 - New session creates a new session_id directory; old ones are not auto-deleted
+- **FAST scale**: no session directory created — processing is inline, stage introspection unavailable
 
 ---
 
@@ -71,9 +76,9 @@ Session directories: `~/docs/epiphany/prompts/.sessions/{session_id}/stages/`
 
 | Flag | Scale | Spawns (normal mode) |
 |------|-------|----------------------|
-| `--minimal` | FAST | 4 agents |
-| *(default)* | STANDARD | 5 agents (7 if W4 repair: +M3 +M4) |
-| `--verbose` | DEEP | 7 agents (+2 per repair loop; max 11 if both W4+W6 repair) |
+| `--minimal` | FAST | 0 agents (inline) |
+| *(default)* | STANDARD | 3 agents (5 if repair: +M3 +M4M5) |
+| `--verbose` | DEEP | 5 agents (+2 per repair loop; max 9 if both W3+W5 repair) |
 
 `--quiet` is display-only — does not affect scale or wave plan.
 
@@ -81,32 +86,37 @@ Scale does not apply to specification or plan modes — both always run STANDARD
 
 ---
 
-## Module Set — 14 files
+## Module Set — 11 files
 
 ```
 ~/.claude/skills/epiphany-prompt/modules/
 
 Normal mode (5 files):
-  m1-analysis.md          6-dimension analysis + INVENTORY extraction
-  m2-ideation.md          Enhancement contracts, DEEP adds anti-conformity pass
-  m3-synthesis.md         Preservation-first synthesis, DEEP adds self-critique
-  m4-verification.md      12-check battery, scale-aware repair behaviour
-  m5-expansion.md         DEEP only — gap scan + targeted expansion synthesis
+  m12-analysis-ideation.md   Analysis (6-dim + INVENTORY) → Ideation (contracts)
+                             Two-phase single agent. Writes 3 output files.
+                             DEEP: opportunity scoring → anti-conformity pass.
+  m3-synthesis.md            Preservation-first synthesis. DEEP: self-critique.
+  m4-verification.md         12-check verification — DEEP W3 only (standalone,
+                             before expansion). Repair triggers M3 re-spawn.
+  m5-expansion.md            DEEP only — gap scan + targeted expansion synthesis.
+  m4m5-verify-output.md      12-check verification + output formatting.
+                             Used in: STANDARD W3 (final), DEEP W5 (post-expansion).
+                             On PASS: formats + saves output. On FAIL: returns
+                             VERIFICATION: FAIL, triggers repair.
 
-Specification mode (4 files):
-  mspec-1-domain.md       S2–S3: domain analysis + concept decomposition
-  mspec-2-requirements.md S4: requirement extraction (SHALL/SHOULD/MAY)
-  mspec-3-synthesis.md    S5: specification synthesis
-  mspec-4-verify.md       S6–S7: completeness audit + 11-check verification
+Specification mode (3 files):
+  mspec12-domain-req.md      Domain analysis + requirement extraction (S2–S4).
+                             Two-phase single agent. Writes 2 output files.
+  mspec3-synthesis.md        Specification synthesis (S5).
+  mspec4m5-verify-output.md  Completeness audit + 11-check verification + output (S6–S7).
 
-Plan mode (4 files):
-  mplan-1-analysis.md     P2–P3: goal analysis + action decomposition
-  mplan-2-design.md       P4–P5: dependency mapping + safeguard design
-  mplan-3-synthesis.md    P6–P7: plan synthesis + execution simulation
-  mplan-4-verify.md       P8–P9: gap audit + 9-check verification
+Plan mode (3 files):
+  mplan12-analysis-design.md Goal analysis + dependency mapping + safeguards (P2–P5).
+                             Two-phase single agent. Writes 2 output files.
+  mplan3-synthesis.md        Plan synthesis + execution simulation (P6–P7).
+  mplan4m5-verify-output.md  Gap audit + 9-check verification + output (P8–P9).
 
-Shared (1 file):
-  m5-output.md            Display routing, file save, summary — used by all modes
+FAST scale: no module files — complete pipeline runs inline in the orchestrator.
 ```
 
 ---
@@ -116,42 +126,40 @@ Shared (1 file):
 ### Normal mode
 
 ```
-FAST  (--minimal)       STANDARD  (default)     DEEP  (--verbose)
+FAST (inline)                STANDARD (3 agents)      DEEP (5 agents)
 
-W1: M1-Analysis         W1: M1-Analysis          W1: M1-Analysis
-W2: M3-Synthesis        W2: M2-Ideation          W2: M2-Ideation
-W3: M4-Verification     W3: M3-Synthesis         W3: M3-Synthesis
-W4: M5-Output           W4: M4-Verification      W4: M4-Verification
-                        W5: M5-Output            W5: M5-Expansion
-                                                 W6: M4-Verification*
-                                                 W7: M5-Output
+Orchestrator runs            W1: M12                  W1: M12
+full pipeline inline:          Analysis+Ideation        Analysis+Ideation
+  Quick Analysis             W2: M3 Synthesis         W2: M3 Synthesis
+  Synthesis (T1–T7)          W3: M4M5                 W3: M4 Verify*
+  12-check Verification        Verify+Output          W4: M5 Expansion
+  Output                                              W5: M4M5
+No session directory.                                   Verify+Output
+Stage introspection N/A.
 
-4 agents                5 agents                 7 agents
+0 agents                     3 agents                 5 agents
 ```
 
-*W6 re-runs M4 against `05-expansion.md` output. Same module file, different input_dependencies passed by orchestrator.
+*W3 DEEP repair: M3 re-spawned (max 1 attempt). Double-failure: skip W4+W5,
+output synthesis directly with note. Re-spawned M4 shares same module file.
 
 ### Specification and plan modes
 
 ```
-SPECIFICATION                   PLAN
+SPECIFICATION (3 agents)         PLAN (3 agents)
 
-W1: MSPEC-1-Domain              W1: MPLAN-1-Analysis
-W2: MSPEC-2-Requirements        W2: MPLAN-2-Design
-W3: MSPEC-3-Synthesis           W3: MPLAN-3-Synthesis
-W4: MSPEC-4-Verify              W4: MPLAN-4-Verify
-W5: M5-Output                   W5: M5-Output
-
-5 agents                        5 agents
+W1: MSPEC12 Domain+Req           W1: MPLAN12 Analysis+Design
+W2: MSPEC3 Synthesis             W2: MPLAN3 Synthesis
+W3: MSPEC4M5 Verify+Output       W3: MPLAN4M5 Verify+Output
 ```
 
 ### Mode × Scale matrix
 
 | | FAST | STANDARD | DEEP |
 |---|---|---|---|
-| **normal** | M1→M3→M4→M5 | M1→M2→M3→M4→M5 | M1→M2→M3→M4→M5-exp→M4→M5 |
-| **specification** | → STANDARD | MSPEC-1→2→3→4→M5 | → STANDARD |
-| **plan** | → STANDARD | MPLAN-1→2→3→4→M5 | → STANDARD |
+| **normal** | inline pipeline | M12→M3→M4M5 | M12→M3→M4→M5-exp→M4M5 |
+| **specification** | → STANDARD | MSPEC12→MSPEC3→MSPEC4M5 | → STANDARD |
+| **plan** | → STANDARD | MPLAN12→MPLAN3→MPLAN4M5 | → STANDARD |
 | **spec then plan** | → STANDARD both | spec waves → confirm → plan waves | → STANDARD both |
 | **+ `--quiet`** | display suppressed, file saved | same | same |
 
@@ -161,7 +169,9 @@ W5: M5-Output                   W5: M5-Output
 
 ### Stage files
 
-**Normal mode:**
+**FAST scale:** No session directory. No stage files. Processing is entirely inline.
+
+**STANDARD/DEEP normal mode:**
 ```
 stages/00-config.md         mode, scale, flags { quiet }, date (DD-MM),
                             session_id, input_type (A/B/C),
@@ -171,71 +181,72 @@ stages/00-config.md         mode, scale, flags { quiet }, date (DD-MM),
 stages/00-input.md          processed original input (flags stripped,
                             XML/prior-output extracted if type B/C)
 
-stages/01-analysis.md       full 6-dimension analysis (3a–3f)
-stages/01-inventory.md      INVENTORY checklist only — extracted from
-                            01-analysis, standalone preservation checklist
+stages/01-analysis.md       M12 Phase 1: full 6-dimension analysis (3a–3f)
+stages/01-inventory.md      M12 Phase 1: INVENTORY checklist — standalone
+                            preservation checklist (separate from full analysis)
 
-stages/02-ideation.md       enhancement contracts (see schema below)
-stages/03-synthesis.md      enhanced prompt draft
+stages/02-ideation.md       M12 Phase 2: enhancement contracts (see schema below)
+stages/03-synthesis.md      M3: enhanced prompt draft
                             (STANDARD repair: overwritten in place;
                              DEEP repair: saved as 03-synthesis-failed.md first)
-stages/04-verification.md   12-check results (see schema below)
-stages/05-expansion.md      DEEP only — gap scan findings + expanded output
-stages/06-verification-2.md DEEP only — M4 re-run against expansion output
-stages/output-meta.md       Written by M5-Output (all modes) — contains
-                            target_filename (resolved save path).
-                            Orchestrator reads this after M5 to confirm save path.
+stages/04-verification.md   M4: 12-check results — DEEP W3 only (see schema below)
+stages/05-expansion.md      M5-exp: DEEP only — gap scan findings + expanded output
+stages/06-verification-2.md M4M5: DEEP W5 — verification results for expansion output
+stages/output-meta.md       M4M5/MSPEC4M5/MPLAN4M5: written on PASS — contains
+                            target_filename. Orchestrator reads after verify+output
+                            completes to confirm save path.
 ```
 
 **Specification mode** (00-config.md and 00-input.md shared):
 ```
-stages/spec-01-domain.md    MSPEC-1 output: domain analysis + decomposition
-stages/spec-02-requirements.md MSPEC-2 output: extracted requirements
-stages/spec-03-synthesis.md MSPEC-3 output: specification document
-stages/spec-04-verify.md    MSPEC-4 output: completeness audit + 11 checks
+stages/spec-01-domain.md       MSPEC12 Phase 1: domain analysis + decomposition
+stages/spec-02-requirements.md MSPEC12 Phase 2: extracted requirements
+stages/spec-03-synthesis.md    MSPEC3: specification document
+stages/spec-04-verify.md       MSPEC4M5: completeness audit + 11 checks
 ```
 
 **Plan mode** (00-config.md and 00-input.md shared):
 ```
-stages/plan-01-analysis.md  MPLAN-1 output: goal analysis + decomposition
-stages/plan-02-design.md    MPLAN-2 output: dependency map + safeguards
-stages/plan-03-synthesis.md MPLAN-3 output: plan document + simulation
-stages/plan-04-verify.md    MPLAN-4 output: gap audit + 9 checks
+stages/plan-01-analysis.md  MPLAN12 Phase 1: goal analysis + decomposition
+stages/plan-02-design.md    MPLAN12 Phase 2: dependency map + safeguards
+stages/plan-03-synthesis.md MPLAN3: plan document + execution simulation
+stages/plan-04-verify.md    MPLAN4M5: gap audit + 9 checks
 ```
 
 ### Module input_dependencies
 
-| Module | Reads |
-|--------|-------|
-| M1 Analysis | `00-config` + `00-input` |
-| M2 Ideation | `00-config` + `00-input` + `01-analysis` |
-| M3 Synthesis (FAST) | `00-config` + `00-input` + `01-analysis` + `01-inventory` |
-| M3 Synthesis (STANDARD/DEEP initial) | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` |
-| M3 Synthesis (STANDARD repair) | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` + `04-verification` (no failed draft) |
-| M3 Synthesis (DEEP repair) | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` + `03-synthesis-failed` + `04-verification` |
-| M4 Verification | `00-config` + `00-input` + `01-inventory` + `03-synthesis` |
-| M4 Verification (W6 DEEP) | `00-config` + `00-input` + `01-inventory` + `05-expansion` |
-| M5 Expansion | `00-config` + `00-input` + `01-inventory` + `03-synthesis` (latest) |
-| M5 Output (FAST/STANDARD) | `00-config` + `03-synthesis` + `04-verification` |
-| M5 Output (DEEP expanded) | `00-config` + `05-expansion` + `06-verification-2` |
-| M5 Output (DEEP no-op exp) | `00-config` + `03-synthesis` + `06-verification-2` |
-| M5 Output (spec) | `00-config` + `spec-03-synthesis` + `spec-04-verify` |
-| M5 Output (plan) | `00-config` + `plan-03-synthesis` + `plan-04-verify` |
-| MSPEC-1 Domain | `00-config` + `00-input` |
-| MSPEC-2 Requirements | `00-config` + `00-input` + `spec-01-domain` |
-| MSPEC-3 Synthesis | `00-config` + `00-input` + `spec-01-domain` + `spec-02-requirements` |
-| MSPEC-4 Verify | `00-config` + `00-input` + `spec-01-domain` + `spec-02-requirements` + `spec-03-synthesis` |
-| MPLAN-1 Analysis | `00-config` + `00-input` |
-| MPLAN-2 Design | `00-config` + `00-input` + `plan-01-analysis` |
-| MPLAN-3 Synthesis | `00-config` + `00-input` + `plan-01-analysis` + `plan-02-design` |
-| MPLAN-4 Verify | `00-config` + `00-input` + `plan-01-analysis` + `plan-02-design` + `plan-03-synthesis` |
+FAST inline has no modules; all context is in-memory within the orchestrator.
+
+| Module | Reads | Writes |
+|--------|-------|--------|
+| M12 Analysis+Ideation | `00-config` + `00-input` | `01-analysis`, `01-inventory`, `02-ideation` |
+| M3 Synthesis (initial) | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` | `03-synthesis` |
+| M3 Synthesis (STANDARD repair) | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` + `04-verification` | `03-synthesis` (overwrite) |
+| M3 Synthesis (DEEP repair) | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` + `03-synthesis-failed` + `04-verification` | `03-synthesis` (overwrite) |
+| M4 Verification (DEEP W3) | `00-config` + `00-input` + `01-inventory` + `03-synthesis` | `04-verification` |
+| M5 Expansion (DEEP W4) | `00-config` + `00-input` + `01-inventory` + `03-synthesis` (latest) | `05-expansion` |
+| M4M5 Verify+Output (STANDARD W3) | `00-config` + `00-input` + `01-inventory` + `03-synthesis` | `04-verification` + `output-meta` (on PASS) |
+| M4M5 Verify+Output (DEEP W5) | `00-config` + `00-input` + `01-inventory` + `05-expansion` | `06-verification-2` + `output-meta` (on PASS) |
+| MSPEC12 Domain+Req | `00-config` + `00-input` | `spec-01-domain`, `spec-02-requirements` |
+| MSPEC3 Synthesis | `00-config` + `00-input` + `spec-01-domain` + `spec-02-requirements` | `spec-03-synthesis` |
+| MSPEC4M5 Verify+Output | `00-config` + `00-input` + `spec-01-domain` + `spec-02-requirements` + `spec-03-synthesis` | `spec-04-verify` + `output-meta` (on PASS) |
+| MPLAN12 Analysis+Design | `00-config` + `00-input` | `plan-01-analysis`, `plan-02-design` |
+| MPLAN3 Synthesis | `00-config` + `00-input` + `plan-01-analysis` + `plan-02-design` | `plan-03-synthesis` |
+| MPLAN4M5 Verify+Output | `00-config` + `00-input` + `plan-01-analysis` + `plan-02-design` + `plan-03-synthesis` | `plan-04-verify` + `output-meta` (on PASS) |
 
 ### Segregation rationale
 
-- M2 Ideation never sees a synthesis draft — keeps enhancement design generative, not editorial
-- M4 Verification never sees M2 Ideation reasoning — checks output quality, not intent
-- STANDARD repair: M3 receives no failed draft — clean regeneration, no anchoring
-- DEEP repair: M3 receives failed draft deliberately — targeted surgical fix only
+**What was merged and why it's safe:**
+- M12 (M1+M2): The critical isolation is M3 not seeing M2 reasoning — not M1 from M2. Analysis informing ideation directly is harmless and actually beneficial (opportunity scores flow inline, no file roundtrip).
+- M4M5 (*verify+output): Verification runs first; output formatting only executes on PASS. No isolation concern — M5 never influenced analysis or synthesis quality.
+- MSPEC12, MPLAN12: Same logic — requirements extraction builds directly on domain analysis. Isolation point is downstream (synthesis needs fresh context, not requirements from domain).
+
+**What was kept separate and why:**
+- M3 Synthesis: full context for synthesis only. Must not see M12 reasoning or previous synthesis attempts inline. Critical isolation preserved.
+- M4 Verification (DEEP W3): fresh eyes on synthesis before expansion runs. M4 must not see how synthesis was produced.
+- M5 Expansion: runs against verified output, not mid-synthesis context. Fresh perspective on gaps.
+- STANDARD repair: M3 re-spawned with no failed draft — clean regeneration, no anchoring to the failure.
+- DEEP repair: M3 re-spawned with failed draft + report — surgical fix using structured failure data.
 
 ### Enhancement contract schema (v1)
 
@@ -285,51 +296,60 @@ Summary (plan mode):
 
 ## Per-Module Enhancements
 
-### M1 Analysis — what isolation enables
+### FAST scale — inline execution
 
-- Full context budget for analysis only
-- Two formal outputs: `01-analysis.md` (full findings) + `01-inventory.md` (structured standalone checklist). Verification reads the checklist directly — no parsing required.
-- **DEEP: Enhancement Opportunity Scoring.** After identifying weaknesses, M1 scores each by impact potential before handing off to M2-Ideation:
-  - high = weakness would cause the AI to fail the stated task
-  - medium = weakness would reduce output quality or completeness
-  - low = stylistic issue with no functional impact
-- M2-Ideation uses scores to prioritize enhancement budget.
+- Complete pipeline runs in the orchestrator's context window. Zero subagent spawns.
+- Quick Analysis: Intent extraction + INVENTORY (abbreviated form of 6-dimension analysis).
+- Synthesis: T1, T2, T3, T5, T7 applied directly. Same techniques as prompt-epiphany --minimal.
+- 12-check verification inline. Output formatting + file save inline.
+- Quality floor: identical to prompt-epiphany --minimal. No regression.
+- **Limitation:** shares context window with existing conversation. Long inputs or long sessions may produce lower quality due to competing context. Use STANDARD for complex prompts.
+- No session directory. Stage introspection unavailable.
 
-### M2 Ideation — what isolation enables
+### M12 Analysis+Ideation — what merging enables
 
-- Full context for creative enhancement design with no pressure to begin synthesizing
-- Output is enhancement contracts (formal, structured) — M3 executes, doesn't rediscover
-- **DEEP: Anti-Conformity internal second pass.** First pass: T1–T13 gap analysis (systematic). Second pass: Anti-Conformity — "what would a contrarian enhancer do that the systematic pass missed?" Both passes internal to M2 (single agent, two reasoning passes — no sub-spawning). Merged output prioritized by M1 opportunity scores.
-- Clean upgrade path: replace `m2-ideation.md` with any new ideation method; M3 receives the same contract schema (v1) and requires no changes.
+- Two-phase single agent. Phase 1: full 6-dimension analysis (3a–3f) + writes `01-analysis.md` and `01-inventory.md`. Phase 2: enhancement ideation → writes `02-ideation.md`.
+- Full context budget covers both analysis AND ideation. Enhancement opportunity scores flow directly from Phase 1 to Phase 2 — no file roundtrip.
+- M3 receives only the structured contract output, not M12's reasoning. Critical isolation preserved.
+- **DEEP Phase 1:** scores each weakness high/medium/low by impact. Phase 2 uses scores to allocate enhancement budget, then runs Anti-Conformity second pass (contrarian enhancer perspective). Both passes internal — no sub-spawning.
+- Upgrade path: replace `m12-analysis-ideation.md` to change either or both phases. M3 only requires the contract schema (v1) to be unchanged.
+- Tradeoff: ideation strategy cannot be swapped independently of analysis. To update only the ideation logic, edit the Phase 2 section of the module file.
 
 ### M3 Synthesis — what isolation enables
 
-- Full context for synthesis with no competing analysis or verification context
-- Executes enhancement contracts rather than rediscovering enhancement rationale mid-synthesis
-- Preservation-first protocol more rigorous: full budget to place every INVENTORY item before adding any enhancement
-- **DEEP: Iterative self-critique.** Draft → internal self-critique against INVENTORY + contracts → targeted revision → final. Two reasoning passes within single M3 agent. No separate spawn.
-- FAST quality floor: applies T1, T2, T3, T5, T7 directly from Quick Analysis (Intent + Inventory). Matches prompt-epiphany minimal mode quality — no regression.
+- Full context for synthesis only — no M12 reasoning in context, no verification pressure.
+- Executes enhancement contracts rather than rediscovering rationale mid-synthesis.
+- Preservation-first: full context budget to place every INVENTORY item before adding any enhancement.
+- **DEEP: Iterative self-critique.** Draft → internal self-critique against INVENTORY + contracts → targeted revision → final. Two passes within single agent, no sub-spawn.
 
-### M4 Verification — what isolation enables
+### M4 Verification — what isolation enables (DEEP W3 only)
 
-- Fresh eyes on synthesis output — no memory of how it was produced
-- **STANDARD repair:** M3 re-spawned fresh (no failed draft) — clean regeneration, not a patch
-- **DEEP repair:** M3 re-spawned targeted (failed draft + failure report) — surgical fix using exact failure details from formal verification report. Only possible because failures are a structured document, not prose.
-- Max 1 repair attempt at any scale; fail twice → output with note (same rule as prompt-epiphany source)
-- Writes structured verification report as formal output — M5-Output reads preservation counts as data
+- Standalone in DEEP only. Runs after M3, before M5-Expansion.
+- Fresh eyes on synthesis — no memory of how it was produced.
+- **DEEP repair:** M3 re-spawned targeted (03-synthesis-failed.md + 04-verification) — surgical fix using structured failure data.
+- Max 1 repair attempt. **Double-failure:** skip W4+W5. Orchestrator outputs synthesis inline with note. Do not run expansion on content that failed two verification rounds.
 
-### M5 Expansion — what isolation enables (DEEP only)
+### M5 Expansion — what isolation enables (DEEP W4 only)
 
-- Fresh eyes on verified synthesis — no memory of synthesis reasoning
-- Runs against verified output (post-M4), not raw synthesis — expands content already known to be preservation-complete
-- Clean no-op path: if gap scan finds nothing thin, passes through with note; W6 M4-Verification runs unchanged against the pass-through output
-- Gap scan findings written to `05-expansion.md` — inspectable via stage introspection
+- Fresh eyes on verified synthesis — no memory of synthesis reasoning.
+- Runs against post-M4 verified output — expands content known to be preservation-complete.
+- No-op path: if gap scan finds nothing thin, writes pass-through to `05-expansion.md` with "already comprehensive" note. M4M5 at W5 still runs against `05-expansion.md` in both cases.
 
-### Spec and Plan modules — what isolation enables
+### M4M5 Verify+Output — what merging enables
 
-- Formal document handoffs at each stage boundary: Decomposition output → Requirements must trace to it
-- Execution Simulation (MPLAN-3) has full context for the mental walkthrough
-- Verification modules (MSPEC-4, MPLAN-4) see specification/plan without memory of how it was written
+- Two-phase single agent: Phase 1 (verification), Phase 2 (output formatting — only on PASS).
+- Used in STANDARD (W3, final step) and DEEP (W5, post-expansion step).
+- Inputs vary by context: STANDARD reads `03-synthesis`; DEEP W5 reads `05-expansion`. Orchestrator passes the correct file path. Same module file handles both via `00-config` scale field.
+- Fresh eyes: no memory of how synthesis/expansion was produced. Same isolation property as standalone M4.
+- On PASS: generates formatted output, writes `output-meta.md` with `target_filename`, returns "VERIFICATION: PASS — output complete."
+- On FAIL: writes verification report, returns "VERIFICATION: FAIL — [summary]". No output. Orchestrator triggers repair (max 1 attempt).
+
+### Spec and Plan modules — what merging enables
+
+- **MSPEC12:** Domain analysis informs requirements extraction in same context — naturally sequential, no isolation loss. Requirements must trace to domain; running them together enforces this implicitly. Writes `spec-01-domain.md` and `spec-02-requirements.md` for introspection.
+- **MSPEC3:** Specification synthesis needs fresh context. Separate agent with no MSPEC12 reasoning inline. Critical isolation.
+- **MSPEC4M5:** 11-check verification then output. Same merge rationale as M4M5. Delivers with flagged gaps if verification fails (no repair loop for spec mode).
+- **MPLAN12/MPLAN3/MPLAN4M5:** Mirror pattern. MPLAN3 Execution Simulation has full context for mental walkthrough with no prior dependency-mapping context competing.
 
 ---
 
@@ -366,11 +386,13 @@ STEP 1 — INPUT ROUTING + SUFFICIENCY (inline, no spawn)
 STEP 2 — SESSION INIT
   Generate topic_slug: lowercase first 3–5 meaningful words of input,
     joined with hyphens (stop words: a, an, the, is, for, to, of, in, ...)
+  filename_slug = topic_slug  [used for save path by all scales]
+  If FAST: session init complete — skip session directory creation.
+    Proceed to STEP 3 with filename_slug in memory.
   session_id = YYYYMMDD-{topic_slug}
   Collision: if session_dir already exists, append -2, -3, etc. to
     both session_id and topic_slug until unique
     (e.g., build-prompt-skill → build-prompt-skill-2)
-  filename_slug = topic_slug  [same value, stored in 00-config for M5-Output]
   session_dir = ~/docs/epiphany/prompts/.sessions/{session_id}/stages/
   Write 00-config.md: mode, scale, flags, date (DD-MM),
     session_id, input_type, filename_slug, contract_schema: v1  [write-once]
@@ -382,66 +404,86 @@ STEP 3 — ANNOUNCE
    develop a step-by-step plan]."
 
 STEP 4 — WAVE EXECUTION
-  Select wave plan from mode × scale matrix.
+  If FAST: run FAST Inline Pipeline (see below). Skip STEPS 5–7.
+  Else: select wave plan from mode × scale matrix.
   Per wave:
     Single-stage: spawn Agent(module_file, input_dependencies), wait,
-      validate output file exists and non-empty → HALT if missing or empty
+      validate all declared output files exist and non-empty → HALT if any missing/empty
       HALT format: "[HALT] {module}: output file missing or empty.
         Check session_dir path and module output instructions."
     Multi-stage: spawn all Agents in one message (parallel),
       wait for all, validate all output files → HALT if any missing or empty
-      (Note: current wave design has no parallel stages — rule reserved for future expansion)
-    M4 return value: M4 ends its run with "VERIFICATION: PASS" or
-      "VERIFICATION: FAIL — [summary]". Orchestrator reads the Agent return
-      message to decide whether to trigger repair. Orchestrator never reads
-      04-verification.md directly (three-layer rule).
-    MSPEC-4 / MPLAN-4 return value: same contract — "VERIFICATION: PASS"
-      or "VERIFICATION: FAIL — [summary]". No repair loop for spec/plan modes.
-      On FAIL: orchestrator passes the failure summary to M5-Output as context;
-      output is delivered with flagged gaps noted in the summary line.
+      (Note: current wave design has no parallel stages — reserved for future expansion)
+    Verification return values:
+      M4, M4M5, MSPEC4M5, MPLAN4M5 all end with "VERIFICATION: PASS" or
+      "VERIFICATION: FAIL — [summary]". Orchestrator reads Agent return message
+      to decide repair. Never reads verification files directly (three-layer rule).
+      MSPEC4M5 / MPLAN4M5: no repair loop. On FAIL, orchestrator passes failure
+      summary as context in the verify+output module prompt; output delivered
+      with flagged gaps.
   After each wave, check for stage introspection request:
-    "show me [analysis/ideation/synthesis/expansion/verification]"
-      → display corresponding stages/*.md, then continue
-    "show me the analysis" → display 01-analysis.md
+    "show me [stage]" → display corresponding stages/*.md (FAST: unavailable)
 
-STEP 5 — REPAIR LOOP (on M4 failure at W4)
-  repair_count_w4 = 0
-  On M4 failure (W4):
-    repair_count_w4++
-    If repair_count_w4 > 1 → proceed to output with note
-    If FAST → no repair, proceed with note immediately
-    If STANDARD → spawn M3-Synthesis fresh (no failed draft)
-    If DEEP → save 03-synthesis-failed.md before overwriting;
-      spawn M3-Synthesis targeted (with 03-synthesis-failed.md + 04-verification)
-    Respawn M4-Verification against new synthesis
-    Overwrite 03-synthesis.md and 04-verification.md
+FAST INLINE PIPELINE (scale = FAST, no spawns)
+  1. Quick Analysis inline: extract intent, identify inventory items
+  2. Synthesis inline: apply T1, T2, T3, T5, T7
+  3. 12-check verification inline
+  4. Format output with <meta source="epiphany-prompt"/> marker
+  5. Non-quiet: display in --- delimiters, offer save
+     Quiet: save to ~/docs/epiphany/prompts/DD-MM-{filename_slug}.md directly
+  Note: context window is shared with conversation history. For long inputs
+  or long sessions, prefer STANDARD to avoid context competition.
 
-STEP 6 — EXPANSION (DEEP normal mode only)
-  Spawn M5-Expansion (reads 00-input + 00-config + 01-inventory
-    + 03-synthesis [latest, post-repair if applicable])
-  If gap scan finds nothing thin → pass-through, note "already comprehensive"
-  Spawn M4-Verification second run (W6):
-    reads: 00-input + 01-inventory + 05-expansion
-    writes: 06-verification-2.md
-  Repair loop (W6), max 1 attempt:
-    repair_count_w6 = 0
-    On M4 failure (W6):
-      repair_count_w6++
-      If repair_count_w6 > 1 → proceed to output with note
+STEP 5 — REPAIR LOOPS
+
+  STANDARD — W3 (M4M5 failure):
+    repair_count_std = 0
+    On M4M5 failure (W3):
+      repair_count_std++
+      If repair_count_std > 1 → output synthesis inline with note (no further spawns)
+      Spawn M3-Synthesis fresh (no failed draft)
+      Respawn M4M5-Verify-Output against new synthesis
+      Overwrite 03-synthesis.md; 04-verification.md written by M4M5
+
+  DEEP — W3 (M4 standalone failure):
+    repair_count_w3 = 0
+    On M4 failure (W3):
+      repair_count_w3++
+      If repair_count_w3 > 1 →
+        SKIP W4+W5 (do not expand unverified content)
+        Output synthesis inline with note
+      Save 03-synthesis-failed.md before overwriting
+      Spawn M3-Synthesis targeted (reads 03-synthesis-failed + 04-verification)
+      Respawn M4-Verification; overwrite 03-synthesis.md and 04-verification.md
+
+  DEEP — W5 (M4M5 failure):
+    repair_count_w5 = 0
+    On M4M5 failure (W5):
+      repair_count_w5++
+      If repair_count_w5 > 1 → output expansion inline with note
       Save 05-expansion-failed.md before overwriting
-      Respawn M5-Expansion targeted (with 05-expansion-failed.md + 06-verification-2)
-      Respawn M4-Verification third run; overwrite 05-expansion.md and 06-verification-2.md
+      Respawn M5-Expansion targeted (reads 05-expansion-failed + 06-verification-2)
+      Respawn M4M5-Verify-Output; overwrite 05-expansion.md and 06-verification-2.md
+
+STEP 6 — EXPANSION (DEEP normal mode only; only runs if W3 passed)
+  Spawn M5-Expansion (reads 00-config + 00-input + 01-inventory + 03-synthesis [latest])
+  If gap scan finds nothing thin → pass-through with "already comprehensive" note
+  Spawn M4M5-Verify-Output (W5):
+    reads: 00-config + 00-input + 01-inventory + 05-expansion
+    writes: 06-verification-2.md + output-meta.md (on PASS)
+  Repair logic at W5: see STEP 5 — DEEP W5
 
 STEP 7 — OUTPUT
-  Spawn M5-Output with scale-appropriate inputs (see dependency table)
-  M5-Output:
-    Reads filename_slug from 00-config.md (generated by orchestrator at STEP 2)
-    Assembles target_filename: DD-MM-{filename_slug}.md
-    Writes target_filename to stages/output-meta.md (write-once; does not
-      modify 00-config.md — that file is orchestrator-owned)
-    Non-quiet: display output in --- delimiters, print summary line,
-      offer save → ~/docs/epiphany/prompts/DD-MM-name.md
-    Quiet: save immediately, print "Saved to [path]" + summary line
+  Output is generated within M4M5 / MSPEC4M5 / MPLAN4M5 on PASS.
+  After verify+output module completes:
+    Read output-meta.md to confirm target_filename
+    Non-quiet: module displayed output during run; print summary line
+    Quiet: module saved directly; print "Saved to [path]" + summary line
+  Double-failure output-with-note path (output generated inline by orchestrator):
+    Format: same XML output + <meta source="epiphany-prompt"/> marker
+      + appended <note>Verification incomplete — [failure summary]</note>
+    Apply quiet/non-quiet display logic
+    File save logic applies normally
 
 STEP 8 — SESSION ARTIFACTS
   Stage files remain in .sessions/{session_id}/ after run
@@ -454,15 +496,25 @@ STEP 8 — SESSION ARTIFACTS
 
 ---
 
-## M5-Output — Mode Dispatch
+## Verify+Output Modules — Mode Dispatch
 
-M5-Output is shared across all modes but receives different input files per mode. The orchestrator determines which files to pass based on `00-config.md`'s `mode` and `scale` fields — M5-Output does not detect mode itself. This is the orchestrator's responsibility, not the module's. M5-Output reads `00-config.md` first to confirm what it received, then formats output accordingly (preservation summary for normal mode, coverage summary for spec, plan summary for plan).
+Each `*-verify-output.md` module is responsible for both verification and output. The orchestrator determines which synthesis file to pass based on mode and scale. The module reads `00-config.md` first to confirm what it received, then:
+
+- **Normal mode:** runs 12 checks (6a–6l); on PASS, formats prompt XML with preservation summary
+- **Specification mode:** runs 11 checks (S7a–S7k); on PASS, formats spec document with coverage summary
+- **Plan mode:** runs 9 checks (P9a–P9i); on PASS, formats plan document with coverage summary
+
+Output always includes `<meta source="epiphany-prompt"/>` marker (enables type C input detection on re-use).
+
+The module does not detect mode from flags — mode and scale come from `00-config.md`. The orchestrator's responsibility is passing the correct input files (synthesis or expansion). The module's responsibility is verification logic + output formatting for the mode it receives.
 
 ---
 
 ## Stage Introspection
 
-First-class feature enabled by file-based state. After any wave completes, the orchestrator responds to:
+**FAST scale:** Not available. No session directory, no stage files.
+
+**STANDARD/DEEP/spec/plan:** First-class feature enabled by file-based state. After any wave completes, the orchestrator responds to:
 
 **Normal mode:**
 
@@ -522,15 +574,17 @@ More powerful than prompt-epiphany's "show me the analysis" — any stage is ins
 - Hard gates: SUFFICIENCY, ZERO INFORMATION LOSS, PROMPT CONTENT ONLY verbatim
 
 ### Must add
-- 14 module files with explicit input_dependencies frontmatter
+- 11 module files with explicit input_dependencies frontmatter
+- FAST inline pipeline in SKILL.md (full pipeline, no spawns — documented exception to three-layer rule)
 - Orchestrator pseudocode in SKILL.md
 - 00-config.md schema (fields: mode, scale, flags, date, session_id, input_type, filename_slug, contract_schema)
-- output-meta.md schema (field: target_filename — written by M5-Output)
+- output-meta.md schema (field: target_filename — written by verify+output modules on PASS)
 - Enhancement contract schema (v1)
 - Verification report schema with mode-appropriate summary (preservation_counts / coverage_counts)
-- Stage introspection feature (normal + spec + plan stage names, dual-verification disambiguation)
-- Scale-aware module protocols (FAST/STANDARD/DEEP variants where applicable; spec/plan modules always run STANDARD)
+- Stage introspection feature (STANDARD/DEEP/spec/plan only; FAST N/A; normal + spec + plan stage names, dual-verification disambiguation)
+- Scale-aware module protocols (FAST inline; STANDARD/DEEP variants in m3, m4, m12 modules; spec/plan always STANDARD-equivalent)
 - `<meta source="epiphany-prompt"/>` marker in all output XML (enables type C input detection)
+- DEEP W3 double-failure behavior: skip expansion, output synthesis inline with note
 
 ### Must not
 - Increase spawn count beyond what scale requires
@@ -544,22 +598,19 @@ More powerful than prompt-epiphany's "show me the analysis" — any stage is ins
 ## File Deliverables
 
 ```
-~/.claude/skills/epiphany-prompt/SKILL.md           orchestrator
+~/.claude/skills/epiphany-prompt/SKILL.md           orchestrator + FAST inline pipeline
 ~/.claude/skills/epiphany-prompt/modules/
-  m1-analysis.md
-  m2-ideation.md
-  m3-synthesis.md
-  m4-verification.md
-  m5-expansion.md
-  m5-output.md
-  mspec-1-domain.md
-  mspec-2-requirements.md
-  mspec-3-synthesis.md
-  mspec-4-verify.md
-  mplan-1-analysis.md
-  mplan-2-design.md
-  mplan-3-synthesis.md
-  mplan-4-verify.md
+  m12-analysis-ideation.md    Analysis (6-dim + inventory) → ideation (contracts)
+  m3-synthesis.md             Preservation-first synthesis
+  m4-verification.md          12-check verification — DEEP W3 standalone only
+  m5-expansion.md             Gap scan + expansion — DEEP W4 only
+  m4m5-verify-output.md       Verify + output — STANDARD W3, DEEP W5
+  mspec12-domain-req.md       Spec domain analysis + requirements
+  mspec3-synthesis.md         Specification synthesis
+  mspec4m5-verify-output.md   Spec verify + output
+  mplan12-analysis-design.md  Plan analysis + dependency design
+  mplan3-synthesis.md         Plan synthesis + execution simulation
+  mplan4m5-verify-output.md   Plan verify + output
 ```
 
 Existing directories (`kb/`, `reports/`) remain untouched.
