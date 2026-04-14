@@ -81,6 +81,16 @@ if [[ -f "$SKILL_DIR/SKILL.md" ]]; then
         assert_grep "\\b$t\\b" "$SKILL_DIR/SKILL.md" "technique $t"
     done
     assert_grep 'Application order' "$SKILL_DIR/SKILL.md" "technique ordering"
+    assert_grep '^## Verification Checks' "$SKILL_DIR/SKILL.md" "verification checks section"
+    for c in 6a 6b 6c 6d 6e 6f 6g 6h 6i 6j 6k 6l; do
+        assert_grep "\\b$c\\b" "$SKILL_DIR/SKILL.md" "check $c"
+    done
+    for c in S7a S7b S7c S7d S7e S7f S7g S7h S7i S7j S7k; do
+        assert_grep "\\b$c\\b" "$SKILL_DIR/SKILL.md" "check $c"
+    done
+    for c in P9a P9b P9c P9d P9e P9f P9g P9h P9i; do
+        assert_grep "\\b$c\\b" "$SKILL_DIR/SKILL.md" "check $c"
+    done
 fi
 
 # All 11 module files + frontmatter

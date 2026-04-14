@@ -469,3 +469,130 @@ More powerful than prompt-epiphany's "show me the analysis" — any stage is ins
 **Techniques in specification and plan modes:** T1 (XML semantic structuring), T2 (prompt decomposition), T3 (explicit constraint specification), and T10 (self-critique/validation) are structurally built into the spec/plan pipelines. T4 (role), T6 (CoT), T8 (edge cases), T9 (few-shot), T11 (context anchoring), T12 (audience), and T13 (escape hatch) generally do not apply — the output is a specification or plan document, not an enhanced prompt. T5 (output format template) is already defined by the Specification Output Format and Plan Output Format sections below.
 
 **Minimal mode technique subset:** T1 (XML semantic structuring), T2 (prompt decomposition), T3 (explicit constraints), T5 (output format), T7 (priority hierarchy). Skipped by default in minimal: T4 (persona), T6 (reasoning), T8 (edge cases), T9 (examples), T10 (self-critique), T11 (context anchoring), T12 (audience), T13 (escape hatch). These are the creative/depth techniques that minimal intentionally foregoes.
+
+## Verification Checks
+
+This section is the authoritative checklist used by `m4-verification.md`, `m4m5-verify-output.md` (normal mode), `mspec4m5-verify-output.md` (spec mode), and `mplan4m5-verify-output.md` (plan mode). Modules reference checks by ID; definitions below are transcribed verbatim from the prompt-epiphany source.
+
+### Normal mode — 12 checks (6a–6l)
+
+**Twelve checks, all must pass.**
+
+**6a. Preservation Completeness — URLs** — Every URL from INVENTORY appears in output, verbatim, including query strings and fragments. Missing → FAIL. **Recovery:** Add missing URL to appropriate section.
+
+**6b. Preservation Completeness — Paths** — Every file path from INVENTORY appears in output, verbatim. Missing → FAIL. **Recovery:** Add missing path to appropriate section.
+
+**6c. Preservation Completeness — Technology+Version** — Every technology+version pair from INVENTORY appears in output, together, not just name. Missing version → FAIL. **Recovery:** Add tech+version pair intact.
+
+**6d. Preservation Completeness — Directives** — Every embedded directive (instruction + its target) from INVENTORY appears in output. Missing directive OR target → FAIL. **Recovery:** Add complete directive with target.
+
+**6e. Element Completeness** — Every INVENTORY item exists in output. Missing → FAIL. **Recovery:** Add missing item to appropriate section.
+
+**6f. Semantic Fidelity** — INTENT matches enhanced prompt. Same objective, same success criteria. Any "no" → FAIL. **Recovery:** Revise to match original intent.
+
+**6g. Technical Integrity** — Code, formulas, API refs content-identical. Any alteration → FAIL. **Recovery:** Restore exact original content.
+
+**6h. Enhancement Validation** — Every added element traces to Step 3 finding. Unjustified → remove. **Recovery:** Remove unjustified elements or document justification.
+
+**6i. Production Readiness** — No placeholders, incomplete sentences, empty tags. Any found → FAIL. **Recovery:** Complete all sections or remove placeholders.
+
+**6j. No Fabrication** — Every enhancement traces to both an analysis finding and an ideation design. No invented requirements. **Recovery:** Remove fabricated content or trace to original.
+
+**6k. Rationale Accuracy** — For any rationale or explanation added, apply three-tier test: (1) Derivable from the original prompt text → include, no flag. (2) Requires reasoning beyond the text but reasonably supportable → include, flag it for user review. (3) Cannot be reasonably supported → omit rather than guess. **Recovery:** Remove unsupported rationale or flag for review.
+
+**6l. Value Added** — Every enhancement genuinely improves the prompt. Remove any that are padding. **Recovery:** Remove padding.
+
+**After all checks pass, generate preservation summary for output:**
+
+Count items in each category and format as follows:
+
+```
+Preserved: X URLs, Y file paths, Z tech+version pairs, W version specs, N directives, M code blocks, K API refs, E named entities, Q numeric specs, R quotes, T tech specs
+```
+
+**Formatting rules:**
+- Include all categories with non-zero counts
+- Omit categories with zero counts (don't say "0 URLs")
+- If ALL categories are empty (no preservation items): output nothing (skip preservation summary entirely)
+- Example: "Preserved: 3 URLs, 1 file path, 2 tech+version pairs"
+- Example with many items: "Preserved: 5 URLs, 12 file paths, 8 tech+version pairs, 3 directives"
+
+**Loop:** All pass → output with preservation summary. Any fail → re-examine the entire affected section from scratch — do not make minimal corrections. Regenerate with harder thinking until the check passes. Same check fails twice despite genuine re-examination → output with note: "Verification check [name] could not be fully resolved — review flagged area."
+
+**"Same check fails twice" meaning:** If check 6a fails, you re-examine from scratch, attempt a full regeneration of the affected section, and 6a still fails — then output with a note. This prevents infinite loops while ensuring the user is informed of unresolvable issues.
+
+### Specification mode — 11 checks (S7a–S7k)
+
+**Eleven checks, all must pass.**
+
+**S7a. Decomposition Coverage** — Every Decomposition item traces to ≥1 requirement or OQ. Missing → FAIL. Recovery: Add requirement or OQ.
+
+**S7b. Requirement Quality** — Every SHALL requirement is Necessary, Unambiguous, Verifiable, Consistent, Traceable. Any failure → FAIL. Recovery: Rewrite or move to OQ.
+
+**S7c. No Unresolved TBD** — No section contains "TBD" or "to be determined" without a corresponding OQ. Any → FAIL. Recovery: Convert to OQ or resolve.
+
+**S7d. Consistency** — No two requirements contradict each other. Contradiction → FAIL. Recovery: Flag conflict, ask user before continuing.
+
+**S7e. Scope Clarity** — Scope states what IS included AND what IS excluded. Ambiguous → FAIL. Recovery: Add explicit exclusions.
+
+**S7f. Verification Criteria** — Every SHALL requirement has a verification criterion. Missing → FAIL. Recovery: Add "Verification: [observable test]".
+
+**S7g. Open Questions Surfaced** — Every ambiguity has an explicit OQ entry. Buried ambiguity → FAIL. Recovery: Surface as OQ.
+
+**S7h. Stakeholder Coverage** — Every stakeholder from Domain Analysis appears in requirements or context. Missing → FAIL. Recovery: Add requirements or context for missing stakeholder.
+
+**S7i. Technical Detail Preservation** — Every item in the Technical Details inventory (Step S3): URL, file path, technology+version pair, code block, numeric specification, named entity, version specification, quoted string, API reference, and embedded directive — appears in the specification output verbatim. Missing any item → FAIL. Recovery: Add the missing technical detail to the appropriate requirement, constraint, context, or data requirement section. Do NOT paraphrase, summarize, or alter version numbers, quantities, paths, or URLs. Technology+version pairs must appear with BOTH name AND version together, not split or separated.
+
+**S7j. Plan-Readiness Check** — If this specification is intended to be fed into `--plan` mode (or if it was produced as part of a pipeline chain), verify: (1) every FR/NFR contains enough concrete technical detail that `--plan` can write atomic steps from it without guessing — abstract requirements like "the system SHALL perform well" FAIL this check, (2) any Open Question that would block an entire phase of plan generation is explicitly flagged with "BLOCKS PLAN PHASE: [description]". Requirements too abstract → FAIL. Recovery: Add specific metrics, commands, file paths, or configurations to make abstract requirements concrete. If detail is genuinely unknown, add an OQ flagged as plan-blocking.
+
+**S7k. Structural Element Preservation (Workflow Specs)** — ONLY applies when Step S1b detected workflow/process spec. Verify: (1) Every phase name and number from input appears in output with same name/number, (2) Every step within phases is preserved (not summarized or merged), (3) Every tier definition block is preserved verbatim (including all criteria), (4) Every conditional logic block (if/then, when X do Y) is preserved, (5) Every iteration rule (loop until X, max N passes) is preserved with termination condition, (6) Every verification criterion is preserved, (7) Every defaults section is preserved, (8) Every edge case definition is preserved. Any missing → FAIL. Recovery: Restore the complete structural element from input. Do NOT paraphrase or summarize.
+
+**After all checks pass**, produce specification coverage summary:
+
+**For workflow/process specs:**
+```
+Preserved: N phases, M steps, K tier definitions, L conditional blocks, I iteration rules, V verification criteria, E edge cases, D defaults | Open questions: X
+```
+
+**For requirements specs:**
+```
+Coverage: N functional requirements, M non-functional, K interface, J data, L constraints | Open questions: X
+```
+
+**Loop:** All pass → output. Any fail → re-examine the entire affected section from scratch — do not make minimal corrections. Regenerate with harder thinking until the check passes. Same check fails twice despite genuine re-examination → output with note: "Specification check [name] could not be fully resolved — review flagged area."
+
+**Open Question interview (after all checks pass):** If the specification contains any Open Questions, do NOT output the spec silently. Instead:
+1. Output the spec as-is
+2. Immediately follow with: "This specification has [N] Open Questions that must be resolved before implementation. I can work through them with you now — reply 'yes' to resolve them in dialogue, or 'skip' to proceed with the current spec."
+3. If user replies yes: present each OQ one at a time, collect the answer, update the relevant requirement(s), and re-run S7b/S7f on affected requirements only. After all OQs are resolved, output the final updated specification.
+4. If user replies skip (or ignores the offer and pastes into --plan): proceed with the spec as-is. The unresolved OQs remain in the output as explicit gaps.
+5. Do not offer the interview if there are zero OQs.
+
+### Plan mode — 9 checks (P9a–P9i)
+
+**Nine checks, all must pass.**
+
+**P9a. Action Coverage** — Every action from Action Decomposition appears in the plan. Missing → FAIL. Recovery: Add missing step.
+
+**P9b. Step Atomicity** — No step contains more than one action. Compound step ("do X and Y") → FAIL. Recovery: Split into separate steps.
+
+**P9c. Verifiability** — Every step has a verification test (observable outcome). Missing → FAIL. Recovery: Add "Verify: [outcome]".
+
+**P9d. Dependency Compliance** — No step depends on output from a later step. Any violation → FAIL. Recovery: Reorder steps.
+
+**P9e. Checkpoint Coverage** — Every phase ends with an explicit checkpoint. Missing → FAIL. Recovery: Add checkpoint.
+
+**P9f. Safeguard Coverage** — Every destructive or irreversible step has a rollback or escalation procedure. Missing → FAIL. Recovery: Add "Recovery: [procedure]".
+
+**P9g. Execution Viability** — Every step can be executed with only what exists at that point in the plan. Gap → FAIL. Recovery: Add prerequisite step or move earlier.
+
+**P9h. Completion Criteria** — Plan ends with observable completion criteria confirming the entire plan succeeded. Missing → FAIL. Recovery: Add Completion Criteria section.
+
+**P9i. Technical Detail Preservation** — Every item in the Technical Details inventory (Step P2): URL, file path, technology+version pair, code block, numeric specification, named entity, version specification, quoted string, API reference, and embedded directive — appears in the plan output verbatim. Missing any item → FAIL. Recovery: Add the missing technical detail to the appropriate step, prerequisite, dependency note, or completion criterion. Do NOT paraphrase, summarize, or alter version numbers, quantities, paths, or URLs. Technology+version pairs must appear with BOTH name AND version together, not split or separated.
+
+**After all checks pass**, produce plan coverage summary:
+```
+Plan: N steps across M phases | Verification tests: N | Safeguards: J | Open questions: X
+```
+
+**Loop:** All pass → output. Any fail → re-examine the entire affected phase or section from scratch — do not make minimal corrections. Regenerate with harder thinking until the check passes. Same check fails twice despite genuine re-examination → output with note: "Plan check [name] could not be fully resolved — review flagged area."
