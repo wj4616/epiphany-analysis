@@ -99,6 +99,12 @@ if [[ -f "$SKILL_DIR/SKILL.md" ]]; then
     for p in P1 P2 P3 P4 P5 P6 P7 P8 P9; do
         assert_grep "\\bStep $p\\b" "$SKILL_DIR/SKILL.md" "pipeline step $p"
     done
+    assert_grep '^## Output Formats' "$SKILL_DIR/SKILL.md" "output formats section"
+    assert_grep '^## Schemas' "$SKILL_DIR/SKILL.md" "schemas section"
+    assert_grep '<meta source="epiphany-prompt"/>' "$SKILL_DIR/SKILL.md" "meta marker"
+    assert_grep 'Enhancement contract schema' "$SKILL_DIR/SKILL.md" "enhancement contract"
+    assert_grep 'Verification report schema' "$SKILL_DIR/SKILL.md" "verification report"
+    assert_grep '00-config' "$SKILL_DIR/SKILL.md" "00-config schema"
 fi
 
 # All 11 module files + frontmatter
