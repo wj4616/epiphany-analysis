@@ -47,9 +47,15 @@ stages/ (session)     File-based state. Each subagent reads declared
                       input files from stages/ and writes its output file(s).
                       Orchestrator never reads stage files during pipeline
                       execution for routing decisions — it reads module
-                      return values instead. Exception: stage introspection
-                      reads and displays stage files on user request after
-                      a wave completes (display-only, not for routing).
+                      return values instead.
+                      Documented exceptions (display-only, not routing):
+                        1. Stage introspection: reads and displays stage
+                           files on user request after a wave completes.
+                        2. Double-failure fallback output: on two failed
+                           verification cycles, orchestrator reads the
+                           latest synthesis/expansion stage content to
+                           produce best-effort output XML (no module
+                           output XML was returned).
                       FAST scale: no session directory — all processing is
                       inline, no stage files persist, introspection N/A.
 ```
@@ -192,10 +198,9 @@ stages/03-synthesis.md      M3: enhanced prompt draft
 stages/04-verification.md   M4: 12-check results — DEEP W3 only (see schema below)
 stages/05-expansion.md      M5-exp: DEEP only — gap scan findings + expanded output
 stages/06-verification-2.md M4M5: DEEP W5 — verification results for expansion output
-stages/output-meta.md       M4M5/MSPEC4M5/MPLAN4M5: written on PASS — contains
-                            target_filename. Orchestrator reads after verify+output
-                            completes to confirm save path.
 ```
+
+Note: verify+output modules (M4M5 / MSPEC4M5 / MPLAN4M5) do NOT write an output stage file. On PASS they return the formatted output XML as part of their Agent return message. The orchestrator handles display/save based on `00-config` quiet flag. This keeps the three-layer rule intact — orchestrator only reads Agent return values, never module output stage files.
 
 **Specification mode** (00-config.md and 00-input.md shared):
 ```
@@ -225,14 +230,15 @@ FAST inline has no modules; all context is in-memory within the orchestrator.
 | M3 Synthesis (DEEP repair) | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` + `03-synthesis-failed` + `04-verification` | `03-synthesis` (overwrite) |
 | M4 Verification (DEEP W3) | `00-config` + `00-input` + `01-inventory` + `03-synthesis` | `04-verification` |
 | M5 Expansion (DEEP W4) | `00-config` + `00-input` + `01-inventory` + `03-synthesis` (latest) | `05-expansion` |
-| M4M5 Verify+Output (STANDARD W3) | `00-config` + `00-input` + `01-inventory` + `03-synthesis` | `04-verification` + `output-meta` (on PASS) |
-| M4M5 Verify+Output (DEEP W5) | `00-config` + `00-input` + `01-inventory` + `05-expansion` | `06-verification-2` + `output-meta` (on PASS) |
+| M5 Expansion (DEEP W5 repair) | `00-config` + `00-input` + `01-inventory` + `05-expansion-failed` + `06-verification-2` | `05-expansion` (overwrite) |
+| M4M5 Verify+Output (STANDARD W3) | `00-config` + `00-input` + `01-inventory` + `03-synthesis` | `04-verification`; on PASS: returns output XML in Agent return message |
+| M4M5 Verify+Output (DEEP W5) | `00-config` + `00-input` + `01-inventory` + `05-expansion` | `06-verification-2`; on PASS: returns output XML in Agent return message |
 | MSPEC12 Domain+Req | `00-config` + `00-input` | `spec-01-domain`, `spec-02-requirements` |
 | MSPEC3 Synthesis | `00-config` + `00-input` + `spec-01-domain` + `spec-02-requirements` | `spec-03-synthesis` |
-| MSPEC4M5 Verify+Output | `00-config` + `00-input` + `spec-01-domain` + `spec-02-requirements` + `spec-03-synthesis` | `spec-04-verify` + `output-meta` (on PASS) |
+| MSPEC4M5 Verify+Output | `00-config` + `00-input` + `spec-01-domain` + `spec-02-requirements` + `spec-03-synthesis` | `spec-04-verify`; on PASS or PASS-WITH-NOTES: returns output XML in Agent return message |
 | MPLAN12 Analysis+Design | `00-config` + `00-input` | `plan-01-analysis`, `plan-02-design` |
 | MPLAN3 Synthesis | `00-config` + `00-input` + `plan-01-analysis` + `plan-02-design` | `plan-03-synthesis` |
-| MPLAN4M5 Verify+Output | `00-config` + `00-input` + `plan-01-analysis` + `plan-02-design` + `plan-03-synthesis` | `plan-04-verify` + `output-meta` (on PASS) |
+| MPLAN4M5 Verify+Output | `00-config` + `00-input` + `plan-01-analysis` + `plan-02-design` + `plan-03-synthesis` | `plan-04-verify`; on PASS or PASS-WITH-NOTES: returns output XML in Agent return message |
 
 ### Segregation rationale
 
@@ -292,19 +298,47 @@ Summary (plan mode):
 }
 ```
 
----
+### Module frontmatter schema
 
-## Per-Module Enhancements
+Every module file MUST begin with YAML frontmatter declaring its contract. The orchestrator uses `input_dependencies` and `output_files` to validate stage state before and after spawning.
+
+```yaml
+---
+name: [module filename without .md]
+stage_id: M12 | M3 | M4 | M5 | M4M5 | MSPEC12 | MSPEC3 | MSPEC4M5 | MPLAN12 | MPLAN3 | MPLAN4M5
+input_dependencies:
+  - 00-config.md
+  - 00-input.md
+  - [other stage files this module reads — see dependency table]
+output_files:
+  - [stage file(s) this module writes — see dependency table]
+scale_variants: [FAST | STANDARD | DEEP]   # only variants that apply (FAST never listed — no module files)
+kb_sources:
+  - kb/[path/to/relevant/entry.md]          # advisory; listed for audit/lineage. The orchestrator does not load these.
+activation:
+  mode: normal | specification | plan
+  wave: [wave number where this module runs]
+  role: [human-readable role, e.g., "analysis+ideation", "verify+output"]
+return_contract: |
+  [One-line description of what the Agent return message looks like. For
+   verify+output modules: include the full PASS/FAIL format. For non-verify
+   modules: "[Module] complete. Wrote: [file list]."]
+---
+```
+
+`kb_sources` enables later auditing of which KB entries informed a module's protocol design. The module protocol body cites these entries inline by relative path.
+
+Frontmatter is parsed and validated by the orchestrator at pre-spawn time. Missing required fields → HALT with clear error identifying the module.
 
 ### FAST scale — inline execution
 
 - Complete pipeline runs in the orchestrator's context window. Zero subagent spawns.
 - Quick Analysis: Intent extraction + INVENTORY (abbreviated form of 6-dimension analysis).
-- Synthesis: T1, T2, T3, T5, T7 applied directly. Same techniques as prompt-epiphany --minimal.
+- Synthesis: apply the same technique subset as `prompt-epiphany --minimal` mode — consult `~/.claude/skills/prompt-epiphany/SKILL.md` for the exact list. Do not hardcode the list here; prevents drift when source skill evolves.
 - 12-check verification inline. Output formatting + file save inline.
-- Quality floor: identical to prompt-epiphany --minimal. No regression.
+- Quality floor: identical to `prompt-epiphany --minimal`. No regression.
 - **Limitation:** shares context window with existing conversation. Long inputs or long sessions may produce lower quality due to competing context. Use STANDARD for complex prompts.
-- No session directory. Stage introspection unavailable.
+- No session directory. Stage introspection unavailable (tradeoff accepted for speed).
 
 ### M12 Analysis+Ideation — what merging enables
 
@@ -341,15 +375,15 @@ Summary (plan mode):
 - Used in STANDARD (W3, final step) and DEEP (W5, post-expansion step).
 - Inputs vary by context: STANDARD reads `03-synthesis`; DEEP W5 reads `05-expansion`. Orchestrator passes the correct file path. Same module file handles both via `00-config` scale field.
 - Fresh eyes: no memory of how synthesis/expansion was produced. Same isolation property as standalone M4.
-- On PASS: generates formatted output, writes `output-meta.md` with `target_filename`, returns "VERIFICATION: PASS — output complete."
-- On FAIL: writes verification report, returns "VERIFICATION: FAIL — [summary]". No output. Orchestrator triggers repair (max 1 attempt).
+- On PASS: generates formatted output XML; returns `"VERIFICATION: PASS\n\n<prompt>...</prompt>"` — the PASS line followed by the full output XML in the Agent return message. Orchestrator parses the return message to extract XML for display/save.
+- On FAIL: writes verification report, returns `"VERIFICATION: FAIL — [summary]"`. No output. Orchestrator triggers repair (max 1 attempt).
 
 ### Spec and Plan modules — what merging enables
 
 - **MSPEC12:** Domain analysis informs requirements extraction in same context — naturally sequential, no isolation loss. Requirements must trace to domain; running them together enforces this implicitly. Writes `spec-01-domain.md` and `spec-02-requirements.md` for introspection.
 - **MSPEC3:** Specification synthesis needs fresh context. Separate agent with no MSPEC12 reasoning inline. Critical isolation.
-- **MSPEC4M5:** 11-check verification then output. Same merge rationale as M4M5. Delivers with flagged gaps if verification fails (no repair loop for spec mode).
-- **MPLAN12/MPLAN3/MPLAN4M5:** Mirror pattern. MPLAN3 Execution Simulation has full context for mental walkthrough with no prior dependency-mapping context competing.
+- **MSPEC4M5:** 11-check verification then output. Same merge rationale as M4M5. Delivers with flagged gaps if verification fails (no repair loop for spec mode). Always returns `"VERIFICATION: <status>\n\n<specification>...</specification>"` — even on FAIL-with-gaps, output XML accompanies the failure summary so orchestrator can display/save the best-effort document with a `<note>` block appended.
+- **MPLAN12/MPLAN3/MPLAN4M5:** Mirror pattern. MPLAN3 Execution Simulation has full context for mental walkthrough with no prior dependency-mapping context competing. MPLAN4M5 return contract matches MSPEC4M5 — output XML always returned (with `<note>` appended on failed checks).
 
 ---
 
@@ -363,135 +397,227 @@ STEP 0 — FLAG DETECTION
     Display: --quiet → quiet (display only, no effect on wave plan)
   Conflicts:
     --minimal + --verbose → BLOCK: ask user to pick one
-    --specification + --plan → confirm sequential run
-    scale flag + spec/plan mode → ignore scale, announce dismissal
+    --specification + --plan → ASK user: "Run --specification first, then
+      --plan on its output sequentially? (y/n)". If yes → proceed
+      sequentially (spec pipeline runs to completion, then plan pipeline
+      runs with spec output as input). If no → ASK which single mode to
+      run. BLOCK until resolved.
+    scale flag + spec/plan mode → ignore scale, announce dismissal in STEP 2
   Strip flags from input body. Mid-sentence flags = content.
 
-STEP 1 — INPUT ROUTING + SUFFICIENCY (inline, no spawn)
+STEP 1 — INPUT ROUTING
+  File path input: if input string matches a file path heuristic
+    (starts with ~/, /, ./, or ../ AND refers to an existing file on
+    disk), read file contents and use as processed input. Otherwise
+    treat input as inline text.
   Detect input type:
     A — raw text (default)
-    B — prompt-epiphany XML → root element contains <prompt> or <enhanced_prompt>
-        with no <meta source="epiphany-prompt"/> marker
-        → extract <task>, <context>, <constraints>
-    C — prior epiphany-prompt output → contains <meta source="epiphany-prompt"/>
-        → extract original input section, start fresh pipeline
-        (Note: epiphany-prompt output includes this marker to enable type C detection)
-  Sufficiency check: discernible task? If not → BLOCK.
+    B — prompt-epiphany XML: root element is <prompt> or <enhanced_prompt>
+        AND contains at least one of <task>, <context>, <constraints>
+        as direct children AND no <meta source="epiphany-prompt"/> marker
+        → extract <task>, <context>, <constraints> contents
+        (Heuristic requires inner structure to avoid misclassifying
+         raw prompts that merely contain the word "prompt" in tags.)
+    C — prior epiphany-prompt output: contains <meta source="epiphany-prompt"/>
+        marker → extract original input section, start fresh pipeline
+        (All epiphany-prompt outputs include this marker — see Output
+         format section.)
+
+STEP 2 — ANNOUNCE
+  Emit before any analysis:
+    "I'm using the epiphany-prompt skill ([SCALE], [mode] mode)
+     to [enhance this prompt / develop a specification /
+     develop a step-by-step plan]."
+  If scale flag was dismissed for spec/plan mode, append:
+    "(--minimal/--verbose does not apply to [spec/plan] — proceeding
+     with STANDARD.)"
+
+STEP 3 — SUFFICIENCY CHECK
+  Sufficient? Identifiable task (normal), concept/problem (spec),
+    or goal with constraints (plan)? If not → BLOCK with mode-appropriate
+    message explaining what's missing.
   Emit one line: "Sufficient — [reason]"
-  Mode routing signal (no flag given):
-    concept/problem → suggest --specification
-    spec/requirements doc → suggest --plan
-    either → suggest full pipeline chain
+  Mode routing signal (only when NO mode flag was given) — non-blocking hint:
+    concept/problem input → append: "This looks like a concept — add
+      `--specification` to build a complete spec from it."
+    spec/requirements doc input → append: "This looks like a spec —
+      add `--plan` to turn it into a step-by-step plan."
+    either → append: "For best result, run `--specification` first,
+      then `--plan` on its output."
+    None detected → no suggestion.
+  Hint is advisory. Pipeline continues with detected mode; does NOT block.
 
-STEP 2 — SESSION INIT
-  Generate topic_slug: lowercase first 3–5 meaningful words of input,
-    joined with hyphens (stop words: a, an, the, is, for, to, of, in, ...)
-  filename_slug = topic_slug  [used for save path by all scales]
-  If FAST: session init complete — skip session directory creation.
-    Proceed to STEP 3 with filename_slug in memory.
+STEP 4 — SESSION INIT
+  Generate topic_slug: lowercase first 3–5 meaningful words of processed
+    input, joined with hyphens (stop words removed: a, an, the, is, are,
+    for, to, of, in, on, with, and, or, but, that, this, these, those).
+    Example: input "Build a VST plugin with reverb" → meaningful words
+      [build, vst, plugin, reverb] → topic_slug "build-vst-plugin-reverb"
+      (capped at 5 words).
+  filename_slug = topic_slug  [same value used for save path]
+  If FAST: session init complete. Skip session directory creation.
+    Proceed to STEP 5 with filename_slug in memory only.
   session_id = YYYYMMDD-{topic_slug}
-  Collision: if session_dir already exists, append -2, -3, etc. to
-    both session_id and topic_slug until unique
-    (e.g., build-prompt-skill → build-prompt-skill-2)
+    (YYYYMMDD format for chronological sort inside .sessions/;
+     distinct from save filename DD-MM format which matches
+     prompt-epiphany convention.)
+  Session directory collision: if ~/docs/epiphany/prompts/.sessions/
+    {session_id}/ already exists, append -2, -3, ... to both session_id
+    and topic_slug until unique.
   session_dir = ~/docs/epiphany/prompts/.sessions/{session_id}/stages/
-  Write 00-config.md: mode, scale, flags, date (DD-MM),
-    session_id, input_type, filename_slug, contract_schema: v1  [write-once]
-  Write 00-input.md: processed input
+  Write 00-config.md: mode, scale, flags { quiet }, date (DD-MM),
+    session_id, input_type (A/B/C), filename_slug, contract_schema: v1
+    [write-once by orchestrator; modules read only]
+  Write 00-input.md: processed input (flags stripped; extracted content
+    for type B; original input section for type C)
 
-STEP 3 — ANNOUNCE
-  "I'm using the epiphany-prompt skill ([SCALE], [mode] mode)
-   to [enhance this prompt / develop a specification /
-   develop a step-by-step plan]."
-
-STEP 4 — WAVE EXECUTION
-  If FAST: run FAST Inline Pipeline (see below). Skip STEPS 5–7.
+STEP 5 — WAVE EXECUTION
+  If FAST: run FAST Inline Pipeline (below). Skip STEPS 6–7; go to STEP 8.
   Else: select wave plan from mode × scale matrix.
+  Pre-spawn validation (once, before first wave):
+    For every module file referenced in the selected wave plan, verify
+    ~/.claude/skills/epiphany-prompt/modules/{module_file} exists and
+    has valid frontmatter.
+    Missing file or malformed frontmatter → HALT:
+      "[HALT] Module file not found or invalid: {file}. Check
+       installation at ~/.claude/skills/epiphany-prompt/modules/."
   Per wave:
     Single-stage: spawn Agent(module_file, input_dependencies), wait,
-      validate all declared output files exist and non-empty → HALT if any missing/empty
-      HALT format: "[HALT] {module}: output file missing or empty.
-        Check session_dir path and module output instructions."
-    Multi-stage: spawn all Agents in one message (parallel),
-      wait for all, validate all output files → HALT if any missing or empty
-      (Note: current wave design has no parallel stages — reserved for future expansion)
-    Verification return values:
-      M4, M4M5, MSPEC4M5, MPLAN4M5 all end with "VERIFICATION: PASS" or
-      "VERIFICATION: FAIL — [summary]". Orchestrator reads Agent return message
-      to decide repair. Never reads verification files directly (three-layer rule).
-      MSPEC4M5 / MPLAN4M5: no repair loop. On FAIL, orchestrator passes failure
-      summary as context in the verify+output module prompt; output delivered
-      with flagged gaps.
+      validate all declared output_files exist and non-empty.
+      Missing/empty → HALT: "[HALT] {module}: output file(s) missing
+      or empty. Check session_dir path and module output instructions."
+    Multi-stage: spawn all Agents in one message (parallel), wait,
+      validate all output_files. HALT on any missing/empty.
+      (Note: current wave design has no parallel stages — reserved
+       for future expansion.)
+    Return value contracts:
+      Verify+output modules (M4M5, MSPEC4M5, MPLAN4M5):
+        PASS: "VERIFICATION: PASS\n\n<output XML>"
+        PASS-WITH-NOTES (spec/plan): "VERIFICATION: PASS-WITH-NOTES —
+          [summary]\n\n<output XML>"
+        FAIL (normal mode only): "VERIFICATION: FAIL — [summary]"
+        Orchestrator parses return message to extract output XML
+        (everything after the first blank line following the PASS/
+         PASS-WITH-NOTES header).
+      M4 standalone (DEEP W3):
+        PASS: "VERIFICATION: PASS"
+        FAIL: "VERIFICATION: FAIL — [summary]"
+      Non-verify modules (M12, M3, M5, MSPEC12, MSPEC3, MPLAN12, MPLAN3):
+        Informational: "[Module] complete. Wrote: [file list]."
+        Success is determined by output file presence + non-empty check,
+        not by return text content.
+      Three-layer rule: orchestrator reads Agent return messages only;
+      never reads stage files for routing decisions.
+    Spec/plan failure policy:
+      MSPEC4M5 / MPLAN4M5 have no repair loop. On verification failures,
+      the module returns PASS-WITH-NOTES (best-effort output + flagged
+      gaps summary) rather than FAIL. The orchestrator displays/saves
+      the output as if passed, with failure summary surfaced in the
+      displayed note.
   After each wave, check for stage introspection request:
-    "show me [stage]" → display corresponding stages/*.md (FAST: unavailable)
+    "show me [stage]" → display corresponding stages/*.md
+    (FAST: unavailable — no stage files.)
 
-FAST INLINE PIPELINE (scale = FAST, no spawns)
-  1. Quick Analysis inline: extract intent, identify inventory items
-  2. Synthesis inline: apply T1, T2, T3, T5, T7
-  3. 12-check verification inline
-  4. Format output with <meta source="epiphany-prompt"/> marker
-  5. Non-quiet: display in --- delimiters, offer save
-     Quiet: save to ~/docs/epiphany/prompts/DD-MM-{filename_slug}.md directly
-  Note: context window is shared with conversation history. For long inputs
-  or long sessions, prefer STANDARD to avoid context competition.
+FAST INLINE PIPELINE (scale = FAST, no spawns, no stage files)
+  1. Quick Analysis inline: extract intent + INVENTORY.
+  2. Synthesis inline: apply same technique subset as `prompt-epiphany
+     --minimal`. See source skill for exact list.
+  3. 12-check verification inline.
+  4. Format output XML. Insert <meta source="epiphany-prompt"/> as first
+     child of root element (<prompt>).
+  5. Save path: ~/docs/epiphany/prompts/DD-MM-{filename_slug}.md
+     Collision (see STEP 7 — Output file collision handling).
+     Non-quiet: display in --- delimiters; ASK "Save to file? (y/n)".
+       If yes: save using the above path + collision rule.
+     Quiet: save directly using the above path + collision rule.
+  Note: FAST shares context with conversation history. For long inputs
+  or long sessions, prefer STANDARD. Stage introspection unavailable.
 
-STEP 5 — REPAIR LOOPS
+STEP 6 — REPAIR LOOPS
 
   STANDARD — W3 (M4M5 failure):
     repair_count_std = 0
-    On M4M5 failure (W3):
+    On M4M5 FAIL (W3):
       repair_count_std++
-      If repair_count_std > 1 → output synthesis inline with note (no further spawns)
-      Spawn M3-Synthesis fresh (no failed draft)
-      Respawn M4M5-Verify-Output against new synthesis
-      Overwrite 03-synthesis.md; 04-verification.md written by M4M5
+      If repair_count_std > 1:
+        Go to STEP 7 — double-failure output path. No further spawns.
+      Else:
+        Spawn M3-Synthesis fresh (no failed draft input)
+        Overwrite 03-synthesis.md
+        Respawn M4M5-Verify-Output against new synthesis
+        (M4M5 overwrites 04-verification.md)
 
   DEEP — W3 (M4 standalone failure):
     repair_count_w3 = 0
-    On M4 failure (W3):
+    On M4 FAIL (W3):
       repair_count_w3++
-      If repair_count_w3 > 1 →
-        SKIP W4+W5 (do not expand unverified content)
-        Output synthesis inline with note
-      Save 03-synthesis-failed.md before overwriting
-      Spawn M3-Synthesis targeted (reads 03-synthesis-failed + 04-verification)
-      Respawn M4-Verification; overwrite 03-synthesis.md and 04-verification.md
+      If repair_count_w3 > 1:
+        SKIP W4 + W5 (do not expand unverified content)
+        Go to STEP 7 — double-failure output path (source = 03-synthesis).
+        No further spawns.
+      Else:
+        Rename 03-synthesis.md → 03-synthesis-failed.md
+        Spawn M3-Synthesis targeted (reads 03-synthesis-failed +
+          04-verification)
+        Overwrite 03-synthesis.md
+        Respawn M4-Verification; overwrite 04-verification.md
 
   DEEP — W5 (M4M5 failure):
     repair_count_w5 = 0
-    On M4M5 failure (W5):
+    On M4M5 FAIL (W5):
       repair_count_w5++
-      If repair_count_w5 > 1 → output expansion inline with note
-      Save 05-expansion-failed.md before overwriting
-      Respawn M5-Expansion targeted (reads 05-expansion-failed + 06-verification-2)
-      Respawn M4M5-Verify-Output; overwrite 05-expansion.md and 06-verification-2.md
-
-STEP 6 — EXPANSION (DEEP normal mode only; only runs if W3 passed)
-  Spawn M5-Expansion (reads 00-config + 00-input + 01-inventory + 03-synthesis [latest])
-  If gap scan finds nothing thin → pass-through with "already comprehensive" note
-  Spawn M4M5-Verify-Output (W5):
-    reads: 00-config + 00-input + 01-inventory + 05-expansion
-    writes: 06-verification-2.md + output-meta.md (on PASS)
-  Repair logic at W5: see STEP 5 — DEEP W5
+      If repair_count_w5 > 1:
+        Go to STEP 7 — double-failure output path (source = 05-expansion).
+        No further spawns.
+      Else:
+        Rename 05-expansion.md → 05-expansion-failed.md
+        Respawn M5-Expansion targeted (reads 05-expansion-failed +
+          06-verification-2)
+        Overwrite 05-expansion.md
+        Respawn M4M5-Verify-Output against new expansion
+        (M4M5 overwrites 06-verification-2.md)
 
 STEP 7 — OUTPUT
-  Output is generated within M4M5 / MSPEC4M5 / MPLAN4M5 on PASS.
-  After verify+output module completes:
-    Read output-meta.md to confirm target_filename
-    Non-quiet: module displayed output during run; print summary line
-    Quiet: module saved directly; print "Saved to [path]" + summary line
-  Double-failure output-with-note path (output generated inline by orchestrator):
-    Format: same XML output + <meta source="epiphany-prompt"/> marker
-      + appended <note>Verification incomplete — [failure summary]</note>
-    Apply quiet/non-quiet display logic
-    File save logic applies normally
+
+  PASS path (verify+output module returned output XML in return message):
+    Parse Agent return message: verification header line, blank line,
+      output XML body.
+    Non-quiet: display XML body in --- delimiters; ASK "Save to file?
+      (y/n)". If yes → save.
+    Quiet: save directly.
+    Save path: ~/docs/epiphany/prompts/DD-MM-{filename_slug}.md
+    Output file collision handling: if file exists, append -v2, -v3, ...
+      until unique. Never overwrite existing files without explicit
+      user confirmation.
+    On save: print "Saved to [full path]".
+
+  PASS-WITH-NOTES path (spec/plan with failed checks):
+    Same as PASS path. The <note> block describing failed checks is
+    embedded inside the output XML by the verify+output module itself.
+
+  Double-failure output-with-note path:
+    Source file depends on branch:
+      STANDARD W3 double-fail → source = stages/03-synthesis.md (last draft)
+      DEEP W3 double-fail → source = stages/03-synthesis.md (last draft)
+      DEEP W5 double-fail → source = stages/05-expansion.md (last draft)
+    This is a documented three-layer rule exception: on double-failure
+      no module produced output XML in its return message, so the
+      orchestrator reads the latest synthesis/expansion stage content
+      to produce a best-effort fallback.
+    Wrap source content in output XML format:
+      <prompt>
+        <meta source="epiphany-prompt"/>
+        [source content, wrapped in appropriate sub-sections]
+        <note>Verification incomplete — [last verification failure
+          summary]. Output delivered without final verification pass.</note>
+      </prompt>
+    Apply same display/save + collision logic as PASS path.
 
 STEP 8 — SESSION ARTIFACTS
-  Stage files remain in .sessions/{session_id}/ after run
-  Not auto-deleted — available for stage introspection on request
-  Next session creates a new session_id directory
-  Cleanup policy: sessions older than 7 days may be deleted manually;
-    the orchestrator does not auto-clean (no destructive ops without
-    user intent)
+  Stage files remain in .sessions/{session_id}/ after run.
+  Not auto-deleted — available for stage introspection on request.
+  Next session creates a new session_id directory.
+  No auto-cleanup. Users may delete old session directories manually.
 ```
 
 ---
@@ -501,10 +627,45 @@ STEP 8 — SESSION ARTIFACTS
 Each `*-verify-output.md` module is responsible for both verification and output. The orchestrator determines which synthesis file to pass based on mode and scale. The module reads `00-config.md` first to confirm what it received, then:
 
 - **Normal mode:** runs 12 checks (6a–6l); on PASS, formats prompt XML with preservation summary
-- **Specification mode:** runs 11 checks (S7a–S7k); on PASS, formats spec document with coverage summary
-- **Plan mode:** runs 9 checks (P9a–P9i); on PASS, formats plan document with coverage summary
+- **Specification mode:** runs 11 checks (S7a–S7k); always formats spec document with coverage summary (PASS or PASS-WITH-NOTES — no repair loop)
+- **Plan mode:** runs 9 checks (P9a–P9i); always formats plan document with coverage summary (PASS or PASS-WITH-NOTES — no repair loop)
 
-Output always includes `<meta source="epiphany-prompt"/>` marker (enables type C input detection on re-use).
+### `<meta>` marker placement
+
+Every output XML document MUST include `<meta source="epiphany-prompt"/>` as the **first child** of the root element (`<prompt>`, `<specification>`, or `<plan>`). This placement is deterministic — type C input detection (STEP 1) relies on finding this marker inside the root. Example:
+
+```xml
+<prompt>
+  <meta source="epiphany-prompt"/>
+  <task>...</task>
+  ...
+</prompt>
+```
+
+### Return value contract
+
+Verify+output modules return the full output in their Agent return message, never via a stage file. Format:
+
+```
+VERIFICATION: <status>[ — summary if applicable]
+
+<root>
+  <meta source="epiphany-prompt"/>
+  ...
+</root>
+```
+
+Where `<status>` is one of:
+
+| Status | When | Orchestrator action |
+|--------|------|---------------------|
+| `PASS` | Normal mode, all 12 checks pass | Display/save output XML |
+| `PASS` | Spec mode, all 11 checks pass | Display/save output XML |
+| `PASS` | Plan mode, all 9 checks pass | Display/save output XML |
+| `PASS-WITH-NOTES` | Spec/plan mode, some checks failed | Display/save output XML (module embeds `<note>` block inside XML describing failures) |
+| `FAIL` | Normal mode only, checks failed | Trigger repair loop (see STEP 6) |
+
+Spec and plan modes never return `FAIL` — they always return output (best-effort if gaps exist). Normal mode uses `FAIL` to trigger repair.
 
 The module does not detect mode from flags — mode and scale come from `00-config.md`. The orchestrator's responsibility is passing the correct input files (synthesis or expansion). The module's responsibility is verification logic + output formatting for the mode it receives.
 
@@ -574,17 +735,22 @@ More powerful than prompt-epiphany's "show me the analysis" — any stage is ins
 - Hard gates: SUFFICIENCY, ZERO INFORMATION LOSS, PROMPT CONTENT ONLY verbatim
 
 ### Must add
-- 11 module files with explicit input_dependencies frontmatter
+- 11 module files with explicit input_dependencies frontmatter (see Module Frontmatter Schema)
 - FAST inline pipeline in SKILL.md (full pipeline, no spawns — documented exception to three-layer rule)
 - Orchestrator pseudocode in SKILL.md
 - 00-config.md schema (fields: mode, scale, flags, date, session_id, input_type, filename_slug, contract_schema)
-- output-meta.md schema (field: target_filename — written by verify+output modules on PASS)
+- Module frontmatter schema (name, stage_id, input_dependencies, output_files, scale_variants, kb_sources, activation, return_contract)
 - Enhancement contract schema (v1)
 - Verification report schema with mode-appropriate summary (preservation_counts / coverage_counts)
+- Verify+output return contract: output XML returned in Agent return message (never via stage file); orchestrator parses PASS/PASS-WITH-NOTES/FAIL header
 - Stage introspection feature (STANDARD/DEEP/spec/plan only; FAST N/A; normal + spec + plan stage names, dual-verification disambiguation)
 - Scale-aware module protocols (FAST inline; STANDARD/DEEP variants in m3, m4, m12 modules; spec/plan always STANDARD-equivalent)
-- `<meta source="epiphany-prompt"/>` marker in all output XML (enables type C input detection)
+- `<meta source="epiphany-prompt"/>` marker as first child of output root element in all output XML (enables deterministic type C input detection)
 - DEEP W3 double-failure behavior: skip expansion, output synthesis inline with note
+- Output file collision handling: append -v2, -v3 to DD-MM-{filename_slug}.md until unique
+- File path input handling: if input matches path heuristic, read file contents as input
+- Announce-before-sufficiency-check ordering (user sees skill activation before any gate)
+- Spec/plan always-return contract: MSPEC4M5/MPLAN4M5 return PASS-WITH-NOTES instead of FAIL when checks fail (no repair loop)
 
 ### Must not
 - Increase spawn count beyond what scale requires
