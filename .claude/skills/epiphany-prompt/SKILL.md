@@ -132,3 +132,59 @@ Items may belong to multiple categories. **Preserve once, in the most specific c
 
 ---
 
+## Orchestrator
+
+The orchestrator is the SKILL.md body. It parses flags, detects mode + scale, runs the sufficiency check inline, then either (a) runs the FAST inline pipeline or (b) spawns Agent subagents wave-by-wave. The orchestrator NEVER reads stage files for routing decisions — it reads Agent return messages. Documented exceptions: stage introspection on user request (display-only) and double-failure fallback output (last-resort source for best-effort XML).
+
+### STEP 0 — FLAG DETECTION
+
+Parse first/last token only:
+- Scale: `--minimal` → FAST | `--verbose` → DEEP | (none) → STANDARD
+- Mode: `--specification` → spec | `--plan` → plan | (none) → normal
+- Display: `--quiet` → quiet (display only, no effect on wave plan)
+
+Conflicts:
+- `--minimal` + `--verbose` → BLOCK: ask user to pick one
+- `--specification` + `--plan` → ASK user: "Run --specification first, then --plan on its output sequentially? (y/n)". If yes → proceed sequentially (spec pipeline runs to completion, then plan pipeline runs with spec output as input — see **Chained spec+plan execution** below). If no → ASK which single mode to run. BLOCK until resolved.
+- scale flag + spec/plan mode → ignore scale, announce dismissal in STEP 2.
+
+Strip flags from input body. Mid-sentence flags = content.
+
+### STEP 1 — INPUT ROUTING
+
+**File path input:** if input string matches a file path heuristic (starts with `~/`, `/`, `./`, or `../` AND refers to an existing file on disk), read file contents and use as processed input. Otherwise treat input as inline text.
+
+**Detect input type:**
+- **Type A — raw text** (default)
+- **Type B — prompt-epiphany XML**: root element is `<prompt>` or `<enhanced_prompt>` AND contains at least one of `<task>`, `<context>`, `<constraints>` as direct children AND no `<meta source="epiphany-prompt"/>` marker → extract `<task>`, `<context>`, `<constraints>` contents. (Heuristic requires inner structure to avoid misclassifying raw prompts that merely contain the word "prompt" in tags.)
+- **Type C — prior epiphany-prompt output**: contains `<meta source="epiphany-prompt"/>` marker → extract original input section, start fresh pipeline. (All epiphany-prompt outputs include this marker — see Output format section.)
+
+### STEP 2 — ANNOUNCE
+
+Emit before any analysis:
+
+> "I'm using the epiphany-prompt skill ([SCALE], [mode] mode) to [enhance this prompt / develop a specification / develop a step-by-step plan]."
+
+If scale flag was dismissed for spec/plan mode, append:
+
+> "(--minimal/--verbose does not apply to [spec/plan] — proceeding with STANDARD.)"
+
+### STEP 3 — SUFFICIENCY CHECK
+
+Sufficient? Identifiable task (normal), concept/problem (spec), or goal with constraints (plan)? If not → BLOCK with mode-appropriate message explaining what's missing.
+
+Emit one line: `Sufficient — [reason]`
+
+**Mode routing signal** (only when NO mode flag was given) — non-blocking hint:
+- Concept/problem input → append: "This looks like a concept — add `--specification` to build a complete spec from it."
+- Spec/requirements doc input → append: "This looks like a spec — add `--plan` to turn it into a step-by-step plan."
+- Either → append: "For best result, run `--specification` first, then `--plan` on its output."
+- None detected → no suggestion.
+
+Hint is advisory. Pipeline continues with detected mode; does NOT block.
+
+**Edge cases for STEP 3:**
+- **Empty input:** No content provided → explain that input is required, block.
+- **Just a URL/path:** Has preservation items but no task → explain that a task/intent is needed, block.
+- **Only whitespace:** No meaningful content → explain that content is required, block.
+
