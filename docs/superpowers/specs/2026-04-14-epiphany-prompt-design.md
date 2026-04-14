@@ -82,13 +82,12 @@ Scale does not apply to specification or plan modes — both always run STANDARD
 ```
 ~/.claude/skills/epiphany-prompt/modules/
 
-Normal mode (6 files):
+Normal mode (5 files):
   m1-analysis.md          6-dimension analysis + INVENTORY extraction
   m2-ideation.md          Enhancement contracts, DEEP adds anti-conformity pass
   m3-synthesis.md         Preservation-first synthesis, DEEP adds self-critique
   m4-verification.md      12-check battery, scale-aware repair behaviour
   m5-expansion.md         DEEP only — gap scan + targeted expansion synthesis
-  m5-output.md            Display routing, file save, preservation summary
 
 Specification mode (4 files):
   mspec-1-domain.md       S2–S3: domain analysis + concept decomposition
@@ -102,8 +101,8 @@ Plan mode (4 files):
   mplan-3-synthesis.md    P6–P7: plan synthesis + execution simulation
   mplan-4-verify.md       P8–P9: gap audit + 9-check verification
 
-Shared:
-  m5-output.md            Used by all modes
+Shared (1 file):
+  m5-output.md            Display routing, file save, summary — used by all modes
 ```
 
 ---
@@ -161,9 +160,8 @@ W5: M5-Output                   W5: M5-Output
 **Normal mode:**
 ```
 stages/00-config.md         mode, scale, flags { quiet }, date (DD-MM),
-                            target_filename (blank until M5 fills),
                             session_id, input_type (A/B/C),
-                            contract_schema: v1
+                            contract_schema: v1  [write-once by orchestrator]
 
 stages/00-input.md          processed original input (flags stripped,
                             XML/prior-output extracted if type B/C)
@@ -177,6 +175,9 @@ stages/03-synthesis.md      enhanced prompt draft (overwritten on repair)
 stages/04-verification.md   12-check results (see schema below)
 stages/05-expansion.md      DEEP only — gap scan findings + expanded output
 stages/06-verification-2.md DEEP only — M4 re-run against expansion output
+stages/output-meta.md       Written by M5-Output (all modes) — contains
+                            target_filename (resolved save path).
+                            Orchestrator reads this after M5 to confirm save path.
 ```
 
 **Specification mode** (00-config.md and 00-input.md shared):
@@ -201,9 +202,9 @@ stages/plan-04-verify.md    MPLAN-4 output: gap audit + 9 checks
 |--------|-------|
 | M1 Analysis | `00-config` + `00-input` |
 | M2 Ideation | `00-config` + `00-input` + `01-analysis` |
-| M3 Synthesis | `00-config` + `00-input` + `01-analysis` + `02-ideation` |
-| M3 Synthesis (STANDARD repair) | `00-config` + `00-input` + `01-analysis` + `02-ideation` + `04-verification` (no failed draft) |
-| M3 Synthesis (DEEP repair) | `00-config` + `00-input` + `01-analysis` + `02-ideation` + `03-synthesis` (failed) + `04-verification` |
+| M3 Synthesis | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` |
+| M3 Synthesis (STANDARD repair) | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` + `04-verification` (no failed draft) |
+| M3 Synthesis (DEEP repair) | `00-config` + `00-input` + `01-analysis` + `01-inventory` + `02-ideation` + `03-synthesis` (failed) + `04-verification` |
 | M4 Verification | `00-config` + `00-input` + `01-inventory` + `03-synthesis` |
 | M4 Verification (W6 DEEP) | `00-config` + `00-input` + `01-inventory` + `05-expansion` |
 | M5 Expansion | `00-config` + `00-input` + `01-inventory` + `03-synthesis` (latest) |
@@ -212,6 +213,14 @@ stages/plan-04-verify.md    MPLAN-4 output: gap audit + 9 checks
 | M5 Output (DEEP no-op exp) | `00-config` + `03-synthesis` + `06-verification-2` |
 | M5 Output (spec) | `00-config` + `spec-03-synthesis` + `spec-04-verify` |
 | M5 Output (plan) | `00-config` + `plan-03-synthesis` + `plan-04-verify` |
+| MSPEC-1 Domain | `00-config` + `00-input` |
+| MSPEC-2 Requirements | `00-config` + `00-input` + `spec-01-domain` |
+| MSPEC-3 Synthesis | `00-config` + `00-input` + `spec-01-domain` + `spec-02-requirements` |
+| MSPEC-4 Verify | `00-config` + `00-input` + `spec-01-domain` + `spec-02-requirements` + `spec-03-synthesis` |
+| MPLAN-1 Analysis | `00-config` + `00-input` |
+| MPLAN-2 Design | `00-config` + `00-input` + `plan-01-analysis` |
+| MPLAN-3 Synthesis | `00-config` + `00-input` + `plan-01-analysis` + `plan-02-design` |
+| MPLAN-4 Verify | `00-config` + `00-input` + `plan-01-analysis` + `plan-02-design` + `plan-03-synthesis` |
 
 ### Segregation rationale
 
@@ -224,7 +233,7 @@ stages/plan-04-verify.md    MPLAN-4 output: gap audit + 9 checks
 
 ```
 {
-  technique: T[N],
+  technique: T[N] | "other:[description]",
   target_section: <xml-tag> | "global",
   action: "[imperative — what to add/change]",
   rationale: "[why this improves the prompt]",
@@ -239,7 +248,7 @@ Contract conflict rule: if a contract conflicts with an anti-pattern directive i
 ```
 Per check:
 {
-  check: 6a | 6b | ... | 6l,
+  check: 6a | 6b | ... | 6l | S7a | S7b | ... | S7k | P9a | P9b | ... | P9i,
   result: pass | fail | pass-with-note,
   detail: "[specific failed item, verbatim]",
   repair_target: "[section or XML tag to fix]"
@@ -334,9 +343,10 @@ STEP 2 — SESSION INIT
   session_id = YYYYMMDD-[topic-slug]
     slug: lowercase, strip punctuation, remove stop words,
     first 3–5 tokens joined with hyphens
+  Collision: if session_dir already exists, append -2, -3, etc. until unique
   session_dir = ~/docs/epiphany/prompts/.sessions/{session_id}/stages/
   Write 00-config.md: mode, scale, flags, date (DD-MM),
-    target_filename (blank), session_id, input_type, contract_schema: v1
+    session_id, input_type, contract_schema: v1  [write-once]
   Write 00-input.md: processed input
 
 STEP 3 — ANNOUNCE
@@ -348,40 +358,55 @@ STEP 4 — WAVE EXECUTION
   Select wave plan from mode × scale matrix.
   Per wave:
     Single-stage: spawn Agent(module_file, input_dependencies), wait,
-      validate output file exists → HALT if missing
+      validate output file exists and non-empty → HALT if missing or empty
+      HALT format: "[HALT] {module}: output file missing or empty.
+        Check session_dir path and module output instructions."
     Multi-stage: spawn all Agents in one message (parallel),
-      wait for all, validate all output files → HALT if any missing
+      wait for all, validate all output files → HALT if any missing or empty
+      (Note: current wave design has no parallel stages — rule reserved for future expansion)
+    M4 return value: M4 ends its run with "VERIFICATION: PASS" or
+      "VERIFICATION: FAIL — [summary]". Orchestrator reads the Agent return
+      message to decide whether to trigger repair. Orchestrator never reads
+      04-verification.md directly (three-layer rule).
   After each wave, check for stage introspection request:
     "show me [analysis/ideation/synthesis/expansion/verification]"
       → display corresponding stages/*.md, then continue
     "show me the analysis" → display 01-analysis.md
 
-STEP 5 — REPAIR LOOP (on M4 failure)
-  repair_count = 0
-  On M4 failure:
-    repair_count++
-    If repair_count > 1 → proceed to output with note
+STEP 5 — REPAIR LOOP (on M4 failure at W4)
+  repair_count_w4 = 0
+  On M4 failure (W4):
+    repair_count_w4++
+    If repair_count_w4 > 1 → proceed to output with note
     If FAST → no repair, proceed with note immediately
     If STANDARD → spawn M3-Synthesis fresh (no failed draft)
-    If DEEP → spawn M3-Synthesis targeted (with failed draft + report)
+    If DEEP → save 03-synthesis-failed.md before overwriting;
+      spawn M3-Synthesis targeted (with 03-synthesis-failed.md + 04-verification)
     Respawn M4-Verification against new synthesis
     Overwrite 03-synthesis.md and 04-verification.md
-  Same repair logic applies at W6 (M4 second run in DEEP mode)
 
 STEP 6 — EXPANSION (DEEP normal mode only)
   Spawn M5-Expansion (reads 00-input + 00-config + 01-inventory
     + 03-synthesis [latest, post-repair if applicable])
   If gap scan finds nothing thin → pass-through, note "already comprehensive"
-  Spawn M4-Verification second run:
+  Spawn M4-Verification second run (W6):
     reads: 00-input + 01-inventory + 05-expansion
     writes: 06-verification-2.md
-  Repair loop applies (max 1 attempt)
+  Repair loop (W6), max 1 attempt:
+    repair_count_w6 = 0
+    On M4 failure (W6):
+      repair_count_w6++
+      If repair_count_w6 > 1 → proceed to output with note
+      Save 05-expansion-failed.md before overwriting
+      Respawn M5-Expansion targeted (with 05-expansion-failed.md + 06-verification-2)
+      Respawn M4-Verification third run; overwrite 05-expansion.md and 06-verification-2.md
 
 STEP 7 — OUTPUT
   Spawn M5-Output with scale-appropriate inputs (see dependency table)
   M5-Output:
     Generates filename slug from 00-input.md
-    Updates target_filename in 00-config.md
+    Writes target_filename to stages/output-meta.md (write-once; does not
+      modify 00-config.md — that file is orchestrator-owned)
     Non-quiet: display output in --- delimiters, print summary line,
       offer save → ~/docs/epiphany/prompts/DD-MM-name.md
     Quiet: save immediately, print "Saved to [path]" + summary line
@@ -441,7 +466,7 @@ More powerful than prompt-epiphany's "show me the analysis" — any stage is ins
 - Enhancement contract schema (v1)
 - Verification report schema
 - Stage introspection feature
-- Scale-aware module protocols (FAST/STANDARD/DEEP variants per module)
+- Scale-aware module protocols (FAST/STANDARD/DEEP variants where applicable; spec/plan modules always run STANDARD)
 
 ### Must not
 - Increase spawn count beyond what scale requires
