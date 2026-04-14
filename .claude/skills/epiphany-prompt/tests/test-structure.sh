@@ -70,6 +70,10 @@ if [[ -f "$SKILL_DIR/SKILL.md" ]]; then
     assert_grep '.v3.' "$SKILL_DIR/SKILL.md" "collision suffix v3"
     assert_grep 'mkdir -p ~/docs/epiphany/prompts' "$SKILL_DIR/SKILL.md" "save path mkdir"
     assert_grep 'STEP 8 — SESSION ARTIFACTS' "$SKILL_DIR/SKILL.md" "STEP 8"
+    assert_grep '^## Chained spec\+plan execution' "$SKILL_DIR/SKILL.md" "chained spec+plan section"
+    assert_grep '^## Stage Introspection' "$SKILL_DIR/SKILL.md" "stage introspection section"
+    assert_grep 'YYYYMMDD-\{topic_slug\}-plan' "$SKILL_DIR/SKILL.md" "plan session suffix"
+    assert_grep 'show me the analysis' "$SKILL_DIR/SKILL.md" "introspection mapping"
 fi
 
 # All 11 module files + frontmatter

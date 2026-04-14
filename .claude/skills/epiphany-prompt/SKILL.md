@@ -363,3 +363,61 @@ On M4M5 FAIL (W5):
 - Not auto-deleted — available for stage introspection on request.
 - Next session creates a new `session_id` directory.
 - No auto-cleanup. Users may delete old session directories manually.
+
+## Chained spec+plan execution
+
+When the user passes `--specification --plan` and confirms sequential run in STEP 0:
+
+1. **Spec pipeline runs first** — full `MSPEC12 → MSPEC3 → MSPEC4M5` sequence in its own `session_dir` (session_id = `YYYYMMDD-{topic_slug}`). Spec output XML is saved to `~/docs/epiphany/prompts/DD-MM-{filename_slug}.md` per normal output handling.
+2. **Plan pipeline runs second** — starts a **new session** with its own `session_dir` (session_id = `YYYYMMDD-{topic_slug}-plan`; append `-plan` suffix to differentiate). The plan pipeline's `00-input.md` is populated with the spec output content (the full XML body from step 1's return message, not the saved file — no round-trip through disk). Plan output saves to `~/docs/epiphany/prompts/DD-MM-{filename_slug}-plan.md`.
+3. **No intermediate confirmation** — the single upfront confirm in STEP 0 is sufficient. The orchestrator announces the transition ("Specification complete. Starting plan pipeline with spec as input.") but does not block.
+4. **`--quiet`** applies to both pipelines. Both save to disk without display.
+5. **Failure in spec phase** — spec pipeline always delivers (PASS-WITH-NOTES on gaps). Plan pipeline proceeds regardless. If spec had flagged gaps, the `<note>` block carries into plan's input context as part of the spec XML.
+6. **Failure in plan phase** — same PASS-WITH-NOTES policy. Plan always delivers.
+
+## Stage Introspection
+
+**FAST scale:** Not available. No session directory, no stage files.
+
+**STANDARD / DEEP / spec / plan:** First-class feature enabled by file-based state. After any wave completes, the orchestrator responds to user requests by reading the matching stage file from the current session's `stages/` directory and displaying its contents verbatim.
+
+**Normal mode:**
+
+| Request | Displays |
+|---|---|
+| "show me the analysis" | `01-analysis.md` |
+| "show me the inventory" | `01-inventory.md` |
+| "show me ideation" | `02-ideation.md` |
+| "show me synthesis" | `03-synthesis.md` |
+| "show me verification" | Most recent: `06-verification-2.md` if it exists, else `04-verification.md` |
+| "show me first verification" | `04-verification.md` |
+| "show me expansion verification" | `06-verification-2.md` (DEEP only) |
+| "show me expansion" | `05-expansion.md` (DEEP only) |
+
+**Specification mode:**
+
+| Request | Displays |
+|---|---|
+| "show me domain analysis" | `spec-01-domain.md` |
+| "show me requirements" | `spec-02-requirements.md` |
+| "show me specification" / "show me spec synthesis" | `spec-03-synthesis.md` |
+| "show me spec verification" | `spec-04-verify.md` |
+
+**Plan mode:**
+
+| Request | Displays |
+|---|---|
+| "show me goal analysis" | `plan-01-analysis.md` |
+| "show me plan design" / "show me dependencies" | `plan-02-design.md` |
+| "show me plan synthesis" | `plan-03-synthesis.md` |
+| "show me plan verification" | `plan-04-verify.md` |
+
+**Debug (all non-FAST modes):**
+
+| Request | Displays |
+|---|---|
+| "show me config" | `00-config.md` |
+| "show me input" | `00-input.md` |
+| "show me [anything]" | Corresponding stage file if it exists |
+
+More powerful than prompt-epiphany's "show me the analysis" — any stage is inspectable independently.
