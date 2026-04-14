@@ -137,10 +137,11 @@ FAST (inline)                STANDARD (3 agents)      DEEP (5 agents)
 Orchestrator runs            W1: M12                  W1: M12
 full pipeline inline:          Analysis+Ideation        Analysis+Ideation
   Quick Analysis             W2: M3 Synthesis         W2: M3 Synthesis
-  Synthesis (T1–T7)          W3: M4M5                 W3: M4 Verify*
-  12-check Verification        Verify+Output          W4: M5 Expansion
-  Output                                              W5: M4M5
-No session directory.                                   Verify+Output
+  Synthesis (--minimal      W3: M4M5                 W3: M4 Verify*
+    technique subset)          Verify+Output          W4: M5 Expansion
+  12-check Verification                               W5: M4M5
+  Output                                                Verify+Output
+No session directory.
 Stage introspection N/A.
 
 0 agents                     3 agents                 5 agents
@@ -166,8 +167,19 @@ W3: MSPEC4M5 Verify+Output       W3: MPLAN4M5 Verify+Output
 | **normal** | inline pipeline | M12→M3→M4M5 | M12→M3→M4→M5-exp→M4M5 |
 | **specification** | → STANDARD | MSPEC12→MSPEC3→MSPEC4M5 | → STANDARD |
 | **plan** | → STANDARD | MPLAN12→MPLAN3→MPLAN4M5 | → STANDARD |
-| **spec then plan** | → STANDARD both | spec waves → confirm → plan waves | → STANDARD both |
+| **spec then plan** | → STANDARD both | spec pipeline → save spec output → plan pipeline (spec output as input) | → STANDARD both |
 | **+ `--quiet`** | display suppressed, file saved | same | same |
+
+### Chained spec+plan execution
+
+When the user passes `--specification --plan` and confirms sequential run in STEP 0:
+
+1. **Spec pipeline runs first** — full MSPEC12 → MSPEC3 → MSPEC4M5 sequence in its own `session_dir` (session_id = `YYYYMMDD-{topic_slug}`). Spec output XML is saved to `~/docs/epiphany/prompts/DD-MM-{filename_slug}.md` per normal output handling.
+2. **Plan pipeline runs second** — starts a **new session** with its own `session_dir` (session_id = `YYYYMMDD-{topic_slug}-plan`; append `-plan` suffix to differentiate). The plan pipeline's `00-input.md` is populated with the spec output content (the full XML body from step 1's return message, not the saved file — no round-trip through disk). Plan output saves to `~/docs/epiphany/prompts/DD-MM-{filename_slug}-plan.md`.
+3. **No intermediate confirmation** — the single upfront confirm in STEP 0 is sufficient. The orchestrator announces the transition ("Specification complete. Starting plan pipeline with spec as input.") but does not block.
+4. **`--quiet`** applies to both pipelines. Both save to disk without display.
+5. **Failure in spec phase** — spec pipeline always delivers (PASS-WITH-NOTES on gaps). Plan pipeline proceeds regardless. If spec had flagged gaps, the `<note>` block carries into plan's input context as part of the spec XML.
+6. **Failure in plan phase** — same PASS-WITH-NOTES policy. Plan always delivers.
 
 ---
 
@@ -217,6 +229,20 @@ stages/plan-02-design.md    MPLAN12 Phase 2: dependency map + safeguards
 stages/plan-03-synthesis.md MPLAN3: plan document + execution simulation
 stages/plan-04-verify.md    MPLAN4M5: gap audit + 9 checks
 ```
+
+### Module invocation mechanism
+
+Every STANDARD/DEEP wave spawns a subagent via the `Agent` tool. The orchestrator passes:
+
+1. **`subagent_type`**: `"general-purpose"` (the module protocol file is referenced by path in the prompt, not loaded as a built-in agent type).
+2. **`prompt`** (constructed inline): contains
+   - Path to the module protocol file (`~/.claude/skills/epiphany-prompt/modules/{module_file}`) with instruction to read and follow it.
+   - Absolute `session_dir` path.
+   - Explicit list of stage files the module must read (per dependency table).
+   - Explicit list of output files the module must write.
+   - Variant hints if applicable (e.g., "this is the DEEP repair path; failed draft is at 03-synthesis-failed.md").
+
+The module protocol itself uses the **Read tool** to load every declared input from `session_dir`, and the **Write tool** to write its declared outputs. The orchestrator never passes stage content inline in the Agent prompt — only paths. This keeps Agent prompts short and the orchestrator's context light.
 
 ### Module input_dependencies
 
@@ -328,6 +354,8 @@ return_contract: |
 
 `kb_sources` enables later auditing of which KB entries informed a module's protocol design. The module protocol body cites these entries inline by relative path.
 
+**Variant inputs:** `input_dependencies` declares the **primary (initial)** input set only. Repair-path variants (e.g., M3 DEEP repair reads `03-synthesis-failed.md` + `04-verification.md` in addition to the primary set) are not listed in frontmatter — the orchestrator dispatches variant input lists at spawn time per the dependency table. The module protocol body documents which variant paths exist and how to detect them from the orchestrator's spawn prompt (which lists exactly which files to read for that invocation).
+
 Frontmatter is parsed and validated by the orchestrator at pre-spawn time. Missing required fields → HALT with clear error identifying the module.
 
 ### FAST scale — inline execution
@@ -373,7 +401,7 @@ Frontmatter is parsed and validated by the orchestrator at pre-spawn time. Missi
 
 - Two-phase single agent: Phase 1 (verification), Phase 2 (output formatting — only on PASS).
 - Used in STANDARD (W3, final step) and DEEP (W5, post-expansion step).
-- Inputs vary by context: STANDARD reads `03-synthesis`; DEEP W5 reads `05-expansion`. Orchestrator passes the correct file path. Same module file handles both via `00-config` scale field.
+- Inputs vary by context: STANDARD reads `03-synthesis`; DEEP W5 reads `05-expansion`. The orchestrator selects and passes the correct input file in the Agent prompt. The module reads whatever synthesis-like file it is told to read — module behavior does not branch on the `00-config` scale field, so the same module file transparently handles both waves.
 - Fresh eyes: no memory of how synthesis/expansion was produced. Same isolation property as standalone M4.
 - On PASS: generates formatted output XML; returns `"VERIFICATION: PASS\n\n<prompt>...</prompt>"` — the PASS line followed by the full output XML in the Agent return message. Orchestrator parses the return message to extract XML for display/save.
 - On FAIL: writes verification report, returns `"VERIFICATION: FAIL — [summary]"`. No output. Orchestrator triggers repair (max 1 attempt).
@@ -454,6 +482,19 @@ STEP 4 — SESSION INIT
     Example: input "Build a VST plugin with reverb" → meaningful words
       [build, vst, plugin, reverb] → topic_slug "build-vst-plugin-reverb"
       (capped at 5 words).
+  Edge cases:
+    - More than 5 meaningful words → cap at first 5.
+    - Fewer than 3 meaningful words → use what exists (minimum 1 word).
+      Example: input "fix bug" → topic_slug "fix-bug" (2 words).
+    - Zero meaningful words (all stop words, or input is only code/URLs
+      with no prose) → fall back to topic_slug = "prompt-{short-hash}"
+      where short-hash is the first 6 hex chars of a SHA-1 of the
+      processed input.
+    - Non-ASCII characters in meaningful words → transliterate to ASCII
+      where possible; drop otherwise. If transliteration empties a word,
+      treat as a stop word for slug purposes.
+    - Punctuation inside a meaningful word (e.g., "v2.0", "foo_bar") →
+      strip punctuation; collapse to a single token ("v20", "foobar").
   filename_slug = topic_slug  [same value used for save path]
   If FAST: session init complete. Skip session directory creation.
     Proceed to STEP 5 with filename_slug in memory only.
