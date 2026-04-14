@@ -45,6 +45,13 @@ if [[ -f "$SKILL_DIR/SKILL.md" ]]; then
     assert_grep 'Type C — prior epiphany-prompt output' "$SKILL_DIR/SKILL.md" "type C detection"
     assert_grep 'Mode routing signal' "$SKILL_DIR/SKILL.md" "mode routing signal"
     assert_grep 'STEP 4 — SESSION INIT' "$SKILL_DIR/SKILL.md" "STEP 4"
+    assert_grep 'topic_slug' "$SKILL_DIR/SKILL.md" "topic_slug generation"
+    assert_grep 'stop words removed' "$SKILL_DIR/SKILL.md" "stop word list"
+    assert_grep 'Zero meaningful words' "$SKILL_DIR/SKILL.md" "zero-words fallback"
+    assert_grep 'prompt-\{short-hash\}' "$SKILL_DIR/SKILL.md" "short-hash fallback"
+    assert_grep '00-config.md' "$SKILL_DIR/SKILL.md" "00-config"
+    assert_grep '00-input.md' "$SKILL_DIR/SKILL.md" "00-input"
+    assert_grep 'mkdir -p \{session_dir\}' "$SKILL_DIR/SKILL.md" "session dir mkdir"
     assert_grep 'STEP 7 — OUTPUT' "$SKILL_DIR/SKILL.md" "STEP 7"
 fi
 

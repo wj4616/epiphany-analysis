@@ -188,3 +188,30 @@ Hint is advisory. Pipeline continues with detected mode; does NOT block.
 - **Just a URL/path:** Has preservation items but no task → explain that a task/intent is needed, block.
 - **Only whitespace:** No meaningful content → explain that content is required, block.
 
+
+### STEP 4 — SESSION INIT
+
+Generate `topic_slug`: lowercase first 3–5 meaningful words of processed input, joined with hyphens (stop words removed: `a, an, the, is, are, for, to, of, in, on, with, and, or, but, that, this, these, those`).
+
+Example: input "Build a VST plugin with reverb" → meaningful words `[build, vst, plugin, reverb]` → `topic_slug = "build-vst-plugin-reverb"` (capped at 5 words).
+
+**Edge cases:**
+- More than 5 meaningful words → cap at first 5.
+- Fewer than 3 meaningful words → use what exists (minimum 1 word). Example: input "fix bug" → `topic_slug = "fix-bug"` (2 words).
+- Zero meaningful words (all stop words, or input is only code/URLs with no prose) → fall back to `topic_slug = "prompt-{short-hash}"` where `short-hash` is the first 6 hex chars of a SHA-1 of the processed input.
+- Non-ASCII characters in meaningful words → transliterate to ASCII where possible; drop otherwise. If transliteration empties a word, treat as a stop word for slug purposes.
+- Punctuation inside a meaningful word (e.g., `v2.0`, `foo_bar`) → strip punctuation; collapse to a single token (`v20`, `foobar`).
+
+`filename_slug = topic_slug` (same value used for save path).
+
+**FAST scale:** session init complete. Skip session directory creation. Proceed to STEP 5 with `filename_slug` in memory only.
+
+**STANDARD/DEEP/spec/plan:**
+- **Date source:** both `YYYYMMDD` (session_id) and `DD-MM` (save filename) derive from the **same** calendar date — today in the user's local timezone, as exposed by the active Claude Code session (read `Today's date is YYYY-MM-DD` from the environment header if present; otherwise fall back to `date +%Y-%m-%d` in a one-off Bash call). Do NOT hardcode or guess the date.
+- `session_id = YYYYMMDD-{topic_slug}` (YYYYMMDD format for chronological sort inside `.sessions/`; distinct from save filename DD-MM format which matches prompt-epiphany convention — same calendar day, two renderings).
+- Session directory collision: if `~/docs/epiphany/prompts/.sessions/{session_id}/` already exists, append `-2`, `-3`, ... to both `session_id` and `topic_slug` until unique.
+- `session_dir = ~/docs/epiphany/prompts/.sessions/{session_id}/stages/`
+- **Create the directory tree:** `mkdir -p {session_dir}`. This ensures both `.sessions/` and `.sessions/{session_id}/stages/` exist before any file write — the parent `.sessions/` may not exist on first run.
+- Write `00-config.md`: mode, scale, flags { quiet }, date (DD-MM), session_id, input_type (A/B/C), filename_slug, contract_schema: v1 [write-once by orchestrator; modules read only].
+- Write `00-input.md`: processed input (flags stripped; extracted content for type B; original input section for type C).
+
