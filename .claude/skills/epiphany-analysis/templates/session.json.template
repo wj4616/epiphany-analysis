@@ -1,0 +1,33 @@
+{
+  "session_id": "",
+  "created_utc": "",
+  "node_a": {
+    "source_kind": "",
+    "source_path": null,
+    "content_hash": ""
+  },
+  "node_b": {
+    "source_kind": "",
+    "source_path": null,
+    "genius_detection": "",
+    "matched_sections": [],
+    "drift_notes": ""
+  },
+  "modules": {
+    "m-intake":    { "status": "pending", "start_utc": null, "end_utc": null, "notes": "" },
+    "m-analyze":   { "status": "pending", "a1_complete": false, "b1_complete": false, "start_utc": null, "end_utc": null },
+    "m-ideate":    { "status": "pending", "passes_run": 0, "ideas_total": 0, "stop_reason": "" },
+    "m-filter":    { "status": "pending", "ideas_in": 0, "accepted_out": 0 },
+    "m-engineer":  { "status": "pending", "d_entries_processed": 0, "e_entries_produced": 0, "double_fail_count": 0 },
+    "m-integrate": { "status": "pending", "refinement_cycles": 0, "audit_verdict": "" }
+  },
+  "caps_applied": {
+    "ideation_passes": 3,
+    "ideation_total": 50,
+    "drafts_per_d": 2,
+    "refinement_cycles": 1,
+    "global_wall_clock_sec": 900
+  },
+  "stop_reasons": [],
+  "argv_flags": { "start_at": null, "stop_at": null }
+}
