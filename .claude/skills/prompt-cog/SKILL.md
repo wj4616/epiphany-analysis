@@ -429,3 +429,32 @@ The return message MUST start with `VERIFICATION: PASS` or `VERIFICATION: FAIL`.
 *(End of synthesis agent spawn prompt)*
 
 ---
+
+### Step 7 — Output
+
+**Context:** Inline, orchestrator. **Role:** none.
+
+**Input:** Synthesis agent return message.
+
+**Return message parsing:**
+- Starts with `VERIFICATION: PASS` → PASS path
+- Starts with `VERIFICATION: FAIL` → FAIL path
+- Does not start with `VERIFICATION:` → malformed. Display return message as-is with header: "Synthesis agent returned an unexpected format. Manual review required." Do not attempt to save.
+
+**PASS path:**
+- Non-quiet: display XML in `---` delimiters. Ask: "Save to file? (y/n)". On yes → save.
+- Quiet: save directly without asking.
+
+**FAIL path:**
+- Prepend to XML: `<!-- VERIFICATION FAILED: [summary] — unverified output below -->`
+- Non-quiet: display annotated XML in `---` delimiters with failure summary before delimiters. Ask: "Save annotated output to file? (y/n)". On yes → save.
+- Quiet: save directly (annotated).
+- **Recovery suggestions (E09):** After displaying the failure summary and save prompt, append:
+  "Synthesis verification failed. To retry with a better outcome: (1) run with `--minimal` to reduce context pressure on the synthesis agent; (2) pass the best-effort XML back to prompt-cog as a Type C input for a refinement pass; (3) if the input is complex (>12 INVENTORY items or deeply interdependent constraints), switch to epiphany-prompt for this enhancement."
+
+**Save path:** `~/docs/epiphany/prompts/DD-MM-{descriptive-slug}.md`
+- Tilde expansion: expand `~` to absolute path before passing to Write/Read/Edit tools.
+- Collision handling: if file exists, append `-v2`, `-v3`, etc. until unique. Never overwrite.
+- On save: print `Saved to [full path]`.
+
+**Save applies to both PASS and FAIL paths** — FAIL output is saved annotated with the verification failure comment.
