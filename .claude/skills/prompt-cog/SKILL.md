@@ -121,3 +121,39 @@ Detection patterns:
 Type D is a flag only — routing remains A/B/C. Pass Type D flag to Step 2.
 
 **Output:** Input type (A / B / C), Type D flag (yes/no), normalized input content.
+
+---
+
+### Step 2 — Announce + Complexity Advisory + Sufficiency
+
+**Context:** Inline, orchestrator. **Role:** none.
+
+**Input:** Normalized input + type + mode flag + Type D flag.
+
+**Processing order:**
+
+**1. Type D advisory (E06) — output FIRST if set:**
+"Advisory: this input appears to describe an executable workflow or runnable skill. Hard Gate 3 reduces but cannot eliminate the risk of synthesis treating enhancement as execution for this input class. Review the output carefully before use."
+
+**2. Announce (mode-aware):**
+- Normal: "Using prompt-cog to analyze and enhance this prompt."
+- Minimal: "Using prompt-cog (minimal mode) to enhance this prompt."
+  → Next line: "Analysis limited to intent and inventory — technique gap coverage and weakness scoring are skipped. Use normal mode for prompts requiring full technique application."
+- Quiet: "Using prompt-cog (quiet mode) to enhance this prompt."
+- Quiet + Minimal: "Using prompt-cog (quiet + minimal mode) to enhance this prompt."
+  → Next line: same minimal advisory as above.
+
+**3. Complexity advisory (E04) — after announce:**
+Quick-scan the input for INVENTORY density signals: count distinct code blocks, URLs, version strings, named technical entities, and explicit constraint statements visible in the raw input text.
+
+- If scan suggests >12 INVENTORY items OR >5 explicit constraint statements:
+  → Append: "Advisory: this input appears above the moderate-complexity threshold (~12 INVENTORY items). The quality floor covers moderate-complexity inputs in the expected case — for this input, results may be less reliable. Consider epiphany-prompt DEEP for higher-stakes enhancements."
+- If minimal mode AND high complexity both detected:
+  → Issue combined advisory instead: "Minimal mode with complex input: analysis limited to intent and inventory; input appears above the moderate-complexity threshold. For coverage of this input's full constraint space, use normal mode or epiphany-prompt DEEP."
+
+**4. Sufficiency check:**
+Block if input has no discernible task, is fundamentally ambiguous, or has no identifiable intent. Explain what's missing and wait. Do not proceed to Step 3 until input is adequate.
+
+Passing inputs: any input with some structure (even a rough draft) passes. Single words, fragments with no context, or blank inputs fail. An input with no INVENTORY items (empty code blocks, URLs, constraints) is a VALID input — do not treat it as insufficient.
+
+**Output:** Sufficiency decision (proceed or block with explanation).
