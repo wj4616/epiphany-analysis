@@ -222,3 +222,65 @@ Wrap ALL Step 3 output in these structural markers — do not omit them:
 ```
 
 These markers allow Step 5 to extract analyst output by structural address. The synthesis spawn prompt is assembled from channel-extracted content — if markers are missing or empty, Step 5 checklist will abort.
+
+---
+
+### Step 4 — Ideation *(role switch)*
+
+**Context:** Inline, orchestrator — role-switched.
+
+**Role transition (E10):** Before applying the ideation role declaration, output the following text into the orchestrator context (not user-facing): "The analyst role has concluded. All analyst output is captured in the ANALYST OUTPUT section above. You are no longer in analysis mode."
+
+**Role declaration:** "You are a divergent-convergent enhancement designer. You transform analysis findings into actionable enhancement contracts. You think laterally before converging."
+
+**Input:** Step 3 output (inline, same context, referenced from the `=== ANALYST OUTPUT BEGIN/END ===` section).
+
+**Normal mode protocol:**
+
+1. For every weakness in the WEAKNESSES block: identify an enhancement contract or note why not viable.
+2. For every needed technique in the TECHNIQUES block: design a specific application as a contract.
+3. Allocate more contracts to high-impact weaknesses (weakness impact scoring drives budget — more contracts for high-impact, fewer for low-impact).
+4. **Anti-conformity second pass (with novelty gate E03):**
+   After the primary contract list, re-read the input + primary contracts with contrarian framing.
+   Ask: what unconventional enhancement did the primary pass miss?
+   For each candidate contract, apply all six tests:
+   1. Impact — does this provide meaningful enhancement?
+   2. Risk — does this risk damaging the prompt's intent or content?
+   3. Validity — is this a real prompt engineering technique?
+   4. Necessity — is this actually missing from the current prompt?
+   5. Preservation — does this respect verbatim INVENTORY items?
+   6. **Novelty gate (E03):** "Would a primary-pass T1–T13 analyst — running techniques in order against the analysis findings — have generated this contract?" If yes or genuinely borderline: DISCARD. Only append a contract if you can articulate a specific exclusion reason.
+   Append 1–3 contracts only if they pass all six tests. Each anti-conformity contract's rationale field MUST include: "Primary-pass exclusion reason: [why a sequential T1–T13 pass misses this]"
+5. Apply contract conflict rule: skip contracts that conflict with explicit input directives; log them as `[INPUT-DIRECTIVE]` conflicts.
+
+**Minimal mode protocol:**
+- Run steps 1 and 2 only (weakness contracts from INTENT analysis + technique contracts)
+- Skip anti-conformity second pass (sub-step 4 above)
+- Skip weakness impact scoring allocation (step 3) — treat all weaknesses as equal priority
+
+**Contract Finalization — all modes (E07):**
+1. **Same-target conflict scan:** Group all contracts by (technique, target_section) pair. If two or more contracts in a group specify incompatible actions (one adds / one removes the same element; or two specify mutually exclusive content for the same section with the same technique): keep the higher-priority contract, log the other as `[INTERNAL]` conflict: "Internal conflict: superseded by higher-priority contract targeting same [technique, target_section]."
+2. Merge `[INTERNAL]` conflicts into the conflict log alongside `[INPUT-DIRECTIVE]` conflicts.
+
+**Contract format (v1):**
+```
+technique | target_section | action | rationale | priority
+```
+- `technique`: one of T1–T13 or "anti-conformity:[name]"
+- `target_section`: one of `<role>`, `<context>`, `<task>`, `<constraints>`, `<output_format>`, `<verification>`, `<edge_cases>`
+- `action`: specific, concrete instruction to the synthesis agent
+- `rationale`: why this contract improves the prompt; anti-conformity contracts include "Primary-pass exclusion reason: [...]"
+- `priority`: high / medium / low
+
+**T4 binding rule:** Contracts with `technique: T4` (role prompting) MUST set `target_section: "<role>"`, never `"<context>"`.
+
+**Output structure (E01):**
+Wrap ALL Step 4 output in these structural markers — do not omit them:
+
+```
+=== IDEATION OUTPUT BEGIN ===
+[Primary contract list]
+[Anti-conformity additions]  ← Normal mode only
+[Conflict log]
+=== IDEATION OUTPUT END ===
+```
