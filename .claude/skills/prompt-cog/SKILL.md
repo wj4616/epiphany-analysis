@@ -157,3 +157,68 @@ Block if input has no discernible task, is fundamentally ambiguous, or has no id
 Passing inputs: any input with some structure (even a rough draft) passes. Single words, fragments with no context, or blank inputs fail. An input with no INVENTORY items (empty code blocks, URLs, constraints) is a VALID input — do not treat it as insufficient.
 
 **Output:** Sufficiency decision (proceed or block with explanation).
+
+---
+
+### Step 3 — Analysis *(role switch)*
+
+**Context:** Inline, orchestrator — role-switched.
+
+**Role declaration:** Before beginning analysis, declare: "You are a structured prompt analyst. Your task is to analyze the input prompt across 6 dimensions and produce the authoritative INVENTORY."
+
+**Input:** Normalized input.
+
+**T1–T13 reference:** The 13 technique definitions are in the `## Enhancement Techniques Reference` section of this file. Read `~/.claude/skills/prompt-epiphany/SKILL.md` as a fallback if needed.
+
+**Normal mode output (held in context):**
+
+- **INTENT block:** What the prompt is trying to accomplish, desired end state, success criteria.
+- **STRUCTURE block:** Current organization, missing elements.
+- **CONSTRAINTS block:** Explicit and implicit constraints, conflicts.
+- **TECHNIQUES block:** T1–T13 gap analysis — for each technique: already present / needed / impact.
+- **WEAKNESSES block:** Vagueness, likely misinterpretations, contradictions. Each weakness scored **high / medium / low** impact with a **causal explanation** — not just a label. State why the weakness exists and what failure mode it causes. Example of required format: "Weakness: vague success criteria [high] — causal: without measurable criteria, the synthesizer cannot determine when enhancement is complete, risking over-editing or under-constraining the output."
+- **INVENTORY YAML:** Full schema — all 8 keys, all values verbatim (no normalization):
+
+```yaml
+inventory:
+  urls: []
+  file_paths: []
+  tech_version: []
+  code_blocks: []
+  named_entities: []
+  key_constraints: []
+  tone_markers: []
+  structural_elements: []
+```
+
+Use `[]` for empty categories. Do not omit keys. Every URL, file path, technology+version string, code block, named entity, explicit constraint, tone marker, and structural element from the input must be listed verbatim.
+
+**Minimal mode output (held in context):**
+- INTENT block only (3–5 sentences: purpose + success criteria)
+- INVENTORY YAML (full schema — preservation is non-negotiable in all modes)
+- Skip STRUCTURE, CONSTRAINTS, TECHNIQUES, WEAKNESSES blocks
+
+**Step 3 self-check (E14) — informational, non-blocking:**
+At the end of analyst output, before the closing `=== ANALYST OUTPUT END ===` marker, verify:
+1. INTENT: is it specific? (names goal, success criteria, target audience or use case) → if vague: note "INTENT: THIN — ideation may be underconstrained"
+2. WEAKNESSES (normal mode only): does each weakness have a causal explanation? → if any is label-only (e.g., "vague" with no cause): note "WEAKNESS: LABEL-ONLY — contract targeting this may miss root cause"
+3. INVENTORY YAML: are all 8 keys present, even if empty? → if missing: note which key is absent
+
+These notes accompany the analyst output into the ideation context. They do not block execution and do not trigger a re-run.
+
+**Output structure (E01):**
+Wrap ALL Step 3 output in these structural markers — do not omit them:
+
+```
+=== ANALYST OUTPUT BEGIN ===
+[INTENT block]
+[STRUCTURE block]   ← Normal mode only
+[CONSTRAINTS block] ← Normal mode only
+[TECHNIQUES block]  ← Normal mode only
+[WEAKNESSES block]  ← Normal mode only
+[INVENTORY YAML]
+[Step 3 self-check notes]
+=== ANALYST OUTPUT END ===
+```
+
+These markers allow Step 5 to extract analyst output by structural address. The synthesis spawn prompt is assembled from channel-extracted content — if markers are missing or empty, Step 5 checklist will abort.
