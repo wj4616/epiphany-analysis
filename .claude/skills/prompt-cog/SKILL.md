@@ -458,3 +458,31 @@ The return message MUST start with `VERIFICATION: PASS` or `VERIFICATION: FAIL`.
 - On save: print `Saved to [full path]`.
 
 **Save applies to both PASS and FAIL paths** — FAIL output is saved annotated with the verification failure comment.
+
+---
+
+## Enhancement Techniques Reference
+
+*Source: prompt-epiphany SKILL.md — authoritative reference. Read `~/.claude/skills/prompt-epiphany/SKILL.md` (`## Enhancement Techniques Reference`) if in doubt.*
+
+| # | Technique | Trigger | Application |
+|---|-----------|---------|-------------|
+| T1 | XML semantic structuring | 2+ logical sections | Wrap in `<context>`, `<task>`, `<constraints>`, etc. |
+| T2 | Prompt decomposition | Monolithic block | Split into labeled sections |
+| T3 | Explicit constraint specification | Implicit assumptions | Convert to DO/DO NOT constraints |
+| T4 | Role/persona assignment | No expert framing | Add calibrated persona |
+| T5 | Output format templates | No output spec | Add XML/JSON/markdown template |
+| T6 | Structured reasoning injection | Multi-step analysis | Add CoT guidance |
+| T7 | Priority hierarchy | Conflicting constraints | "If X and Y conflict, prioritize X" |
+| T8 | Boundary/edge case spec | Ambiguous inputs | "If [edge case], then [behavior]" |
+| T9 | Few-shot exemplar injection | Task benefits from demo | 1-3 examples covering normal + edge |
+| T10 | Self-critique/validation | Quality-critical output | "Verify [criteria]. If any fail, revise." |
+| T11 | Context preservation anchoring | Long prompt, recurring concepts | Label key concepts early |
+| T12 | Audience calibration | No output consumer specified | Target reader, assumed knowledge |
+| T13 | Escape hatch provision | Ambiguous completion | "If cannot determine X, state what's missing" |
+
+**Application order:** T2→T1→T4→T3→T7→T6→T5→T8→T12→T9→T11→T10→T13
+
+**Note on T13:** Place escape hatches in `<edge_cases>` or `<verification>`, not `<constraints>`. Constraints specify behavior; escape hatches handle ambiguity.
+
+**Not every technique applies.** Apply only what gap analysis identifies as needed.
