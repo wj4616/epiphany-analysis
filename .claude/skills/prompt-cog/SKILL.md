@@ -486,3 +486,75 @@ The return message MUST start with `VERIFICATION: PASS` or `VERIFICATION: FAIL`.
 **Note on T13:** Place escape hatches in `<edge_cases>` or `<verification>`, not `<constraints>`. Constraints specify behavior; escape hatches handle ambiguity.
 
 **Not every technique applies.** Apply only what gap analysis identifies as needed.
+
+---
+
+## Design Notes
+
+**1-spawn architecture.** Only synthesis gets a dedicated agent; all analysis and ideation run inline. Synthesis requires isolated context budget; analysis and ideation do not benefit from agent isolation and add cold-start cost if spawned separately.
+
+**No repair loops in v1.** Synthesis failures are surfaced as annotated output with recovery guidance (E09), not retried. Repair loops cost 1–2 additional spawns; omitting them is the primary speed gain over epiphany-prompt.
+
+**No session directory.** All inter-agent communication happens via the synthesis spawn prompt body — channel-extracted content from structural markers, not the filesystem.
+
+**INVENTORY held in-context, not on disk.** Preservation quality comes from the schema and synthesis protocol, not from a file path.
+
+**Anti-conformity ported as in-context second pass with novelty gate (E03).** Contrarian re-read runs immediately after primary ideation in the same context window. Novelty magnitude from epiphany-prompt DEEP (+32.9%) was measured in an isolated agent context and does not transfer directly to an inline re-read — treat as unvalidated until empirically measured.
+
+**Quality floor:** Expected-value claim for moderate-complexity inputs (INVENTORY ≤ ~12 items, constraints not deeply interdependent, synthesis does not require cross-constraint judgment at scale). Not a per-invocation guarantee on complex technical prompts.
+
+---
+
+## Smoke Test Checklist
+
+Run these manually to verify the skill executes correctly after changes.
+
+**Test A — Normal mode, simple input:**
+Invoke: `/prompt-cog Write a function that reverses a string.`
+Expected:
+- [ ] Announce message: "Using prompt-cog to analyze and enhance this prompt."
+- [ ] Step 3 analyst output wrapped in `=== ANALYST OUTPUT BEGIN/END ===` markers
+- [ ] Step 4 ideation output wrapped in `=== IDEATION OUTPUT BEGIN/END ===` markers
+- [ ] Step 5 checklist runs silently; spawn proceeds
+- [ ] Synthesis agent returns `VERIFICATION: PASS\n\n<prompt>...</prompt>`
+- [ ] Output displayed in `---` delimiters
+- [ ] Save prompt appears: "Save to file? (y/n)"
+
+**Test B — Minimal mode:**
+Invoke: `/prompt-cog --minimal Write a function that reverses a string.`
+Expected:
+- [ ] Announce with minimal advisory
+- [ ] Step 3 output: INTENT block + INVENTORY YAML only (no STRUCTURE, CONSTRAINTS, TECHNIQUES, WEAKNESSES)
+- [ ] Step 4: no anti-conformity pass in ideation output
+- [ ] Synthesis agent spawned and returns VERIFICATION: PASS
+
+**Test C — Quiet mode:**
+Invoke: `/prompt-cog --quiet Write a function that reverses a string.`
+Expected:
+- [ ] Announce: "Using prompt-cog (quiet mode) to enhance this prompt."
+- [ ] No "Save to file?" prompt — saves directly
+- [ ] Prints "Saved to [full path]"
+
+**Test D — Type B input (prior prompt-epiphany output):**
+Invoke: `/prompt-cog` then paste a `<prompt><meta source="prompt-epiphany"/>...</prompt>` block
+Expected:
+- [ ] Routed as Type B; inner content extracted; outer `<prompt>` stripped
+- [ ] Enhancement proceeds on inner content
+
+**Test E — Deferred flag:**
+Invoke: `/prompt-cog --verbose Write a function.`
+Expected:
+- [ ] Halts immediately with: "The `--verbose` flag is not yet supported in prompt-cog. Run without a flag for normal mode, or use `--minimal` for a lighter-weight pass."
+- [ ] Does NOT proceed to analysis
+
+**Test F — Unknown flag (prose context):**
+Invoke: `/prompt-cog --describe what a reverse string function does`
+Expected:
+- [ ] Soft advisory: "Token '--describe' resembles a flag but is not a recognized prompt-cog flag. Treating as prompt content."
+- [ ] Proceeds with enhancement on "what a reverse string function does" (with "--describe" treated as content)
+
+**Test G — VERIFICATION: FAIL path:**
+To trigger: manually construct a synthesis spawn prompt that is likely to fail verification.
+Expected:
+- [ ] Output annotated with `<!-- VERIFICATION FAILED: ... -->`
+- [ ] Recovery suggestions (E09) displayed after failure summary
