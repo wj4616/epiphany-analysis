@@ -85,3 +85,39 @@ Orchestrator (inline)
 6. Strip all detected valid flags from their detected position. Never strip any token from within the prompt body.
 
 **Output:** Validated flag set (mode: normal/minimal, quiet: yes/no), stripped invocation string with valid flags removed.
+
+---
+
+### Step 1 — Input Routing
+
+**Context:** Inline, orchestrator. **Role:** none.
+
+**Input:** Step 0 output (stripped invocation string).
+
+**Detection rules (apply in order):**
+
+**Type B — Prior `prompt-epiphany` output:**
+Detect `<meta source="prompt-epiphany"/>` as direct child of root `<prompt>` element. Strip the `<prompt>` XML wrapper; use the inner content as the normalized input.
+
+**Type C — Prior `epiphany-prompt` or `prompt-cog` output:**
+Detect `<meta source="epiphany-prompt"/>` or `<meta source="prompt-cog"/>` as direct child of root `<prompt>` element. Same extraction rule as Type B: strip outer `<prompt>` wrapper, use inner content.
+
+**Type A — Everything else:**
+Raw prompt, plain text, partial XML, file path. If input starts with `~/`, `/`, `./`, or `../` and refers to an existing file: read file contents as input. Otherwise treat as inline text.
+
+**Malformed XML fallback:** If Type B or C XML is malformed (root element not parseable): treat as Type A. Do not attempt partial extraction.
+
+**Type D advisory flag (E06) — independently of A/B/C routing:**
+Detect inputs whose structure IS an executable/agentic workflow — not inputs that merely discuss or reference one.
+
+Detection patterns:
+- SKILL.md YAML frontmatter where the input's root structure is the skill definition itself (triple-dash `---` header with `name:` / `description:` / `triggers:` as top-level keys)
+- Inputs where the primary content is 3+ consecutive executable shell command lines (not commands mentioned as examples inside prose)
+- `<step>` or `<skill:` XML tags forming the document's top-level structure
+- Numbered sequences that define an agent invocation chain as the document's primary purpose
+
+**NOT Type D:** A prompt that asks Claude to write or analyze a SKILL.md. The SKILL.md content is the target of enhancement, not the input structure.
+
+Type D is a flag only — routing remains A/B/C. Pass Type D flag to Step 2.
+
+**Output:** Input type (A / B / C), Type D flag (yes/no), normalized input content.
