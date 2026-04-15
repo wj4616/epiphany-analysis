@@ -1,6 +1,6 @@
 ---
 name: prompt-cog
-version: 1.0.0
+version: 1.1.0
 last_modified: 2026-04-14
 description: "Inline-orchestrated prompt enhancement skill. 1-spawn architecture: analysis + ideation run inline under role-switched framing; one synthesis agent handles synthesis and inline verification. Faster than epiphany-prompt; more programmatic than prompt-epiphany. Supports --minimal and --quiet modes. ONLY on /prompt-cog or explicit name mention. Outputs enhanced prompt in --- delimiters, offers file save to ~/docs/epiphany/prompts/ with DD-MM-descriptive-name.md naming."
 ---
@@ -16,7 +16,7 @@ Applies 13 proven prompt engineering techniques through an inline-orchestrated p
 **Operating modes:**
 - **Normal** (default): Full 6-dimension analysis, all weaknesses + technique gap contracts, anti-conformity second pass with novelty gate, 1 synthesis spawn.
 - **Minimal** (`--minimal`): INTENT + INVENTORY analysis only, weakness and technique contracts at equal priority, no anti-conformity pass, 1 synthesis spawn.
-- **Quiet** (`--quiet`): Suppresses terminal display; saves directly to file without asking. Orthogonal — combines with any mode.
+- **Quiet** (`--quiet`): Suppresses XML output display and save prompt; saves directly to file. Announce message still shown. Orthogonal — combines with any mode.
 
 Deferred (v2): `--verbose`, `--specification`, `--plan` flags; repair loops; DEEP expansion wave.
 
@@ -31,11 +31,13 @@ Deferred (v2): `--verbose`, `--specification`, `--plan` flags; repair loops; DEE
 | `/prompt-cog --minimal` | Activate with minimal mode. Flag at first or last token only. |
 | `/prompt-cog --quiet` | Save directly without asking. Flag at first or last token only. |
 | `/prompt-cog --minimal --quiet` | Both flags apply: minimal + quiet. |
-| Both `--minimal` and `--verbose` | BLOCK — ask user to pick one before proceeding. |
+| Both `--minimal` and `--verbose` | HALT — `--verbose` is deferred (same as `--verbose` alone). |
 | `--verbose`, `--specification`, or `--plan` | Deferred (v2). Surface deferred-flag warning and halt (see Step 0). |
 | Any other `--` token | See Step 0 flag disambiguation rule (E13). |
 
 **Input:** Inline text, file path, or follow-up message. If input starts with `~/`, `/`, `./`, or `../` AND refers to an existing file: read file contents as input. Otherwise treat as inline text.
+
+**Follow-up after prompt request:** If the skill asked the user to provide a prompt and the user replies with text, treat that message as the input and re-enter from Step 0 (apply flag detection to the follow-up text).
 
 ## Hard Gates
 
@@ -77,12 +79,11 @@ Orchestrator (inline)
 
 1. Scan for `--` tokens at **first or last standalone token position only**. A flag mid-sentence within the prompt body is treated as prompt content, not a mode selector.
 2. Detect valid flags: `--minimal` → set minimal mode. `--quiet` → set quiet mode. Both → both apply.
-3. **Conflicting flags:** `--minimal` + `--verbose` → BLOCK. Output: "The `--minimal` and `--verbose` flags conflict. Please pick one and re-invoke." Do not proceed.
-4. **Deferred flags:** `--verbose`, `--specification`, `--plan` → HALT. Output: "The `[flag]` flag is not yet supported in prompt-cog. Run without a flag for normal mode, or use `--minimal` for a lighter-weight pass." Do not proceed.
-5. **Unknown flag disambiguation (E13):** Before surfacing an unknown-flag error, check: is the unrecognized `--token` followed by non-flag words forming a natural phrase (reads as prose rather than a flag invocation)?
+3. **Deferred flags (check first):** `--verbose`, `--specification`, `--plan` → HALT regardless of what other flags are present. Output: "The `[flag]` flag is not yet supported in prompt-cog. Run without a flag for normal mode, or use `--minimal` for a lighter-weight pass." Do not proceed.
+4. **Unknown flag disambiguation (E13):** Before surfacing an unknown-flag error, check: is the unrecognized `--token` followed by non-flag words forming a natural phrase (reads as prose rather than a flag invocation)?
    - If unrecognized token AND appears to continue into prose: issue soft advisory: "Token '[...]' resembles a flag but is not a recognized prompt-cog flag. Treating as prompt content. If you intended a mode flag, check spelling." Proceed with execution.
    - If unrecognized token at a flag position AND followed by no content or a clearly separate sentence: HALT with standard unknown-flag error: "Unknown flag '[...]'. Recognized flags are: --minimal, --quiet. Deferred flags (--verbose, --specification, --plan) are not yet supported."
-6. Strip all detected valid flags from their detected position. Never strip any token from within the prompt body.
+5. Strip all detected valid flags from their detected position. Never strip any token from within the prompt body.
 
 **Output:** Validated flag set (mode: normal/minimal, quiet: yes/no), stripped invocation string with valid flags removed.
 
@@ -97,10 +98,10 @@ Orchestrator (inline)
 **Detection rules (apply in order):**
 
 **Type B — Prior `prompt-epiphany` output:**
-Detect `<meta source="prompt-epiphany"/>` as direct child of root `<prompt>` element. Strip the `<prompt>` XML wrapper; use the inner content as the normalized input.
+Detect `<meta source="prompt-epiphany"/>` as direct child of root `<prompt>` element. Strip the `<prompt>` XML wrapper AND the `<meta .../>` tag; use the remaining inner content as the normalized input.
 
 **Type C — Prior `epiphany-prompt` or `prompt-cog` output:**
-Detect `<meta source="epiphany-prompt"/>` or `<meta source="prompt-cog"/>` as direct child of root `<prompt>` element. Same extraction rule as Type B: strip outer `<prompt>` wrapper, use inner content.
+Detect `<meta source="epiphany-prompt"/>` or `<meta source="prompt-cog"/>` as direct child of root `<prompt>` element. Same extraction rule as Type B: strip outer `<prompt>` wrapper AND the `<meta .../>` tag; use the remaining inner content as the normalized input.
 
 **Type A — Everything else:**
 Raw prompt, plain text, partial XML, file path. If input starts with `~/`, `/`, `./`, or `../` and refers to an existing file: read file contents as input. Otherwise treat as inline text.
@@ -164,7 +165,7 @@ Passing inputs: any input with some structure (even a rough draft) passes. Singl
 
 **Context:** Inline, orchestrator — role-switched.
 
-**Role declaration:** Before beginning analysis, declare: "You are a structured prompt analyst. Your task is to analyze the input prompt across 6 dimensions and produce the authoritative INVENTORY."
+**Role declaration:** Before beginning analysis, declare: "You are a structured prompt analyst. Your task is to analyze the input prompt across 5 dimensions (INTENT, STRUCTURE, CONSTRAINTS, TECHNIQUES, WEAKNESSES) and produce the authoritative INVENTORY."
 
 **Input:** Normalized input.
 
@@ -229,7 +230,7 @@ These markers allow Step 5 to extract analyst output by structural address. The 
 
 **Context:** Inline, orchestrator — role-switched.
 
-**Role transition (E10):** Before applying the ideation role declaration, output the following text into the orchestrator context (not user-facing): "The analyst role has concluded. All analyst output is captured in the ANALYST OUTPUT section above. You are no longer in analysis mode."
+**Role transition (E10):** Before applying the ideation role declaration, output: "The analyst role has concluded. All analyst output is captured in the ANALYST OUTPUT section above. You are no longer in analysis mode."
 
 **Role declaration:** "You are a divergent-convergent enhancement designer. You transform analysis findings into actionable enhancement contracts. You think laterally before converging."
 
@@ -254,9 +255,10 @@ These markers allow Step 5 to extract analyst output by structural address. The 
 5. Apply contract conflict rule: skip contracts that conflict with explicit input directives; log them as `[INPUT-DIRECTIVE]` conflicts.
 
 **Minimal mode protocol:**
-- Run steps 1 and 2 only (weakness contracts from INTENT analysis + technique contracts)
-- Skip anti-conformity second pass (sub-step 4 above)
-- Skip weakness impact scoring allocation (step 3) — treat all weaknesses as equal priority
+- Step 1 (gap contracts): no WEAKNESSES block exists in minimal mode — derive gaps directly from the INTENT block by comparing what the INTENT says the prompt should accomplish against what the normalized input actually provides. Generate contracts to address each identified gap.
+- Step 2 (technique contracts): no TECHNIQUES block from analysis — apply the T1–T13 table from the Enhancement Techniques Reference section directly against the normalized input and generate contracts for needed techniques.
+- Skip step 3 (impact scoring allocation) — treat all contracts as equal priority.
+- Skip step 4 (anti-conformity second pass).
 
 **Contract Finalization — all modes (E07):**
 1. **Same-target conflict scan:** Group all contracts by (technique, target_section) pair. If two or more contracts in a group specify incompatible actions (one adds / one removes the same element; or two specify mutually exclusive content for the same section with the same technique): keep the higher-priority contract, log the other as `[INTERNAL]` conflict: "Internal conflict: superseded by higher-priority contract targeting same [technique, target_section]."
@@ -296,9 +298,9 @@ Wrap ALL Step 4 output in these structural markers — do not omit them:
 **Checklist — abort if any item fails; report the specific failing item to the user:**
 
 1. Analysis blocks produced: INTENT present AND INVENTORY YAML present (required in all modes).
-2. INVENTORY YAML has ≥ 1 entry in any category OR all categories are explicitly `[]` with at least one category noted.
+2. INVENTORY YAML is syntactically valid and contains all 8 required keys (urls, file_paths, tech_version, code_blocks, named_entities, key_constraints, tone_markers, structural_elements), even if all values are `[]`.
 3. Contract list non-empty.
-4. **Channel boundaries present (E01) — check BEFORE item 5:**
+4. **Channel boundaries present (E01) — abort immediately if missing; do not proceed to item 5:**
    `=== ANALYST OUTPUT BEGIN ===` and `=== ANALYST OUTPUT END ===` are present and non-empty in context.
    `=== IDEATION OUTPUT BEGIN ===` and `=== IDEATION OUTPUT END ===` are present and non-empty in context.
    If boundaries are missing, output: "Step 5 abort: channel markers missing. Cannot assemble synthesis spawn prompt. Re-run from Step 3."
@@ -319,12 +321,13 @@ Extract content from structural markers only:
 
 Do not dump unstructured orchestrator prose into the spawn prompt body.
 
-**Token budget:** If the assembled spawn prompt would exceed ~15,000 tokens, prioritize in this order:
+**Token budget:** If the assembled dynamic content would exceed ~15,000 tokens (total spawn prompt minus the fixed KB snippets and role instructions), prioritize in this order:
 1. Normalized input (never truncate)
 2. INVENTORY YAML (never truncate)
 3. Contract list (high-priority only if truncation needed)
 4. Analysis blocks (INTENT + WEAKNESSES)
-5. KB snippets (drop if necessary)
+
+Note: KB snippets are fixed in the spawn prompt template and cannot be dropped dynamically.
 
 **Output:** Synthesis spawn prompt assembled from channel-extracted, checklist-verified content, or user-facing error if checklist fails.
 
@@ -361,14 +364,14 @@ Do not dump unstructured orchestrator prose into the spawn prompt body.
 
 **EMBEDDED KB SNIPPETS**
 
-*KB Snippet 1 — Chain-of-Thought (covers T7 reasoning scaffolding):*
+*KB Snippet 1 — Chain-of-Thought (covers T6 structured reasoning injection):*
 Chain-of-Thought (CoT) prompting instructs a model to produce explicit intermediate reasoning steps before delivering a final answer. Two main forms: Few-Shot CoT (worked reasoning exemplars) and Zero-Shot CoT (trigger phrase: "Let's think step by step"). In synthesis tasks, CoT guides the model through evidence accumulation and contradiction resolution before the final synthesis. Application: insert a reasoning scaffold in the system or user prompt when output requires multi-step reasoning. Self-Consistency + CoT: sample N reasoning chains and vote on the most consistent answer — +17.9% GSM8K over greedy CoT decoding.
 
-*KB Snippet 2 — Structured Output (covers T9 XML output formatting):*
+*KB Snippet 2 — Structured Output (covers T1/T5 XML structuring and output format templates):*
 Structured Output Prompting constrains generation to machine-parseable formats (JSON, XML, YAML). Four-layer approach: (1) define schema in prompt, (2) provide one perfect example output, (3) state strict formatting rules explicitly, (4) include self-validation instruction ("Before outputting, verify your XML matches the schema and all required sections are present"). Temperature 0.0–0.1 for format-critical outputs. For complex nested schemas, the self-validation instruction is especially important — without it, models frequently omit required nested fields.
 
 *KB Snippet 3 — Self-Refine (covers iterative self-critique):*
-Self-Refine implements a generate → self-feedback → revise loop. The same model produces an initial output, critiques it, and revises based on the critique. ~20% absolute improvement on diverse generation tasks. Key: the feedback prompt uses evaluative framing asking the model to act as a critic rather than a generator. For epiphany-style skills, the feedback prompt must specify concrete, checkable criteria rather than general impressions — this reduces self-bias by anchoring critique to observable properties. 1–2 refinement iterations are sufficient; additional iterations produce diminishing returns.
+Self-Refine implements a generate → self-feedback → revise loop. The same model produces an initial output, critiques it, and revises based on the critique. ~20% absolute improvement on diverse generation tasks. Key: the feedback prompt uses evaluative framing asking the model to act as a critic rather than a generator. The feedback prompt must specify concrete, checkable criteria rather than general impressions — this reduces self-bias by anchoring critique to observable properties. 1–2 refinement iterations are sufficient; additional iterations produce diminishing returns.
 
 ---
 
@@ -426,6 +429,26 @@ VERIFICATION: FAIL — [summary of what failed]
 The return message MUST start with `VERIFICATION: PASS` or `VERIFICATION: FAIL`. Any other format will be treated as malformed by the orchestrator.
 
 ---
+
+**ASSEMBLED CONTENT** *(injected here by the orchestrator at Step 5 — this block is replaced with the actual extracted content before spawning)*
+
+```
+=== NORMALIZED INPUT ===
+[verbatim normalized input]
+=== NORMALIZED INPUT END ===
+
+=== ANALYSIS ===
+[content extracted from ANALYST OUTPUT BEGIN/END markers]
+=== ANALYSIS END ===
+
+=== CONTRACTS ===
+[content extracted from IDEATION OUTPUT BEGIN/END markers]
+=== CONTRACTS END ===
+```
+
+Execute S1–S4 using the content in these three sections.
+
+---
 *(End of synthesis agent spawn prompt)*
 
 ---
@@ -433,6 +456,8 @@ The return message MUST start with `VERIFICATION: PASS` or `VERIFICATION: FAIL`.
 ### Step 7 — Output
 
 **Context:** Inline, orchestrator. **Role:** none.
+
+**Role reset:** Before processing the synthesis agent return message, declare: "The ideation and synthesis phases are complete. Returning to orchestrator context."
 
 **Input:** Synthesis agent return message.
 
@@ -558,3 +583,44 @@ To trigger: manually construct a synthesis spawn prompt that is likely to fail v
 Expected:
 - [ ] Output annotated with `<!-- VERIFICATION FAILED: ... -->`
 - [ ] Recovery suggestions (E09) displayed after failure summary
+
+**Test H — `--minimal --quiet` combined:**
+Invoke: `/prompt-cog --minimal --quiet Write a function that reverses a string.`
+Expected:
+- [ ] Announce: "Using prompt-cog (quiet + minimal mode) to enhance this prompt."
+- [ ] Minimal advisory shown on next line
+- [ ] Step 3: INTENT + INVENTORY only (no STRUCTURE/CONSTRAINTS/TECHNIQUES/WEAKNESSES)
+- [ ] Step 4: no anti-conformity pass
+- [ ] Saves directly without asking
+- [ ] Prints "Saved to [full path]"
+
+**Test I — Type C input (prior prompt-cog output re-fed):**
+Invoke: `/prompt-cog` then paste a `<prompt><meta source="prompt-cog"/>...</prompt>` block
+Expected:
+- [ ] Routed as Type C; outer `<prompt>` wrapper AND `<meta source="prompt-cog"/>` tag both stripped
+- [ ] Enhancement proceeds on remaining inner content only
+
+**Test J — Conflict/deferred: `--minimal --verbose`:**
+Invoke: `/prompt-cog --minimal --verbose Write a function.`
+Expected:
+- [ ] Halts immediately (rule 3 fires on --verbose regardless of --minimal)
+- [ ] Message: "The `--verbose` flag is not yet supported in prompt-cog..."
+- [ ] Does NOT produce a "conflict" or "pick one" message
+
+**Test K — Step 5 abort (missing channel markers):**
+To trigger: manually remove the `=== ANALYST OUTPUT BEGIN ===` marker from an in-progress run.
+Expected:
+- [ ] Step 5 outputs: "Step 5 abort: channel markers missing. Cannot assemble synthesis spawn prompt. Re-run from Step 3."
+- [ ] No synthesis agent spawned
+
+**Test L — Type D advisory (executable workflow input):**
+Invoke: `/prompt-cog` then paste a SKILL.md YAML frontmatter block or 3+ shell command lines
+Expected:
+- [ ] Type D advisory displayed before announce: "Advisory: this input appears to describe an executable workflow..."
+- [ ] Enhancement proceeds normally (Type D does not block execution)
+
+**Test M — File path input:**
+Invoke: `/prompt-cog ~/docs/epiphany/prompts/some-existing-file.md`
+Expected:
+- [ ] File contents read and used as the normalized input
+- [ ] Enhancement runs against file contents, not the path string
