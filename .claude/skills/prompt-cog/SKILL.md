@@ -284,3 +284,46 @@ Wrap ALL Step 4 output in these structural markers — do not omit them:
 [Conflict log]
 === IDEATION OUTPUT END ===
 ```
+
+---
+
+### Step 5 — Pre-Spawn Checkpoint
+
+**Context:** Inline, orchestrator. **Role:** none.
+
+**Input:** Steps 3–4 structured output (in context).
+
+**Checklist — abort if any item fails; report the specific failing item to the user:**
+
+1. Analysis blocks produced: INTENT present AND INVENTORY YAML present (required in all modes).
+2. INVENTORY YAML has ≥ 1 entry in any category OR all categories are explicitly `[]` with at least one category noted.
+3. Contract list non-empty.
+4. **Channel boundaries present (E01) — check BEFORE item 5:**
+   `=== ANALYST OUTPUT BEGIN ===` and `=== ANALYST OUTPUT END ===` are present and non-empty in context.
+   `=== IDEATION OUTPUT BEGIN ===` and `=== IDEATION OUTPUT END ===` are present and non-empty in context.
+   If boundaries are missing, output: "Step 5 abort: channel markers missing. Cannot assemble synthesis spawn prompt. Re-run from Step 3."
+5. Synthesis spawn prompt assembled without obvious truncation: extract content from channel markers (item 4 verified they exist), then confirm all four required sections are present in the assembled spawn prompt:
+   - Analysis blocks (INTENT + INVENTORY, plus STRUCTURE/CONSTRAINTS/TECHNIQUES/WEAKNESSES in normal mode)
+   - INVENTORY YAML (full, verbatim)
+   - Contract list (high-priority contracts at minimum)
+   - Normalized input (verbatim, no truncation)
+6. **Interface 2 coherence (E11) — normal mode only; skip in minimal mode:**
+   For each high-impact weakness in the WEAKNESSES block, verify at least one mapped contract (a) references that weakness AND (b) uses a technique and action that plausibly addresses the specific gap described in that weakness's causal explanation.
+   Presence-only mapping (a contract exists that mentions the weakness but uses an irrelevant technique or non-specific action) does NOT satisfy this check.
+   If any high-impact weakness is unmapped: output advisory "Step 5 warning: high-impact weakness '[X]' has no adequately mapped contract. Proceeding — synthesis quality for this weakness may be reduced."
+
+**Spawn prompt assembly (E01):**
+Extract content from structural markers only:
+- From `=== ANALYST OUTPUT BEGIN/END ===`: analysis blocks + INVENTORY YAML
+- From `=== IDEATION OUTPUT BEGIN/END ===`: contracts + conflict log
+
+Do not dump unstructured orchestrator prose into the spawn prompt body.
+
+**Token budget:** If the assembled spawn prompt would exceed ~15,000 tokens, prioritize in this order:
+1. Normalized input (never truncate)
+2. INVENTORY YAML (never truncate)
+3. Contract list (high-priority only if truncation needed)
+4. Analysis blocks (INTENT + WEAKNESSES)
+5. KB snippets (drop if necessary)
+
+**Output:** Synthesis spawn prompt assembled from channel-extracted, checklist-verified content, or user-facing error if checklist fails.
