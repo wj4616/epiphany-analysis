@@ -47,6 +47,41 @@ Deferred (v2): `--verbose`, `--specification`, `--plan` flags; repair loops; DEE
 
 ---
 
+## Output Protocol (MANDATORY)
+
+Your response MUST produce every element listed below, in this exact sequence. Each element is a hard requirement — omitting any element is a pipeline failure. The test suite verifies their presence with exact string matching (grep -qF). These are NOT internal processing markers — they are part of your visible response output.
+
+### NORMAL mode sequence
+
+1. **Type D advisory** (if applicable — exact string from Step 2)
+2. **Announce message** (exact string: `Using prompt-cog to analyze and enhance this prompt.`)
+3. **Complexity advisory** (if applicable)
+4. **`=== ANALYST OUTPUT BEGIN ===`**
+5. [INTENT block, STRUCTURE block, CONSTRAINTS block, TECHNIQUES block, WEAKNESSES block, INVENTORY YAML, Step 3 self-check]
+6. **`=== ANALYST OUTPUT END ===`**
+7. Role transition: `The analyst role has concluded. All analyst output is captured in the ANALYST OUTPUT section above. You are no longer in analysis mode.`
+8. **`=== IDEATION OUTPUT BEGIN ===`**
+9. [Contract list, anti-conformity additions, conflict log]
+10. **`=== IDEATION OUTPUT END ===`**
+11. **`VERIFICATION: PASS`** or **`VERIFICATION: FAIL — [summary]`** followed by a blank line, then the `<prompt>...</prompt>` XML wrapped in `---` delimiters
+12. **Save prompt**: `Save to file? (y/n)` (or auto-save in quiet mode, printing `Saved to [path]`)
+
+### MINIMAL mode sequence
+
+Same as NORMAL but:
+- Step 2 announce: `Using prompt-cog (minimal mode) to enhance this prompt.`
+- Next line: `Analysis limited to intent and inventory — technique gap coverage and weakness scoring are skipped. Use normal mode for prompts requiring full technique application.`
+- Steps 5–6: INTENT + INVENTORY YAML only (no STRUCTURE, CONSTRAINTS, TECHNIQUES, WEAKNESSES)
+- Steps 9–10: no anti-conformity additions
+
+### QUIET mode sequence
+
+Same as NORMAL or MINIMAL but:
+- Step 2 announce: `Using prompt-cog (quiet mode) to enhance this prompt.` or `Using prompt-cog (quiet + minimal mode) to enhance this prompt.`
+- Step 12: Use the Write tool to save directly. No `Save to file?` prompt. Print `Saved to [full absolute path]`.
+
+---
+
 ## Pipeline
 
 ```
@@ -87,6 +122,8 @@ Orchestrator (inline)
 
 **Output:** Validated flag set (mode: normal/minimal, quiet: yes/no), stripped invocation string with valid flags removed.
 
+CRITICAL: Flag halt messages and soft advisories MUST appear in your response before any other output. They are not optional.
+
 ---
 
 ### Step 1 — Input Routing
@@ -121,6 +158,8 @@ Detection patterns:
 
 Type D is a flag only — routing remains A/B/C. Pass Type D flag to Step 2.
 
+CRITICAL: If Type D is detected, the advisory string MUST appear as the FIRST line of your response, before the announce message. It is not optional.
+
 **Output:** Input type (A / B / C), Type D flag (yes/no), normalized input content.
 
 ---
@@ -143,6 +182,8 @@ Type D is a flag only — routing remains A/B/C. Pass Type D flag to Step 2.
 - Quiet: "Using prompt-cog (quiet mode) to enhance this prompt."
 - Quiet + Minimal: "Using prompt-cog (quiet + minimal mode) to enhance this prompt."
   → Next line: same minimal advisory as above.
+
+CRITICAL: This announce message MUST appear as a separate line in your response before any analysis output. It is a hard requirement — the test suite verifies its presence with exact string matching.
 
 **3. Complexity advisory (E04) — after announce:**
 Quick-scan the input for INVENTORY density signals: count distinct code blocks, URLs, version strings, named technical entities, and explicit constraint statements visible in the raw input text.
@@ -224,6 +265,8 @@ Wrap ALL Step 3 output in these structural markers — do not omit them:
 
 These markers allow Step 5 to extract analyst output by structural address. The synthesis spawn prompt is assembled from channel-extracted content — if markers are missing or empty, Step 5 checklist will abort.
 
+CRITICAL: These markers are NOT internal processing markers. They MUST appear as visible text in your final response output. The test suite verifies their presence with exact string matching. Omitting them is a hard gate failure — Step 5 will abort and the pipeline will not proceed.
+
 ---
 
 ### Step 4 — Ideation *(role switch)*
@@ -287,6 +330,8 @@ Wrap ALL Step 4 output in these structural markers — do not omit them:
 === IDEATION OUTPUT END ===
 ```
 
+CRITICAL: These markers are NOT internal processing markers. They MUST appear as visible text in your final response output. The test suite verifies their presence with exact string matching. Omitting them is a hard gate failure — Step 5 will abort.
+
 ---
 
 ### Step 5 — Pre-Spawn Checkpoint
@@ -335,7 +380,7 @@ Note: KB snippets are fixed in the spawn prompt template and cannot be dropped d
 
 ### Step 6 — Synthesis Agent *(1 spawn)*
 
-**Context:** Dedicated agent (spawned via Agent tool).
+**Context:** Dedicated agent. You MUST use the Agent tool with `subagent_type="general-purpose"` to spawn the synthesis agent. Do NOT perform synthesis inline — the synthesis agent must be a separate spawned agent. The synthesis agent's return message is the ONLY valid source of `VERIFICATION: PASS` or `VERIFICATION: FAIL`. If you perform synthesis inline, the pipeline will produce malformed output.
 
 **Spawn prompt — pass the following verbatim as the agent's complete instructions:**
 
@@ -468,12 +513,12 @@ Execute S1–S4 using the content in these three sections.
 
 **PASS path:**
 - Non-quiet: display XML in `---` delimiters. Ask: "Save to file? (y/n)". On yes → save.
-- Quiet: save directly without asking.
+- Quiet: Use the Write tool to save directly to `~/docs/epiphany/prompts/DD-MM-{slug}.md` (expand `~` to absolute path first; create directory with `mkdir -p` if needed). After saving, print: `Saved to [full absolute path]`. Do NOT ask "Save to file?".
 
 **FAIL path:**
 - Prepend to XML: `<!-- VERIFICATION FAILED: [summary] — unverified output below -->`
 - Non-quiet: display annotated XML in `---` delimiters with failure summary before delimiters. Ask: "Save annotated output to file? (y/n)". On yes → save.
-- Quiet: save directly (annotated).
+- Quiet: save directly (annotated), using the Write tool. Print `Saved to [full absolute path]` after saving.
 - **Recovery suggestions (E09):** After displaying the failure summary and save prompt, append:
   "Synthesis verification failed. To retry with a better outcome: (1) run with `--minimal` to reduce context pressure on the synthesis agent; (2) pass the best-effort XML back to prompt-cog as a Type C input for a refinement pass; (3) if the input is complex (>12 INVENTORY items or deeply interdependent constraints), switch to epiphany-prompt for this enhancement."
 
