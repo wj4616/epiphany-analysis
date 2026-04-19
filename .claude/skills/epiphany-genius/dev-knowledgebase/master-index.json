@@ -1,0 +1,584 @@
+{
+  "kb_layers": [
+    {
+      "name": "research",
+      "authority_score": 0.85,
+      "entries": [
+        {
+          "id": "research-triz-inventive-principles",
+          "title": "TRIZ Inventive Principles",
+          "file_path": "research-triz-inventive-principles.md",
+          "confidence": 0.95,
+          "tags": ["TRIZ", "contradiction-matrix", "inventive-principles", "problem-solving"],
+          "word_count": 2800,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "research-conceptual-blending",
+          "title": "Conceptual Blending",
+          "file_path": "research-conceptual-blending.md",
+          "confidence": 0.85,
+          "tags": ["conceptual-blending", "blending", "cognitive-science", "creativity"],
+          "word_count": 2200,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "research-conceptual-space-boden",
+          "title": "Conceptual Space (Boden)",
+          "file_path": "research-conceptual-space-boden.md",
+          "confidence": 0.85,
+          "tags": ["conceptual-space", "boden", "creativity", "transformational"],
+          "word_count": 2400,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "research-lateral-thinking-debono",
+          "title": "Lateral Thinking (De Bono)",
+          "file_path": "research-lateral-thinking-debono.md",
+          "confidence": 0.85,
+          "tags": ["lateral-thinking", "de-bono", "creativity", "provocation"],
+          "word_count": 2300,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "research-metacognition-ai",
+          "title": "Metacognition for AI",
+          "file_path": "research-metacognition-ai.md",
+          "confidence": 0.85,
+          "tags": ["metacognition", "ai", "self-monitoring", "reflection"],
+          "word_count": 1800,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "research-representational-change",
+          "title": "Representational Change",
+          "file_path": "research-representational-change.md",
+          "confidence": 0.85,
+          "tags": ["representational-change", "insight", "restructuring", "problem-solving"],
+          "word_count": 1900,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "research-spreading-activation",
+          "title": "Spreading Activation",
+          "file_path": "research-spreading-activation.md",
+          "confidence": 0.85,
+          "tags": ["spreading-activation", "memory", "association", "semantic-network"],
+          "word_count": 2100,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "research-abductive-reasoning",
+          "title": "Abductive Reasoning",
+          "file_path": "research-abductive-reasoning.md",
+          "confidence": 0.85,
+          "tags": ["abductive-reasoning", "inference", "hypothesis-generation", "diagnosis"],
+          "word_count": 2000,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "creative-genius-cognitive-differentiators-report",
+          "title": "Creative Genius Cognitive Differentials Report",
+          "file_path": "creative-genius-cognitive-differentiators-report.md",
+          "confidence": 0.95,
+          "tags": ["genius", "cognitive-traits", "differentiators", "creativity"],
+          "word_count": 8500,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        }
+      ]
+    },
+    {
+      "name": "genius-minds",
+      "authority_score": 0.90,
+      "entries": [
+        {
+          "id": "gm-einstein-thought-experiments",
+          "title": "Einstein: Thought Experiments",
+          "file_path": "genius-minds/gm-einstein-thought-experiments.md",
+          "confidence": 0.95,
+          "tags": ["einstein", "thought-experiments", "relativity", "visual-reasoning"],
+          "word_count": 3200,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "gm-feynman-first-principles",
+          "title": "Feynman: First Principles Decomposition",
+          "file_path": "genius-minds/gm-feynman-first-principles.md",
+          "confidence": 0.95,
+          "tags": ["feynman", "first-principles", "decomposition", "understanding"],
+          "word_count": 3500,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "gm-feynman-error-seeking",
+          "title": "Feynman: Error-Seeking",
+          "file_path": "genius-minds/gm-feynman-error-seeking.md",
+          "confidence": 0.95,
+          "tags": ["feynman", "error-seeking", "disconfirmation", "testing"],
+          "word_count": 2800,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "gm-newton-analogical-transfer",
+          "title": "Newton: Analogical Transfer",
+          "file_path": "genius-minds/gm-newton-analogical-transfer.md",
+          "confidence": 0.90,
+          "tags": ["newton", "analogy", "transfer", "physics"],
+          "word_count": 2600,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "gm-turing-formalization",
+          "title": "Turing: Formalization",
+          "file_path": "genius-minds/gm-turing-formalization.md",
+          "confidence": 0.90,
+          "tags": ["turing", "formalization", "computation", "abstraction"],
+          "word_count": 2500,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "gm-davinci-cross-domain-observation",
+          "title": "Da Vinci: Cross-Domain Observation",
+          "file_path": "genius-minds/gm-davinci-cross-domain-observation.md",
+          "confidence": 0.90,
+          "tags": ["davinci", "cross-domain", "observation", "nature"],
+          "word_count": 2400,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "gm-vonneumann-working-memory",
+          "title": "Von Neumann: Working Memory Exploitation",
+          "file_path": "genius-minds/gm-vonneumann-working-memory.md",
+          "confidence": 0.90,
+          "tags": ["von-neumann", "working-memory", "mental-computation", "parallel"],
+          "word_count": 2300,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "gm-darwin-evidence-accumulation",
+          "title": "Darwin: Evidence Accumulation",
+          "file_path": "genius-minds/gm-darwin-evidence-accumulation.md",
+          "confidence": 0.90,
+          "tags": ["darwin", "evidence", "accumulation", "natural-selection"],
+          "word_count": 2600,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "gm-tesla-visual-simulation",
+          "title": "Tesla: Visual Simulation",
+          "file_path": "genius-minds/gm-tesla-visual-simulation.md",
+          "confidence": 0.90,
+          "tags": ["tesla", "visual-simulation", "mental-models", "imagination"],
+          "word_count": 2500,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "gm-poincare-incubation",
+          "title": "Poincaré: Incubation",
+          "file_path": "genius-minds/gm-poincare-incubation.md",
+          "confidence": 0.90,
+          "tags": ["poincare", "incubation", "unconscious", "mathematical-discovery"],
+          "word_count": 2400,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "gm-ramanujan-intuition-verification",
+          "title": "Ramanujan: Intuition-Verification Partnership",
+          "file_path": "genius-minds/gm-ramanujan-intuition-verification.md",
+          "confidence": 0.90,
+          "tags": ["ramanujan", "intuition", "verification", "mathematical-intuition"],
+          "word_count": 2300,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        },
+        {
+          "id": "gm-archimedes-constraint-reframing",
+          "title": "Archimedes: Constraint Reframing",
+          "file_path": "genius-minds/gm-archimedes-constraint-reframing.md",
+          "confidence": 0.90,
+          "tags": ["archimedes", "constraint-reframing", "eureka", "displacement"],
+          "word_count": 2200,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": false
+        }
+      ]
+    },
+    {
+      "name": "traits",
+      "authority_score": 0.80,
+      "entries": [
+        {
+          "id": "T1-trait-preparation-before-solution",
+          "title": "TRAIT: Preparation Before Solution",
+          "file_path": "traits/T1/T1-TRAIT-preparation-before-solution.md",
+          "confidence": 0.90,
+          "tags": ["T1", "preparation", "solution", "incubation"],
+          "word_count": 1200,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-verification-after-generation",
+          "title": "TRAIT: Verification After Generation",
+          "file_path": "traits/T1/T1-TRAIT-verification-after-generation.md",
+          "confidence": 0.90,
+          "tags": ["T1", "verification", "generation", "testing"],
+          "word_count": 1100,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-golden-rule-disconfirming-evidence",
+          "title": "TRAIT: Golden Rule - Disconfirming Evidence",
+          "file_path": "traits/T1/T1-TRAIT-golden-rule-disconfirming-evidence.md",
+          "confidence": 0.90,
+          "tags": ["T1", "disconfirming-evidence", "golden-rule", "testing"],
+          "word_count": 1300,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-visual-simulation-failure-detection",
+          "title": "TRAIT: Visual Simulation Failure Detection",
+          "file_path": "traits/T1/T1-TRAIT-visual-simulation-failure-detection.md",
+          "confidence": 0.90,
+          "tags": ["T1", "visual-simulation", "failure-detection", "tesla"],
+          "word_count": 1150,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-four-stage-incubation-model",
+          "title": "TRAIT: Four-Stage Incubation Model",
+          "file_path": "traits/T1/T1-TRAIT-four-stage-incubation-model.md",
+          "confidence": 0.90,
+          "tags": ["T1", "incubation", "four-stage", "poincare"],
+          "word_count": 1250,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-constraint-naming-domain-switch",
+          "title": "TRAIT: Constraint Naming Domain Switch",
+          "file_path": "traits/T1/T1-TRAIT-constraint-naming-domain-switch.md",
+          "confidence": 0.90,
+          "tags": ["T1", "constraint-naming", "domain-switch", "reframing"],
+          "word_count": 1180,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-self-as-observer-embedding",
+          "title": "TRAIT: Self as Observer Embedding",
+          "file_path": "traits/T1/T1-TRAIT-self-as-observer-embedding.md",
+          "confidence": 0.90,
+          "tags": ["T1", "self-observer", "metacognition", "embedding"],
+          "word_count": 1100,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-jargon-removal-as-diagnostic",
+          "title": "TRAIT: Jargon Removal as Diagnostic",
+          "file_path": "traits/T1/T1-TRAIT-jargon-removal-as-diagnostic.md",
+          "confidence": 0.90,
+          "tags": ["T1", "jargon", "diagnostic", "feynman"],
+          "word_count": 1050,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-differential-effort-detection",
+          "title": "TRAIT: Differential Effort Detection",
+          "file_path": "traits/T1/T1-TRAIT-differential-effort-detection.md",
+          "confidence": 0.90,
+          "tags": ["T1", "differential-effort", "fluency", "metacognition"],
+          "word_count": 1000,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-constructive-specification",
+          "title": "TRAIT: Constructive Specification",
+          "file_path": "traits/T1/T1-TRAIT-constructive-specification.md",
+          "confidence": 0.90,
+          "tags": ["T1", "specification", "constructive", "requirements"],
+          "word_count": 1150,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-domain-crossing-methodology",
+          "title": "TRAIT: Domain Crossing Methodology",
+          "file_path": "traits/T1/T1-TRAIT-domain-crossing-methodology.md",
+          "confidence": 0.90,
+          "tags": ["T1", "domain-crossing", "analogy", "transfer"],
+          "word_count": 1200,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-extreme-scenario-construction",
+          "title": "TRAIT: Extreme Scenario Construction",
+          "file_path": "traits/T1/T1-TRAIT-extreme-scenario-construction.md",
+          "confidence": 0.90,
+          "tags": ["T1", "extreme-scenarios", "stress-testing", "edge-cases"],
+          "word_count": 1100,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-simplicity-stripping",
+          "title": "TRAIT: Simplicity Stripping",
+          "file_path": "traits/T1/T1-TRAIT-simplicity-stripping.md",
+          "confidence": 0.90,
+          "tags": ["T1", "simplicity", "stripping", "essential"],
+          "word_count": 1050,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-contradiction-seeking",
+          "title": "TRAIT: Contradiction Seeking",
+          "file_path": "traits/T1/T1-TRAIT-contradiction-seeking.md",
+          "confidence": 0.90,
+          "tags": ["T1", "contradiction", "triz", "tension"],
+          "word_count": 1150,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-pattern-level-abstraction",
+          "title": "TRAIT: Pattern Level Abstraction",
+          "file_path": "traits/T1/T1-TRAIT-pattern-level-abstraction.md",
+          "confidence": 0.90,
+          "tags": ["T1", "pattern", "abstraction", "generalization"],
+          "word_count": 1100,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-cargo-cult-detection",
+          "title": "TRAIT: Cargo Cult Detection",
+          "file_path": "traits/T1/T1-TRAIT-cargo-cult-detection.md",
+          "confidence": 0.90,
+          "tags": ["T1", "cargo-cult", "superficial", "understanding"],
+          "word_count": 1000,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-drawing-as-disambiguation",
+          "title": "TRAIT: Drawing as Disambiguation",
+          "file_path": "traits/T1/T1-TRAIT-drawing-as-disambiguation.md",
+          "confidence": 0.90,
+          "tags": ["T1", "drawing", "disambiguation", "visual"],
+          "word_count": 1080,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-evidence-source-diversification",
+          "title": "TRAIT: Evidence Source Diversification",
+          "file_path": "traits/T1/T1-TRAIT-evidence-source-diversification.md",
+          "confidence": 0.90,
+          "tags": ["T1", "evidence", "diversification", "sources"],
+          "word_count": 1120,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T1-trait-pre-sketch-completion",
+          "title": "TRAIT: Pre-Sketch Completion",
+          "file_path": "traits/T1/T1-TRAIT-pre-sketch-completion.md",
+          "confidence": 0.90,
+          "tags": ["T1", "sketch", "completion", "anticipation"],
+          "word_count": 980,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T2-trait-background-processing",
+          "title": "TRAIT: Background Processing",
+          "file_path": "traits/T2/T2-TRAIT-background-processing.md",
+          "confidence": 0.90,
+          "tags": ["T2", "background", "unconscious", "incubation"],
+          "word_count": 1100,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T2-trait-generalization-first",
+          "title": "TRAIT: Generalization First",
+          "file_path": "traits/T2/T2-TRAIT-generalization-first.md",
+          "confidence": 0.90,
+          "tags": ["T2", "generalization", "abstraction", "pattern"],
+          "word_count": 1050,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T2-trait-working-memory-capacity-exploitation",
+          "title": "TRAIT: Working Memory Capacity Exploitation",
+          "file_path": "traits/T2/T2-TRAIT-working-memory-capacity-exploitation.md",
+          "confidence": 0.90,
+          "tags": ["T2", "working-memory", "capacity", "chunking"],
+          "word_count": 1150,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T2-trait-pattern-recognition-generation",
+          "title": "TRAIT: Pattern Recognition Generation",
+          "file_path": "traits/T2/T2-TRAIT-pattern-recognition-generation.md",
+          "confidence": 0.90,
+          "tags": ["T2", "pattern-recognition", "generation", "emergence"],
+          "word_count": 1080,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T2-trait-intuition-verification-partnership",
+          "title": "TRAIT: Intuition-Verification Partnership",
+          "file_path": "traits/T2/T2-TRAIT-intuition-verification-partnership.md",
+          "confidence": 0.90,
+          "tags": ["T2", "intuition", "verification", "partnership"],
+          "word_count": 1020,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T2-trait-domain-boundary-refusal",
+          "title": "TRAIT: Domain Boundary Refusal",
+          "file_path": "traits/T2/T2-TRAIT-domain-boundary-refusal.md",
+          "confidence": 0.90,
+          "tags": ["T2", "domain-boundary", "refusal", "interdisciplinary"],
+          "word_count": 980,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T2-trait-structural-coherence-as-evidence",
+          "title": "TRAIT: Structural Coherence as Evidence",
+          "file_path": "traits/T2/T2-TRAIT-structural-coherence-as-evidence.md",
+          "confidence": 0.90,
+          "tags": ["T2", "structural-coherence", "evidence", "elegance"],
+          "word_count": 1100,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T2-trait-ten-steps-ahead-derivation",
+          "title": "TRAIT: Ten Steps Ahead Derivation",
+          "file_path": "traits/T2/T2-TRAIT-ten-steps-ahead-derivation.md",
+          "confidence": 0.90,
+          "tags": ["T2", "ten-steps-ahead", "derivation", "foresight"],
+          "word_count": 1150,
+          "has_headings": true,
+          "has_references": true,
+          "has_frontmatter": true
+        },
+        {
+          "id": "T3-batch-research",
+          "title": "T3 Batch Research",
+          "file_path": "traits/T3-BATCH-RESEARCH.md",
+          "confidence": 0.75,
+          "tags": ["T3", "batch-research", "pending", "queue"],
+          "word_count": 800,
+          "has_headings": true,
+          "has_references": false,
+          "has_frontmatter": false
+        }
+      ]
+    }
+  ],
+  "generated_at": "2026-04-10T00:00:00Z",
+  "total_entries": 49,
+  "confidence_algorithm": {
+    "base": 0.70,
+    "modifiers": {
+      "has_headings": 0.15,
+      "has_references": 0.10,
+      "has_frontmatter": 0.05,
+      "has_todo_fixme": -0.20,
+      "under_500_chars": -0.10
+    },
+    "range": [0.40, 1.00]
+  },
+  "relevance_algorithm": {
+    "title_match": 3,
+    "content_match_per_occurrence": 1,
+    "content_match_max": 5,
+    "layer_priority": {
+      "genius-minds": 1.2,
+      "traits": 1.1,
+      "research": 1.0
+    }
+  }
+}

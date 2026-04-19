@@ -1,0 +1,198 @@
+{
+  "bridge_schema_version": "1.0.0",
+  "description": "Internal concept linking across cognitive KB layers. Used during epiphany-* skill development to find related concepts.",
+  "layer_hierarchy": {
+    "research": {
+      "role": "foundational",
+      "description": "Theoretical frameworks and cognitive science concepts",
+      "links_to": ["genius-minds", "traits"]
+    },
+    "genius-minds": {
+      "role": "exemplary",
+      "description": "Historical instantiations of cognitive traits",
+      "links_to": ["traits"]
+    },
+    "traits": {
+      "role": "actionable",
+      "description": "Implementable patterns for AI reasoning",
+      "links_to": []
+    }
+  },
+  "concept_bridges": [
+    {
+      "research_concept": "four-stage-incubation-model",
+      "research_file": "research-spreading-activation.md",
+      "genius_exemplars": [
+        {
+          "file": "genius-minds/gm-poincare-incubation.md",
+          "trait_connection": "T1-TRAIT-four-stage-incubation-model"
+        }
+      ],
+      "trait_applications": [
+        "T1-TRAIT-four-stage-incubation-model",
+        "T1-TRAIT-preparation-before-solution",
+        "T1-TRAIT-verification-after-generation"
+      ]
+    },
+    {
+      "research_concept": "first-principles-thinking",
+      "research_file": "research-abductive-reasoning.md",
+      "genius_exemplars": [
+        {
+          "file": "genius-minds/gm-feynman-first-principles.md",
+          "trait_connection": "T1-TRAIT-contradiction-seeking"
+        }
+      ],
+      "trait_applications": [
+        "T1-TRAIT-contradiction-seeking",
+        "T1-TRAIT-simplicity-stripping"
+      ]
+    },
+    {
+      "research_concept": "TRIZ-inventive-principles",
+      "research_file": "research-triz-inventive-principles.md",
+      "genius_exemplars": [
+        {
+          "file": "genius-minds/gm-archimedes-constraint-reframing.md",
+          "trait_connection": "T1-TRAIT-contradiction-seeking"
+        }
+      ],
+      "trait_applications": [
+        "T1-TRAIT-contradiction-seeking",
+        "T1-TRAIT-extreme-scenario-construction"
+      ]
+    },
+    {
+      "research_concept": "conceptual-blending",
+      "research_file": "research-conceptual-blending.md",
+      "genius_exemplars": [
+        {
+          "file": "genius-minds/gm-davinci-cross-domain-observation.md",
+          "trait_connection": "T1-TRAIT-domain-crossing-methodology"
+        }
+      ],
+      "trait_applications": [
+        "T1-TRAIT-domain-crossing-methodology",
+        "T2-TRAIT-pattern-recognition-generation"
+      ]
+    },
+    {
+      "research_concept": "visual-simulation",
+      "research_file": "research-representational-change.md",
+      "genius_exemplars": [
+        {
+          "file": "genius-minds/gm-tesla-visual-simulation.md",
+          "trait_connection": "T1-TRAIT-visual-simulation-failure-detection"
+        },
+        {
+          "file": "genius-minds/gm-einstein-thought-experiments.md",
+          "trait_connection": "T1-TRAIT-drawing-as-disambiguation"
+        }
+      ],
+      "trait_applications": [
+        "T1-TRAIT-visual-simulation-failure-detection",
+        "T1-TRAIT-drawing-as-disambiguation"
+      ]
+    },
+    {
+      "research_concept": "evidence-accumulation",
+      "research_file": "research-abductive-reasoning.md",
+      "genius_exemplars": [
+        {
+          "file": "genius-minds/gm-darwin-evidence-accumulation.md",
+          "trait_connection": "T1-TRAIT-evidence-source-diversification"
+        }
+      ],
+      "trait_applications": [
+        "T1-TRAIT-evidence-source-diversification",
+        "T1-TRAIT-golden-rule-disconfirming-evidence"
+      ]
+    },
+    {
+      "research_concept": "lateral-thinking",
+      "research_file": "research-lateral-thinking-debono.md",
+      "genius_exemplars": [],
+      "trait_applications": [
+        "T1-TRAIT-constraint-naming-domain-switch",
+        "T1-TRAIT-jargon-removal-as-diagnostic"
+      ]
+    },
+    {
+      "research_concept": "metacognition",
+      "research_file": "research-metacognition-ai.md",
+      "genius_exemplars": [],
+      "trait_applications": [
+        "T1-TRAIT-self-as-observer-embedding",
+        "T2-TRAIT-intuition-verification-partnership"
+      ]
+    },
+    {
+      "research_concept": "spreading-activation",
+      "research_file": "research-spreading-activation.md",
+      "genius_exemplars": [
+        {
+          "file": "genius-minds/gm-poincare-incubation.md",
+          "trait_connection": "T1-TRAIT-four-stage-incubation-model"
+        }
+      ],
+      "trait_applications": [
+        "T1-TRAIT-four-stage-incubation-model",
+        "T2-TRAIT-background-processing"
+      ]
+    },
+    {
+      "research_concept": "conceptual-space-transformation",
+      "research_file": "research-conceptual-space-boden.md",
+      "genius_exemplars": [
+        {
+          "file": "genius-minds/gm-einstein-thought-experiments.md",
+          "trait_connection": "T1-TRAIT-extreme-scenario-construction"
+        },
+        {
+          "file": "genius-minds/gm-newton-analogical-transfer.md",
+          "trait_connection": "T2-TRAIT-pattern-recognition-generation"
+        }
+      ],
+      "trait_applications": [
+        "T1-TRAIT-extreme-scenario-construction",
+        "T2-TRAIT-pattern-recognition-generation",
+        "T2-TRAIT-ten-steps-ahead-derivation"
+      ]
+    }
+  ],
+  "trait_to_genius_mapping": {
+    "T1-TRAIT-four-stage-incubation-model": ["gm-poincare-incubation.md"],
+    "T1-TRAIT-preparation-before-solution": ["gm-poincare-incubation.md", "gm-vonneumann-working-memory.md"],
+    "T1-TRAIT-verification-after-generation": ["gm-poincare-incubation.md", "gm-ramanujan-intuition-verification.md"],
+    "T1-TRAIT-golden-rule-disconfirming-evidence": ["gm-darwin-evidence-accumulation.md", "gm-feynman-error-seeking.md"],
+    "T1-TRAIT-visual-simulation-failure-detection": ["gm-tesla-visual-simulation.md", "gm-einstein-thought-experiments.md"],
+    "T1-TRAIT-constraint-naming-domain-switch": ["gm-archimedes-constraint-reframing.md", "gm-davinci-cross-domain-observation.md"],
+    "T1-TRAIT-self-as-observer-embedding": ["gm-vonneumann-working-memory.md"],
+    "T1-TRAIT-jargon-removal-as-diagnostic": ["gm-feynman-first-principles.md"],
+    "T1-TRAIT-differential-effort-detection": ["gm-feynman-error-seeking.md"],
+    "T1-TRAIT-constructive-specification": ["gm-turing-formalization.md"],
+    "T1-TRAIT-domain-crossing-methodology": ["gm-davinci-cross-domain-observation.md", "gm-newton-analogical-transfer.md"],
+    "T1-TRAIT-extreme-scenario-construction": ["gm-einstein-thought-experiments.md"],
+    "T1-TRAIT-simplicity-stripping": ["gm-feynman-first-principles.md"],
+    "T1-TRAIT-contradiction-seeking": ["gm-archimedes-constraint-reframing.md"],
+    "T1-TRAIT-pattern-level-abstraction": ["gm-newton-analogical-transfer.md"],
+    "T1-TRAIT-cargo-cult-detection": ["gm-feynman-first-principles.md"],
+    "T1-TRAIT-drawing-as-disambiguation": ["gm-einstein-thought-experiments.md", "gm-davinci-cross-domain-observation.md"],
+    "T1-TRAIT-evidence-source-diversification": ["gm-darwin-evidence-accumulation.md"],
+    "T1-TRAIT-pre-sketch-completion": ["gm-davinci-cross-domain-observation.md"],
+    "T2-TRAIT-background-processing": ["gm-poincare-incubation.md", "gm-vonneumann-working-memory.md"],
+    "T2-TRAIT-generalization-first": ["gm-newton-analogical-transfer.md"],
+    "T2-TRAIT-working-memory-capacity-exploitation": ["gm-vonneumann-working-memory.md"],
+    "T2-TRAIT-pattern-recognition-generation": ["gm-davinci-cross-domain-observation.md", "gm-newton-analogical-transfer.md"],
+    "T2-TRAIT-intuition-verification-partnership": ["gm-ramanujan-intuition-verification.md"],
+    "T2-TRAIT-domain-boundary-refusal": ["gm-feynman-first-principles.md"],
+    "T2-TRAIT-structural-coherence-as-evidence": ["gm-darwin-evidence-accumulation.md"],
+    "T2-TRAIT-ten-steps-ahead-derivation": ["gm-newton-analogical-transfer.md"]
+  },
+  "query_patterns": {
+    "by_research_concept": "Returns genius exemplars + trait applications",
+    "by_trait": "Returns related research + genius exemplars",
+    "by_genius": "Returns related research + trait applications",
+    "for_skill_design": "Returns complete chain: research → genius → trait for a concept"
+  }
+}

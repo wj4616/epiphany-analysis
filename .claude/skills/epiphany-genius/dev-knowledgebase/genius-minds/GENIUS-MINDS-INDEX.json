@@ -1,0 +1,251 @@
+{
+  "generated": "2026-04-09",
+  "last_updated": "2026-04-09",
+  "phase_status": {
+    "phase_0": "complete",
+    "phase_1": "complete",
+    "phase_2": "complete",
+    "phase_3": "in_progress"
+  },
+  "individuals": [
+    {"name": "Einstein", "file": "gm-einstein-thought-experiments.md", "category": "A", "score": "15/15"},
+    {"name": "Feynman", "file": "gm-feynman-first-principles.md", "category": "A", "score": "15/15", "note": "First-principles decomposition entry"},
+    {"name": "Feynman", "file": "gm-feynman-error-seeking.md", "category": "C", "score": "15/15", "note": "Error-seeking and calibration entry"},
+    {"name": "Newton", "file": "gm-newton-analogical-transfer.md", "category": "D", "score": "14/15"},
+    {"name": "Turing", "file": "gm-turing-formalization.md", "category": "A", "score": "15/15"},
+    {"name": "Da Vinci", "file": "gm-davinci-cross-domain-observation.md", "category": "B", "score": "14/15"},
+    {"name": "Von Neumann", "file": "gm-vonneumann-working-memory.md", "category": "C", "score": "13/15"},
+    {"name": "Darwin", "file": "gm-darwin-evidence-accumulation.md", "category": "C", "score": "14/15"},
+    {"name": "Tesla", "file": "gm-tesla-visual-simulation.md", "category": "B", "score": "15/15"},
+    {"name": "Poincaré", "file": "gm-poincare-incubation.md", "category": "A", "score": "15/15"},
+    {"name": "Ramanujan", "file": "gm-ramanujan-intuition-verification.md", "category": "A", "score": "13/15"},
+    {"name": "Archimedes", "file": "gm-archimedes-constraint-reframing.md", "category": "D", "score": "14/15"}
+  ],
+  "traits": [
+    {
+      "name": "Preparation Before Solution",
+      "tier": "Tier 1",
+      "individuals": ["Einstein", "Feynman-FP", "Darwin", "Tesla", "Poincaré", "Turing", "Archimedes"],
+      "trait_file": "T1-TRAIT-preparation-before-solution.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Verification After Generation",
+      "tier": "Tier 1",
+      "individuals": ["Feynman-ES", "Darwin", "Poincaré", "Ramanujan", "Archimedes", "Turing"],
+      "trait_file": "T1-TRAIT-verification-after-generation.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Golden Rule for Disconfirming Evidence",
+      "tier": "Tier 1",
+      "individuals": ["Darwin"],
+      "trait_file": "T1-TRAIT-golden-rule-disconfirming-evidence.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Domain-Crossing Methodology",
+      "tier": "Tier 1",
+      "individuals": ["Newton", "Da Vinci", "Archimedes"],
+      "trait_file": "T1-TRAIT-domain-crossing-methodology.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Extreme Scenario Construction",
+      "tier": "Tier 1",
+      "individuals": ["Einstein", "Tesla", "Turing"],
+      "trait_file": "T1-TRAIT-extreme-scenario-construction.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Simplicity Stripping",
+      "tier": "Tier 1",
+      "individuals": ["Einstein", "Feynman-FP", "Turing"],
+      "trait_file": "T1-TRAIT-simplicity-stripping.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Contradiction-Seeking",
+      "tier": "Tier 1",
+      "individuals": ["Einstein", "Feynman-ES"],
+      "trait_file": "T1-TRAIT-contradiction-seeking.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Pattern-Level Abstraction",
+      "tier": "Tier 1",
+      "individuals": ["Da Vinci", "Ramanujan"],
+      "trait_file": "T1-TRAIT-pattern-level-abstraction.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Background Processing",
+      "tier": "Tier 2",
+      "individuals": ["Poincaré", "Von Neumann"],
+      "trait_file": "T2-TRAIT-background-processing.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Generalization-First",
+      "tier": "Tier 2",
+      "individuals": ["Newton", "Ramanujan"],
+      "trait_file": "T2-TRAIT-generalization-first.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Differential Effort Detection",
+      "tier": "Tier 1",
+      "individuals": ["Feynman-ES"],
+      "trait_file": "",
+      "research_status": "pending"
+    },
+    {
+      "name": "Cargo Cult Detection",
+      "tier": "Tier 1",
+      "individuals": ["Feynman-ES"],
+      "trait_file": "T1-TRAIT-cargo-cult-detection.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Visual Simulation with Failure Detection",
+      "tier": "Tier 1",
+      "individuals": ["Tesla"],
+      "trait_file": "T1-TRAIT-visual-simulation-failure-detection.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Four-Stage Incubation Model",
+      "tier": "Tier 1",
+      "individuals": ["Poincaré"],
+      "trait_file": "T1-TRAIT-four-stage-incubation-model.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Constraint-Naming and Domain-Switch",
+      "tier": "Tier 1",
+      "individuals": ["Archimedes"],
+      "trait_file": "T1-TRAIT-constraint-naming-domain-switch.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Self-as-Observer Embedding",
+      "tier": "Tier 1",
+      "individuals": ["Einstein"],
+      "trait_file": "T1-TRAIT-self-as-observer-embedding.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Jargon-Removal as Diagnostic",
+      "tier": "Tier 1",
+      "individuals": ["Feynman-FP"],
+      "trait_file": "T1-TRAIT-jargon-removal-as-diagnostic.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Differential Effort Detection",
+      "tier": "Tier 1",
+      "individuals": ["Feynman-ES"],
+      "trait_file": "T1-TRAIT-differential-effort-detection.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Drawing as Disambiguation",
+      "tier": "Tier 1",
+      "individuals": ["Da Vinci"],
+      "trait_file": "T1-TRAIT-drawing-as-disambiguation.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Constructive Specification",
+      "tier": "Tier 1",
+      "individuals": ["Turing"],
+      "trait_file": "T1-TRAIT-constructive-specification.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Evidence Source Diversification",
+      "tier": "Tier 1",
+      "individuals": ["Darwin"],
+      "trait_file": "T1-TRAIT-evidence-source-diversification.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Pre-Sketch Completion",
+      "tier": "Tier 1",
+      "individuals": ["Tesla"],
+      "trait_file": "T1-TRAIT-pre-sketch-completion.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Working Memory Capacity Exploitation",
+      "tier": "Tier 2",
+      "individuals": ["Von Neumann"],
+      "trait_file": "T2-TRAIT-working-memory-capacity-exploitation.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Pattern Recognition Generation",
+      "tier": "Tier 2",
+      "individuals": ["Ramanujan"],
+      "trait_file": "T2-TRAIT-pattern-recognition-generation.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Intuition-Verification Partnership",
+      "tier": "Tier 2",
+      "individuals": ["Ramanujan"],
+      "trait_file": "T2-TRAIT-intuition-verification-partnership.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Domain Boundary Refusal",
+      "tier": "Tier 2",
+      "individuals": ["Newton"],
+      "trait_file": "T2-TRAIT-domain-boundary-refusal.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Structural Coherence as Evidence",
+      "tier": "Tier 2",
+      "individuals": ["Ramanujan"],
+      "trait_file": "T2-TRAIT-structural-coherence-as-evidence.md",
+      "research_status": "complete"
+    },
+    {
+      "name": "Ten-Steps-Ahead Derivation",
+      "tier": "Tier 2",
+      "individuals": ["Von Neumann"],
+      "trait_file": "T2-TRAIT-ten-steps-ahead-derivation.md",
+      "research_status": "complete"
+    }
+  ],
+  "tier3_batches": {
+    "batch_a_internal_cognitive_mechanics": [
+      "Von Neumann rapid derivation",
+      "Ramanujan intuition mechanism",
+      "Von Neumann intuitive pre-loading"
+    ],
+    "batch_b_inferred_methodologies": [
+      "Newton domain boundary refusal",
+      "Da Vinci domain-agnostic description",
+      "Turing minimal model",
+      "Newton deep structural comparison",
+      "Archimedes back-translation"
+    ],
+    "batch_c_amplification_only": [
+      "Von Neumann state loading protocol",
+      "Background processing simulation",
+      "Pattern recognition pipeline"
+    ]
+  },
+  "research_progress": {
+    "total_traits": 38,
+    "tier1_total": 19,
+    "tier1_complete": 19,
+    "tier2_total": 8,
+    "tier2_complete": 8,
+    "tier3_total": 11,
+    "tier3_complete": 11,
+    "excluded_total": 4
+  }
+}

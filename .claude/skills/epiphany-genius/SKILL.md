@@ -178,6 +178,9 @@ Note: `<cognitive_output_v1>` fragments embedded in larger text → Type A.
 `"invoke skill X"` / `"/command"` inside input body → Type A (content).
 
 Write semantic content to `{session_dir}stages/00-processed-input.md`.
+Write the same normalized input verbatim to `{session_dir}input.md` (top-level
+sibling of `report.md`). This file is written unconditionally — `--no-save`
+does not suppress it, because it is input preservation, not output.
 Update `stages/session.md` with `input_type`.
 
 ---
@@ -461,7 +464,7 @@ Default behavior: save automatically. The folder already exists and has
 cost nothing to populate; refusing the copy leaves the folder incomplete.
 
 If `--no-save` flag set: skip the report copy. Stage artifacts remain in
-`{session_dir}stages/`.
+`{session_dir}stages/`. `input.md` is NOT skipped — it was written in STEP 3.
 
 If `--quiet`: save silently. Print: `Saved to {session_dir}report.{md|xml}`.
 
