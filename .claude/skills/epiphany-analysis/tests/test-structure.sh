@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Structural assertions for epiphany-analysis skill files.
+# v2.0: Updated for inline pipeline (all modules in SKILL.md, modules/ as reference archive)
 # Exits 0 on success, 1 on failure.
 
 set -u
@@ -22,9 +23,14 @@ if [[ -f "$SKILL_DIR/SKILL.md" ]]; then
     assert_grep '^trigger: /epiphany-analysis' "$SKILL_DIR/SKILL.md" "trigger"
     assert_grep '^## Trigger Conditions' "$SKILL_DIR/SKILL.md" "trigger section"
     assert_grep '^## Hard Gates' "$SKILL_DIR/SKILL.md" "hard gates"
-    assert_grep '^## Orchestrator' "$SKILL_DIR/SKILL.md" "orchestrator"
-    for step in 'STEP 0' 'STEP 1' 'STEP 2' 'STEP 3' 'STEP 4' 'STEP 5' 'STEP 6' 'STEP 7'; do
-        assert_grep "^### $step" "$SKILL_DIR/SKILL.md" "$step"
+    assert_grep '^## Pipeline' "$SKILL_DIR/SKILL.md" "pipeline section"
+    # Pre-Pipeline sections
+    assert_grep '^### Flag Parsing' "$SKILL_DIR/SKILL.md" "flag parsing"
+    assert_grep '^### Session Init' "$SKILL_DIR/SKILL.md" "session init"
+    assert_grep '^### Replay Contract' "$SKILL_DIR/SKILL.md" "replay contract"
+    # Inline pipeline modules (M-INTAKE through M-INTEGRATE)
+    for m in M-INTAKE M-ANALYZE M-IDEATE M-FILTER M-ENGINEER M-INTEGRATE; do
+        assert_grep "^### $m" "$SKILL_DIR/SKILL.md" "$m section"
     done
     assert_grep '^## Section-Tailoring Map' "$SKILL_DIR/SKILL.md" "map"
     assert_grep '^## Genius Detection' "$SKILL_DIR/SKILL.md" "detection"
@@ -32,10 +38,13 @@ if [[ -f "$SKILL_DIR/SKILL.md" ]]; then
     assert_grep '^## Anti-Patterns' "$SKILL_DIR/SKILL.md" "anti-patterns"
 fi
 
-# All 6 module files exist
+# Reference module files still exist (archive)
 for m in m-intake m-analyze m-ideate m-filter m-engineer m-integrate; do
     assert_file "$SKILL_DIR/modules/$m.md"
 done
+
+# Reference archive README
+assert_file "$SKILL_DIR/modules/README.md"
 
 # Template exists
 assert_file "$SKILL_DIR/templates/session.json.template"
@@ -45,10 +54,11 @@ if [[ -f "$SKILL_DIR/templates/session.json.template" ]]; then
     fi
 fi
 
-# Frontmatter validator
-if ! "$SKILL_DIR/tests/validate-frontmatter.py" "$SKILL_DIR/modules"/*.md > /dev/null; then
+# Frontmatter validator (validates reference module files, excludes README.md)
+MODULE_FILES=$(find "$SKILL_DIR/modules" -maxdepth 1 -name 'm-*.md' | sort)
+if ! "$SKILL_DIR/tests/validate-frontmatter.py" $MODULE_FILES > /dev/null; then
     echo "FAIL: module frontmatter invalid"
-    "$SKILL_DIR/tests/validate-frontmatter.py" "$SKILL_DIR/modules"/*.md
+    "$SKILL_DIR/tests/validate-frontmatter.py" $MODULE_FILES
     FAIL=1
 fi
 

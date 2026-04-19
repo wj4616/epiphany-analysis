@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Verify epiphany-analysis is discoverable by Claude Code.
+# v2.0: Updated for inline pipeline (module sections in SKILL.md, not separate files)
 set -u
 SKILL_DIR="$HOME/.claude/skills/epiphany-analysis"
 FAIL=0
@@ -22,11 +23,20 @@ for key in "name: epiphany-analysis" "trigger: /epiphany-analysis" "version:" "s
     fi
 done
 
-count=$(find "$SKILL_DIR/modules" -maxdepth 1 -name '*.md' | wc -l)
+# v2.0: Check for 6 inline module sections in SKILL.md instead of separate module files
+count=$(grep -c '^### M-' "$SKILL_DIR/SKILL.md")
 if (( count == 6 )); then
-    echo "OK: 6 module files present"
+    echo "OK: 6 inline module sections in SKILL.md"
 else
-    echo "FAIL: expected 6 modules, found $count"; FAIL=1
+    echo "FAIL: expected 6 inline module sections, found $count"; FAIL=1
+fi
+
+# Reference module files still exist (archive)
+count=$(find "$SKILL_DIR/modules" -maxdepth 1 -name '*.md' ! -name 'README.md' | wc -l)
+if (( count == 6 )); then
+    echo "OK: 6 reference module files in archive"
+else
+    echo "FAIL: expected 6 reference modules, found $count"; FAIL=1
 fi
 
 exit $FAIL
