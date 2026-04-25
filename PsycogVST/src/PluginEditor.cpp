@@ -187,6 +187,7 @@ void PsycogAudioProcessorEditor::timerCallback()
     updateValueLabels();
     updateFreezeModeButtons();
     updateLfoWaveformButtons();
+
 }
 
 void PsycogAudioProcessorEditor::updateFreezeModeButtons()
@@ -270,11 +271,11 @@ void PsycogAudioProcessorEditor::paint(juce::Graphics& g)
     g.setFont(juce::Font(20.0f, juce::Font::bold));
     g.drawText("PSYCOG", 12, 8, 200, 28, juce::Justification::centredLeft);
 
-    // Version tag
+    // Version tag + build timestamp (verify REAPER loads the latest binary)
     g.setFont(juce::Font(9.0f));
     g.setColour(CustomLookAndFeel::gold().withAlpha(0.5f));
-    g.drawText(juce::String("v") + PsycogVersion::current,
-               getWidth() - 40, 8, 32, 14, juce::Justification::centredRight);
+    g.drawText(juce::String("v") + PsycogVersion::current + " | " + PSYCOG_BUILD_STAMP,
+               getWidth() - 220, 8, 212, 14, juce::Justification::centredRight);
 
     // Signal flow strip
     const int sfY = 82;
@@ -339,6 +340,7 @@ void PsycogAudioProcessorEditor::paint(juce::Graphics& g)
                    (int)targetPanel.getWidth() - 4, 10,
                    juce::Justification::centredLeft);
     }
+
 }
 
 //==============================================================================
@@ -388,8 +390,8 @@ void PsycogAudioProcessorEditor::resized()
         const int posKs = 50;  // slightly smaller
         position.place(c.getX() + c.getWidth() / 2 - posKs / 2, fmY + 32, posKs);
 
-        // Hint label below position knob
-        positionHintLabel.setBounds(c.getX() + 4, fmY + 32 + posKs + 14,
+        // Hint label below position value label (label=13 + knob=posKs + value=12 + gap=2)
+        positionHintLabel.setBounds(c.getX() + 4, fmY + 32 + 13 + posKs + 14,
                                     c.getWidth() - 8, 10);
     }
 

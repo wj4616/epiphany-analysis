@@ -116,18 +116,20 @@ description: "Transforms any input (single-sentence idea → full specification)
              ┌────────┴─────────┐
              ▼                  ▼
          S1 ──▶ S2 ──▶ S3 ──▶ S4 ──▶ S5    (lens sequence, scale-gated)
-             │                  │
+             │                  │          │
+             │                  │          └── DEEP only
+             │                  └────────────── STANDARD/DEEP only
              └────────┬─────────┘
                       │
            ┌──────────▼────────┐
            │ Mid-pipeline gate │  ← Gate 2 (STANDARD/DEEP only)
-           └──────────┬────────┘
+           └──────────┬────────┘   Position: after last applicable lens per scale
                       ▼
            ┌──────────────────┐
            │ Synthesis ckpt   │
            └──────────┬───────┘
                       ▼
-                    S6 (Decision — Pugh Matrix)
+                    S6 (Decision — Pugh Matrix)  ← STANDARD/DEEP only
                       │
                       ▼
            ┌──────────────────┐
@@ -136,6 +138,8 @@ description: "Transforms any input (single-sentence idea → full specification)
                       ▼
              XML output + save offer
 ```
+
+**Note:** The diagram shows the maximum (DEEP) lens sequence. At STANDARD, S5 is skipped and the mid-pipeline gate fires after S4. At MINIMAL, only S1 and S3-reduced run; the mid-pipeline gate is skipped entirely.
 
 ## 6. Scale Router
 
@@ -547,7 +551,7 @@ Under no circumstance does this skill at runtime: read `~/.claude/skills/six-thi
 | Input references external files or skills the agent cannot access | Preserve reference verbatim. Record in `<gaps><unresolved_reference>`. Note that resolution is the downstream consumer's responsibility. |
 | A validation gate fails twice on the same check | Annotate `[REVIEW NEEDED — gate X check Y could not be fully resolved]` in `<process_notes>` and proceed. No infinite loops. |
 | A firewall is violated twice on the same lens | Annotate `[REVIEW NEEDED — firewall N on lens X could not be fully resolved]` in `<process_notes>` and proceed. |
-| Methodology budget would be exceeded (defense-in-depth — the fixed pipeline never exceeds its cap, so this triggers only if a future revision adds stages) | Drop stages in this order: **S5 Reverse Brainstorming first, then S2 Morphological, then S4 TRIZ**. The minimum viable pipeline is scale-dependent: MINIMAL = S1 + S3-reduced; STANDARD/DEEP = S1 + S3 + S6. Never drop the scale's minimum. Log the drop in `<process_notes><budget_drop>`. |
+| Methodology budget would be exceeded (defense-in-depth — the fixed pipeline never exceeds its cap, so this triggers only if a future revision adds stages) | Drop stages in this order: **S5 Reverse Brainstorming first, then S2 Morphological, then S4 TRIZ**. Rationale: S5 is DEEP-only and least broadly applicable; S2 adds systematic completeness but less value when input is already sparse; S4 provides contradiction resolution but the minimum viable pipeline can function without it. The minimum viable pipeline is scale-dependent: MINIMAL = S1 + S3-reduced; STANDARD/DEEP = S1 + S3 + S6. Never drop the scale's minimum. Log the drop in `<process_notes><budget_drop>`. |
 | Two or more mode flags present (e.g., `--minimal` and `--deep`) | Block and ask user to pick one before proceeding. |
 | Flag token inside prompt body (not first/last) | Treated as content, not mode selector. Not stripped. Preserved in `<input_inventory>`. |
 | User asks to show internal analysis | Return the lens outputs and the synthesis. Do not expose raw firewall self-verification checks — those are internal working state. |

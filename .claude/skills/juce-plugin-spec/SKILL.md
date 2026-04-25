@@ -78,6 +78,24 @@ After defining sound identity, use the juce-sound-design-bridge to:
 **Map sonic descriptors to capabilities:**
 - User's character words (warm, bright, punchy) map to parameter ranges
 - Check capability_requirements for needed DSP modules
+
+**KB-Route Integration (NEW):**
+First query the Bridge KB via kb-route for authoritative translations:
+```
+Read ~/.claude/skills/kb-route/SKILL.md Resolution Procedure
+Parameters: bridge_descriptor="<character_word>", kb="vst-product-lifecycle"
+```
+
+If kb-route returns results with confidence >= 0.60:
+- Use bridge entry parameter ranges
+- Note the 'why' explanation for each parameter
+- Check anti_patterns for what NOT to do
+
+If confidence 0.40–0.59:
+- Use bridge entry but warn: "Medium confidence (X.XX) — verify before applying"
+
+If no results or confidence < 0.40:
+- Fall back to juce-sound-design-bridge built-in translations
 - Verify plugin design includes required modules
 
 **Populate capability schema:**

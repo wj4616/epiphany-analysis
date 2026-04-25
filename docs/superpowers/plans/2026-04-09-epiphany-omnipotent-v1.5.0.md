@@ -145,8 +145,10 @@ Expected: one match around line 355.
 
 **NEW:**
 ```
-│  OUTPUT: Saved to ~/epiphany/omnipotent/<filename>.xml                 │
+│  OUTPUT: Saved to ~/epiphany/omnipotent/<filename>.xml                     │
 ```
+
+> **Note:** The original line 355 is 78 chars (2 chars short of the 80-char box). The new line above is 78 chars to match. Verify alignment visually after editing — if nearby box lines are 80 chars, add 2 more spaces before the closing `│`.
 
 - [ ] **Step 3: Verify**
 
@@ -238,16 +240,16 @@ The `<recommended_next_skill>` value MUST be `epiphany-analysis` or `none` (clos
 - [ ] **Step 4: Verify**
 
 ```bash
-grep -n "writing-plans\|prompt-epiphany" ~/.claude/skills/epiphany-omnipotent/SKILL.md | grep -v "##\|With\|Input\|input_pre\|epiphany-context\|input can"
+grep -n "writing-plans\|prompt-epiphany" ~/.claude/skills/epiphany-omnipotent/SKILL.md | grep -v "##\|With\|Input\|input_pre\|input_format\|epiphany-context\|input can"
 ```
 
-Expected: no matches in the handoff logic area. (Matches in Integration Notes and input processing sections are expected and correct.)
+Expected: no matches. (The `-v` filter excludes: Integration Notes headers, `With \`...\`` entries, input processing lines including `<input_format>prompt-epiphany</input_format>` on ~line 165, and trigger condition lines.)
 
 ```bash
 grep -n "epiphany_analysis_ready\|degraded_shallow_or_escape" ~/.claude/skills/epiphany-omnipotent/SKILL.md
 ```
 
-Expected: two matches (one in the table, one implied by the closed set note).
+Expected: two matches (both in the logic table, one per row — the closed-set prose note does not contain these rule name strings).
 
 - [ ] **Step 5: Commit**
 
@@ -272,6 +274,8 @@ grep -n "^## Integration Notes" ~/.claude/skills/epiphany-omnipotent/SKILL.md
 Expected: one match. The new section goes immediately before Integration Notes (after the `---` separator that precedes it).
 
 - [ ] **Step 2: Insert the Post-Save Interaction section**
+
+> **Formatting note:** The OLD and NEW blocks below use 4-space indentation to avoid nested backtick rendering issues in this plan document. When you perform the actual file edit, the content you insert into SKILL.md is the indented text **without** the 4-space leading indent — it should be normal top-level markdown prose.
 
 Find this exact text:
 
@@ -396,8 +400,10 @@ Find this exact text:
 ```
 ## Document Status
 
-Version 1.4.3 (2026-04-08):
+Version 1.4.3 (2026-04-08): Second project-audit pass
 ```
+
+> **Why this anchor:** The full line is `Version 1.4.3 (2026-04-08): Second project-audit pass — 24 findings...` (text continues after the colon). The old_string must include enough of that line to match uniquely. Do NOT use `Version 1.4.3 (2026-04-08):\n` — it won't match.
 
 **NEW:**
 ```
@@ -412,7 +418,7 @@ Version 1.5.0 (2026-04-09): Output persistence and handoff redesign — XML-only
 - **Integration Notes updated.** `writing-plans` entry removed. `prompt-epiphany` entry scoped to input direction only. `epiphany-analysis` entry added.
 - **epiphany-analysis placeholder created** at `~/.claude/skills/epiphany-analysis/SKILL.md` as a forward dependency with a defined input contract.
 
-Version 1.4.3 (2026-04-08):
+Version 1.4.3 (2026-04-08): Second project-audit pass
 ```
 
 - [ ] **Step 3: Verify**

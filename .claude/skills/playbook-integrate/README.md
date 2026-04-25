@@ -71,6 +71,15 @@ Optional supplementary knowledge:
 - **Minor contradictions** (case variations, wording): Auto-resolved using playbook version
 - **Major contradictions** (gate conflicts, logic mismatches): Blocked for human resolution
 
+## Output Files
+
+| File | Purpose |
+|------|---------|
+| `playbook-v{N+1}.json` | Updated playbook with integrated content |
+| `integration_report.json` | Summary of what was integrated |
+| `.playbook-integrate-cache-<hash>/` | Intermediate files for resume |
+| `audits/` | Full audit trail |
+
 ## Resume Support
 
 If interrupted, resume with:

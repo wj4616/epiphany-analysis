@@ -46,7 +46,7 @@ The orchestrator's Agent prompt lists exactly which files to read. Read those fi
 
 ## Protocol
 
-1. **Place preservation items first.** Start by placing every item in `01-inventory.md` into the appropriate output XML section. No enhancement work happens until every INVENTORY item has a home.
+1. **Place preservation items first.** Read `01-inventory.md` as YAML (see SKILL.md § Schemas → Inventory schema). Iterate each category list (`inventory.urls`, `inventory.file_paths`, `inventory.tech_version`, etc.) and place every item into the appropriate output XML section. An item is "placed" when it appears verbatim in the draft. No enhancement work happens until every INVENTORY item has a home.
 
 2. **Execute contracts in priority order.** Process `02-ideation.md` contracts by `priority: high → medium → low`. Within a priority level, process in listed order.
 
@@ -62,7 +62,7 @@ The orchestrator's Agent prompt lists exactly which files to read. Read those fi
 -->
 ```
 
-6. **Output XML structure.** Root element `<prompt>`. First child `<meta source="epiphany-prompt"/>`. Subsequent children are semantic sections (role, task, context, constraints, output_format, verification, edge_cases) — choose the set and sequence that best fits the enhanced prompt. See SKILL.md `## Output Formats` for the full format spec.
+6. **Output XML structure.** Root element `<prompt>`. First child `<meta source="epiphany-prompt"/>`. Subsequent children are semantic sections — choose the set that applies; prefer canonical order: `<role>` → `<context>` → `<task>` → `<constraints>` → `<output_format>` → `<verification>` → `<edge_cases>`. **Semantic separation rule (load-bearing):** persona/identity content from T4 contracts MUST go in `<role>` ("You are an expert X..."). Background situational facts (platform, domain, consumer context) MUST go in `<context>`. Never merge them — they are different elements serving different purposes. See SKILL.md `## Output Formats` for the full format spec.
 
 7. **DEEP variant — iterative self-critique (after initial draft):**
    a. Draft the full output XML following steps 1–6.
@@ -72,11 +72,21 @@ The orchestrator's Agent prompt lists exactly which files to read. Read those fi
 
 ## Output
 
-Write `03-synthesis.md`:
+**Initial invocation and STANDARD repair:** Write `03-synthesis.md`:
 - First lines: optional `<!-- Skipped contracts: ... -->` comment if any contracts were skipped (step 5).
 - Remainder: the full output XML (the enhanced prompt), ready for M4 verification.
+- Do NOT include a verification section in this file — that is M4/M4M5's job.
 
-Do NOT include a verification section in this file — that is M4/M4M5's job.
+**DEEP repair invocation — Edit-based surgical output:**
+Use the Edit tool to make targeted changes rather than rewriting the whole file. This physically enforces "preserve passing sections verbatim."
+
+1. Read `03-synthesis-failed.md` (the failed draft).
+2. Write `03-synthesis.md` with the exact content of `03-synthesis-failed.md` (character-for-character copy — establish the baseline without changing it).
+3. Read `04-verification.md`. For each check entry where `result: fail`, note the `repair_target` (XML tag name) and `detail` (specific failed item or description).
+4. Re-Read `03-synthesis.md` to get current file content (required before using Edit — `old_string` must match the file exactly).
+5. For each failing check: use Edit on `03-synthesis.md` to replace ONLY the `repair_target` XML element. `old_string` = the full element including its opening and closing tags (e.g., `<constraints>...</constraints>`); `new_string` = the corrected full element with the same tags.
+6. Do NOT modify any XML element not listed as a failing `repair_target` in `04-verification.md`.
+7. If a `repair_target` element cannot be uniquely identified for Edit (ambiguous match): log this in the Edit return message and include a note in the return message: `<!-- Edit ambiguous: {check_id} {repair_target} — manual review needed -->`. Leave that element unchanged rather than guessing.
 
 ## Return message
 

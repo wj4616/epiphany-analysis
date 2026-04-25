@@ -37,16 +37,17 @@ Read from `{session_dir}`:
 
 Follow **Step S5** from SKILL.md `## Specification Mode Pipeline` verbatim. Produce a `<specification>` XML document containing:
 
-1. `<meta source="epiphany-prompt"/>` as first child
-2. `<domain>` — from spec-01
-3. `<scope>` — what is in scope
-4. `<out_of_scope>` — what is explicitly NOT in scope (from S5 rules)
-5. `<concept_decomposition>` — structural parts with relationships
-6. `<requirements>` — every R1, R2, ... from spec-02, classified MUST/SHOULD/MAY, with rationale
-7. `<interfaces>` — boundary-facing parts
-8. `<success_criteria>` — measurable outcomes
-9. `<assumptions>` and `<constraints>` — explicit
-10. `<open_questions>` — anything the input doesn't resolve
+1. `<domain>` — from spec-01
+2. `<scope>` — what is in scope
+3. `<out_of_scope>` — what is explicitly NOT in scope (from S5 rules)
+4. `<concept_decomposition>` — structural parts with relationships
+5. `<requirements>` — every R1, R2, ... from spec-02, classified MUST/SHOULD/MAY, with rationale
+6. `<interfaces>` — boundary-facing parts
+7. `<success_criteria>` — measurable outcomes
+8. `<assumptions>` and `<constraints>` — explicit
+9. `<open_questions>` — anything the input doesn't resolve
+
+Do NOT include `<meta source="epiphany-prompt"/>` — MSPEC4M5 adds it (along with `<original_input>`) when assembling the final output.
 
 ## Output
 

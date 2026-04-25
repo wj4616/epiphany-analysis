@@ -54,9 +54,9 @@ Evaluate T1–T13 (see SKILL.md `## Techniques`): already present? needed? impac
 **3e. Weakness Identification → WEAKNESSES block**
 Vagueness? Likely misinterpretations? Contradictions? Flag contradictions — do not silently resolve them.
 
-**3f. Domain/Technical Inventory → INVENTORY checklist**
+**3f. Domain/Technical Inventory → INVENTORY YAML**
 
-Produce the complete INVENTORY across every category listed in SKILL.md `## Preservation Methodology`. Use the format shown there (URLs, File Paths, Technology + Version, Version Specifications, Code Blocks, API References, Named Entities, Numeric Specifications, Embedded Directives, Quoted Strings, Technical Specifications, Phase/Step Structure, Tier/Classification Definitions, Conditional Logic, Iteration/Loop Rules, Verification Criteria, Edge Case Definitions, Defaults/Fallbacks, Other Items to Preserve). Empty categories: list with "(none)".
+Produce the complete INVENTORY using the YAML schema defined in SKILL.md `§ Schemas → Inventory schema`. Categories are defined in SKILL.md `## Preservation Methodology`. Write pure YAML — no prose, no markdown headers. Every category key is required; use `[]` for empty categories (do not omit keys). All values verbatim — do NOT normalize, paraphrase, or summarize any item.
 
 **DEEP variant additional step (Phase 1):** For each entry in the WEAKNESSES block, score impact as `high | medium | low`. Scores drive Phase 2's enhancement budget allocation.
 
@@ -93,6 +93,8 @@ Read Phase 1 outputs from your own context (they were just written). Produce enh
   rationale: "[why this improves the prompt]"
   priority: high | medium | low
 ```
+
+**T4 element binding:** Contracts with `technique: T4` MUST set `target_section: "<role>"`. Never set `target_section: "<context>"` for persona assignment. `<context>` is for background situational facts (platform, domain, consumer skill level). `<role>` is for identity/persona ("You are an expert X with deep knowledge of Y"). Conflating them is a structural error that weakens both elements.
 
 **DEEP variant Phase 2:**
 1. Allocate enhancement budget using weakness impact scores from Phase 1 — high-impact weaknesses get more contracts.

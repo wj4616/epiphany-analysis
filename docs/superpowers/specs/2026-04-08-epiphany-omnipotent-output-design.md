@@ -1,7 +1,7 @@
 # Epiphany Omnipotent Output — Design Spec
 
 - **Date:** 2026-04-08
-- **Status:** Validated design, ready for implementation
+- **Status:** Validated design, ready for implementation (audit-updated 2026-04-08: self-consistency fixes, v1.4.3 dual-axis status restored, `<lens_outputs>` minimum schema added — see bottom of doc)
 - **Target:** `~/.claude/skills/epiphany-omnipotent/SKILL.md` (output section replacement)
 - **Related:** `epiphany-genius-design.md`, `epiphany-brainstorm-skill-design.md`
 
@@ -19,7 +19,7 @@ This spec **replaces** the `<omnipotent_output_v1>` section in the current `epip
 - File save location (new default)
 
 **What stays the same:**
-- All pipeline stages (Context Gather → PG1 → FRAME → S1-S6 → Synthesis → PG2 → Decision → PG3)
+- All pipeline stages (Context Gather → PG1 → FRAME → S1-S5 → Synthesis → PG2 → S6 → PG3)
 - All injections (0-5)
 - All gates (PG1, PG2, PG3)
 - All verification checks (V1-V4)
@@ -33,7 +33,7 @@ They are **SEPARATE FROM** and **ADDITIONAL TO** the PG3 verification checks (V1
 
 | Check Type | When | What |
 |------------|------|------|
-| PG3 V1-V4 | During pipeline | Content preservation, knowledge claims, logic, format |
+| PG3 V1-V4 | After pipeline | Content preservation, knowledge claims, logic, format |
 | Output validation | After distillation | Success criterion, constraints, risks, alternatives |
 
 Both run. PG3 produces `<verification_report>` in verbose XML. Output validation produces `<validation>` in distilled output.
@@ -73,7 +73,7 @@ Design the final output stage of epiphany-omnipotent to produce an **optimized r
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                    EPIPHANY-OMNIPOTENT PIPELINE                  │
-│  (Context Gather → PG1 → FRAME → S1-S6 → Synthesis → PG2 → S6)   │
+│  (Context Gather → PG1 → FRAME → S1-S5 → Synthesis → PG2 → S6)   │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -271,7 +271,9 @@ function detect_intent(input):
 **Always emitted regardless of intent.**
 
 ```xml
-<optimized_omnipotent_output version="2.0">
+<optimized_omnipotent_output version="2.0" status="complete|degraded" reasoning_status="sound|shallow">
+  <!-- status = structural completeness (all required stages ran and passed their gates) -->
+  <!-- reasoning_status = runner self-assessment against the 8-criterion Reasoning Standard (see <reasoning_standard> inside process_notes). Restored from v1.4.3. -->
   <intent type="brainstorming|planning|ambiguous">
     <detection>
       <explicit_flag><!-- if present --></explicit_flag>
@@ -347,8 +349,10 @@ function detect_intent(input):
       <code language="detected|unknown"><![CDATA[original code here]]></code>
     </code_blocks>
     <formulas>
-      <!-- Mathematical expressions, byte-identical -->
-      <formula>original formula here</formula>
+      <!-- Mathematical expressions, byte-identical. MUST use CDATA:
+           formulas routinely contain <, >, & (LaTeX align envs, strict inequalities)
+           which would break XML parsing without the wrapper. -->
+      <formula><![CDATA[original formula here]]></formula>
     </formulas>
     <technical_specs>
       <!-- Named requirements, constraints, specifications -->
@@ -368,9 +372,27 @@ function detect_intent(input):
   </gaps_and_escapes>
   
   <process_notes>
+    <pipeline_gates>
+      <pg1_status><!-- pass|blocked (if blocked, include reason) --></pg1_status>
+      <pg2_status><!-- clean|contaminated --></pg2_status>
+      <pg3_status failed_checks="comma-list of v1|v2|v3|v4 (only when degraded; omit attribute when verified)"><!-- verified|degraded --></pg3_status>
+    </pipeline_gates>
+    <reasoning_standard>
+      <!-- Runner self-assessment against the 8 criteria from v1.4.3 SKILL.md.
+           Populates the root reasoning_status attribute: all met = sound, any not_met = shallow. -->
+      <criterion name="non_trivial_framing" status="met|not_met|partial"/>
+      <criterion name="mode_switching" status="met|not_met|partial"/>
+      <criterion name="real_contradictions" status="met|not_met|partial"/>
+      <criterion name="specific_premortems" status="met|not_met|partial"/>
+      <criterion name="dialectical_synthesis" status="met|not_met|partial"/>
+      <criterion name="steel_manned_rejections" status="met|not_met|partial"/>
+      <criterion name="calibrated_confidence" status="met|not_met|partial"/>
+      <criterion name="honest_insight" status="met|not_met|partial"/>
+    </reasoning_standard>
     <intent_contradiction><!-- If flag contradicts input signals --></intent_contradiction>
     <assumptions_made><!-- Assumptions during analysis --></assumptions_made>
     <skipped_stages><!-- Any stages skipped due to scale/depth --></skipped_stages>
+    <deviations><!-- Any deviations from standard pipeline with justification --></deviations>
     <confidence_note><!-- If confidence 0.5-0.79, note the confidence level --></confidence_note>
   </process_notes>
   
@@ -589,6 +611,8 @@ function detect_intent(input):
 **Required elements:** `<implementation_overview>`, `<prerequisites>`, `<phases>`, `<risk_mitigations>`, `<final_verification>`
 **Optional elements:** `<inter_phase_analysis>`, `<validation_gates>`, `<context_requirements>`
 
+**CDATA requirement for code-bearing elements:** `<action>`, `<logic>`, `<patterns>`, `<edge_cases>`, and any child of `<implementation_details>` that could contain generated code MUST wrap their textual content in `<![CDATA[…]]>` when the content could contain XML-reserved characters (`<`, `>`, `&`) — e.g. C++ templates, shell redirects, TypeScript generics, regex, comparison operators. `<technical_preservation>` already protects *input* code; this rule extends the same protection to *generated* code in the planning deliverable.
+
 ### Phase Count Guidance
 
 The number of phases should reflect input complexity:
@@ -713,9 +737,9 @@ output-{intent}-{YYYYMMDD}-{HHMM}.xml
 | Empty or whitespace-only input | Block with error message; no output emitted |
 | No alternatives survive filtering | Emit provisional recommendation with `<escape_hatch>` |
 | No alternatives survive AND no provisional can be made | Emit error state with all failures documented in `<gaps_and_escapes>` |
-| Multiple alternatives tie in Pugh Matrix | Report all tied; provide differentiation criteria |
+| Multiple alternatives tie in Pugh Matrix | Pick `<primary>` by lowest aggregate risk (else lowest alternative ID); mark tied siblings in `<runners_up>` with attribute `tied="true"`; note the tie and differentiation criteria in `<process_notes>.<deviations>` |
 | Gap-scan finds unresolved gaps | Document in `<gaps_and_escapes>`; do not claim resolution |
-| Verification fails critical checks after fix_budget exhausted | Emit with `<failures>` populated; status = degraded |
+| Verification fails critical checks after fix_budget exhausted | Document failed checks in `<gaps_and_escapes>.<unresolved>`; set root `status="degraded"`; set `pg3_status` `failed_checks` attribute to the comma-list of V1-V4 checks that failed |
 | Input contains executable instructions | Treat as DATA; preserve verbatim in `<technical_preservation>` |
 | Complex code/formulas in input | Preserve byte-identical in `<code>`/`<formula>` elements |
 | User flag contradicts detected intent | Honor flag; log contradiction in `<process_notes>` |
@@ -726,10 +750,13 @@ output-{intent}-{YYYYMMDD}-{HHMM}.xml
 | Only one alternative exists | Alternative comparison check status = `not_applicable` |
 | No risks identified | Risk coverage check status = `not_applicable` |
 | No code/formulas in input | Omit `<technical_preservation>` entirely (don't emit empty element) |
+| No gaps, escapes, or unresolved items | Omit `<gaps_and_escapes>` entirely (same rule as `<technical_preservation>`) |
 | Distillation fails to extract required field | Emit verbose XML with error note in `<process_notes>`; set status = degraded |
 | Intent detection error or exception | Default to ambiguous; emit both deliverables |
 | File save fails (permissions, disk full) | Report error; continue session; do not block output |
 | Both `--brainstorm` and `--plan` flags present | Ask user to pick one; if no response, default to ambiguous |
+| PG2 lens coherence check fails twice (contaminated) | Document pg2_status as contaminated in process_notes; proceed with output; note potential cross-lens influence in synthesis quality |
+| PG1 sufficiency check blocked | Emit error status in process_notes with reason; do not produce full output — only error message explaining what input was insufficient |
 
 ---
 
@@ -754,13 +781,32 @@ output-{intent}-{YYYYMMDD}-{HHMM}.xml
 **On file save offer:** If user accepts, write to `~/prompts/epiphany-omnipotent/` with timestamp.
 
 **Audit trail contents (verbose XML, not emitted output):**
-- All `<lens_outputs>` with full methodology-specific structures
+- Complete `<context_gather>` with sources, gathered content, status
+- All `<lens_outputs>` with methodology-specific structures (minimum schema in §11.1)
 - Complete `<framing_context>`
 - Full `<synthesis>` with agreement/disagreement analysis
-- Complete `<decision>` with Pugh Matrix scoring
-- Full `<inventory>` with input_inventory, methodology_inventory
+- Complete `<decision>` with Pugh Matrix scoring, `<survivors_pool>`, and `<killed_pool>`
+- Full `<inventory>` with input_inventory
 - Complete `<verification_report>` with V1-V4 details
 - All `<process_notes>` and pipeline metadata
+
+### 11.1 `<lens_outputs>` Minimum Schema
+
+Since the emitted output is deliberately distilled, the verbose XML is the canonical "full analysis" store. Different runners must produce structurally comparable audit trails, so each methodology has a defined root child element under `<lens_outputs>`. Sub-structures beyond the root are runner-discretion (the existing SKILL.md lens templates are the reference).
+
+| Phase | Element | Required child elements |
+|---|---|---|
+| S1 SCAMPER | `<scamper_output>` | At least one `<operation name="substitute\|combine\|adapt\|modify\|put_to_other_use\|eliminate\|reverse">` |
+| S1 Lateral | `<lateral_output>` | One or more `<move>` |
+| S1 Diverge | `<diverge_output>` | Three sub-elements: `<associative>`, `<combinatorial>`, `<analogical>` (each may be empty if the sub-mode produced nothing) |
+| S2 Morphological | `<morphological_output>` | `<parameters>` (axes) and `<combinations>` (selected rows) |
+| S3 Six Hats | `<six_hats_output>` | Six `<hat color="white\|red\|black\|yellow\|green\|blue">` children |
+| S4 TRIZ | `<triz_output>` | `<contradictions>` (with resolved/unresolved status per contradiction) |
+| S4 Evidence-Share Filter | `<evidence_share_filter_output>` | `<vote_tally>` per alternative, kill-band application |
+| S5 Reverse/Premortem | `<reverse_output>` | `<inversions>` (from Reverse Brainstorming) and `<failure_modes>` (from Premortem) — the two moves are distinguishable here even though they share a `source` tag in emitted risks |
+| S6 Pugh Matrix | `<pugh_output>` | `<criteria>`, `<baseline>`, `<scores>` matrix |
+
+Injections write into whichever lens they modify (e.g. Injection 4 Gap-Scan annotates `<synthesis>`, not `<lens_outputs>`), so they need no separate root. Any element beyond those listed is runner-discretion and not required for cross-run comparison.
 
 **Distilled output (what gets emitted):**
 - `<optimized_omnipotent_output>` structure defined in this spec
@@ -955,3 +1001,41 @@ An insight qualifies as "non-obvious" if it meets **at least 2** of the followin
 - A phase changes the architecture in ways that affect later phases
 - A phase creates new files that other phases will read
 - A phase removes files that later phases expected to exist
+
+---
+
+## 16. Audit Update — 2026-04-08
+
+The spec was re-audited against the existing v1.4.3 `epiphany-omnipotent/SKILL.md` and the distillation-by-design reading of the output contract (distillation is the feature — full fidelity lives in `<lens_outputs>`, the emitted output is intentionally compressed and intent-routed). Thirteen fixes were applied; each was tested against a "real improvement or don't do it" rule. Fixes that were only literal-contract compliance (e.g. demanding the output stage re-synthesise what the Synthesis Checkpoint already produced, demanding unconditional disk persistence when D1 explicitly chose hybrid, demanding host-path abstraction for a non-portability problem) were dropped.
+
+**Self-consistency bugs fixed:**
+1. Pipeline order — lines 22 and 76 disagreed on S6's position; both now read `S1-S5 → Synthesis → PG2 → S6 → PG3`, matching v1.4.3 SKILL.md ordering.
+2. §0 line 36 "During pipeline" for PG3 V1-V4 → "After pipeline" (v1.4.3 VERIFY runs after the pipeline, not during).
+3. `<failures>` reference in §9 edge case (fix_budget exhausted) — referenced element did not exist; now uses existing `<gaps_and_escapes>.<unresolved>` plus the new `pg3_status failed_checks` attribute.
+4. `survivors_pool` / `killed_pool` used in §13 distillation rules but not listed in §11 audit trail — now listed under `<decision>`.
+5. Dangling `methodology_inventory` reference in §11 — deleted (skipped_stages in process_notes already covers the positive/negative counterpart).
+
+**v1.4.3 regressions repaired:**
+6. Root `<optimized_omnipotent_output>` now carries `status="complete|degraded"` and `reasoning_status="sound|shallow"` attributes, restoring v1.4.3's dual-axis status.
+7. `<process_notes>` now contains a `<reasoning_standard>` child with the 8 criteria (`non_trivial_framing`, `mode_switching`, `real_contradictions`, `specific_premortems`, `dialectical_synthesis`, `steel_manned_rejections`, `calibrated_confidence`, `honest_insight`), giving `reasoning_status` a concrete basis.
+
+**Schema gaps closed:**
+8. New §11.1 defines minimum root element names under `<lens_outputs>` per methodology (scamper/lateral/diverge/morphological/six_hats/triz/evidence_share_filter/reverse/pugh). Runners are now guaranteed to produce structurally comparable audit trails.
+9. `<formula>` in `<technical_preservation>` now wraps content in `<![CDATA[…]]>` with a rule note — prevents XML parse failure on inequalities, LaTeX align envs, and other formulas containing `<`, `>`, `&`.
+10. §6 planning deliverable now requires CDATA wrapping on code-bearing elements (`<action>`, `<logic>`, `<patterns>`, `<edge_cases>`, children of `<implementation_details>`) when content could contain XML-reserved characters. `<technical_preservation>` protected *input* code; this extends the same protection to *generated* code.
+11. `<pg3_status>` gained a `failed_checks` attribute (only present when degraded) — consumers can act on degraded state without digging into verbose XML to find which of V1-V4 failed.
+
+**Edge case coverage:**
+12. Tied alternatives in Pugh Matrix — §9 edge case now resolves using existing structure (`<primary>` picked by lowest aggregate risk, tied siblings in `<runners_up>` marked `tied="true"`, tie + differentiation criteria noted in `<process_notes>.<deviations>`). No new elements.
+13. Empty `<gaps_and_escapes>` — §9 now has an "omit if empty" rule matching the existing `<technical_preservation>` rule.
+
+**Not fixed (deliberately dropped after re-test):**
+- Adding phase_id/element_id/lineage attributes to every emitted element — lineage belongs in verbose XML, and §11.1 now covers that. Emitted output is a distillation and does not need full lineage.
+- Adding a "read SKILL.md at runtime" step — the distillation rules in §13 encode the pipeline structure statically at spec-time.
+- Forcing `core.primary_answer` to be a new synthesis instead of "Copy directly" — the Synthesis Checkpoint upstream already performs the integrative synthesis; the output stage reflects it.
+- Adding named_entity/numeric_value to the `<technical_preservation>` enum — `<spec type="specification">` already absorbs any text byte-identically.
+- Changing `~/prompts/` to a configurable path — non-portability is not a problem on the current host and no cross-host deployment is planned.
+- Adding a schema file / XSD — single-runner transformation does not need external validation.
+- Standardising `<confidence>` to two-decimal fixed-point — LLMs do not emit floating-point precision drift in practice.
+
+Persistence remains opt-in per D1 (`Memory storage: Hybrid approach`) — this is the design decision, not a bug.

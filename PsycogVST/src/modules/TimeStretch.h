@@ -53,7 +53,7 @@ private:
 
     static constexpr int numGrains = 4;
     static constexpr int grainSize = PsycogConstants::grainSize;  // 2048
-    static constexpr int inputBufferSize = grainSize * 8;          // 16384 samples headroom
+    static constexpr int inputBufferSize = grainSize * 32;         // 65536 samples (~1.4s at 48kHz)
     static constexpr int jitterRange = 64;                         // ±64 samples
 
     double sampleRate = 48000.0;
@@ -94,4 +94,5 @@ private:
     void launchGrain(float stretch, float position, PsycogConstants::FreezeMode mode);
     void processGrainSample(Grain& grain, float& outL, float& outR,
                             PsycogConstants::FreezeMode mode, float stretchRate);
+
 };

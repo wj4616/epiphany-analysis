@@ -82,7 +82,12 @@ void TimeStretch::launchGrain(float stretch, float position, PsycogConstants::Fr
             g.playbackPosition = 0;
             g.active = true;
 
-            int jitter = nextJitter();
+            // Scale jitter with distance from unity stretch.
+            // At stretch=1.0x, jitter=0 (perfect reconstruction).
+            // At stretch>=2.0x, full ±64 sample jitter (breaks periodicity).
+            float jitterScale = juce::jlimit(0.0f, 1.0f, std::abs(stretch - 1.0f));
+            int rawJitter = nextJitter();
+            int jitter = static_cast<int>(rawJitter * jitterScale);
 
             if (mode == PsycogConstants::FreezeMode::Off)
             {
@@ -163,21 +168,25 @@ void TimeStretch::processSample(float& outL, float& outR,
         lastFreezeMode = freezeMode;
     }
 
-    // Compute hop size
+    // Grain launch interval: constant for smooth OLA output.
+    // grainSize / 2 = 1024 samples between launches → 50% Hann overlap = unity sum.
     float overlapFactor = 2.0f;
-    float hopSize = static_cast<float>(grainSize) / (stretch * overlapFactor);
-    hopSize = std::max(hopSize, 1.0f);
+    float outputHop = static_cast<float>(grainSize) / overlapFactor;
 
     // Check if time to launch a new grain
     samplesSinceLastGrain++;
-    if (samplesSinceLastGrain >= static_cast<int>(hopSize))
+    if (samplesSinceLastGrain >= static_cast<int>(outputHop))
     {
         launchGrain(stretch, smoothedPosition, freezeMode);
         samplesSinceLastGrain = 0;
 
         if (freezeMode == PsycogConstants::FreezeMode::Off)
         {
-            inputReadHead += hopSize;
+            // Input advance is separate from grain launch interval.
+            // Divide by stretch so the read head moves slower than real-time
+            // (stretch>1 = expansion) or faster (stretch<1 = compression).
+            float inputAdvance = outputHop / stretch;
+            inputReadHead += inputAdvance;
             while (inputReadHead >= static_cast<float>(inputBufferSize))
                 inputReadHead -= static_cast<float>(inputBufferSize);
         }

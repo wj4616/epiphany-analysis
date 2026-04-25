@@ -7,7 +7,7 @@ description: Use for Phase 9 - human-only DAW testing. The human loads the plugi
 
 **human_only** — The human loads the plugin in Reaper and LISTENS. This is where real bugs surface and YOU approve the sound.
 
-**Playbook Reference:** `~/.agents/juce-agent/playbooks/vst-plugin-playbook-v6-unified.json` Phase 9
+**Playbook Reference:** `~/.agents/juce-agent/playbooks/vst-plugin-playbook-v7-unified.json` Phase 9
 
 ## Critical Insight
 
@@ -68,6 +68,14 @@ digraph daw_testing {
   - Is there obvious distortion or noise?
   - Does the effect sound like what you expected?
   - Are there any clicks, pops, or dropouts?
+
+**KB Quality Reference (NEW):**
+When evaluating sound quality, query the Bridge KB for expected sonic characteristics:
+```
+Read ~/.claude/skills/kb-route/SKILL.md Resolution Procedure
+Parameters: bridge_descriptor="<sound_quality>", kb="vst-product-lifecycle"
+```
+If results found, compare heard sound against expected parameter ranges.
 
 ### 2. Control Responsiveness Check (human_only)
 
@@ -360,7 +368,8 @@ The feedback translation tables in this skill are built-in references. When a re
 
 When using KB entries for feedback translation:
 - If `harvest_metadata.overall_confidence >= 0.60`: use KB translation
-- If confidence < 0.60: use built-in table instead, note: "KB translation has low confidence — using built-in defaults"
+- If confidence 0.40–0.59: use KB translation but warn: "Medium confidence DAW reference (confidence: X.XX) — verify against your own listening."
+- If confidence < 0.40: use built-in table instead, note: "KB translation has low confidence — using built-in defaults"
 
 ## Validation Logging (CRITICAL)
 

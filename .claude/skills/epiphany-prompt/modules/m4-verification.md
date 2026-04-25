@@ -38,6 +38,8 @@ Read from `{session_dir}`:
 
 ## Protocol
 
+Read `01-inventory.md` as YAML (see SKILL.md `§ Schemas → Inventory schema`). Each category is a list; iterate each list for per-item preservation checks (6a–6e) and use list lengths for preservation summary counts.
+
 Run all 12 checks (6a–6l) against `03-synthesis.md`. Check definitions are in SKILL.md `## Verification Checks` → Normal mode — 12 checks (6a–6l). Use those definitions verbatim.
 
 For each check, produce a report entry:

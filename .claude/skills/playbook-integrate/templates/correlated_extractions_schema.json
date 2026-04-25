@@ -4,24 +4,35 @@
   "title": "Correlated Extractions Output",
   "description": "Schema for Pass 2 Phase Correlation output",
   "type": "object",
-  "required": ["source", "playbook_version", "correlation_timestamp"],
+  "required": ["source", "playbook_version", "correlation_timestamp", "session_lineage"],
   "properties": {
     "source": { "type": "string", "const": "raw_extractions.json" },
     "playbook_version": { "type": "integer", "minimum": 1 },
     "correlation_timestamp": { "type": "string", "format": "date-time" },
+    "session_lineage": {
+      "type": "object",
+      "description": "Preserves session_index mapping from Pass 1 for traceability",
+      "required": ["by_message_id", "by_timestamp", "by_file"],
+      "properties": {
+        "by_message_id": { "type": "object", "additionalProperties": { "type": "object" } },
+        "by_timestamp": { "type": "object", "additionalProperties": { "type": "string" } },
+        "by_file": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "integer" } } }
+      }
+    },
     "failures_correlated": {
       "type": "array",
       "items": {
         "type": "object",
         "required": ["extraction_id", "phase", "phase_match_confidence", "phase_match_method"],
         "properties": {
-          "extraction_id": { "type": "string", "pattern": "^F[0-9]{3,}$" },
+          "extraction_id": { "type": "string", "pattern": "^FM-[0-9]{3,}$" },
           "phase": { "type": "string", "pattern": "^Phase [0-9]+$" },
           "phase_match_confidence": { "type": "number", "minimum": 0, "maximum": 1 },
           "phase_match_method": { "type": "string", "enum": ["task_context", "file_context", "timestamp", "explicit"] },
           "match_evidence": { "type": "string" },
           "checklist_items_matched": { "type": "array", "items": { "type": "string" } },
-          "gate_conditions_matched": { "type": "array", "items": { "type": "string" } }
+          "gate_conditions_matched": { "type": "array", "items": { "type": "string" } },
+          "source_message_index": { "type": "integer", "minimum": 0 }
         }
       }
     },
@@ -31,12 +42,13 @@
         "type": "object",
         "required": ["extraction_id", "phase", "match_type"],
         "properties": {
-          "extraction_id": { "type": "string", "pattern": "^D[0-9]{3,}$" },
+          "extraction_id": { "type": "string", "pattern": "^CD-[0-9]{3,}$" },
           "phase": { "type": "string", "pattern": "^Phase [0-9]+$" },
           "task_matched": { "type": "string" },
           "match_type": { "type": "string", "enum": ["approval", "rejection", "clarification", "creative_choice"] },
           "gate_condition_matched": { "type": "string" },
-          "human_only": { "type": "boolean" }
+          "human_only": { "type": "boolean" },
+          "source_message_index": { "type": "integer", "minimum": 0 }
         }
       }
     },
@@ -46,7 +58,7 @@
         "type": "object",
         "required": ["extraction_id", "phase_sequence", "occurrences"],
         "properties": {
-          "extraction_id": { "type": "string", "pattern": "^W[0-9]{3,}$" },
+          "extraction_id": { "type": "string", "pattern": "^WP-[0-9]{3,}$" },
           "phase_sequence": { "type": "array", "items": { "type": "string", "pattern": "^Phase [0-9]+$" } },
           "occurrences": { "type": "integer", "minimum": 1 }
         }
@@ -58,7 +70,7 @@
         "type": "object",
         "required": ["extraction_id", "kb_layer"],
         "properties": {
-          "extraction_id": { "type": "string", "pattern": "^K[0-9]{3,}$" },
+          "extraction_id": { "type": "string", "pattern": "^KB-[0-9]{3,}$" },
           "kb_layer": { "type": "string" },
           "topic": { "type": "string" },
           "entry_matched": { "type": "string" }
@@ -71,7 +83,7 @@
         "type": "object",
         "required": ["extraction_id", "from_phase", "to_phase", "message_index"],
         "properties": {
-          "extraction_id": { "type": "string", "pattern": "^B[0-9]{3,}$" },
+          "extraction_id": { "type": "string", "pattern": "^B-[0-9]{3,}$" },
           "from_phase": { "type": "string", "pattern": "^Phase [0-9]+$" },
           "to_phase": { "type": "string", "pattern": "^Phase [0-9]+$" },
           "message_index": { "type": "integer", "minimum": 0 },
@@ -90,7 +102,8 @@
           "content": { "type": "string" },
           "reason": { "type": "string", "enum": ["no_phase_match", "ambiguous", "novel"] },
           "suggested_phases": { "type": "array", "items": { "type": "string" } },
-          "detail": { "type": "string" }
+          "detail": { "type": "string" },
+          "source_message_index": { "type": "integer", "minimum": 0 }
         }
       }
     }

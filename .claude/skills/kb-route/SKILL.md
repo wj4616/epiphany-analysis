@@ -34,7 +34,7 @@ If both `concept` and `bridge_descriptor` are provided, Steps 2 and 4 both run. 
 2. Narrow to relevant KB(s):
    - If consumption skill specifies `kb=<name>` → use that KB only
    - Otherwise → use all registered KBs
-3. For each relevant KB, read its master-index at `<kb.path>/master-index.json`.
+3. For each relevant KB, read its master-index at `<kb.path>/master-index.json`. If you already read this master-index earlier in the same session, use the cached content — do not re-read the file.
    - **New format** (PBCPB-generated): look for `kb_layers[]` array, each with `name`, `topics[]`, `authority_score`
    - **Prototype format**: look for `knowledge_bases{}` object, each key being a layer name with `topics[]`
    - Extract: layer names, topic lists, `cross_layer_mappings[]` if present
@@ -66,7 +66,7 @@ If both `concept` and `bridge_descriptor` are provided, Steps 2 and 4 both run. 
      ```
      kb-harvest --kb <kb_name> --auto --entry <entry_id> --batch 1
      ```
-     Wait for completion. Re-read entry. If harvest fails or takes too long, note failure and continue with other results.
+     Wait up to 30 seconds for completion. Re-read entry. If harvest fails or exceeds 30 seconds, note failure and continue with other results.
 
 **Failures:**
 - Grep returns no matches across all layers → fall through to Step 6 (gap detection)
@@ -87,17 +87,18 @@ If both `concept` and `bridge_descriptor` are provided, Steps 2 and 4 both run. 
 - Manifest missing → report, fall back to Glob listing
 - Manifest exists but entries arrays empty → fall back to Glob, note: "Manifest out of date — run `kb-sync --repair`."
 
-### Step 3: Cross-Reference Follow *(skip if Step 2 was skipped or found no entries with `cross_references[]`)*
+### Step 3: Cross-Reference Follow *(skip if no `concept` parameter was provided or Step 2 found no entries with `cross_references[]`)*
 
-Follows **entry-level** cross-references — links from one entry to a specific entry in another layer.
+Follows **entry-level** cross-references — links from one entry to a specific entry in another layer within the same KB.
 
 1. For each entry found in Step 2, check its `cross_references[]` field:
    ```json
    "cross_references": [
-     { "kb": "technical", "entry_id": "vst_technical_filter-design", "relationship": "implements" }
+     { "layer": "technical", "entry_id": "vst_technical_filter-design", "relationship": "implements" }
    ]
    ```
-2. Read the referenced entries. Locate by: Glob for `<kb.path>/<cross_ref.kb>/**/<entry_id>.json` (entry IDs match filenames). If Glob finds nothing, fall back to Grep for `"id": "<entry_id>"` in that layer directory.
+   Note: the `"layer"` field names a layer within the same KB (not a separate KB). Do not confuse with the top-level `kb` parameter.
+2. Read the referenced entries. Locate by: Glob for `<kb.path>/<cross_ref.layer>/**/<entry_id>.json` (entry IDs match filenames). If Glob finds nothing, fall back to Grep for `"id": "<entry_id>"` in that layer directory.
 3. These are secondary results — include them but mark as cross-referenced.
 4. If entries have `related_topics[]`, note them in results as "Related topics: [list]". Do not auto-follow — the consumption skill decides whether to explore further.
 
@@ -121,7 +122,7 @@ Follows **entry-level** cross-references — links from one entry to a specific 
    - Read each bridge entry separately
    - Check `combinations[]` for `compatible_with` references between them
    - If compatible: merge parameter lists, apply `confidence_modifier`, intersection of `anti_patterns`
-   - If not listed as compatible: compose with lowered confidence (multiply each by 0.8), union of `anti_patterns`
+   - If not listed as compatible: multiply each entry's confidence by 0.8, then take the minimum as the combined confidence. Union of `anti_patterns`. (Example: A=0.85, B=0.70 → combined = min(0.68, 0.56) = 0.56, triggering a medium-confidence warning.)
 
 **Failures:**
 - No bridge layer in KB → skip Step 4 entirely (normal)
@@ -150,7 +151,7 @@ Order results: scored entries sorted by confidence descending, then unscored ent
 **Edge cases:**
 - All results filtered out by confidence → fall to Step 6 with note
 - Mix of scored and unscored → return both, scored first by confidence descending, unscored after
-- `authority_score` present on some layers, absent on others → use where present for ordering, treat absent as equal priority
+- `authority_score` present on some layers, absent on others → use as a tiebreaker only when two entries have identical confidence scores. Higher `authority_score` wins. If `authority_score` is absent on either entry, treat them as equal for tiebreaking.
 
 ### Step 6: Gap Detection *(runs if no usable results from any previous step)*
 
@@ -165,17 +166,32 @@ Differentiated by cause:
 
 **Do not auto-harvest.** The agent decides whether to harvest now or proceed with its own knowledge.
 
+Note: this differs from Step 2's placeholder handling. Step 2 found a matching entry that exists but has no content yet — auto-harvest fills it in. Step 6 means no matching entry exists at all — auto-harvest cannot create new entries from nothing, so it is deferred to the agent.
+
 ### Result Summary
 
-After completing the procedure, summarize collected results for the consumption skill:
+After completing the procedure, summarize collected results for the consumption skill using this structure:
 
-For each **concept result**: entry ID, title, status, confidence (or "unscored"), layer, KB name. If cross-referenced entries were followed, list them as secondary with their relationship type.
+```
+KB-ROUTE RESULTS
+================
+Concept results (for concept="<value>"):
+  [1] <entry_id> — <title> | status: <status> | confidence: <X.XX or "unscored"> | layer: <layer> | KB: <kb_name>
+      [cross-ref] <entry_id> — <title> | relationship: <type>
+  [2] ...
 
-For each **bridge result**: descriptor, parameters with value ranges, confidence, anti-patterns, combination notes (if composed).
+Bridge results (for bridge_descriptor="<value>"):
+  descriptor: <value> | confidence: <X.XX>
+  parameters: <param>=<min>-<max> (default: <default>); ...
+  anti_patterns: <description>
+  combination notes: <if composed>
 
-For **gaps**: the gap report message and suggested kb-harvest command.
+Gaps:
+  <gap report message>
+  Suggested: <kb-harvest command>
+```
 
-The consumption skill uses these results directly — kb-route does not format output into a specific structure. The results are in the agent's working context from having read the entry files during the procedure.
+Omit sections that produced no results. The consumption skill reads from this summary in its working context — kb-route does not write to a file unless the consumption skill requests it.
 
 ## Cross-Cutting Edge Cases
 

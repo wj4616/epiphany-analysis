@@ -53,7 +53,14 @@ Write `plan-04-verify.md` with audit + check results + summary.
 
 ## Phase 3 — Output Formatting
 
-Format `<plan>` XML. On gaps or failed checks, append a `<note>` block as last child.
+Format `<plan>` XML with required structure:
+- Root: `<plan>`
+- First child: `<meta source="epiphany-prompt"/>`
+- Second child: `<original_input>` containing the verbatim contents of `00-input.md` (CDATA-wrap if content contains `<`, `>`, `&`, or embedded XML). For plan mode chained from specification, this is the extracted original input, not the raw `<specification>` markup.
+- Subsequent children: all semantic sections from `plan-03-synthesis.md` per the P6 structure — `<goal>`, numbered `<steps>`, `<dependencies>`, `<safeguards>`, `<execution_order>`, `<success_criteria>`, `<out_of_scope>`, `<assumptions>` (see SKILL.md `## Output Formats → Plan mode`).
+- Last child (only if PASS-WITH-NOTES): `<note>` summarizing gaps
+
+See SKILL.md `## Output Formats` for the full format spec.
 
 ## Return message
 
@@ -64,6 +71,7 @@ VERIFICATION: PASS
 
 <plan>
   <meta source="epiphany-prompt"/>
+  <original_input><![CDATA[...]]></original_input>
   ...
 </plan>
 ```
@@ -75,6 +83,7 @@ VERIFICATION: PASS-WITH-NOTES — [summary]
 
 <plan>
   <meta source="epiphany-prompt"/>
+  <original_input><![CDATA[...]]></original_input>
   ...
   <note>Verification notes: ...</note>
 </plan>

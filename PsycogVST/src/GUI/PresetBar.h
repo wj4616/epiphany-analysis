@@ -18,10 +18,12 @@ public:
 
     void paint(juce::Graphics&) override;
     void resized() override;
+    void mouseDown(const juce::MouseEvent& e) override;
 
 private:
     void buttonClicked(juce::Button*) override;
     void timerCallback() override;
+    void showPresetMenu();
 
     PsycogAudioProcessor& processor;
 

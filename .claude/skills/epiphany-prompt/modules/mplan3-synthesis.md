@@ -40,13 +40,14 @@ Read from `{session_dir}`:
 
 Follow **Step P6** from SKILL.md `## Plan Mode Pipeline`. Produce a `<plan>` XML document:
 
-1. `<meta source="epiphany-prompt"/>` as first child
-2. `<goal>` — from P2
-3. `<steps>` — numbered, each with description, acceptance criterion, preconditions, dependencies
-4. `<dependencies>` — from P4, in graph form
-5. `<safeguards>` — from P5
-6. `<execution_order>` — the topologically-sorted or critical-path-first ordering
-7. `<success_criteria>`, `<out_of_scope>`, `<assumptions>`
+1. `<goal>` — from P2
+2. `<steps>` — numbered, each with description, acceptance criterion, preconditions, dependencies
+3. `<dependencies>` — from P4, in graph form
+4. `<safeguards>` — from P5
+5. `<execution_order>` — the topologically-sorted or critical-path-first ordering
+6. `<success_criteria>`, `<out_of_scope>`, `<assumptions>`
+
+Do NOT include `<meta source="epiphany-prompt"/>` — MPLAN4M5 adds it (along with `<original_input>`) when assembling the final output.
 
 ### Phase 2 — Execution Simulation (P7, internal)
 

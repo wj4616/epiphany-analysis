@@ -21,7 +21,7 @@
         },
         "timestamp": { "type": "string", "format": "date-time" },
         "total_duration_ms": { "type": "integer", "minimum": 0 },
-        "status": { "type": "string", "enum": ["integrated", "partial", "blocked", "audit_complete"] },
+        "status": { "type": "string", "enum": ["integrated", "partial", "blocked", "audit_complete", "no_extractions"] },
         "passes": {
           "type": "object",
           "properties": {
@@ -29,9 +29,10 @@
               "type": "object",
               "required": ["status", "duration_ms"],
               "properties": {
-                "status": { "type": "string", "enum": ["complete", "partial", "failed", "skipped"] },
+                "status": { "type": "string", "enum": ["complete", "partial", "failed", "skipped", "no_extractions"] },
                 "duration_ms": { "type": "integer" },
                 "extractions": { "type": "object" },
+                "deduplication_stats": { "type": "object" },
                 "warnings": { "type": "integer" },
                 "errors": { "type": "integer" }
               }
@@ -99,7 +100,18 @@
             "cross_references_valid": { "type": "boolean" },
             "ids_unique": { "type": "boolean" },
             "phases_valid": { "type": "boolean" },
-            "no_orphan_references": { "type": "boolean" }
+            "no_orphan_references": { "type": "boolean" },
+            "bidirectional_refs_verified": { "type": "boolean" }
+          }
+        },
+        "fingerprint_validation": {
+          "type": "object",
+          "properties": {
+            "playbook_hash": { "type": "string" },
+            "session_hash": { "type": "string" },
+            "knowledge_dir_hash": { "type": "string" },
+            "valid": { "type": "boolean" },
+            "mismatch_details": { "type": "string" }
           }
         }
       }

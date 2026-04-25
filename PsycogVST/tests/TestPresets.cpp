@@ -2,14 +2,13 @@
   PsycogVST - Interdimensional sound transformation plugin
   Phase 5: State Management - Preset tests
 
-  20 presets calibrated for synthesizer pads:
-  - Subtle (1-5): fold 0.0-0.12, mix 0.65-0.80
-  - Moderate (6-12): fold 0.05-0.15, mix 0.60-0.75
-  - Drive (13): fold 0.20, mix 0.65 — the "saturated" preset
-  - Multi-target (14): fold 0.10, all 4 LFO targets
-  - Performance (15, 19): Manual freeze presets
-  - Extreme (16): pure granular, no fold
-  - Ghost (17): low mix parallel effect
+  20 presets for psybient pad processing:
+  - Drones (5, 16): extreme stretch, minimal fold, immersive 95-100% mix
+  - Evolving textures (1, 2, 7, 10): multi-target LFO, deeper modulation
+  - Freeze explorers (3, 6, 12, 17): auto-freeze with position scanning
+  - Harmonic shapers (4, 9, 13): fold 0.25-0.35, stereo offset movement
+  - Glitch/pulse (8, 11, 18, 19): square/S&H LFO, bold state changes
+  - Spatial (14, 15): manual/auto freeze, all-target evolution
 */
 
 #include <catch2/catch_test_macros.hpp>
@@ -73,55 +72,60 @@ TEST_CASE("PresetManager - Create preset state", "[presets]")
                      Catch::Matchers::WithinAbs(0.0, 0.001));
     }
 
-    SECTION("Turning Through Time - gentle granular shimmer")
+    SECTION("Turning Through Time - evolving granular drift")
     {
         auto xml = Presets::createPresetState(1);
         REQUIRE(xml != nullptr);
 
         REQUIRE(xml->getIntAttribute(ParamIDs::freezeMode) == 0); // Off
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::foldAmount),
-                     Catch::Matchers::WithinAbs(0.08, 0.01));
+                     Catch::Matchers::WithinAbs(0.18, 0.01));
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::mix),
-                     Catch::Matchers::WithinAbs(0.7, 0.01));
+                     Catch::Matchers::WithinAbs(0.85, 0.01));
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetPosition) == true);
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldAmount) == true);
     }
 
-    SECTION("Golden Memories - warm stretched")
+    SECTION("Golden Memories - stretched pitch drift")
     {
         auto xml = Presets::createPresetState(2);
         REQUIRE(xml != nullptr);
 
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::foldAmount),
-                     Catch::Matchers::WithinAbs(0.1, 0.01));
+                     Catch::Matchers::WithinAbs(0.15, 0.01));
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::mix),
-                     Catch::Matchers::WithinAbs(0.7, 0.01));
+                     Catch::Matchers::WithinAbs(0.9, 0.01));
         REQUIRE(xml->getIntAttribute(ParamIDs::lfoWaveform) == 1); // Triangle
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetStretch) == true);
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldOffset) == true);
     }
 
-    SECTION("Omnipotent Observers - auto-freeze layers")
+    SECTION("Omnipotent Observers - S&H freeze scanning")
     {
         auto xml = Presets::createPresetState(3);
         REQUIRE(xml != nullptr);
 
         REQUIRE(xml->getIntAttribute(ParamIDs::freezeMode) == 2); // Auto
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::foldAmount),
-                     Catch::Matchers::WithinAbs(0.06, 0.01));
+                     Catch::Matchers::WithinAbs(0.2, 0.01));
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::threshold),
-                     Catch::Matchers::WithinAbs(0.5, 0.01));
+                     Catch::Matchers::WithinAbs(0.35, 0.01));
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::mix),
-                     Catch::Matchers::WithinAbs(0.65, 0.01));
+                     Catch::Matchers::WithinAbs(0.8, 0.01));
+        REQUIRE(xml->getIntAttribute(ParamIDs::lfoWaveform) == 3); // S&H
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetPosition) == true);
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldAmount) == true);
     }
 
-    SECTION("Infinite Cogs - stereo offset weaving")
+    SECTION("Infinite Cogs - mechanical fold + stereo weave")
     {
         auto xml = Presets::createPresetState(4);
         REQUIRE(xml != nullptr);
 
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::foldAmount),
-                     Catch::Matchers::WithinAbs(0.12, 0.01));
+                     Catch::Matchers::WithinAbs(0.25, 0.01));
         REQUIRE(xml->getIntAttribute(ParamIDs::lfoWaveform) == 1); // Triangle
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldAmount) == true);
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldOffset) == true);
     }
 
@@ -134,24 +138,25 @@ TEST_CASE("PresetManager - Create preset state", "[presets]")
 
 TEST_CASE("PresetManager - Creative presets", "[presets]")
 {
-    SECTION("Primordial Gear - pure granular drone")
+    SECTION("Primordial Gear - deep granular drone")
     {
         auto xml = Presets::createPresetState(Presets::PrimordialGearIdx);
         REQUIRE(xml != nullptr);
         REQUIRE(xml->getIntAttribute(ParamIDs::freezeMode) == 0); // Off — pure stretch
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::foldAmount),
-                     Catch::Matchers::WithinAbs(0.0, 0.001)); // No fold
+                     Catch::Matchers::WithinAbs(0.1, 0.01)); // Subtle warmth
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::mix),
-                     Catch::Matchers::WithinAbs(0.8, 0.01));
+                     Catch::Matchers::WithinAbs(0.95, 0.01));
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetStretch) == true);
     }
 
-    SECTION("Observer's Gaze - S&H position jumps")
+    SECTION("Observer's Gaze - S&H position + stretch jumps")
     {
         auto xml = Presets::createPresetState(Presets::ObserversGazeIdx);
         REQUIRE(xml != nullptr);
         REQUIRE(xml->getIntAttribute(ParamIDs::freezeMode) == 2); // Auto
         REQUIRE(xml->getIntAttribute(ParamIDs::lfoWaveform) == 3); // S&H
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetStretch) == true);
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetPosition) == true);
     }
 
@@ -163,14 +168,15 @@ TEST_CASE("PresetManager - Creative presets", "[presets]")
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetStretch) == true);
     }
 
-    SECTION("Infinite Recursion - square stepped stretch")
+    SECTION("Infinite Recursion - square state switching")
     {
         auto xml = Presets::createPresetState(Presets::InfiniteRecursionIdx);
         REQUIRE(xml != nullptr);
         REQUIRE(xml->getIntAttribute(ParamIDs::lfoWaveform) == 2); // Square
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::foldAmount),
-                     Catch::Matchers::WithinAbs(0.08, 0.01));
+                     Catch::Matchers::WithinAbs(0.2, 0.01));
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetStretch) == true);
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldOffset) == true);
     }
 
     SECTION("Weaver's Dance - offset weaving")
@@ -181,11 +187,13 @@ TEST_CASE("PresetManager - Creative presets", "[presets]")
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldOffset) == true);
     }
 
-    SECTION("Cog Within Cog - position + offset dual target")
+    SECTION("Cog Within Cog - all four targets evolving")
     {
         auto xml = Presets::createPresetState(Presets::CogWithinCogIdx);
         REQUIRE(xml != nullptr);
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetStretch) == true);
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetPosition) == true);
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldAmount) == true);
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldOffset) == true);
     }
 
@@ -205,13 +213,14 @@ TEST_CASE("PresetManager - Creative presets", "[presets]")
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetPosition) == true);
     }
 
-    SECTION("Mirror of Mirrors - the drive preset")
+    SECTION("Mirror of Mirrors - harmonic hall of mirrors")
     {
         auto xml = Presets::createPresetState(Presets::MirrorOfMirrorsIdx);
         REQUIRE(xml != nullptr);
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::foldAmount),
-                     Catch::Matchers::WithinAbs(0.2, 0.01));
+                     Catch::Matchers::WithinAbs(0.35, 0.01));
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldAmount) == true);
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldOffset) == true);
     }
 
     SECTION("Omniscient Dawn - multi-target evolution")
@@ -226,42 +235,44 @@ TEST_CASE("PresetManager - Creative presets", "[presets]")
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldOffset) == true);
     }
 
-    SECTION("Frozen Cathedral - manual freeze pad")
+    SECTION("Frozen Cathedral - manual freeze exploration")
     {
         auto xml = Presets::createPresetState(Presets::FrozenCathedralIdx);
         REQUIRE(xml != nullptr);
         REQUIRE(xml->getIntAttribute(ParamIDs::freezeMode) == 1); // Manual
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::foldAmount),
-                     Catch::Matchers::WithinAbs(0.05, 0.01));
+                     Catch::Matchers::WithinAbs(0.12, 0.01));
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::mix),
-                     Catch::Matchers::WithinAbs(0.8, 0.01));
+                     Catch::Matchers::WithinAbs(0.95, 0.01));
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetStretch) == true);
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetPosition) == true);
     }
 
-    SECTION("Event Horizon - extreme stretch, no fold")
+    SECTION("Event Horizon - extreme stretch drone")
     {
         auto xml = Presets::createPresetState(Presets::EventHorizonIdx);
         REQUIRE(xml != nullptr);
         REQUIRE(xml->getIntAttribute(ParamIDs::freezeMode) == 0); // Off — pure stretch
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::stretch),
-                     Catch::Matchers::WithinAbs(0.85, 0.01)); // ~6.3x
+                     Catch::Matchers::WithinAbs(0.88, 0.01)); // ~7.5x
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::foldAmount),
-                     Catch::Matchers::WithinAbs(0.0, 0.001)); // No fold
+                     Catch::Matchers::WithinAbs(0.08, 0.01));
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::mix),
-                     Catch::Matchers::WithinAbs(0.85, 0.01));
+                     Catch::Matchers::WithinAbs(1.0, 0.01)); // 100% immersive
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetStretch) == true);
     }
 
-    SECTION("Ghost Layer - parallel ghost effect")
+    SECTION("Ghost Layer - parallel haunting ghost")
     {
         auto xml = Presets::createPresetState(Presets::GhostLayerIdx);
         REQUIRE(xml != nullptr);
         REQUIRE(xml->getIntAttribute(ParamIDs::freezeMode) == 2); // Auto
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::foldAmount),
-                     Catch::Matchers::WithinAbs(0.05, 0.01));
+                     Catch::Matchers::WithinAbs(0.22, 0.01));
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::mix),
-                     Catch::Matchers::WithinAbs(0.4, 0.01)); // Low mix
+                     Catch::Matchers::WithinAbs(0.5, 0.01)); // Ghost behind dry
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetPosition) == true);
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldAmount) == true);
     }
 
     SECTION("Temporal Rift - S&H position tears")
@@ -279,11 +290,13 @@ TEST_CASE("PresetManager - Creative presets", "[presets]")
         REQUIRE(xml != nullptr);
         REQUIRE(xml->getIntAttribute(ParamIDs::freezeMode) == 1); // Manual
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::foldAmount),
-                     Catch::Matchers::WithinAbs(0.1, 0.01));
+                     Catch::Matchers::WithinAbs(0.22, 0.01));
         REQUIRE_THAT(xml->getDoubleAttribute(ParamIDs::mix),
-                     Catch::Matchers::WithinAbs(0.7, 0.01));
+                     Catch::Matchers::WithinAbs(0.9, 0.01));
         REQUIRE(xml->getIntAttribute(ParamIDs::lfoWaveform) == 2); // Square
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetStretch) == true);
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetPosition) == true);
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldOffset) == true);
     }
 }
 
@@ -299,24 +312,24 @@ TEST_CASE("PresetManager - LFO target flags", "[presets]")
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldOffset) == false);
     }
 
-    SECTION("Turning Through Time has Position target only")
+    SECTION("Turning Through Time has Position + FoldAmount targets")
     {
         auto xml = Presets::createPresetState(1);
         REQUIRE(xml != nullptr);
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetStretch) == false);
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetPosition) == true);
-        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldAmount) == false);
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldAmount) == true);
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldOffset) == false);
     }
 
-    SECTION("Golden Memories has Stretch target only")
+    SECTION("Golden Memories has Stretch + FoldOffset targets")
     {
         auto xml = Presets::createPresetState(2);
         REQUIRE(xml != nullptr);
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetStretch) == true);
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetPosition) == false);
         REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldAmount) == false);
-        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldOffset) == false);
+        REQUIRE(xml->getBoolAttribute(ParamIDs::lfoTargetFoldOffset) == true);
     }
 }
 
@@ -337,14 +350,14 @@ TEST_CASE("PresetManager - Preset design criteria", "[presets]")
         }
     }
 
-    SECTION("All presets have fold amount <= 0.20 (pad-safe)")
+    SECTION("All presets have fold amount <= 0.35 (psybient-safe with gainMax=1.5)")
     {
         for (int i = 0; i < Presets::numPresets; ++i)
         {
             auto xml = Presets::createPresetState(i);
             REQUIRE(xml != nullptr);
             double fold = xml->getDoubleAttribute(ParamIDs::foldAmount);
-            REQUIRE(fold <= 0.201);  // 0.20 max (Mirror of Mirrors)
+            REQUIRE(fold <= 0.351);  // 0.35 max (Mirror of Mirrors)
         }
     }
 

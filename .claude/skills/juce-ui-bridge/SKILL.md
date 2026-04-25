@@ -26,17 +26,42 @@ Invoke this skill when:
 
 ```
 1. Parse the query for UI concepts and visual descriptors
-2. Load UI Knowledge Base from playbook (ui_design section)
-3. Load Capability Schema if plugin context exists
-4. Translate concepts to JUCE implementations:
+2. KB UI Pattern Lookup (NEW):
+   - Read kb-route with concept="UI pattern [knob / slider / layout / meter / etc.]", kb="vst-product-lifecycle"
+   - Substitute the actual UI component type from the query — do NOT pass "<type>" literally
+   - If results with confidence >= 0.60: use KB guidance
+   - If no results: continue with built-in knowledge
+3. Load UI Knowledge Base from playbook (ui_design section)
+4. Load Capability Schema if plugin context exists
+5. Translate concepts to JUCE implementations:
    - UI concepts → LookAndFeel methods
    - Visual descriptors → color schemes, typography
    - Layout patterns → JUCE layout systems
-5. Verify against JUCE 7 API capabilities
-6. Generate response with progressive disclosure:
+6. Verify against JUCE 7 API capabilities
+7. Generate response with progressive disclosure:
    - Quick answer for immediate implementation
    - Detailed explanation if requested
    - Educational context if time permits
+```
+
+## KB Pattern Resolution
+
+For UI-related queries, first check the Technical KB via kb-route:
+
+```markdown
+### KB UI Pattern Lookup
+
+Read and follow the Resolution Procedure in `~/.claude/skills/kb-route/SKILL.md`
+with parameters: `concept="UI pattern [knob / slider / layout / meter / etc.]"`, `kb="vst-product-lifecycle"`
+
+Substitute the actual UI component type from the user's query for the bracketed placeholder.
+
+If results with confidence >= 0.60:
+- Extract layout patterns and control design guidance
+- Apply to JUCE implementation context
+
+If no results:
+- Fall back to built-in UI knowledge
 ```
 
 ## Progressive Disclosure

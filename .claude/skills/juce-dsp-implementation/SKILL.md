@@ -7,7 +7,7 @@ description: Use when implementing DSP modules in JUCE plugins. Includes two-sta
 
 Build the audio engine module by module with two-stage review after each. This is the single most important quality gate in the playbook.
 
-**Playbook Reference:** `~/.agents/juce-agent/playbooks/vst-plugin-playbook-v6-unified.json` Phase 4
+**Playbook Reference:** `~/.agents/juce-agent/playbooks/vst-plugin-playbook-v7-unified.json` Phase 4
 
 ## Pre-Flight Checks (run before EVERY DSP module)
 
@@ -20,6 +20,18 @@ Before implementing any DSP module, verify:
 - [ ] **EM-08:** Verify filter Q mapping at reso=0 and reso=1
 - [ ] **CM-02:** FFT needs `std::unique_ptr<juce::dsp::FFT>` due to non-copyable
 - [ ] **CM-08:** Latency at non-48kHz: compute from `fftSize * decimationFactor`
+
+### KB Technical Lookup
+
+Read and follow the Resolution Procedure in `~/.claude/skills/kb-route/SKILL.md`
+with parameters: `concept="<dsp_topic>"`, `kb="vst-product-lifecycle"`
+
+If results with confidence >= 0.60:
+- Extract technical guidance from entry
+- Validate against existing code patterns
+
+If no results:
+- Proceed with built-in DSP knowledge
 
 ## Process Flow
 
@@ -448,99 +460,3 @@ Invoke juce-sound-design-bridge for full guidance when available.
 - **Real-Time Safety Overview:** `~/.agents/juce-agent/playbookdata/cpp-kb/topics/realtime-safety/overview.md`
 - **Atomic Audio Patterns:** `~/.agents/juce-agent/playbookdata/cpp-kb/topics/realtime-safety/atomic-audio.md`
 - **Lock-Free Patterns:** `~/.agents/juce-agent/playbookdata/cpp-kb/topics/realtime-safety/lock-free-patterns.md`
-
-## KB Dependency
-
-This skill reads from the DSP Knowledge Base and related technical KBs. KB location is resolved via the registry — not hardcoded paths.
-
-### Registry Resolution
-
-1. Read `~/.claude/kb-registry.json`
-2. Find the registered KB that has a `dsp` layer (or `dsp-kb` for prototype)
-3. Resolve path: `registry.path + "/" + layer_name + "/"`
-4. If no registered KB has a DSP layer, use fallback content (see below)
-
-```python
-# Pseudocode for KB resolution
-import json
-
-def resolve_dsp_kb():
-    registry_path = os.path.expanduser("~/.claude/kb-registry.json")
-    if not os.path.exists(registry_path):
-        return None  # Use fallback content
-    
-    with open(registry_path) as f:
-        registry = json.load(f)
-    
-    for kb in registry["registries"]:
-        for layer in kb["layers"]:
-            if "dsp" in layer:
-                return {"kb_name": kb["name"], "kb_path": kb["path"], "layer": layer}
-    
-    return None  # Use fallback content
-```
-
-### Placeholder Detection
-
-1. **Read manifest for the DSP layer:**
-   ```bash
-   cat <kb_path>/<layer>/manifest.json | jq '.entries[] | select(.status == "placeholder")'
-   ```
-
-2. **If entry status == "placeholder":**
-   - Log: "Placeholder detected in [kb_name]/[layer]/[topic]/[filename]"
-   - Invoke kb-harvest to fill it:
-     ```
-     kb-harvest --kb <kb_name> --auto --entry <entry-id> --batch 1
-     ```
-   - Wait for completion
-   - Re-read KB file
-
-3. **Read KB file and use content:**
-   ```python
-   import json
-   kb_file = f"{kb_path}/{layer}/{topic}/{filename}"
-   with open(kb_file) as f:
-       data = json.load(f)
-   markdown = data.get("original_markdown", "")
-   code_blocks = data.get("code_blocks", [])
-   ```
-
-### Confidence Awareness
-
-When reading a KB entry, check `harvest_metadata.overall_confidence` if present:
-
-| Confidence | Action |
-|------------|--------|
-| >= 0.60 | Use content normally |
-| 0.40 - 0.59 | Use content but warn: "Low confidence DSP reference (confidence: X.XX). Verify algorithm correctness before implementation." |
-| < 0.40 | Do not use content. Warn user and use fallback content instead. |
-
-**Code block confidence:** For entries with `field_provenance.code_blocks.method == "direct-extracted"`, code examples can be trusted more than `ai-synthesized` code blocks which may contain errors.
-
-### Common KB References
-
-Resolved dynamically from registry. Typical structure:
-
-| DSP Topic | KB Path (relative to layer) | Description |
-|-----------|---------|-------------|
-| Reverb | reverb/algorithmic-reverb.json | Algorithmic reverb design |
-| Reverb | reverb/convolution-reverb.json | Convolution reverb |
-| Dynamics | dynamics/compressor.json | Compression algorithms |
-| Dynamics | dynamics/limiter-design.json | Limiter design |
-
-### Fallback if Harvest Fails
-
-If registry is missing, KB not registered, or entry below confidence threshold:
-
-```json
-{
-  "title": "DSP Topic",
-  "status": "placeholder",
-  "fallback": {
-    "brief": "Basic description available",
-    "key_concepts": ["concept1", "concept2"],
-    "common_algorithms": ["algo1", "algo2"]
-  }
-}
-```

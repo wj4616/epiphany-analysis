@@ -4,7 +4,7 @@
   "title": "Validation Report",
   "description": "Schema for Pass 3 Integrity Validation output",
   "type": "object",
-  "required": ["source", "validation_timestamp", "cross_references", "id_assignments", "integration_plan"],
+  "required": ["source", "validation_timestamp", "cross_references", "id_assignments", "integration_plan", "empty_session_handling"],
   "properties": {
     "source": { "type": "string", "const": "correlated_extractions.json" },
     "validation_timestamp": { "type": "string", "format": "date-time" },
@@ -137,16 +137,54 @@
           }
         },
         "needs_human_resolution": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["contradiction_id", "reason"],
-            "properties": {
-              "contradiction_id": { "type": "string" },
-              "reason": { "type": "string" }
+          "type": "object",
+          "required": ["contradictions", "unmatched_items"],
+          "properties": {
+            "contradictions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["contradiction_id", "reason"],
+                "properties": {
+                  "contradiction_id": { "type": "string" },
+                  "reason": { "type": "string" }
+                }
+              }
+            },
+            "unmatched_items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["extraction_id", "type", "content", "suggested_action"],
+                "properties": {
+                  "extraction_id": { "type": "string" },
+                  "type": { "type": "string" },
+                  "content": { "type": "string" },
+                  "suggested_phases": { "type": "array", "items": { "type": "string" } },
+                  "suggested_action": { "type": "string" },
+                  "detail": { "type": "string" }
+                }
+              }
             }
           }
         }
+      }
+    },
+    "empty_session_handling": {
+      "type": "object",
+      "properties": {
+        "is_empty": { "type": "boolean" },
+        "extraction_counts": {
+          "type": "object",
+          "properties": {
+            "failures": { "type": "integer", "minimum": 0 },
+            "decisions": { "type": "integer", "minimum": 0 },
+            "workflow_patterns": { "type": "integer", "minimum": 0 },
+            "knowledge_references": { "type": "integer", "minimum": 0 },
+            "session_boundaries": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "skip_reason": { "type": "string" }
       }
     }
   }

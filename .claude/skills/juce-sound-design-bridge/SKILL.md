@@ -82,14 +82,24 @@ The capability schema tells us:
 - What parameters each module exposes
 - Parameter ranges and defaults
 
-### Step 3: Query Sound Design KB
+### Step 3: KB-Route Integration
 
-Lookup in the `sound_design` section:
+Read and follow the Resolution Procedure in `~/.claude/skills/kb-route/SKILL.md`
+with parameters: `bridge_descriptor="<user_input>"`, `kb="vst-product-lifecycle"`
 
-1. **Direct translation:** Check if descriptor maps directly to parameters
-2. **Capability requirement:** Check what DSP modules needed for sound type
-3. **Preset template:** Check for ground truth preset matching the request
-4. **Vague descriptor:** If descriptor is vague, prepare clarifying questions
+If kb-route returns results with confidence >= 0.60:
+- Use parameters from bridge entry
+- Apply anti_patterns warnings to output
+- Note source: "KB: bridge/<category>/<descriptor>"
+
+If confidence 0.40-0.59:
+- Use with warning: "Medium confidence (X.XX) — verify before applying"
+
+If no results or confidence < 0.40:
+- Fall back to built-in translation table (Step 4 below)
+- Check ground truth presets for the descriptor
+- If descriptor is vague, prepare clarifying questions
+- Note: "Using fallback translation (no KB entry found)"
 
 ### Step 4: Translate
 
@@ -417,6 +427,8 @@ Confidence values are numerical (0.1 to 0.99):
 
 Confidence increases (+0.05) with successful use, decreases (-0.10) with adjustments needed.
 
+**Threshold note:** These levels apply to built-in fallback translations (used when kb-route finds no entry). Bridge results returned via kb-route use kb-route's own thresholds: >= 0.60 = use normally, 0.40–0.59 = warn, < 0.40 = exclude. Do not mix the two scales.
+
 ## Fallback and Error Handling
 
 ### Playbook Unavailable
@@ -539,106 +551,4 @@ Parameter values are derived from sound design principles but haven't been confi
 - Use as starting point
 - Adjust by ear during DAW testing
 - Report results for verification
-```
-
-## KB Dependency
-
-This skill reads from the Sound Design Knowledge Base. KB location is resolved via the registry — not hardcoded paths.
-
-### Registry Resolution
-
-1. Read `~/.claude/kb-registry.json`
-2. Find the registered KB that has a `sound-design` layer (or `sound-design-kb` for prototype)
-3. Resolve path: `registry.path + "/" + layer_name + "/"`
-4. If no registered KB has a sound-design layer, use fallback content (see below)
-
-```python
-# Pseudocode for KB resolution
-import json
-
-def resolve_sound_design_kb():
-    registry_path = os.path.expanduser("~/.claude/kb-registry.json")
-    if not os.path.exists(registry_path):
-        return None  # Use fallback content
-    
-    with open(registry_path) as f:
-        registry = json.load(f)
-    
-    for kb in registry["registries"]:
-        for layer in kb["layers"]:
-            if "sound-design" in layer:
-                return {"kb_name": kb["name"], "kb_path": kb["path"], "layer": layer}
-    
-    return None  # Use fallback content
-```
-
-### Placeholder Detection
-
-1. **Read manifest for the sound-design layer:**
-   ```bash
-   cat <kb_path>/<layer>/manifest.json | jq '.entries[] | select(.status == "placeholder")'
-   ```
-
-2. **If entry status == "placeholder":**
-   - Log: "Placeholder detected in [kb_name]/[layer]/[topic]/[filename]"
-   - Invoke kb-harvest to fill it:
-     ```
-     kb-harvest --kb <kb_name> --auto --entry <entry-id> --batch 1
-     ```
-   - Wait for completion
-   - Re-read KB file
-
-3. **Read KB file and use content:**
-   ```python
-   import json
-   kb_file = f"{kb_path}/{layer}/{topic}/{filename}"
-   with open(kb_file) as f:
-       data = json.load(f)
-   markdown = data.get("original_markdown", "")
-   ```
-
-### Confidence Awareness
-
-When reading a KB entry, check `harvest_metadata.overall_confidence` if present:
-
-| Confidence | Action |
-|------------|--------|
-| >= 0.60 | Use content normally |
-| 0.40 - 0.59 | Use content but warn: "Low confidence translation (confidence: X.XX). Recommend verifying in DAW testing." |
-| < 0.40 | Do not use content. Warn user and use fallback content instead. |
-
-### Bridge Lookup via Master-Index
-
-Instead of hardcoded bridge paths, use the master-index cross_references:
-
-1. Read `<kb_path>/master-index.json`
-2. For a descriptor (e.g., "warm"), search `cross_references` for entries containing that concept
-3. Follow cross_references to find bridge entries in bridge-eligible layers
-4. Return the bridge entry with its confidence and parameter mappings
-
-### Sound Design KB Structure
-
-Resolved dynamically from registry. Typical structure:
-
-| Sonic Goal | KB Path (relative to layer) | Parameter Guidance |
-|------------|---------|---------------------|
-| Warm | filter/warm.json | Filter settings for warmth |
-| Bright | filter/bright.json | High frequency emphasis |
-| Punchy | envelope/punchy.json | Transient shaping |
-| Lush | modulation/lush.json | Chorus/detune settings |
-
-### Fallback Content
-
-If registry is missing, KB not registered, or entry below confidence threshold:
-
-```json
-{
-  "title": "Sound Design: Warm",
-  "status": "placeholder",
-  "fallback": {
-    "filter_cutoff": [0.2, 0.4],
-    "filter_resonance": [0.1, 0.2],
-    "filter_type": "lowpass"
-  }
-}
 ```

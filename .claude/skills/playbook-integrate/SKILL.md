@@ -55,6 +55,34 @@ Flags are evaluated in priority order — first match wins:
 - `--knowledge-dir` can be combined with any session input flag
 - `--resume` and `--clean` are mutually exclusive — using both is an error
 
+## Output Directory Handling
+
+```
+### Output Directory
+
+1. Parse --output-dir flag
+2. If absent: use directory containing playbook file
+3. If specified: create directory if not exists
+4. Validate write permissions before processing
+5. Cache directory created inside output directory: <output-dir>/.playbook-integrate-cache-<playbook-hash>/
+
+Note: Cache uses playbook hash suffix to avoid collisions when multiple playbooks share a directory.
+```
+
+## Version Increment Handling
+
+```
+### Version Increment
+
+1. Parse --version-increment flag (default: minor)
+2. Read playbook version number from "version" field
+3. Apply increment:
+   - minor: X.Y → X.(Y+1)
+   - major: X.Y → (X+1).0
+   - patch: X.Y.Z → X.Y.(Z+1) if semantic versioning present
+4. If version field missing, initialize to 1
+```
+
 ## Input Formats
 
 The skill accepts multiple session data formats.
@@ -107,7 +135,7 @@ Optional `--knowledge-dir <path>` provides supplementary knowledge:
 | Pattern libraries | `patterns/*.json` | Reusable workflow patterns |
 | KB layers | `kb/**/*.json` | Domain knowledge |
 | Phase definitions | `phases/*.json` | Custom phase definitions |
-| Vocabulary | `vocabulary.json` | Terms and synonyms |
+| Vocabulary | `vocabulary.json` | Terms and synonyms (including i18n) |
 
 ### Input Parsing Procedure
 
@@ -118,6 +146,13 @@ Optional `--knowledge-dir <path>` provides supplementary knowledge:
 
 **Step 2: Parse XML (cctrace format)**
 ```
+0. Validate namespace and version:
+   - Check xmlns matches expected: "https://claude.ai/session-export/v1"
+   - Check export-version ≤ supported_version (currently "1.0")
+   - Log namespace mismatch as warning, continue if compatible
+   - Log version mismatch as warning, may fail on incompatible versions
+   - AUDIT: Log validation status in session_metadata
+
 1. Read file with Read tool
 2. Extract metadata: session-id, start-time, end-time, statistics
 3. Parse messages in order:
@@ -166,7 +201,9 @@ Optional `--knowledge-dir <path>` provides supplementary knowledge:
 │  PASS 1: Pattern Extraction                                         │
 │     • Parse session structure                                       │
 │     • Extract failures, decisions, patterns, references            │
+│     • Deduplicate within session                                     │
 │     • Build session index                                           │
+│     • Check for empty session                                        │
 │     • Output: raw_extractions.json + pass_1_audit.json              │
 │                                                                      │
 │  PASS 2: Phase Correlation                                          │
@@ -185,6 +222,7 @@ Optional `--knowledge-dir <path>` provides supplementary knowledge:
 │     • Merge validated extractions                                   │
 │     • Assign new IDs                                                │
 │     • Rebuild indexes                                               │
+│     • Verify bidirectional refs                                     │
 │     • Generate gap analysis                                         │
 │     • Output: playbook-v{N+1}.json + integration_report.json        │
 │                                                                      │
@@ -211,6 +249,8 @@ Optional `--knowledge-dir <path>` provides supplementary knowledge:
 
 **Audit fields:**
 - `xml_valid`: true/false
+- `xml_namespace`: actual namespace found
+- `xml_version`: actual version found
 - `messages_parsed`: count
 - `messages_skipped`: count with reasons
 - `files_touched`: array of file paths
@@ -225,6 +265,24 @@ Scan for:
 | `user_correction` | User message containing "no", "wrong", "incorrect", "try again", "that's not" |
 | `crash` | Messages containing "crashed", "segfault", "assertion failed", "SIGABRT" |
 | `build_error` | Tool result from build command with non-zero exit code |
+
+**Language-Aware Detection (Issue #9):**
+
+Default heuristics use English keywords. For internationalization:
+- Load `vocabulary.json` from knowledge directory if provided
+- Use `detection_keywords` section for localized keywords
+- Fall back to English if vocabulary missing or incomplete
+
+```json
+// vocabulary.json example
+{
+  "detection_keywords": {
+    "approval": ["yes", "proceed", "approved", "ok", "go ahead", "ja", "sí", "oui"],
+    "rejection": ["no", "don't", "rejected", "cancel", "nein", "no", "non"],
+    "correction": ["wrong", "incorrect", "try again", "that's not", "falsch"]
+  }
+}
+```
 
 For each failure:
 1. Extract message_index and timestamp
@@ -313,11 +371,68 @@ Construct three indexes:
 
 **AUDIT:** Log index completeness, orphan references
 
+### 7. Deduplicate Extractions (Issue #4)
+
+For each extraction type:
+
+```
+1. Build content signature:
+   - Normalize whitespace
+   - Lowercase
+   - Hash normalized content
+2. Group extractions by signature
+3. For groups with > 1 member:
+   - Merge into single extraction
+   - Preserve all source_message_indices
+   - Select earliest timestamp
+   - Combine context_before/context_after (keep longest)
+4. Record deduplication stats
+5. AUDIT: Log deduplication counts
+```
+
+**Deduplication output:**
+```json
+{
+  "deduplication_stats": {
+    "failures_deduped": {"original_count": 15, "unique_count": 12, "merged_groups": 3},
+    "decisions_deduped": {"original_count": 8, "unique_count": 8, "merged_groups": 0},
+    "patterns_deduped": {"original_count": 5, "unique_count": 5, "merged_groups": 0}
+  }
+}
+```
+
+### 8. Check for Empty Session (Issue #17)
+
+```
+1. Count extractions by type after deduplication
+2. Calculate total_extractions = failures + decisions + patterns + references + boundaries
+3. If total_extractions == 0:
+   - Write empty raw_extractions.json
+   - Write pass_1_audit.json with skip_reason: "no_extractions"
+   - Skip remaining passes
+   - Output integration_report with status: "no_extractions"
+   - Exit early
+4. Proceed to Pass 2 if extractions exist
+```
+
+**Empty session output:**
+```json
+{
+  "status": "no_extractions",
+  "session_info": {"session_id": "...", "message_count": 45},
+  "empty_session_handling": {
+    "is_empty": true,
+    "extraction_counts": {"failures": 0, "decisions": 0, "patterns": 0, "references": 0, "boundaries": 0},
+    "skip_reason": "No failures, decisions, patterns, or references detected"
+  }
+}
+```
+
 ### Output
 
-Write to cache directory: `.playbook-integrate-cache/pass_1/raw_extractions.json`
+Write to cache directory: `.playbook-integrate-cache-<hash>/pass_1/raw_extractions.json`
 
-Write audit: `.playbook-integrate-cache/pass_1/pass_1_audit.json`
+Write audit: `.playbook-integrate-cache-<hash>/pass_1/pass_1_audit.json`
 
 ## Pass 2: Phase Correlation
 
@@ -369,12 +484,24 @@ For each failure in raw_extractions.failures:
    - Phase 7: GUI files
    - Phase 8: test files
 5. Calculate phase_match_confidence:
+   - Base: 0.0
    - task_context match: +0.4
    - file_context match: +0.3
    - timestamp match (if session has phase markers): +0.3
+   - IMPORTANT: Cap at 1.0 (Issue #3)
 6. Select phase with highest confidence ≥ 0.5
 7. If confidence < 0.5, mark as unmatched
-8. AUDIT: Log matching heuristics, confidence scores
+8. Preserve source_message_index for lineage
+9. AUDIT: Log matching heuristics, confidence scores
+```
+
+**Confidence calculation fix (Issue #3):**
+```python
+# Correct implementation - cap at 1.0
+task_score = 0.4 if task_context_match else 0.0
+file_score = 0.3 if file_context_match else 0.0
+timestamp_score = 0.3 if timestamp_match else 0.0
+phase_match_confidence = min(1.0, task_score + file_score + timestamp_score)
 ```
 
 ### 3. Match Decisions to Phases
@@ -387,7 +514,8 @@ For each decision in raw_extractions.decisions:
 3. Look for gate_condition in surrounding context
 4. Calculate confidence based on context proximity
 5. Mark human_only flag from playbook task
-6. AUDIT: Log decision-to-task mappings
+6. Preserve source_message_index for lineage
+7. AUDIT: Log decision-to-task mappings
 ```
 
 ### 4. Match Patterns to Phases
@@ -425,13 +553,30 @@ For each extraction with no phase match:
    - novel: New topic not in playbook
 3. Add suggested_phases for ambiguous items
 4. Add to gap analysis
+5. Preserve source_message_index for lineage
 ```
+
+### 7. Preserve Session Lineage (Issue #2)
+
+Copy session_index from raw_extractions to correlated_extractions:
+
+```json
+{
+  "session_lineage": {
+    "by_message_id": { ... },
+    "by_timestamp": { ... },
+    "by_file": { ... }
+  }
+}
+```
+
+This enables tracing correlated items back to source messages.
 
 ### Output
 
-Write to cache: `.playbook-integrate-cache/pass_2/correlated_extractions.json`
+Write to cache: `.playbook-integrate-cache-<hash>/pass_2/correlated_extractions.json`
 
-Write audit: `.playbook-integrate-cache/pass_2/pass_2_audit.json`
+Write audit: `.playbook-integrate-cache-<hash>/pass_2/pass_2_audit.json`
 
 ## Pass 3: Integrity Validation
 
@@ -453,8 +598,10 @@ For each proposed cross-reference:
 3. Verify KB layer exists
    - Check layer name in playbook knowledge_base section
    - Check topic exists within layer
-4. Check bidirectional references
-   - If A references B, B should reference A
+4. Check bidirectional references (Issue #11)
+   - Note: Full bidirectional validation happens during Pass 4 rebuild
+   - Here we verify the forward reference exists
+   - Mark for rebuild in Pass 4
 5. AUDIT: Log all reference validations, pass/fail status
 ```
 
@@ -539,17 +686,38 @@ Compare session content vs playbook content:
    - No phase match
    - Invalid cross-references
    - Minor contradictions (can be auto-resolved)
-3. Collect needs_human_resolution:
-   - Major contradictions
-   - Ambiguous phase matches
+3. Collect needs_human_resolution (Issue #7):
+   - Major contradictions in contradictions array
+   - Unmatched items in unmatched_items array
+   - Each needs suggested_action field
 4. AUDIT: Log integration plan summary
+```
+
+**needs_human_resolution structure:**
+```json
+{
+  "needs_human_resolution": {
+    "contradictions": [
+      {"contradiction_id": "C-001", "reason": "Gate condition conflict"}
+    ],
+    "unmatched_items": [
+      {
+        "extraction_id": "FM-007",
+        "type": "failure",
+        "content": "Plugin crashed when loading preset",
+        "suggested_phases": ["Phase 5", "Phase 6"],
+        "suggested_action": "Manual review: assign to appropriate phase"
+      }
+    ]
+  }
+}
 ```
 
 ### Output
 
-Write to cache: `.playbook-integrate-cache/pass_3/validation_report.json`
+Write to cache: `.playbook-integrate-cache-<hash>/pass_3/validation_report.json`
 
-Write audit: `.playbook-integrate-cache/pass_3/pass_3_audit.json`
+Write audit: `.playbook-integrate-cache-<hash>/pass_3/pass_3_audit.json`
 
 ## Pass 4: Playbook Generation
 
@@ -656,7 +824,7 @@ For each session_boundary:
 3. AUDIT: Log phase handoff updates
 ```
 
-### 7. Rebuild Indexes
+### 7. Rebuild Indexes and Verify Bidirectional References (Issue #11)
 
 ```
 1. Rebuild failure_mode → phase index:
@@ -668,15 +836,20 @@ For each session_boundary:
 3. Rebuild KB layer → topic index:
    - Scan knowledge_base.layers
    - Build map: layer_name → [topics]
-4. AUDIT: Log index rebuild statistics
+4. VERIFY BIDIRECTIONAL REFS (Issue #11):
+   - For each FM-XXX, verify it's in phase's failure_modes list
+   - For each phase, verify its failure_modes list has all referenced FMs
+   - Add missing references during rebuild
+5. AUDIT: Log index rebuild statistics, bidirectional ref verification
 ```
 
 ### 8. Generate Gap Analysis
 
 ```
 1. Identify thin-coverage phases:
-   - Calculate coverage = (checklist_items / total_failures_referencing)
+   - Calculate coverage = (checklist_items / max(1, failure_modes_referencing))
    - Flag phases with coverage < 20%
+   - Note: This means "many failures, few preventions" = low coverage
 2. List unmatched extractions with suggested actions
 3. Generate recommended questions:
    - For each thin-coverage phase: "What validation should exist for <topic>?"
@@ -684,14 +857,47 @@ For each session_boundary:
 4. AUDIT: Log gap analysis items
 ```
 
-### 9. Increment Version and Write Output
+**Coverage interpretation (Issue #8):**
+Coverage measures "prevention quality" — how well the checklist prevents known failures.
+- High failure_modes + low checklist_items = LOW coverage (many known failures, few preventions)
+- This is correct: the phase needs more preventive checklist items
+
+### 9. Atomic Write with Rollback (Issue #14)
 
 ```
-1. Increment playbook version number
-2. Write playbook-v{N+1}.json to output directory
-3. Write integration_report.json
-4. Write pass_4_audit.json
-5. Write consolidated audit to audits/<session_id>_<timestamp>/full_audit_report.json
+### Atomic Playbook Write
+
+1. Calculate playbook hash for cache isolation (Issue #12)
+2. Write playbook-v{N+1}.json.tmp to output directory
+3. Validate new file:
+   - Parse JSON
+   - Verify required sections present
+   - Check structural integrity
+4. If validation passes:
+   - Rename .tmp to playbook-v{N+1}.json
+   - Update integration_history in playbook metadata
+5. If validation fails:
+   - Delete .tmp file
+   - Report error
+   - Leave original playbook intact
+6. AUDIT: Log write status, validation results
+
+**Rollback guarantee:** If any error occurs during Pass 4, the original playbook remains untouched.
+```
+
+### 10. Update Integration History (Issue #16)
+
+```json
+{
+  "integration_history": {
+    "last_integrated": "2026-04-08T10:30:00Z",
+    "sessions_integrated": 5,
+    "recent_sessions": [
+      {"session_id": "abc123", "timestamp": "2026-04-08T10:30:00Z", "items_added": 12},
+      {"session_id": "def456", "timestamp": "2026-04-07T15:45:00Z", "items_added": 8}
+    ]
+  }
+}
 ```
 
 ### Output Files
@@ -770,13 +976,45 @@ playbook-integrate --playbook playbook.json --session-dir ./sessions/ --audit
 | Single Pass 4 | Run Pass 4 once on merged extractions |
 | Output | Single playbook update, multi-session integration report |
 
-### Session Conflict Resolution
+### Session Conflict Resolution (Issue #5)
 
 When the same failure/pattern is found in multiple sessions:
 
-1. Use earliest timestamp as `source`
-2. Merge evidence from all sessions
-3. Keep all session citations in `session_evidence_citations`
+**Merge Algorithm:**
+
+```
+1. **Same failure, different sessions:**
+   - source: earliest timestamp
+   - content: longest/most detailed
+   - root_cause: merge all unique analyses
+   - session_evidence_citations: list all session IDs
+
+2. **Same pattern, different occurrences:**
+   - Increment occurrences
+   - Update last_seen to latest
+   - Append session_id to source_sessions
+
+3. **Same decision, different sessions:**
+   - Use earliest timestamp as primary
+   - Merge context from all sessions
+   - Mark as recurring if appears in 3+ sessions
+```
+
+**Merge process:**
+```
+### Merge Extractions from Multiple Sessions
+
+1. Collect all extractions from all sessions
+2. Build content signatures for each type:
+   - failures: hash(symptom + root_cause)
+   - patterns: hash(pattern + phase_sequence)
+   - decisions: hash(decision + phase)
+3. Group by signature
+4. For each group with > 1 member:
+   - Apply merge algorithm above
+   - Track all source sessions
+5. Record merge statistics in integration_report.deduplication_summary
+```
 
 ### Output
 
@@ -793,6 +1031,11 @@ When the same failure/pattern is found in multiple sessions:
     "failures_duplicates_merged": 12,
     "decisions_unique": 23,
     "patterns_unique": 8
+  },
+  "deduplication_summary": {
+    "failures_merged": 12,
+    "decisions_merged": 3,
+    "patterns_merged": 1
   },
   "playbook_version": {"before": 1, "after": 2}
 }
@@ -828,9 +1071,9 @@ playbook-integrate --verify-only --playbook playbook.json
 }
 ```
 
-## Status Mode
+## Status Mode (Issue #16)
 
-Shows playbook statistics:
+Shows playbook statistics including integration history:
 
 ```
 playbook-integrate --status --playbook playbook.json
@@ -859,6 +1102,14 @@ playbook-integrate --status --playbook playbook.json
       "Phase 10": {"checklist_items": 2, "failure_modes": 0, "coverage": "low"}
     }
   },
+  "integration_history": {
+    "last_integrated": "2026-04-08T10:30:00Z",
+    "sessions_integrated": 5,
+    "recent_sessions": [
+      {"session_id": "abc123", "timestamp": "2026-04-08T10:30:00Z", "items_added": 12},
+      {"session_id": "def456", "timestamp": "2026-04-07T15:45:00Z", "items_added": 8}
+    ]
+  },
   "last_modified": "ISO",
   "file_size_bytes": 45000
 }
@@ -866,10 +1117,10 @@ playbook-integrate --status --playbook playbook.json
 
 ## Cache & Resume
 
-### Cache Directory Structure
+### Cache Directory Structure (Issue #12)
 
 ```
-.playbook-integrate-cache/
+.playbook-integrate-cache-<playbook-hash>/
 ├── status.json
 ├── input_fingerprint.json
 ├── session_metadata.json
@@ -891,19 +1142,21 @@ playbook-integrate --status --playbook playbook.json
     └── pass_4_error_audit.json
 ```
 
+**Note:** Cache directory uses playbook hash suffix (Issue #12) to avoid collisions when multiple playbooks share a directory.
+
 ### Resume Behaviors
 
 | Flag | Behavior |
 |------|----------|
 | `--resume` | Load status.json, validate fingerprints, continue from last completed pass |
 | `--clean` | Delete cache directory before starting |
-| `--audit-resume` | Show what would resume without resuming |
+| `--audit-resume` | Show resume state without resuming |
 | Default | Error if cache exists with fingerprint mismatch |
 
 ### Resume Procedure
 
 ```
-1. Check for .playbook-integrate-cache/status.json
+1. Check for .playbook-integrate-cache-<hash>/status.json
 2. If --clean flag: delete entire cache directory, start fresh
 3. If --resume flag:
    a. Read status.json
@@ -920,7 +1173,7 @@ playbook-integrate --status --playbook playbook.json
    a. Error: "Cache exists. Use --resume to continue or --clean to start fresh"
 ```
 
-### Fingerprint Validation
+### Fingerprint Validation (Issue #6)
 
 ```json
 {
@@ -928,6 +1181,23 @@ playbook-integrate --status --playbook playbook.json
   "session_hash": "sha256:<hash>",
   "knowledge_dir_hash": "sha256:<hash> or null"
 }
+```
+
+**Fingerprint Calculation:**
+```
+1. playbook_hash:
+   - SHA-256 of playbook file content (entire file as bytes)
+   
+2. session_hash:
+   - Single session: SHA-256 of session file content
+   - Batch mode: SHA-256 of concatenated sorted session file hashes
+   
+3. knowledge_dir_hash:
+   - If no knowledge directory: null
+   - Recursively list all .json files in directory
+   - Sort files alphabetically
+   - Concatenate all file contents
+   - SHA-256 of concatenated content
 ```
 
 If any hash differs from current input, the cache is stale and must be cleaned.
@@ -948,6 +1218,7 @@ All output files use atomic write:
 | `integrated` | All items processed, playbook updated successfully |
 | `partial` | Some items processed, some blocked or unmatched |
 | `blocked` | Major contradiction or error, requires human resolution |
+| `no_extractions` | Session contained no extractable content |
 
 ### Error Codes
 
@@ -958,6 +1229,8 @@ All output files use atomic write:
 | E003 | phase_not_found | warning | Add to unmatched items |
 | E004 | kb_not_found | warning | Continue without enrichment |
 | E005 | contradiction | blocking | Add to blocked_reason |
+| E006 | fingerprint_mismatch | fatal | Clean cache, restart |
+| E007 | cache_error | fatal | Clean cache, restart |
 
 ### Error Audit Schema
 
@@ -965,6 +1238,7 @@ Every error is logged in `pass_N_error_audit.json`:
 
 ```json
 {
+  "pass": 1,
   "errors": [{
     "code": "E001",
     "category": "parse_error",
@@ -972,7 +1246,6 @@ Every error is logged in `pass_N_error_audit.json`:
     "severity": "fatal",
     "recovery": "Stop processing",
     "audit": {
-      "pass": 1,
       "step": "parse_session_structure",
       "input_snippet": "...",
       "line_number": 234,
@@ -992,6 +1265,8 @@ Every error is logged in `pass_N_error_audit.json`:
 | E003 - phase_not_found | Continue. Add to unmatched_items. Suggest closest phase. |
 | E004 - kb_not_found | Continue. Log warning. Skip KB enrichment. |
 | E005 - contradiction | Continue in audit mode. Add to blocked_reason. |
+| E006 - fingerprint_mismatch | Stop. Report hash mismatch. Suggest --clean. |
+| E007 - cache_error | Stop. Report cache corruption. Suggest --clean. |
 
 ### Partial Processing
 
@@ -1012,8 +1287,8 @@ Playbook is authoritative. Session contradictions go to warnings.
 
 | Severity | Example | Action |
 |----------|---------|--------|
-| minor | Case variation ("REAPER" vs "Reaper") | Auto-resolve (use playbook version) |
-| major | Gate condition mismatch | Block, require human resolution |
+| minor | Case variation ("REAPER" vs "Reaper") | Auto-resolved (use playbook version) |
+| major | Gate condition mismatch | Blocked, require human resolution |
 
 ### Minor Contradictions
 
@@ -1053,10 +1328,14 @@ A phase is considered "thin coverage" if:
 1. Few checklist items (< 3) AND many failure modes referencing it (> 5)
 2. OR coverage percentage < 20%
 
-Coverage calculation:
+Coverage calculation (prevention quality):
 ```
 coverage = (checklist_items / max(1, failure_modes_referencing)) * 100
 ```
+
+**Interpretation (Issue #8):**
+- High failure_modes + low checklist_items = LOW coverage (many known failures, few preventions)
+- This means the phase needs more preventive checklist items
 
 ### Gap Analysis Structure
 
@@ -1074,7 +1353,7 @@ coverage = (checklist_items / max(1, failure_modes_referencing)) * 100
     ],
     "unmatched_extractions": [
       {
-        "extraction_id": "F007",
+        "extraction_id": "FM-007",
         "type": "failure",
         "content": "Plugin crashed when loading preset",
         "suggested_action": "Manual review: could be Phase 5 or Phase 6"
@@ -1095,7 +1374,7 @@ coverage = (checklist_items / max(1, failure_modes_referencing)) * 100
 ├── playbook.json                    # Original (unchanged)
 ├── playbook-v2.json                 # Updated version
 ├── integration_report.json          # Full report
-├── .playbook-integrate-cache/       # Cache directory
+├── .playbook-integrate-cache-<hash>/       # Cache directory (Issue #12)
 │   ├── status.json
 │   ├── input_fingerprint.json
 │   ├── session_metadata.json
@@ -1155,3 +1434,41 @@ If `workflow_patterns` does not exist in the playbook, it is created as a new to
 3. Audit logs are written atomically (write to temp, then rename)
 4. Resume state should track exact position for interrupted runs
 5. Knowledge directory loading should be lazy (load on first reference)
+6. Cache directory uses playbook hash suffix to avoid collisions (Issue #12)
+7. Atomic write with rollback for playbook generation (Issue #14)
+8. Integration history tracked in playbook metadata (Issue #16)
+
+## Schema Migration Notes (Breaking Changes)
+
+The following changes between the previous schema version and the current version are **backward-incompatible**. Existing playbook-integrate outputs produced before these changes will fail schema validation.
+
+### ID Pattern Renames
+
+| Type | Old pattern | New pattern |
+|---|---|---|
+| Failures | `F[0-9]{3,}` (e.g. `F001`) | `FM-[0-9]{3,}` (e.g. `FM-001`) |
+| Decisions | `D[0-9]{3,}` (e.g. `D001`) | `CD-[0-9]{3,}` (e.g. `CD-001`) |
+| Workflow patterns | `W[0-9]{3,}` (e.g. `W001`) | `WP-[0-9]{3,}` (e.g. `WP-001`) |
+| KB references | `K[0-9]{3,}` (e.g. `K001`) | `KB-[0-9]{3,}` (e.g. `KB-001`) |
+| Boundaries | `B[0-9]{3,}` (e.g. `B001`) | `B-[0-9]{3,}` (e.g. `B-001`) |
+
+**Migration action:** Re-run playbook-integrate from the original cctrace session files to regenerate outputs with the new ID format. Old cached outputs in `.playbook-integrate-cache-*/` are invalid and should be deleted before re-running.
+
+### New Required Fields
+
+| Schema | New required field | Effect |
+|---|---|---|
+| `raw_extractions_schema.json` | `deduplication_stats` | Pass 1 outputs without this field are invalid |
+| `correlated_extractions_schema.json` | `session_lineage` | Pass 2 outputs without this field are invalid |
+
+**Migration action:** Re-run from cctrace source. There is no upgrade path from old Pass 1/Pass 2 cache files — the new fields are computed during extraction and cannot be backfilled.
+
+### `conflicts` Type Change
+
+In `validation_report_schema.json`, the `conflicts` field changed from an **array** to an **object** with two sub-arrays: `contradictions` and `unmatched_items`.
+
+**Migration action:** Re-run Pass 3 from the re-generated Pass 2 output.
+
+### New Status Value
+
+`"no_extractions"` added to the `status` enum in `integration_report_schema.json` and `full_audit_report_schema.json`. This is additive — existing outputs with other status values remain valid.

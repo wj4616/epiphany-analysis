@@ -67,7 +67,18 @@ For each thin area:
 
 ## Output
 
-Write `05-expansion.md` containing the full expanded output XML (same root and structure as `03-synthesis.md`).
+**Initial invocation (W4 primary path):** Write `05-expansion.md` containing the full expanded output XML (same root and structure as `03-synthesis.md`).
+
+**W5 repair invocation — Edit-based surgical output:**
+Use the Edit tool to make targeted changes rather than rewriting the whole file. This physically enforces "preserve passing sections verbatim."
+
+1. Read `05-expansion-failed.md` (the failed expansion draft).
+2. Write `05-expansion.md` with the exact content of `05-expansion-failed.md` (character-for-character copy — establish the baseline without changing it).
+3. Read `06-verification-2.md`. For each check entry where `result: fail`, note the `repair_target` (XML tag name) and `detail`.
+4. Re-Read `05-expansion.md` to get current file content (required before using Edit — `old_string` must match the file exactly).
+5. For each failing check: use Edit on `05-expansion.md` to replace ONLY the `repair_target` XML element. `old_string` = the full element including its opening and closing tags (e.g., `<constraints>...</constraints>`); `new_string` = the corrected full element with the same tags.
+6. Do NOT modify any XML element not listed as a failing `repair_target` in `06-verification-2.md`.
+7. If a `repair_target` element cannot be uniquely identified for Edit: include a note in the return message: `<!-- Edit ambiguous: {check_id} {repair_target} — manual review needed -->`. Leave that element unchanged.
 
 ## Return message
 

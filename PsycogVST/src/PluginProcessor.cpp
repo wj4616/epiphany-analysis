@@ -209,6 +209,7 @@ void PsycogAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
     // === 7. Output protection (block-level, in-place) ===
     outputProtection.processInPlace(buffer.getWritePointer(0), buffer.getWritePointer(1),
                                     numSamples);
+
 }
 
 juce::AudioProcessorEditor* PsycogAudioProcessor::createEditor()

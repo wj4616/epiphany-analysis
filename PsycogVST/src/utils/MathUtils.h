@@ -34,10 +34,11 @@ namespace MathUtils
      */
     inline float applyWavefold(float input, float foldAmount, float offset)
     {
-        // Drive mapping: foldAmount [0, 1] → drive [1.0, 10.0]
+        // Drive mapping: foldAmount [0, 1] → drive [1.0, 20.0]
         // At foldAmount=0: drive=1.0, no folding (passthrough)
-        // At foldAmount=1: drive=10.0, aggressive folding
-        float drive = 1.0f + foldAmount * 9.0f;
+        // At foldAmount=0.2 with ±0.3 pad: drive=4.8, driven=±1.44 → audible fold
+        // At foldAmount=1: drive=20.0, aggressive folding
+        float drive = 1.0f + foldAmount * 19.0f;
 
         // Offset scales with foldAmount so foldAmount=0 is true passthrough
         // At foldAmount=0, offset has no effect regardless of its value

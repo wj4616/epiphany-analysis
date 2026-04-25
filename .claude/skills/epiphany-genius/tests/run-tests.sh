@@ -101,6 +101,11 @@ check_contains "S6_no_alternatives signal documented" "S6_no_alternatives" "$SKI
 check_contains "wave-based execution documented"    "wave"              "$SKILL_MD"
 check_contains "session dir structure documented"   "session"           "$SKILL_MD"
 check_contains "test-runner.sh invocation documented" "test-runner.sh"  "$SKILL_MD"
+check_contains "OSP spawn passes flag_verbose"      "flag_verbose"      "$SKILL_MD"
+check_contains "OSP spawn passes scale"             "scale: {scale}"    "$SKILL_MD"
+check_contains "optional_dependencies in spawn prompt" "optional_dependencies" "$SKILL_MD"
+check_contains "context_budget enforcement in spawn" "context_budget_lines" "$SKILL_MD"
+check_contains "session directory layout section"   "Session directory layout" "$SKILL_MD"
 
 # ════════════════════════════════════════════════════════════════════
 # TIER 1 — STATIC: file structure

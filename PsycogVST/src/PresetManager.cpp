@@ -2,12 +2,13 @@
   PsycogVST - Interdimensional sound transformation plugin
   Phase 5: State Management - Factory presets implementation
 
-  20 presets with progressive intensity:
-  - Subtle (1-2): fold 0.30-0.35, mix 0.85
-  - Moderate (3-5): fold 0.30-0.35, mix 0.85-0.90
-  - Heavy (6-12): fold 0.35-0.40, mix 0.85-0.90
-  - Extreme (13-14): fold 0.50-0.55, mix 0.95-1.0
-  - Creative (15-19): fold 0.25-0.40, mix 0.50-0.95 (varied for specific character)
+  20 presets tuned for psybient / psychedelic ambient pad processing:
+  - Drones (5, 16): extreme stretch, minimal fold, immersive 95-100% mix
+  - Evolving textures (1, 2, 7, 10): multi-target LFO, deeper modulation
+  - Freeze explorers (3, 6, 12, 17): auto-freeze with position scanning
+  - Harmonic shapers (4, 9, 13): fold 0.25-0.35, stereo offset movement
+  - Glitch/pulse (8, 11, 18, 19): square/S&H LFO, bold state changes
+  - Spatial (14, 15): manual/auto freeze, all-target evolution
 */
 
 #include "PresetManager.h"
@@ -35,9 +36,9 @@ namespace Presets
     };
 
     // clang-format off
-    // Presets calibrated for synthesizer pads with long release.
-    // Fold amounts kept low (0.0-0.20) to avoid harshness on harmonically rich input.
-    // Mix blends dry pad underneath for body. Slow LFO rates for evolving textures.
+    // Presets for psybient / psychedelic ambient pad processing.
+    // Fold 0.15-0.35 is the sweet spot: audible harmonic character without harshness.
+    // Higher mix, deeper LFO, more multi-target for evolving organic textures.
     constexpr PresetParams factoryPresets[numPresets] = {
         // =====================================================================
         // INDEX 0: Init
@@ -62,402 +63,420 @@ namespace Presets
 
         // =====================================================================
         // INDEX 1: Turning Through Time
-        // Gentle granular shimmer — pad drifts slowly through grain position
-        // =====================================================================
-        {
-            0.6f,    // stretch: ~1.6x — gentle expansion
-            0.5f,    // position: center
-            0,       // freezeMode: Off
-            0.3f,    // threshold: unused
-            0.08f,   // foldAmount: just a touch of warmth
-            0.1f,    // foldOffset: subtle stereo widening
-            0.25f,   // lfoRate: ~0.035 Hz — very slow drift
-            0,       // lfoWaveform: Sine
-            0.3f,    // lfoDepth: gentle movement
-            false,   // lfoTargetStretch
-            true,    // lfoTargetPosition — slow position drift
-            false,   // lfoTargetFoldAmount
-            false,   // lfoTargetFoldOffset
-            0.7f     // mix: 70% — pad body preserved
-        },
-
-        // =====================================================================
-        // INDEX 2: Golden Memories
-        // Warm stretched texture — pad expanded into soft granular cloud
+        // Slow granular drift — pad grains wander through position and
+        // gently fold, creating shimmering evolving texture
         // =====================================================================
         {
             0.65f,   // stretch: ~2x — noticeable expansion
             0.5f,    // position: center
             0,       // freezeMode: Off
             0.3f,    // threshold: unused
-            0.1f,    // foldAmount: gentle harmonic enrichment
-            0.12f,   // foldOffset: stereo warmth
-            0.18f,   // lfoRate: ~0.03 Hz — glacial evolution
+            0.18f,   // foldAmount: warm harmonic saturation
+            0.2f,    // foldOffset: stereo width from fold
+            0.2f,    // lfoRate: ~0.04 Hz — very slow drift
+            0,       // lfoWaveform: Sine
+            0.45f,   // lfoDepth: deep modulation
+            false,   // lfoTargetStretch
+            true,    // lfoTargetPosition — grains drift through time
+            true,    // lfoTargetFoldAmount — harmonics breathe
+            false,   // lfoTargetFoldOffset
+            0.85f    // mix: 85% — effect-forward
+        },
+
+        // =====================================================================
+        // INDEX 2: Golden Memories
+        // Stretched pad cloud with pitch drift — shimmering, nostalgic,
+        // like a memory dissolving into golden particles
+        // =====================================================================
+        {
+            0.72f,   // stretch: ~2.8x — deep expansion
+            0.5f,    // position: center
+            0,       // freezeMode: Off
+            0.3f,    // threshold: unused
+            0.15f,   // foldAmount: gentle harmonic glow
+            0.25f,   // foldOffset: wide stereo separation
+            0.15f,   // lfoRate: ~0.02 Hz — glacial evolution
             1,       // lfoWaveform: Triangle — smooth ramps
-            0.25f,   // lfoDepth: subtle
-            true,    // lfoTargetStretch — slow pitch drift
+            0.4f,    // lfoDepth: stretch drifts through octave range
+            true,    // lfoTargetStretch — pitch rises and falls like tides
             false,   // lfoTargetPosition
             false,   // lfoTargetFoldAmount
-            false,   // lfoTargetFoldOffset
-            0.7f     // mix: 70%
+            true,    // lfoTargetFoldOffset — stereo field breathes
+            0.9f     // mix: 90%
         },
 
         // =====================================================================
         // INDEX 3: Omnipotent Observers
-        // Auto-freeze layers — pad fragments captured and layered
+        // Auto-freeze captures pad fragments, S&H position explores them
+        // randomly — alien intelligence scanning your sound
         // =====================================================================
         {
-            0.55f,   // stretch: ~1.3x — slightly expanded
+            0.6f,    // stretch: ~1.6x — expanded fragments
             0.5f,    // position: center
             2,       // freezeMode: Auto
-            0.5f,    // threshold: only louder passages trigger
-            0.06f,   // foldAmount: barely there — just grain texture
-            0.08f,   // foldOffset: subtle stereo
-            0.22f,   // lfoRate: ~0.04 Hz — slow sweep
-            0,       // lfoWaveform: Sine
-            0.3f,    // lfoDepth: gentle
+            0.35f,   // threshold: triggers readily for more freeze activity
+            0.2f,    // foldAmount: alien harmonic texture
+            0.15f,   // foldOffset: stereo depth
+            0.35f,   // lfoRate: ~0.13 Hz — deliberate random rhythm
+            3,       // lfoWaveform: S&H — random steps through frozen content
+            0.5f,    // lfoDepth: bold position jumps
             false,   // lfoTargetStretch
-            true,    // lfoTargetPosition — drift through frozen layers
-            false,   // lfoTargetFoldAmount
+            true,    // lfoTargetPosition — scanning through captured moments
+            true,    // lfoTargetFoldAmount — harmonic character shifts per step
             false,   // lfoTargetFoldOffset
-            0.65f    // mix: 65% — dry pad anchors the layers
+            0.8f     // mix: 80%
         },
 
         // =====================================================================
         // INDEX 4: Infinite Cogs
-        // Slow mechanical movement — triangle LFO on position
+        // Mechanical psychedelic movement — triangle LFO weaves stereo
+        // offset while fold adds grinding harmonic edge
         // =====================================================================
         {
-            0.5f,    // stretch: 1.0x — natural time
+            0.58f,   // stretch: ~1.5x — slightly expanded
             0.5f,    // position: center
             0,       // freezeMode: Off
             0.3f,    // threshold: unused
-            0.12f,   // foldAmount: light saturation
-            0.15f,   // foldOffset: stereo movement
-            0.303f,  // lfoRate: ~0.1 Hz — slow pulse
-            1,       // lfoWaveform: Triangle
-            0.35f,   // lfoDepth: noticeable movement
+            0.25f,   // foldAmount: crunchy mechanical texture
+            0.0f,    // foldOffset: centered — LFO sweeps it
+            0.28f,   // lfoRate: ~0.06 Hz — slow mechanical pulse
+            1,       // lfoWaveform: Triangle — smooth sweeps
+            0.5f,    // lfoDepth: deep stereo weaving
             false,   // lfoTargetStretch
             false,   // lfoTargetPosition
-            false,   // lfoTargetFoldAmount
-            true,    // lfoTargetFoldOffset — stereo weaving
-            0.65f    // mix: 65%
+            true,    // lfoTargetFoldAmount — fold intensity sweeps
+            true,    // lfoTargetFoldOffset — stereo field rotates
+            0.8f     // mix: 80%
         },
 
         // =====================================================================
         // INDEX 5: Primordial Gear
-        // Deep granular drone — extreme stretch, no fold, immersive
+        // Deep granular drone — extreme stretch turns pad into vast
+        // slowly breathing drone landscape
         // =====================================================================
         {
-            0.75f,   // stretch: ~3x — deep expansion
+            0.8f,    // stretch: ~4x — deep time dilation
             0.5f,    // position: center
             0,       // freezeMode: Off
             0.3f,    // threshold: unused
-            0.0f,    // foldAmount: none — pure granular texture
+            0.1f,    // foldAmount: subtle warmth on the drone
             0.0f,    // foldOffset: none
-            0.15f,   // lfoRate: ~0.02 Hz — glacial
+            0.12f,   // lfoRate: ~0.015 Hz — one breath per minute
             0,       // lfoWaveform: Sine
-            0.2f,    // lfoDepth: slow breathing
-            true,    // lfoTargetStretch — stretch breathes 2x-4x
+            0.35f,   // lfoDepth: stretch breathes 2.5x-6x
+            true,    // lfoTargetStretch — drone breathes slowly
             false,   // lfoTargetPosition
             false,   // lfoTargetFoldAmount
             false,   // lfoTargetFoldOffset
-            0.8f     // mix: 80% — deep but grounded
+            0.95f    // mix: 95% — fully immersive drone
         },
 
         // =====================================================================
         // INDEX 6: Observer's Gaze
-        // S&H position jumps on frozen pad — gentle glitch texture
+        // Auto-freeze + S&H random jumps through position AND stretch
+        // — unpredictable alien texture collage
         // =====================================================================
         {
-            0.55f,   // stretch: ~1.3x
+            0.55f,   // stretch: ~1.3x base
             0.5f,    // position: center
             2,       // freezeMode: Auto
-            0.45f,   // threshold: triggers on louder moments
-            0.05f,   // foldAmount: minimal — let the grains speak
-            0.1f,    // foldOffset: subtle stereo
-            0.394f,  // lfoRate: ~0.2 Hz — gentle random rhythm
-            3,       // lfoWaveform: S&H — random steps
-            0.25f,   // lfoDepth: moderate jumps
-            false,   // lfoTargetStretch
-            true,    // lfoTargetPosition — random position jumps in frozen buffer
-            false,   // lfoTargetFoldAmount
-            false,   // lfoTargetFoldOffset
-            0.6f     // mix: 60%
-        },
-
-        // =====================================================================
-        // INDEX 7: Golden Helix
-        // Spiraling stretch drift — pad slowly rises and falls in pitch
-        // =====================================================================
-        {
-            0.55f,   // stretch: ~1.3x — base slightly expanded
-            0.5f,    // position: center
-            0,       // freezeMode: Off
-            0.3f,    // threshold: unused
-            0.1f,    // foldAmount: light warmth
-            0.1f,    // foldOffset: subtle stereo
-            0.2f,    // lfoRate: ~0.04 Hz — slow spiral
-            0,       // lfoWaveform: Sine — smooth
-            0.3f,    // lfoDepth: stretch drifts between ~0.8x and ~2x
-            true,    // lfoTargetStretch — pitch spiral
-            false,   // lfoTargetPosition
+            0.4f,    // threshold: triggers on moderate levels
+            0.15f,   // foldAmount: each fragment gets harmonic color
+            0.2f,    // foldOffset: stereo fragments
+            0.42f,   // lfoRate: ~0.24 Hz — faster random rhythm
+            3,       // lfoWaveform: S&H — random jumps
+            0.45f,   // lfoDepth: bold jumps in position + pitch
+            true,    // lfoTargetStretch — random pitch shifts per step
+            true,    // lfoTargetPosition — random position per step
             false,   // lfoTargetFoldAmount
             false,   // lfoTargetFoldOffset
             0.75f    // mix: 75%
         },
 
         // =====================================================================
-        // INDEX 8: Infinite Recursion
-        // Square LFO steps between two stretch states — pad alternates
+        // INDEX 7: Golden Helix
+        // Spiraling pitch with harmonic shimmer — pad corkscrews
+        // through octaves while fold amount ebbs and flows
         // =====================================================================
         {
-            0.5f,    // stretch: 1.0x — center point
+            0.6f,    // stretch: ~1.6x — base slightly expanded
             0.5f,    // position: center
             0,       // freezeMode: Off
             0.3f,    // threshold: unused
-            0.08f,   // foldAmount: touch of grit on transitions
-            0.0f,    // foldOffset: centered
-            0.356f,  // lfoRate: ~0.15 Hz — slow alternation
-            2,       // lfoWaveform: Square — hard steps
-            0.2f,    // lfoDepth: steps between ~0.7x and ~1.4x
-            true,    // lfoTargetStretch — stepped pitch
+            0.2f,    // foldAmount: warm harmonic character
+            0.15f,   // foldOffset: stereo width
+            0.18f,   // lfoRate: ~0.03 Hz — slow spiral
+            0,       // lfoWaveform: Sine — smooth
+            0.5f,    // lfoDepth: wide pitch range + fold breathing
+            true,    // lfoTargetStretch — pitch spiral up and down
+            false,   // lfoTargetPosition
+            true,    // lfoTargetFoldAmount — harmonics intensify at extremes
+            false,   // lfoTargetFoldOffset
+            0.85f    // mix: 85%
+        },
+
+        // =====================================================================
+        // INDEX 8: Infinite Recursion
+        // Square LFO hard-switches between two realities — pad jumps
+        // between pitch states with fold offset flipping stereo image
+        // =====================================================================
+        {
+            0.55f,   // stretch: ~1.3x — center point
+            0.5f,    // position: center
+            0,       // freezeMode: Off
+            0.3f,    // threshold: unused
+            0.2f,    // foldAmount: noticeable fold on both states
+            0.0f,    // foldOffset: centered — square LFO flips it
+            0.303f,  // lfoRate: ~0.1 Hz — deliberate slow alternation
+            2,       // lfoWaveform: Square — hard-cut between states
+            0.4f,    // lfoDepth: dramatic state changes
+            true,    // lfoTargetStretch — pitch jumps between two states
             false,   // lfoTargetPosition
             false,   // lfoTargetFoldAmount
-            false,   // lfoTargetFoldOffset
-            0.7f     // mix: 70%
+            true,    // lfoTargetFoldOffset — stereo image flips with state
+            0.85f    // mix: 85%
         },
 
         // =====================================================================
         // INDEX 9: Weaver's Dance
-        // Stereo offset weaving — fold offset LFO creates moving stereo field
+        // Deep stereo weaving — fold offset LFO creates immersive
+        // rotating stereo field, stretched for width
         // =====================================================================
         {
-            0.55f,   // stretch: ~1.3x
+            0.65f,   // stretch: ~2x — expanded for space
             0.5f,    // position: center
             0,       // freezeMode: Off
             0.3f,    // threshold: unused
-            0.15f,   // foldAmount: enough to make offset audible
-            0.0f,    // foldOffset: centered — LFO moves it
-            0.25f,   // lfoRate: ~0.035 Hz — slow weave
+            0.3f,    // foldAmount: strong fold to make offset very audible
+            0.0f,    // foldOffset: centered — LFO sweeps it fully
+            0.22f,   // lfoRate: ~0.04 Hz — slow immersive weave
             1,       // lfoWaveform: Triangle — smooth sweeps
-            0.3f,    // lfoDepth: offset sweeps gently
+            0.55f,   // lfoDepth: full stereo rotation
             false,   // lfoTargetStretch
             false,   // lfoTargetPosition
             false,   // lfoTargetFoldAmount
-            true,    // lfoTargetFoldOffset — stereo field moves
-            0.7f     // mix: 70%
+            true,    // lfoTargetFoldOffset — stereo field rotates
+            0.9f     // mix: 90% — immersive
         },
 
         // =====================================================================
         // INDEX 10: Cog Within Cog
-        // Dual modulation — position + offset move together, slow evolve
+        // Multi-dimensional drift — position + stretch + fold all modulated
+        // by slow sine, creating endlessly evolving organic texture
         // =====================================================================
         {
-            0.6f,    // stretch: ~1.6x
+            0.65f,   // stretch: ~2x
             0.5f,    // position: center
             0,       // freezeMode: Off
             0.3f,    // threshold: unused
-            0.12f,   // foldAmount: light saturation
-            0.05f,   // foldOffset: subtle base offset
-            0.2f,    // lfoRate: ~0.04 Hz — slow
+            0.22f,   // foldAmount: present harmonic character
+            0.1f,    // foldOffset: base stereo offset
+            0.15f,   // lfoRate: ~0.02 Hz — glacial evolution
             0,       // lfoWaveform: Sine
-            0.25f,   // lfoDepth: gentle
-            false,   // lfoTargetStretch
-            true,    // lfoTargetPosition — time movement
-            false,   // lfoTargetFoldAmount
-            true,    // lfoTargetFoldOffset — stereo movement
-            0.7f     // mix: 70%
+            0.45f,   // lfoDepth: everything moves deeply
+            true,    // lfoTargetStretch — pitch drifts
+            true,    // lfoTargetPosition — time drifts
+            true,    // lfoTargetFoldAmount — harmonics drift
+            true,    // lfoTargetFoldOffset — stereo drifts
+            0.85f    // mix: 85%
         },
 
         // =====================================================================
         // INDEX 11: Quantum Collapse
-        // S&H on stretch — random pitch fragments from frozen pad
+        // S&H on stretch + fold — random pitch AND harmonic states,
+        // auto-freeze captures then mangles fragments
         // =====================================================================
         {
-            0.5f,    // stretch: 1.0x base
+            0.55f,   // stretch: ~1.3x base
             0.5f,    // position: center
             2,       // freezeMode: Auto
-            0.45f,   // threshold: triggers on louder passages
-            0.06f,   // foldAmount: minimal
-            0.08f,   // foldOffset: subtle
-            0.45f,   // lfoRate: ~0.21 Hz
-            3,       // lfoWaveform: S&H — random pitch fragments
-            0.2f,    // lfoDepth: moderate jumps
-            true,    // lfoTargetStretch — random pitch shifts
+            0.4f,    // threshold: active triggering
+            0.2f,    // foldAmount: each random state has fold character
+            0.15f,   // foldOffset: stereo per fragment
+            0.4f,    // lfoRate: ~0.2 Hz — moderate random rate
+            3,       // lfoWaveform: S&H — random states
+            0.4f,    // lfoDepth: bold random jumps
+            true,    // lfoTargetStretch — random pitch per step
             false,   // lfoTargetPosition
-            false,   // lfoTargetFoldAmount
-            false,   // lfoTargetFoldOffset
-            0.6f     // mix: 60% — keep dry pad as anchor
-        },
-
-        // =====================================================================
-        // INDEX 12: Eternal Return
-        // Auto-freeze with slow position sweep — looping through moments
-        // =====================================================================
-        {
-            0.55f,   // stretch: ~1.3x
-            0.5f,    // position: center
-            2,       // freezeMode: Auto
-            0.5f,    // threshold: only loud notes trigger
-            0.08f,   // foldAmount: light warmth
-            0.1f,    // foldOffset: subtle stereo
-            0.18f,   // lfoRate: ~0.03 Hz — glacial sweep
-            1,       // lfoWaveform: Triangle — smooth
-            0.35f,   // lfoDepth: wide position sweep through frozen content
-            false,   // lfoTargetStretch
-            true,    // lfoTargetPosition — sweeps through frozen moment
-            false,   // lfoTargetFoldAmount
-            false,   // lfoTargetFoldOffset
-            0.7f     // mix: 70%
-        },
-
-        // =====================================================================
-        // INDEX 13: Mirror of Mirrors
-        // Higher fold — the "drive" preset, still controlled for pads
-        // =====================================================================
-        {
-            0.6f,    // stretch: ~1.6x
-            0.5f,    // position: center
-            0,       // freezeMode: Off
-            0.3f,    // threshold: unused
-            0.2f,    // foldAmount: noticeable saturation (but not harsh)
-            0.15f,   // foldOffset: stereo spread
-            0.22f,   // lfoRate: ~0.04 Hz
-            0,       // lfoWaveform: Sine
-            0.2f,    // lfoDepth: fold amount breathes
-            false,   // lfoTargetStretch
-            false,   // lfoTargetPosition
-            true,    // lfoTargetFoldAmount — harmonic breathing
-            false,   // lfoTargetFoldOffset
-            0.65f    // mix: 65%
-        },
-
-        // =====================================================================
-        // INDEX 14: Omniscient Dawn
-        // Multi-target slow evolution — everything drifts, gentle chaos
-        // =====================================================================
-        {
-            0.6f,    // stretch: ~1.6x
-            0.5f,    // position: center
-            2,       // freezeMode: Auto
-            0.45f,   // threshold: moderate
-            0.1f,    // foldAmount: light
-            0.1f,    // foldOffset: subtle stereo
-            0.15f,   // lfoRate: ~0.02 Hz — glacial
-            0,       // lfoWaveform: Sine
-            0.2f,    // lfoDepth: gentle
-            true,    // lfoTargetStretch — slow pitch drift
-            true,    // lfoTargetPosition — slow position drift
-            true,    // lfoTargetFoldAmount — subtle harmonic shift
-            true,    // lfoTargetFoldOffset — stereo shifts
-            0.7f     // mix: 70%
-        },
-
-        // =====================================================================
-        // INDEX 15: Frozen Cathedral
-        // MANUAL freeze — freeze a pad, it becomes vast ambient space
-        // Position LFO drifts through the frozen moment
-        // =====================================================================
-        {
-            0.6f,    // stretch: ~1.6x — slight pitch shift on frozen content
-            0.5f,    // position: center — LFO drifts through
-            1,       // freezeMode: Manual — user controls freeze
-            0.3f,    // threshold: unused in Manual mode
-            0.05f,   // foldAmount: barely there
-            0.1f,    // foldOffset: subtle stereo width
-            0.15f,   // lfoRate: ~0.02 Hz — slow cathedral drift
-            0,       // lfoWaveform: Sine
-            0.4f,    // lfoDepth: wide position sweep
-            false,   // lfoTargetStretch
-            true,    // lfoTargetPosition — drift through frozen moment
-            false,   // lfoTargetFoldAmount
+            true,    // lfoTargetFoldAmount — random harmonic intensity per step
             false,   // lfoTargetFoldOffset
             0.8f     // mix: 80%
         },
 
         // =====================================================================
-        // INDEX 16: Event Horizon
-        // Extreme stretch — pad becomes glacial drone, no fold needed
+        // INDEX 12: Eternal Return
+        // Auto-freeze + deep triangle sweep through frozen content —
+        // pad moments captured and slowly scanned, ever-returning
         // =====================================================================
         {
-            0.85f,   // stretch: ~6.3x — extreme time dilation
+            0.68f,   // stretch: ~2.2x — expanded frozen grains
+            0.5f,    // position: center
+            2,       // freezeMode: Auto
+            0.4f,    // threshold: active capture
+            0.18f,   // foldAmount: warm frozen texture
+            0.2f,    // foldOffset: stereo depth in frozen content
+            0.12f,   // lfoRate: ~0.015 Hz — glacial sweep
+            1,       // lfoWaveform: Triangle — smooth position scanning
+            0.6f,    // lfoDepth: wide sweep through entire frozen buffer
+            false,   // lfoTargetStretch
+            true,    // lfoTargetPosition — scans through frozen moment
+            false,   // lfoTargetFoldAmount
+            true,    // lfoTargetFoldOffset — stereo shifts during scan
+            0.85f    // mix: 85%
+        },
+
+        // =====================================================================
+        // INDEX 13: Mirror of Mirrors
+        // Harmonic hall of mirrors — fold amount pulsing with sine LFO
+        // creates breathing distortion layers over stretched pad
+        // =====================================================================
+        {
+            0.68f,   // stretch: ~2.2x
+            0.5f,    // position: center
+            0,       // freezeMode: Off
+            0.3f,    // threshold: unused
+            0.35f,   // foldAmount: bold wavefold — the main attraction
+            0.25f,   // foldOffset: wide stereo from fold
+            0.2f,    // lfoRate: ~0.04 Hz — slow breathing
+            0,       // lfoWaveform: Sine
+            0.45f,   // lfoDepth: fold breathes from subtle to intense
+            false,   // lfoTargetStretch
+            false,   // lfoTargetPosition
+            true,    // lfoTargetFoldAmount — harmonic intensity breathes
+            true,    // lfoTargetFoldOffset — stereo field pulses
+            0.8f     // mix: 80%
+        },
+
+        // =====================================================================
+        // INDEX 14: Omniscient Dawn
+        // Everything drifts — all four targets modulated, auto-freeze
+        // captures moments, maximum organic evolution
+        // =====================================================================
+        {
+            0.65f,   // stretch: ~2x
+            0.5f,    // position: center
+            2,       // freezeMode: Auto — captures moments
+            0.35f,   // threshold: active triggering
+            0.2f,    // foldAmount: present harmonic bed
+            0.15f,   // foldOffset: stereo base
+            0.1f,    // lfoRate: ~0.012 Hz — ultra-slow, one cycle ~80 seconds
+            0,       // lfoWaveform: Sine
+            0.5f,    // lfoDepth: deep, everything moves
+            true,    // lfoTargetStretch — pitch evolves
+            true,    // lfoTargetPosition — time evolves
+            true,    // lfoTargetFoldAmount — harmonics evolve
+            true,    // lfoTargetFoldOffset — stereo evolves
+            0.9f     // mix: 90% — deep immersion
+        },
+
+        // =====================================================================
+        // INDEX 15: Frozen Cathedral
+        // MANUAL freeze — freeze any moment, it becomes a vast reverberant
+        // space. Position LFO slowly explores the frozen architecture.
+        // =====================================================================
+        {
+            0.7f,    // stretch: ~2.5x — frozen content pitched slightly
+            0.5f,    // position: center — LFO explores from here
+            1,       // freezeMode: Manual — user freezes the moment
+            0.3f,    // threshold: unused in Manual
+            0.12f,   // foldAmount: subtle warmth on frozen texture
+            0.18f,   // foldOffset: stereo cathedral width
+            0.1f,    // lfoRate: ~0.012 Hz — ultra-slow cathedral drift
+            0,       // lfoWaveform: Sine
+            0.55f,   // lfoDepth: wide exploration of frozen space
+            true,    // lfoTargetStretch — pitch slowly rises/falls
+            true,    // lfoTargetPosition — drifts through frozen moment
+            false,   // lfoTargetFoldAmount
+            false,   // lfoTargetFoldOffset
+            0.95f    // mix: 95% — fully inside the cathedral
+        },
+
+        // =====================================================================
+        // INDEX 16: Event Horizon
+        // Extreme stretch drone — pad becomes glacial, endless,
+        // barely recognizable. Pure granular enormity.
+        // =====================================================================
+        {
+            0.88f,   // stretch: ~7.5x — extreme time dilation
             0.5f,    // position: center
             0,       // freezeMode: Off — pure stretch
             0.3f,    // threshold: unused
-            0.0f,    // foldAmount: none — pure granular
-            0.0f,    // foldOffset: none
-            0.12f,   // lfoRate: ~0.015 Hz — one cycle per ~67 seconds
+            0.08f,   // foldAmount: hint of warmth on the drone
+            0.1f,    // foldOffset: subtle stereo
+            0.08f,   // lfoRate: ~0.01 Hz — one cycle per ~100 seconds
             0,       // lfoWaveform: Sine
-            0.15f,   // lfoDepth: stretch gently breathes
-            true,    // lfoTargetStretch — breathing between ~5x and ~8x
+            0.3f,    // lfoDepth: stretch breathes between ~5x and ~10x
+            true,    // lfoTargetStretch — drone slowly breathes
             false,   // lfoTargetPosition
             false,   // lfoTargetFoldAmount
             false,   // lfoTargetFoldOffset
-            0.85f    // mix: 85% — immersive
+            1.0f     // mix: 100% — fully immersive, no dry signal
         },
 
         // =====================================================================
         // INDEX 17: Ghost Layer
-        // Low mix — granular ghost sits behind the dry pad
+        // Parallel haunting — auto-freeze ghost sits behind dry pad,
+        // folded differently, drifting through captured fragments
         // =====================================================================
         {
-            0.6f,    // stretch: ~1.6x — ghost is slightly expanded
+            0.65f,   // stretch: ~2x — ghost is expanded
             0.5f,    // position: center
             2,       // freezeMode: Auto — ghost captures fragments
-            0.5f,    // threshold: only louder notes trigger
-            0.05f,   // foldAmount: minimal
-            0.08f,   // foldOffset: ghost has subtle stereo
-            0.2f,    // lfoRate: ~0.04 Hz — slow haunting
-            0,       // lfoWaveform: Sine
-            0.25f,   // lfoDepth: gentle drift
+            0.4f,    // threshold: ghost captures readily
+            0.22f,   // foldAmount: ghost has its own harmonic character
+            0.2f,    // foldOffset: ghost has wide stereo
+            0.18f,   // lfoRate: ~0.03 Hz — slow haunting drift
+            1,       // lfoWaveform: Triangle — smooth ghost movement
+            0.4f,    // lfoDepth: ghost wanders noticeably
             false,   // lfoTargetStretch
             true,    // lfoTargetPosition — ghost drifts through captured moment
-            false,   // lfoTargetFoldAmount
+            true,    // lfoTargetFoldAmount — ghost's harmonics shift
             false,   // lfoTargetFoldOffset
-            0.4f     // mix: 40% — ghost barely there, behind dry pad
+            0.5f     // mix: 50% — ghost present but pad leads
         },
 
         // =====================================================================
         // INDEX 18: Temporal Rift
-        // Stretched + S&H position — pad tears into random fragments
+        // Torn time — stretched pad with S&H randomly ripping through
+        // position, fold creates jagged edges on the tears
         // =====================================================================
         {
-            0.7f,    // stretch: ~2.5x — expanded
+            0.75f,   // stretch: ~3x — expanded tears
             0.5f,    // position: center
             2,       // freezeMode: Auto
-            0.45f,   // threshold: moderate
-            0.08f,   // foldAmount: touch of texture
-            0.1f,    // foldOffset: subtle stereo
-            0.356f,  // lfoRate: ~0.15 Hz
+            0.35f,   // threshold: tears happen often
+            0.28f,   // foldAmount: edges of tears have harmonic bite
+            0.2f,    // foldOffset: torn stereo field
+            0.38f,   // lfoRate: ~0.17 Hz — deliberate tear rhythm
             3,       // lfoWaveform: S&H — random position tears
-            0.3f,    // lfoDepth: noticeable jumps
-            false,   // lfoTargetStretch
-            true,    // lfoTargetPosition — random position in frozen content
+            0.55f,   // lfoDepth: bold tears across the buffer
+            true,    // lfoTargetStretch — pitch shifts with tears
+            true,    // lfoTargetPosition — position jumps with tears
             false,   // lfoTargetFoldAmount
             false,   // lfoTargetFoldOffset
-            0.65f    // mix: 65%
+            0.85f    // mix: 85%
         },
 
         // =====================================================================
         // INDEX 19: Lucid Pulse
-        // MANUAL freeze + Square LFO — frozen pad pulses between states
+        // MANUAL freeze + square LFO — frozen pad hard-switches between
+        // two pitch states and stereo positions, hypnotic psybient pulse
         // =====================================================================
         {
-            0.5f,    // stretch: 1.0x — natural pitch
+            0.58f,   // stretch: ~1.5x base
             0.5f,    // position: center
-            1,       // freezeMode: Manual — user controls freeze
-            0.3f,    // threshold: unused
-            0.1f,    // foldAmount: light warmth
-            0.0f,    // foldOffset: centered
-            0.394f,  // lfoRate: ~0.2 Hz — slow pulse
-            2,       // lfoWaveform: Square — hard alternation
-            0.2f,    // lfoDepth: moderate pitch steps
-            true,    // lfoTargetStretch — pitch alternates between two states
-            false,   // lfoTargetPosition
+            1,       // freezeMode: Manual — user controls what gets frozen
+            0.3f,    // threshold: unused in Manual
+            0.22f,   // foldAmount: harmonic character on both states
+            0.15f,   // foldOffset: stereo width
+            0.35f,   // lfoRate: ~0.13 Hz — slow hypnotic pulse
+            2,       // lfoWaveform: Square — hard alternation between states
+            0.45f,   // lfoDepth: dramatic state switches
+            true,    // lfoTargetStretch — pitch hard-switches
+            true,    // lfoTargetPosition — reads different parts of frozen buffer
             false,   // lfoTargetFoldAmount
-            false,   // lfoTargetFoldOffset
-            0.7f     // mix: 70%
+            true,    // lfoTargetFoldOffset — stereo flips with each state
+            0.9f     // mix: 90% — pulsing is the whole point
         }
     };
     // clang-format on

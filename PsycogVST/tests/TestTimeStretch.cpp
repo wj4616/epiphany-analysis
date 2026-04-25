@@ -214,6 +214,50 @@ TEST_CASE("TimeStretch position scrub changes output", "[TimeStretch]")
     REQUIRE(std::abs(sumA - sumB) > 0.001f);
 }
 
+TEST_CASE("TimeStretch different stretch values produce different output", "[TimeStretch]")
+{
+    // This is the critical test: stretch=1x vs stretch=4x MUST sound different.
+    // Before the fix, the input read head tracked real-time regardless of stretch,
+    // making all stretch values identical (passthrough).
+
+    auto sine = generateSine(48000);  // 1 second
+
+    // Run stretch=1x
+    auto ts1 = createPrepared();
+    float norm1x = ParamConversions::stretchToNormalized(1.0f);
+    std::vector<float> out1x(48000);
+    for (int i = 0; i < 48000; ++i)
+    {
+        float outL, outR;
+        ts1.processSample(outL, outR, sine[i], sine[i], norm1x, 0.5f,
+                          PsycogConstants::FreezeMode::Off);
+        out1x[i] = outL;
+    }
+
+    // Run stretch=4x
+    auto ts2 = createPrepared();
+    float norm4x = ParamConversions::stretchToNormalized(4.0f);
+    std::vector<float> out4x(48000);
+    for (int i = 0; i < 48000; ++i)
+    {
+        float outL, outR;
+        ts2.processSample(outL, outR, sine[i], sine[i], norm4x, 0.5f,
+                          PsycogConstants::FreezeMode::Off);
+        out4x[i] = outL;
+    }
+
+    // Count samples that differ significantly (skip first grain window for settling)
+    int diffCount = 0;
+    for (int i = 4096; i < 48000; ++i)
+    {
+        if (std::abs(out1x[i] - out4x[i]) > 0.01f)
+            diffCount++;
+    }
+
+    // At LEAST 25% of samples should differ noticeably
+    REQUIRE(diffCount > (48000 - 4096) / 4);
+}
+
 TEST_CASE("TimeStretch sample rate 44100", "[TimeStretch]")
 {
     TimeStretch ts;

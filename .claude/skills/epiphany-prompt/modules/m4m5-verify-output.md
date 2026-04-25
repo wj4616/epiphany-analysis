@@ -7,7 +7,8 @@ input_dependencies:
   - 01-inventory.md
   - 03-synthesis.md
 output_files:
-  - 04-verification.md
+  - 04-verification.md     # STANDARD W3 — orchestrator provides exact filename per scale in spawn prompt
+  - 06-verification-2.md   # DEEP W5
 scale_variants: [STANDARD, DEEP]
 kb_sources:
   - kb/enhancement/self-refine.md
@@ -15,7 +16,9 @@ kb_sources:
   - kb/techniques/structured-output.md
 activation:
   mode: normal
-  wave: W3 (STANDARD) | W5 (DEEP)
+  wave:
+    STANDARD: 3
+    DEEP: 5
   role: verify+output
 return_contract: |
   PASS: "VERIFICATION: PASS\n\n<prompt>...</prompt>"
@@ -42,6 +45,8 @@ Read from `{session_dir}`:
 
 ## Phase 1 — Verification
 
+Read `01-inventory.md` as YAML (see SKILL.md `§ Schemas → Inventory schema`). Each category is a list; iterate each list for per-item preservation checks (6a–6e) and use list lengths for preservation summary counts.
+
 Run all 12 checks (6a–6l) from SKILL.md `## Verification Checks` → Normal mode. For each check, produce an entry in the standard report schema (see SKILL.md `## Schemas`).
 
 Write `04-verification.md` with check results + summary (the `04-verification.md` file name is used for STANDARD W3; for DEEP W5 the orchestrator expects this module to write to `06-verification-2.md` — the orchestrator's Agent prompt specifies the exact output file name. Write to whatever filename the orchestrator directs.)
@@ -57,7 +62,7 @@ On FAIL: skip Phase 2. Return `VERIFICATION: FAIL — [one-sentence summary]`. D
 On PASS: format the output XML.
 - Root element: `<prompt>`
 - First child: `<meta source="epiphany-prompt"/>`
-- Subsequent children: semantic sections from the draft
+- Subsequent children: semantic sections from the draft in canonical order where applicable: `<role>` → `<context>` → `<task>` → remaining sections
 - See SKILL.md `## Output Formats` for the full format spec
 
 Do NOT write the output XML to a stage file. Instead include it in the Agent return message (see below).

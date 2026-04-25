@@ -275,9 +275,16 @@ Agent({
     2. Read all kb_sources listed in your module's frontmatter (from KB base).
     3. Read all input_dependencies listed in your module's frontmatter
        (from {session_dir}stages/).
-    4. Execute the PROTOCOL.
-    5. Write your output to {session_dir}stages/[output_file].
-    6. Return: {stage_id: '[N]', status: 'complete'|'thin'|'empty',
+    4. Read optional_dependencies listed in your module's frontmatter if the files
+       exist (from {session_dir}stages/). Missing optional files are silently skipped.
+    5. Context budget: read your module's context_budget_lines frontmatter value.
+       Count the total lines across all dependency files loaded in steps 3–4. If the
+       total exceeds context_budget_lines, emit:
+       [WARN] S[N] [Stage Name]: context budget {N} lines, actual {M} lines — reasoning quality may degrade.
+       Then continue — this WARN does not stop execution.
+    6. Execute the PROTOCOL.
+    7. Write your output to {session_dir}stages/[output_file].
+    8. Return: {stage_id: '[N]', status: 'complete'|'thin'|'empty',
        summary: '[one sentence]', signals: []}"
 })
 ```
@@ -421,11 +428,14 @@ Agent({
   prompt: "You are executing the Output Synthesis Pass (OSP) of epiphany-genius v1.1.0.
     Session directory: {session_dir}.
     Module file: {skill_path}modules/output-synthesis-pass.md
+    scale: {scale}
+    flag_verbose: {flag_verbose}
 
     Instructions:
     1. Read your module file and follow its PROTOCOL exactly.
     2. Read all input_dependencies and optional_dependencies listed in frontmatter.
     3. Execute the OSP PROTOCOL (load-bearing claim selection, assembly, self-verify).
+       Use the scale and flag_verbose values above for length targets and section 13.
     4. Write output to {session_dir}stages/output-distilled.md.
     Return: {stage_id: 'OSP', status: 'complete'|'distillation_warning',
     summary: '[one sentence]'}"
@@ -579,6 +589,32 @@ HALT conditions ALWAYS stop pipeline execution. WARN conditions log and continue
 | `--verbose` | runs (expanded) | yes | yes |
 | `--no-save` | (per mode) | yes | **no** |
 | `--resume` | resumes where left off | per mode | yes |
+
+### Session directory layout
+
+```
+{session_dir}/
+  input.md                  ← Preserved raw input (written in STEP 3, always)
+  report.md                 ← Final distilled report (or report.xml for --xml mode)
+  stages/
+    session.md              ← Observability: scale, flags, signals, wave_plan,
+    |                          spawns_total, wall_seconds, retry_path_taken
+    00-processed-input.md   ← Normalized semantic input (written in STEP 3)
+    S1-state-loading.md
+    S2-constraint-escape.md     ← absent if MINIMAL scale
+    S3-peripheral-exploration.md ← absent if MINIMAL scale
+    S3-1-defixation.md          ← conditional (S3_thin_or_empty or Path B)
+    S4-dynamic-simulation.md    ← DEEP scale only
+    S5-precision-forcing.md
+    S6-falsification.md         ← absent if MINIMAL scale
+    S6-1-conjecture.md          ← conditional (--conjecture flag only)
+    S7-integration.md
+    S7-v6-scope.txt             ← V6 verbatim scope (written by S7, read by OSP)
+    output-distilled.md         ← OSP output (absent if --xml mode)
+    output.xml                  ← XML assembly output (present only if --xml mode)
+    test-report.md              ← T1–T5 test results (written by test-runner.sh)
+    validation-log.md           ← Per-stage PASS/FAIL log (written by validate-stage.sh)
+```
 
 ### KB base path
 
