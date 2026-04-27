@@ -148,23 +148,41 @@ Diagnostic: *"resolved target $TARGET looks like a wrapper/aggregator, not a pro
 │   └── N23-fix-reporter.md
 ├── schemas/
 │   ├── audit-report-v1.schema.json
-│   └── fix-report-v1.schema.json
+│   ├── fix-report-v1.schema.json
+│   ├── dry-run-plan-v1.schema.json     # I3 — first-class dry-run plan
+│   └── dimension-plugin-v1.schema.json # I1 — pluggable dimension manifest
+├── dimensions/                          # I1 — built-in + user dimension plugins
+│   ├── correctness.md                  # built-in (mirrors N04)
+│   ├── architecture.md                 # built-in (mirrors N05)
+│   ├── performance.md                  # built-in (mirrors N06)
+│   ├── security.md                     # built-in (mirrors N07)
+│   ├── maintainability.md              # built-in (mirrors N08)
+│   └── README.md                       # how to add a custom dimension
 ├── templates/
 │   ├── audit-report.md.template
-│   └── fix-report.md.template
+│   ├── fix-report.md.template
+│   └── dry-run-plan.md.template        # I3
 └── tests/
     ├── smoke/
-    └── schema-validation/
+    ├── schema-validation/
+    └── determinism/                     # B30 — fixture root for ≥80% set-overlap CI gate
+        ├── python-small/
+        │   ├── source/                  # reference project tree
+        │   └── expected_findings.yaml   # frozen finding set
 ```
 
 **External paths used at runtime:**
 
 - `~/docs/epiphany/audit/` — saved audit reports
 - `~/docs/epiphany/audit/fix-reports/` — saved fix reports
+- `~/docs/epiphany/audit/dry-run-plans/` — saved dry-run plans (I3)
 - `~/docs/epiphany/audit/.state/<source-report-id>.json` — idempotency state per source report
+- `~/docs/epiphany/audit/.baselines/<report-id>.json` — pre-flight baseline manifest (N18)
 - `~/docs/epiphany/audit/.recovery/<report-id>.json` — recovery manifest (in-flight fix state)
 - `~/docs/epiphany/audit/.recovery/.archive/<report-id>-<timestamp>.json` — archived prior recovery manifests
 - `~/docs/epiphany/audit/.logs/<report-id>.jsonl` — structured per-node event log (not stdout)
+- `~/.config/epiphany-audit/dimensions/` — user-installed dimension plugins (loaded after skill-bundled ones)
+- `~/.config/epiphany-audit/allowed-roots.json` — per-user override list for suspicious-target gate
 
 ---
 
@@ -183,14 +201,14 @@ Net effect: 26 → 23 nodes. All other input-prompt nodes are renumbered downwar
 | ID | Name | Type | Mode | Purpose | Backtrack / Aggregation |
 |---|---|---|---|---|---|
 | N01 | ContextIntake | ingest | inline | Fresh project model: language detection, file inventory, build manifest, test command, git state, declared entry points. Honors implied-context resolution + suspicious-target gate. Forbids reference to prior session conclusions. | — |
-| N02 | RelevanceRouter (R-ROUTE) | router | inline | Per-dimension activation map. **Floor:** CORRECTNESS + MAINTAINABILITY always on. Skipped dimensions emit `skipped because: <trigger>` rationale. Heterogeneous monorepo emits per-subtree activation maps. | — |
+| N02 | RelevanceRouter (R-ROUTE) | router | inline | Per-dimension activation map. Loads dimension plugins from (1) skill-bundled `dimensions/*.md`, (2) user `~/.config/epiphany-audit/dimensions/*.md`; user dimensions are loaded *after* and may shadow bundled ones by `name`. Inspects each plugin's `activation_triggers` per §2.4. **Floor:** CORRECTNESS + MAINTAINABILITY always on (regardless of plugin presence). Skipped dimensions emit `skipped because: <trigger>` rationale. Heterogeneous monorepo emits per-subtree activation maps. | — |
 | N03 | BlindspotFinder (B-FIND) | meta-analyzer | inline | Project-type-specific gap dimensions. **Default mode:** auto-add HIGH-confidence gaps; list in `gap_dimensions_auto_added`. **`--deep` mode:** prompt user (`include gap dimension <name>? (y/n/skip-all)`). | — |
 | N04 | DimensionAnalyzer.CORRECTNESS | analyzer | inline / subagent under `--deep` (capped) | Logic, types/lifetime, boundaries, races, leaks, error paths. | participant in BACKTRACK via N10 |
 | N05 | DimensionAnalyzer.ARCHITECTURE | analyzer | inline / subagent under `--deep` | Coupling, circular deps, god objects, duplicated logic, invariant gaps. Tags `latent` findings with reachability. | participant in BACKTRACK |
 | N06 | DimensionAnalyzer.PERFORMANCE | analyzer | inline / subagent under `--deep` | Hot allocations, complexity blowups, cache layout, false sharing. Tags `latent`. | participant in BACKTRACK |
 | N07 | DimensionAnalyzer.SECURITY | analyzer | inline / subagent under `--deep` | Per-surface sub-routing (SQL/shell/auth/secrets/deserialization/prompt-injection). | participant in BACKTRACK |
 | N08 | DimensionAnalyzer.MAINTAINABILITY | analyzer | inline / subagent under `--deep` | Dead code, misleading names, stale TODOs, test coverage gaps on failure-mode branches. | participant in BACKTRACK |
-| N09 | DimensionAnalyzer.\<X\> (template) | analyzer | inline / subagent under `--deep` | **Instantiable** per project-specific dimension (a11y, reproducibility, IaC drift, model-card, schema-evolution, prompt-injection). Concrete instances get IDs `N09.a11y`, `N09.iac-drift`, etc., in `graph.json`. | participant in BACKTRACK |
+| N09 | DimensionAnalyzer.\<X\> (plugin-instantiated) | analyzer | inline / subagent under `--deep` | **Instantiated by R-ROUTE from dimension plugins** (see §2.4) — built-in (a11y, reproducibility, IaC drift, model-card, schema-evolution, prompt-injection live as plugin files in `dimensions/`) and user-installed plugins from `~/.config/epiphany-audit/dimensions/`. Concrete instances get IDs `N09.a11y`, `N09.iac-drift`, etc., recorded in `graph.json` at run time. Plugin manifest declares `activation_triggers`, `prompt_template`, and optional `kb_route_query` for KB consultation. | participant in BACKTRACK |
 | N10 | FalsePositiveVerifier (FPV) | verifier | inline | Re-reads source per finding; runs the 4 false-positive questions; demotes/discards. **Owns audit-side BACKTRACKING (single re-emit cap).** | refinement back-edge to N04..N09 |
 | N11 | FindingsAggregator | aggregator | inline | Dedup by pattern+location, merge cross-dimension overlaps, count-collapse. **Owns audit-side AGGREGATION.** | aggregator |
 | N12 | Prioritizer | scorer | inline | (Severity × Confidence) / Effort. Emits resolve-before-testing punch list. | — |
@@ -198,7 +216,7 @@ Net effect: 26 → 23 nodes. All other input-prompt nodes are renumbered downwar
 | N14 | Q-GATE | verifier | inline (Pass A) + subagent (Pass B) | **Folded from input-prompt N14+N15.** *Pass A* (mechanical, inline): mandatory-field check, location verification (every `file:line` re-Read), CRITICAL/HIGH × Confidence ≥ MEDIUM floor, dup merge, no-comment-echo, no-LOW-only warning. *Pass B* (adversarial, subagent — clean lens): anti-iatrogenic, evidence-rationale coherence, dimension-classification correctness. **Default's only spawn slot.** | adversarial self-review |
 | N15 | SaveHandler | io | inline | Offers save under `~/docs/epiphany/audit/`. **Save prompt explicitly warns about idempotency degradation** if user declines: *"declining to save means future `--fix` runs of this report cannot use state-file idempotency; they fall back to git-log only. Save anyway? (y/n)"*. Writes idempotency state file at `~/docs/epiphany/audit/.state/<report-id>.json` only on save-accept. | — |
 | N16 | FixTriage (F-VAL ingest + Triage) | validator + triage | inline | **Folded from input-prompt N17+N18.** Schema-validates input report (`schemas/audit-report-v1.schema.json`); halt with precise field/finding-id error on schema fail; SHA-256 of source audit report captured for `source_audit_report_sha256`. **Empty-or-unfixable check (early halt):** if source audit report has zero main-body findings (excluding "Unverified Hypotheses"), halt with `halt-on-empty-or-unfixable-report` *before* running idempotency / triage / suspicious-content checks. **Idempotency check at ingest time** (state file authoritative; git-log fallback). Suspicious-content prompt overrides `--auto`. Groups by file/module; topo-sorts; tier 1/2/3 classification (rules per §2.3); defer-on-uncertainty; conflicting-edit detection (`halt-on-conflicting-fixes`). **Owns fix-side CONDITIONAL ROUTING.** | aggregator (file-grouping) |
-| N17 | FixPlanner | planner | inline | Emits fix-plan doc; awaits per-tier batch approval (default policy); Tier-1 silent under `--auto`; per-fix under `--confirm-all`; `--dry-run` halts here with plan + diffs emitted. Each tier presented in order T1 → T2 → T3; decline on Tier-N → all Tier-N findings `deferred (user-declined-batch)`; pipeline proceeds to Tier-N+1. Explicit user `halt` → stop entirely. | — |
+| N17 | FixPlanner | planner | inline | Emits fix-plan doc per Dry-Run Plan Schema v1 (§4.4); awaits per-tier batch approval (default policy); Tier-1 silent under `--auto`; per-fix under `--confirm-all`. **`--dry-run` halts here after writing the plan to `~/docs/epiphany/audit/dry-run-plans/<source-report-id>-dryrun-<YYYYMMDD>-<HHMMSS>.md`** (machine-parseable, same downstream tools as fix reports). Each tier presented in order T1 → T2 → T3; decline on Tier-N → all Tier-N findings `deferred (user-declined-batch)`; pipeline proceeds to Tier-N+1. Explicit user `halt` → stop entirely. | — |
 | N18 | PreFlight | preflight | inline | Captures baseline manifest (tests/types/lint/build) **before any fix**. Creates branch `epiphany-audit/<report-id>-YYYYMMDD`. **`halt-on-baseline-failure` triggers ONLY when the runner crashes / cannot produce any output** (no exit code, missing binary, broken tool config) — pre-existing failing tests are recorded as the project's baseline state and do NOT halt. Halt on unknown test command / git-state incompatible (dirty tree, detached HEAD, no commits). Writes only the baseline-metrics file under `~/docs/epiphany/audit/.baselines/<report-id>.json`. **Does NOT write recovery manifest** (that is N19/N22 responsibility). | — |
 | N19 | FixApplier | actuator | inline (write-serial) | Atomic loop per fix-group (definition in §2.3): **apply edit (working tree only) → invoke N20 → commit `[AUDIT-NNN] <one-line>` (finding-id in commit body) on PASS, or `git checkout -- <touched-files>` on FAIL (no commit ever made for failed attempts).** Critical: **never `git revert HEAD`** — that creates redundant commits that break idempotency grep. **One concern per commit. No bundling. No "while I'm here" cleanups.** Writes/updates recovery manifest at every state transition (`in_flight_state: idle \| applying \| verifying \| committing`; `last_known_good_sha`; `applied`/`pending`/`in_flight_finding_id`). **Regression-prevention test policy: same-commit by default.** Paired follow-up commit allowed only when the language tooling rejects bundled test+source commits OR a project-level pre-commit hook rejects the bundled commit (recorded as `regression_test_added.deferred_to_followup_commit: <sha>` in fix report). Test failure during per-fix verify discards the working-tree changes (no commit). | — |
 | N20 | PerFixVerifier | verifier | inline | Per-fix targeted tests + type check on changed files. PASS → commit (in N19). FAIL → emit fail-signal + `failure_class` enum (`verification-failure` \| `commit-hook-failure` \| `git-operation-failure` \| `type-check-failure` \| `targeted-test-failure`); N19 discards working-tree changes; **E_repair edge-layer logic** (not N20) decides retry vs replan vs cap-hit per the rules in §3.1. | emits fail-signal; routing is E_repair's responsibility |
@@ -249,6 +267,53 @@ Net effect: 26 → 23 nodes. All other input-prompt nodes are renumbered downwar
 
 If the remediation diff is non-deterministic (numbered steps without a literal patch), classifier defaults to **Tier-3** and notes `tier_classification_reason: "non-literal remediation"`.
 
+### 2.4 Dimension plugin manifest (I1 — pluggable dimension registry)
+
+Each dimension is a single markdown file with YAML frontmatter conforming to `schemas/dimension-plugin-v1.schema.json`. Loaded by R-ROUTE at startup from two locations in order:
+
+1. Skill-bundled: `~/.claude/skills/epiphany-audit/dimensions/*.md`
+2. User-installed: `~/.config/epiphany-audit/dimensions/*.md` (loaded after, may shadow by `name`)
+
+**Plugin frontmatter (required):**
+
+```yaml
+schema_version: 1
+name: <slug>                          # unique identifier — e.g., "juce-rt-safety", "iac-drift"
+display_name: <human readable>        # e.g., "JUCE Real-Time Audio Safety"
+version: <semver>
+applies_to:
+  languages: [<lang>, ...] | "*"      # "*" matches any
+  project_markers: [<file-glob>, ...] # e.g., ["CMakeLists.txt", "JUCE/", "*.vst3"]
+activation_triggers:                  # ALL must match for activation
+  - type: file_present
+    path: "**/JuceHeader.h"
+  - type: import_grep
+    pattern: "AudioProcessor"
+    min_matches: 1
+exclusions:                           # ANY match → dimension skipped even if triggers fire
+  - type: project_size
+    max_files: 1                      # skip on trivial projects
+prompt_template: |                    # body of the analyzer prompt; receives {{project_model}} + {{file_subset}}
+  Analyze the following code for <name> issues. Look for:
+  - <specific failure mode 1>
+  - <specific failure mode 2>
+  Return findings in Audit Report Schema v1 format.
+kb_route_query: null | "<query>"      # if set, R-ROUTE prefetches KB context via kb-route skill
+intra_node_token_budget: 30000        # default; per-plugin override allowed
+priority: low | medium | high         # affects ordering in the activation map under budget pressure
+```
+
+**Plugin body** (after frontmatter): freeform markdown documenting the dimension — failure modes, references, examples. Not parsed by R-ROUTE; for human readers and KB ingestion.
+
+**Loader rules:**
+
+- Plugin files that fail schema validation are logged and skipped (do not halt the audit).
+- A user plugin with the same `name` as a bundled plugin shadows the bundled one entirely (no merge).
+- Bundled plugins for CORRECTNESS and MAINTAINABILITY cannot be shadowed by user plugins (floor preservation; user plugins with these names are rejected with a warning).
+- If two user plugins share a `name`, alphabetical order wins; the loser is logged and skipped.
+
+**Built-in plugin set** (versioned with the skill): `correctness.md`, `architecture.md`, `performance.md`, `security.md`, `maintainability.md`. These are simple thin manifests; their actual prompt logic lives in `modules/N04..N08.md`. New built-ins (a11y, reproducibility, IaC drift, etc.) are added as additional bundled plugin files without changing the registry.
+
 ---
 
 ## 3. Edge Table + State Machine
@@ -288,7 +353,7 @@ If the remediation diff is non-deterministic (numbered steps without a literal p
 | invoke | `--deep` | combines | combines | deep variants; +interactive B-FIND prompt; +token-cap partial-report state |
 | invoke | `--auto` | combines (fix-mode) | combines | Tier-1 silent; Tier-2 batch-confirmed; Tier-3 per-fix |
 | invoke | `--confirm-all` | combines (fix-mode) | combines | per-fix confirmation regardless of tier |
-| invoke | `--dry-run` | combines (fix-mode) | n/a | terminates after N17 with plan + diffs emitted; no apply, no commits, no branch |
+| invoke | `--dry-run` | combines (fix-mode) | n/a | terminates after N17 with Dry-Run Plan v1 written to `~/docs/epiphany/audit/dry-run-plans/`; no apply, no commits, no branch |
 | invoke | `--dry-run` without `--fix` and no audit-pending offer | n/a | n/a | warning emitted: *"--dry-run has no effect without --fix or post-audit fix offer"*; ignored, run continues as if not passed |
 
 ### 3.3 Halt states (first-class outcomes)
@@ -417,6 +482,15 @@ tests_present_signal: false          # complementary metadata, not a 5th false-p
                                      # Effect: elevates confidence floor — finding may still pass if the
                                      # test demonstrably doesn't cover the failure path, but Confidence < MEDIUM
                                      # is rejected by Q-GATE Pass A when this signal is true.
+provenance:                          # I2 — finding-level trace; mandatory on every finding
+  node: N04                          # which analyzer produced this finding (N04..N09 or N09.<plugin-name>)
+  mode: inline | subagent            # how that node executed for this run
+  model: <model-id>                  # e.g., "claude-opus-4-7"; populated even for inline (the orchestrator's model)
+  prompt_hash: <sha256 of effective prompt template>
+  plugin_name: null | <slug>         # null for built-in N04..N08; <slug> for plugin-instantiated N09.<x>
+  plugin_version: null | <semver>    # populated when plugin_name is set
+  audit_rerun_iteration: 0           # 0 on the original audit; 1+ when produced during fix-mode N21 audit-rerun
+  q_gate_pass_b_demoted: false       # true if a prior Pass B run demoted this finding (kept for traceability)
 ```
 
 #### 4.1.2 `priority_score` numeric mapping (deterministic)
@@ -546,12 +620,74 @@ notes: |                              # optional
 
 ### 4.3 Cross-schema invariants
 
-- `source_report_id` in fix-report = `report_id` in audit-report.
+- `source_report_id` in fix-report = `report_id` in audit-report = `source_report_id` in dry-run plan.
 - `source_audit_report_sha256` is verified at `--fix` start; halt with `halt-on-stale-source-report` if file missing or hash mismatched.
 - Status-priority sort order intentionally surfaces problems first.
 - F-VAL strict schema validation applies to **all** `--fix` ingests, including hand-edited audit reports.
 - "Unverified Hypotheses" findings are **not consumable** by `--fix`; F-VAL ingests only main-body findings.
-- Authoritative schemas are `schemas/audit-report-v1.schema.json` and `schemas/fix-report-v1.schema.json`; this section is the human-readable companion.
+- Authoritative schemas: `schemas/audit-report-v1.schema.json`, `schemas/fix-report-v1.schema.json`, `schemas/dry-run-plan-v1.schema.json`, `schemas/dimension-plugin-v1.schema.json`. This section is the human-readable companion.
+
+### 4.4 Dry-Run Plan Schema v1 (I3)
+
+Output of `--dry-run` mode. Saved to `~/docs/epiphany/audit/dry-run-plans/<source-report-id>-dryrun-<YYYYMMDD>-<HHMMSS>.md`. Authoritative JSON schema: `schemas/dry-run-plan-v1.schema.json`. Emitted by N17 after triage/tier-classification; pipeline halts here under `--dry-run` (no PreFlight, no FixApplier, no branch).
+
+**Frontmatter (YAML):**
+
+```yaml
+schema_version: 1
+plan_id: <uuid v4>
+source_audit_report: <absolute path>
+source_audit_report_sha256: <hash>
+source_report_id: <uuid from source>
+plan_timestamp: <ISO 8601>
+flags: [dry-run, ...]                      # always includes dry-run; verbose/deep orthogonal
+
+triage_summary:
+  total_findings: 23
+  tier_1_count: 12
+  tier_2_count: 6
+  tier_3_count: 4
+  deferred_at_triage: 1                     # findings N16 deferred for uncertainty / non-literal remediation
+  conflicting_groups: []                    # would have triggered halt-on-conflicting-fixes if applied
+
+simulated_branch: epiphany-audit/<source-report-id>-YYYYMMDD   # what branch WOULD have been created
+test_command_resolved: <auto-detected or --test-cmd value or null>
+```
+
+**Body — sorted by tier (1 → 2 → 3) then by `priority_score` descending. One entry per finding:**
+
+```yaml
+id: F001
+status: simulated
+tier: 1 | 2 | 3
+tier_classification_reason: <string or null>
+fix_group_id: <generated id>                # which fix-group this finding belongs to
+proposed_diff: |                            # the literal patch N19 WOULD have applied
+  -    for i in range(len(tokens) - 1):
+  +    for i in range(len(tokens)):
+files_touched: [src/parser.py]
+blast_radius:
+  callers_grepped: 3                        # number of callers found by N16's grep
+  imports_referencing: 1                    # how many files import the touched file
+projected_verification:
+  targeted_tests: [tests/test_parser.py::test_emit_all]
+  type_check_scope: [src/parser.py]
+projected_commit_message: "[AUDIT-001] fix off-by-one in parser token loop"
+projected_regression_test: yes (tests/test_parser.py::test_emit_all_tokens) | no | n/a
+notes: |                                    # optional
+  <free text>
+```
+
+**Top-of-body sections:**
+
+1. **Plan summary** — counts, branch name, what would happen if `--dry-run` were dropped.
+2. **Per-tier sections** — Tier-1, Tier-2, Tier-3 with the proposed fixes.
+3. **Deferred-at-triage** — findings N16 chose not to attempt; surfaced separately.
+
+**Cross-schema invariants extension:**
+
+- `plan_id` is distinct from any future `fix_report_id`. A dry-run plan and a subsequent live fix run on the same audit report produce two different artifacts; both reference the same `source_report_id`.
+- A dry-run plan can be referenced (path or SHA-256) when scheduling the corresponding live `--fix` run; if referenced, the live run's tier classifications must match the plan's, otherwise emit a `tier-drift` warning per affected finding.
 
 ---
 
@@ -790,7 +926,7 @@ MAINTAINABILITY: activated (floor)
 
 The skill is *production-grade* iff:
 
-1. **Deterministic routing** — R-ROUTE outputs the same activation map for the same project state (`project_model` from N01). Finding generation is **substantively-stable**: re-runs on identical code target ≥80% set-overlap. Verified via determinism fixture at `tests/determinism/<lang>-<size>/` containing reference projects (one per language × size cell — e.g., `python-small/`, `ts-large/`) with frozen expected-finding sets in `expected_findings.yaml`. Re-run set-overlap below 80% on a fixture → CI failure. Strict identity is not claimed because LLM-driven analyzers are probabilistic.
+1. **Deterministic routing** — R-ROUTE outputs the same activation map for the same project state (`project_model` from N01). Finding generation is **substantively-stable**: re-runs on identical code target ≥80% set-overlap. Verified via determinism fixture at `tests/determinism/<lang>-<size>/` containing reference projects (one per language × size cell — e.g., `python-small/`, `ts-large/`) with frozen expected-finding sets in `expected_findings.yaml`. Re-run set-overlap below 80% on a fixture → CI failure. **Provenance-aware diff:** when set-overlap drops, the determinism harness inspects the `provenance` field (I2) to distinguish *content drift* (same node + same model + same prompt_hash, different findings — real probabilistic noise) from *infrastructure drift* (model upgrade, prompt edit, plugin version bump — flagged separately so it isn't counted against the 80% threshold). Strict identity is not claimed because LLM-driven analyzers are probabilistic.
 2. **Idempotent re-runs** — re-audit produces same findings modulo intentional code changes; `--fix` re-run on same report skips already-applied findings (state file authoritative; git-log fallback).
 3. **Schema-versioned output** — `schema_version: 1` mandatory in both audit and fix reports; F-VAL strict validation on `--fix` ingest.
 4. **Halt envelope on every halt state** — structured `{halt_state, subreason, diagnostic}` at the top of the user-facing message; downstream tooling parses the envelope.
@@ -820,10 +956,12 @@ The consumer of this spec produces:
     - **Backtrack/aggregation participation**
     - **Fan-out cardinality** (N04..N09 under `--deep`; N10 across findings)
     - **Back-edge endpoints** (N20 fail-signal → E_repair → N17/N19; N21 induced-regression → E_rerun_fail → N16)
-4. `schemas/audit-report-v1.schema.json` and `schemas/fix-report-v1.schema.json` — authoritative JSON schemas matching §4.
-5. `templates/audit-report.md.template` and `templates/fix-report.md.template`.
-6. `tests/smoke/` — minimal end-to-end smoke runs covering: default invocation, `--audit` only, `--fix` on a known-good report, `--dry-run`, recovery-manifest resume, suspicious-target halt.
-7. `tests/schema-validation/` — JSON-schema validation tests for both report schemas.
+4. `schemas/audit-report-v1.schema.json`, `schemas/fix-report-v1.schema.json`, `schemas/dry-run-plan-v1.schema.json`, `schemas/dimension-plugin-v1.schema.json` — authoritative JSON schemas matching §4 and §2.4.
+5. `templates/audit-report.md.template`, `templates/fix-report.md.template`, `templates/dry-run-plan.md.template`.
+6. `dimensions/` — built-in dimension plugins per §2.4 (`correctness.md`, `architecture.md`, `performance.md`, `security.md`, `maintainability.md`); these mirror the prompts in `modules/N04..N08.md` but conform to the dimension-plugin-v1 schema so R-ROUTE can load them through the same code path as user plugins.
+7. `tests/smoke/` — minimal end-to-end smoke runs covering: default invocation, `--audit` only, `--fix` on a known-good report, `--dry-run` (verifies dry-run plan emission + schema), recovery-manifest resume, suspicious-target halt, target-conflict halt, dimension-plugin loading (a fixture user plugin in `tests/smoke/fixtures/user-dimensions/`).
+8. `tests/schema-validation/` — JSON-schema validation tests for all four schemas.
+9. `tests/determinism/` — fixture root for the ≥80% set-overlap CI gate (per §6.4).
 
 The consumer does **not** invoke `writing-plans` or `executing-plans`; the implementation plan for this spec is produced separately by the brainstorming-skill caller after spec approval.
 
