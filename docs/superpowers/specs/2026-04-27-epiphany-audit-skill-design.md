@@ -225,9 +225,9 @@ Net effect: 26 → 23 nodes. All other input-prompt nodes are renumbered downwar
 | N13 | ReportFormatter | formatter | inline | Markdown per Audit Report Schema v1. | — |
 | N14 | Q-GATE | verifier | inline (Pass A) + conditional subagent (Pass B) | **Folded from input-prompt N14+N15.** *Pass A* (mechanical, inline): mandatory-field check, location verification (consumes shared location-cache populated by N10 FPV — see §7 cache contract), CRITICAL/HIGH × Confidence ≥ MEDIUM floor, dup merge, no-comment-echo, no-LOW-only warning. *Pass B* (adversarial, subagent — clean lens): anti-iatrogenic, evidence-rationale coherence, dimension-classification correctness. **Pass B activation policy (cost-aware):** runs when ANY of: (a) report has ≥5 findings, (b) any finding has severity CRITICAL or HIGH, (c) `--deep` flag set. Otherwise Pass B is skipped (`q_gate.pass_b: skipped-low-volume`) — Pass A's mechanical checks are sufficient for small low-stakes reports. | adversarial self-review |
 | N15 | SaveHandler | io | inline | Offers save under `~/docs/epiphany/audit/`. **Save prompt explicitly warns about idempotency degradation** if user declines: *"declining to save means future `--fix` runs of this report cannot use state-file idempotency; they fall back to git-log only. Save anyway? (y/n)"*. Writes idempotency state file at `~/docs/epiphany/audit/.state/<report-id>.json` only on save-accept. | — |
-| N16 | FixTriage (F-VAL ingest + Triage) | validator + triage | inline | **Folded from input-prompt N17+N18.** Schema-validates input report (`schemas/audit-report-v1.schema.json`); halt with precise field/finding-id error on schema fail; SHA-256 of source audit report captured for `source_audit_report_sha256`. **Empty-or-unfixable check (early halt):** if source audit report has zero main-body findings (excluding "Unverified Hypotheses"), halt with `halt-on-empty-or-unfixable-report` *before* running idempotency / triage / suspicious-content checks. **Idempotency check at ingest time** (state file authoritative; git-log fallback). Suspicious-content prompt overrides `--auto`. Groups by file/module; topo-sorts; tier 1/2/3 classification (rules per §2.3); defer-on-uncertainty; conflicting-edit detection (`halt-on-conflicting-fixes`). **Owns fix-side CONDITIONAL ROUTING.** | aggregator (file-grouping) |
+| N16 | FixTriage (F-VAL ingest + Triage) | validator + triage | inline | **Folded from input-prompt N17+N18.** Schema-validates input report (`schemas/audit-report-v1.schema.json`); halt with precise field/finding-id error on schema fail; SHA-256 of source audit report captured for `source_audit_report_sha256`. **Empty-or-unfixable check (early halt):** if source audit report has zero main-body findings (excluding "Unverified Hypotheses"), halt with `halt-on-empty-or-unfixable-report` *before* running idempotency / triage / suspicious-content checks. **Idempotency check at ingest time** (state file authoritative; git-log fallback). Suspicious-content prompt overrides `--auto`. Groups by file/module; topo-sorts; tier 1/2/3 classification (rules per §2.3); defer-on-uncertainty; conflicting-edit detection: in live mode → `halt-on-conflicting-fixes`; under `--dry-run` → record in `triage_summary.conflicting_groups` and continue (the plan serves as the conflict report; no halt). **Owns fix-side CONDITIONAL ROUTING.** | aggregator (file-grouping) |
 | N17 | FixPlanner | planner | inline | Emits fix-plan doc per Dry-Run Plan Schema v1 (§4.4); awaits per-tier batch approval (default policy); Tier-1 silent under `--auto`; per-fix under `--confirm-all`. **`--dry-run` halts here after writing the plan to `~/docs/epiphany/audit/dry-run-plans/<source-report-id>-dryrun-<YYYYMMDD>-<HHMMSS>.md`** (machine-parseable, same downstream tools as fix reports). Each tier presented in order T1 → T2 → T3; decline on Tier-N → all Tier-N findings `deferred (user-declined-batch)`; pipeline proceeds to Tier-N+1. Explicit user `halt` → stop entirely. | — |
-| N18 | PreFlight | preflight | inline | Captures baseline manifest (tests/types/lint/build) **before any fix**. Creates branch `epiphany-audit/<report-id>-YYYYMMDD`. **`halt-on-baseline-failure` triggers ONLY when the runner crashes / cannot produce any output** (no exit code, missing binary, broken tool config) — pre-existing failing tests are recorded as the project's baseline state and do NOT halt. Halt on unknown test command / git-state incompatible (dirty tree, detached HEAD, no commits). Writes only the baseline-metrics file under `~/docs/epiphany/audit/.baselines/<report-id>.json`. **Does NOT write recovery manifest** (that is N19/N22 responsibility). | — |
+| N18 | PreFlight | preflight | inline | Captures baseline manifest (tests/types/lint/build) **before any fix**. Creates branch `epiphany-audit/<source-report-id>-YYYYMMDD`. **`halt-on-baseline-failure` triggers ONLY when the runner crashes / cannot produce any output** (no exit code, missing binary, broken tool config) — pre-existing failing tests are recorded as the project's baseline state and do NOT halt. Halt on unknown test command / git-state incompatible (dirty tree, detached HEAD, no commits). Writes only the baseline-metrics file under `~/docs/epiphany/audit/.baselines/<report-id>.json`. **Does NOT write recovery manifest** (that is N19/N22 responsibility). | — |
 | N19 | FixApplier | actuator | inline (write-serial) | Atomic loop per fix-group (definition in §2.3): **apply edit (working tree only) → invoke N20 → commit `[AUDIT-NNN] <one-line>` (finding-id in commit body) on PASS, or `git checkout -- <touched-files>` on FAIL (no commit ever made for failed attempts).** Critical: **never `git revert HEAD`** — that creates redundant commits that break idempotency grep. **One concern per commit. No bundling. No "while I'm here" cleanups.** **Recovery manifest write policy (cost-aware):** writes only at fix-group **boundaries** — (a) start of fix-group (manifest: `in_flight_finding_id` set, `pending` updated), (b) end of fix-group with success (manifest: `last_known_good_sha` updated, finding moved to `applied`), (c) end of fix-group with failure/cap-hit (manifest: failure recorded). The intra-loop applying/verifying/committing transitions are **NOT** persisted; if a process death occurs between fix-group boundaries, the resume-handler treats the in-flight fix-group as `failed-mid-flight` and restarts that fix-group from scratch. **Regression-prevention test policy: same-commit by default.** Paired follow-up commit allowed only when the language tooling rejects bundled test+source commits OR a project-level pre-commit hook rejects the bundled commit (recorded as `regression_test_added.deferred_to_followup_commit: <sha>` in fix report). Test failure during per-fix verify discards the working-tree changes (no commit). | — |
 | N20 | PerFixVerifier | verifier | inline | Per-fix targeted tests + type check on changed files. PASS → commit (in N19). FAIL → emit fail-signal + `failure_class` enum (`verification-failure` \| `commit-hook-failure` \| `git-operation-failure` \| `type-check-failure` \| `targeted-test-failure`); N19 discards working-tree changes; **E_repair edge-layer logic** (not N20) decides retry vs replan vs cap-hit per the rules in §3.1. | emits fail-signal; routing is E_repair's responsibility |
 | N21 | RegressionBattery (battery + tiered audit-rerun delta) | verifier | inline (battery) + conditional subagent under `--deep` (audit-rerun clean lens) | **Folded from input-prompt N23+N24.** Battery (always inline): full test suite vs baseline (no new failures), type check (no new errors), lint (`new_warnings_in_changed_regions == 0`), build clean, **diff-scope check** (every diff line maps to AUDIT-ID; regression-prevention test additions count as in-scope via the `[AUDIT-NNN]` commit they ride). **Audit-rerun sub-step is TIERED by the highest tier of fixes applied in this run** (per §2.5): Tier-1-only run → audit-rerun **skipped** (battery is sufficient); Tier-2-only run → **narrow audit-rerun** (re-run only the dimension analyzers matching the dimension tags of the applied fixes — e.g., all-CORRECTNESS fixes → re-run only N04); any Tier-3 fix → **full audit-rerun** (N01..N13). Classify new findings — those in **files touched by fixes** → `induced-regression` (route to E_rerun_fail); those in **untouched files** → `new-finding-discovered` (record in fix report body, no E_rerun_fail). | adversarial-via-rerun |
@@ -368,7 +368,7 @@ The audit-rerun sub-step in N21 is **tiered by the highest tier of fixes success
 | E10 | N13 → N14 | control | 1:1 | always (halt-on-failure handled separately — see §3.3) |
 | E11 | N14 → N15 | data | 1:1 | fires when Pass A succeeds AND (Pass B succeeds OR Pass B is `skipped-low-volume` per O1 conditional-spawn policy). Pass B subagent exec-error treated as failure → halt. Pass B `skipped-token-cap` under partial-report mode also permits E11 (with the partial-report warning attached). |
 | E12 | N15 → user | interactive | 1:1 | "save?" prompt — fires only after N15 save-decision resolves (`--fix <report>` mode skips N01..N15 entirely; E12 never fires there) |
-| E13 | N16 → N17 → N18 → N19 → N20 → N21 → N23 | data/control chain | 1:1 each | fix pipeline; entry from `--fix` mode or post-`save?-fix?` consent |
+| E13 | N16 → N17 → N18 → N19 → N20 → N21 → N23 | data/control chain | 1:1 each | fix pipeline; entry from `--fix` mode or post-E21 fix-offer consent |
 | E14 | E_repair cap-hit → N22 | control | 1:1 | E_repair 3rd invocation (cap-hit) → N22 finalizes recovery manifest for the failed fix-group. Note: working-tree discard (`git checkout -- <touched-files>`) is performed by N19 immediately after N20 fail-signal, BEFORE E_repair routing — N22 is NOT involved in working-tree discard. |
 | E15 | N20 → N19 | feedback | 1:1 | on PerFixVerify success → next fix-group |
 | E_repair | N20 fail OR N21 fail → N17 (replan) OR N19 (retry-with-failure-context) | feedback | 1:1 | bounded per fix-group: **1st E_repair invocation → N19 retry; 2nd → N17 replan; 3rd → cap-hit**, mark group `failed`, continue with independent groups |
@@ -435,6 +435,7 @@ Every halt state emits a structured halt envelope at the top of the user-facing 
 | `halt-on-recovery-conflict` | run start | recovery manifest from prior interrupted run; user choice = resume / fresh / abort |
 | `halt-on-user-abort` | any interactive prompt | ctrl-C / explicit halt |
 | `halt-on-stale-source-report` | F-VAL | `source_audit_report` file missing or `source_audit_report_sha256` mismatch |
+| `halt-no-source-detected` | N01 | target resolved but contains no parseable source files (binary-only, empty, or documentation-only repo) |
 
 ---
 
@@ -466,6 +467,8 @@ subtrees:                                          # only present for heterogene
   - root: <path>
     dimensions_activated: [...]
     dimensions_skipped: [...]
+subtree_grouping_applied: false                    # true when detected subtrees exceed --monorepo-subtree-limit;
+                                                   # lowest-priority subtrees collapsed into synthetic rest-of-repo subtree
 
 gap_dimensions_offered: [...]      # populated only under --deep (B-FIND interactive)
 gap_dimensions_auto_added: [...]   # populated under default mode (HIGH-confidence auto-add)
@@ -496,9 +499,10 @@ partial_report_warning: null | "<warning text>"   # rendered at top of body when
 
 ```
 allowed: [audit] | [audit, verbose] | [audit, deep] | [audit, verbose, deep]
-       | [fix]   | [fix, verbose]   | [fix, deep]   | [fix, verbose, deep]
        | []      | [verbose]        | [deep]        | [verbose, deep]
-       (autonomy/oversight flags appear in fix report, not audit report)
+       (autonomy/oversight flags appear in fix report, not audit report;
+        [fix] combinations are absent — in --fix mode N01..N15 are skipped
+        and no audit report is produced by that run)
 ```
 
 The `improve` flag is orthogonal to mode and verbosity flags. Any of the above sets may additionally include `improve` (e.g., `[audit, improve]`, `[improve, deep]`, `[verbose, improve, deep]`). The schema allows `improve` as an optional member of any set above; sets containing `fix` may also contain `improve` (the schema accepts it) but the runtime emits a warning and ignores it.
@@ -711,7 +715,8 @@ triage_summary:
   tier_2_count: 6
   tier_3_count: 4
   deferred_at_triage: 1                     # findings N16 deferred for uncertainty / non-literal remediation
-  conflicting_groups: []                    # would have triggered halt-on-conflicting-fixes if applied
+  conflicting_groups: []                    # under --dry-run: recorded here rather than halting;
+                                             # in live mode these would trigger halt-on-conflicting-fixes
 
 simulated_branch: epiphany-audit/<source-report-id>-YYYYMMDD   # what branch WOULD have been created
 test_command_resolved: <auto-detected or --test-cmd value or null>
@@ -820,7 +825,7 @@ notes: |                        # optional
 
 | Gate | Node | Owner of | Failure consequence |
 |---|---|---|---|
-| Q-GATE Pass A (mechanical) | N14 inline | Mandatory-field completeness; location verification (every `file:line` re-Read at audit time); CRITICAL/HIGH × Confidence ≥ MEDIUM floor; dup merge; no-comment-echo; no-LOW-only warning; under token-cap, runs as `pass-a-minimal` (mandatory-field + location only) | `halt-on-q-gate-failure` (subreason: `pass-a`) |
+| Q-GATE Pass A (mechanical) | N14 inline | Mandatory-field completeness; location verification (consumes N10 FPV location-cache per §7 cache contract; falls back to Read only on cache miss); CRITICAL/HIGH × Confidence ≥ MEDIUM floor; dup merge; no-comment-echo; no-LOW-only warning; under token-cap, runs as `pass-a-minimal` (mandatory-field + location only) | `halt-on-q-gate-failure` (subreason: `pass-a`) |
 | Q-GATE Pass B (adversarial) | N14 conditional subagent | Anti-iatrogenic check (does remediation introduce a worse defect?); evidence-rationale coherence; dimension-classification correctness. **Activates only when ≥5 findings OR any CRITICAL/HIGH severity OR `--deep`.** Skipped otherwise (`pass_b: skipped-low-volume`). | `halt-on-q-gate-failure` (subreason: `pass-b` for content-fail; `pass-b-exec-error` for subagent timeout/crash). When skipped-low-volume, no halt. |
 | F-VAL ingest | N16 inline | Schema validation; SHA-256 capture; suspicious-content prompt (overrides `--auto`) | `halt-pre-fix-on-validator-failure` |
 | Idempotency | N16 inline | State file authoritative; git-log fallback. State-file-vs-git-log conflict → warn-and-prompt user (state may show applied at sha not findable in current branch). | warn + user override |
@@ -864,7 +869,9 @@ notes: |                        # optional
               + git commit -m "[AUDIT-NNN] <one-line>"
               (commit body includes finding-id; regression-prevention test included if behavioral fix)
               → exit inner loop, fall through to fix-group END (success path)
-       FAIL → git checkout -- <touched-files>         (working tree restored; no commit ever made)
+       FAIL → git checkout -- <tracked-touched-files>   (restores edits to pre-existing tracked files)
+              + git clean -fd <new-files-created-by-this-attempt>  (removes untracked new files, e.g. regression-prevention test)
+              (combined: working tree fully restored; no commit ever made)
               → record failure_context (failure_class + diagnostic from N20)
               → E_repair routing:
                   1st E_repair invocation → retry inner loop (with failure-context)
@@ -886,7 +893,7 @@ notes: |                        # optional
 
 **One concern per commit. No bundling. No "while I'm here" cleanups.**
 
-### 5.4 Tier + autonomy policy (default flipped to confirm-tier-batch — see brainstorm Critique 2)
+### 5.4 Tier + autonomy policy
 
 | Tier | Definition | Default behavior | `--auto` | `--confirm-all` |
 |---|---|---|---|---|
@@ -925,7 +932,7 @@ notes: |                        # optional
 - Never amend prior commits — always new commits, even on retry.
 - Defer over guess — if root cause is unclear, mark `deferred` with a question.
 - **Idempotent** — re-runs skip already-applied findings (state file > git-log fallback).
-- **Fail-loud on partial state** — recovery manifest written at fix-group boundaries (start, end-success, end-failure per O3); mid-flight death leaves a coherent file at rest because (a) the atomic loop never commits before verification passes, so no half-applied state exists in git history, and (b) the resume-handler restarts any in-flight fix-group from scratch with a `git checkout -- .` pre-flight cleanup.
+- **Fail-loud on partial state** — recovery manifest written at fix-group boundaries (start, end-success, end-failure per O3); mid-flight death leaves a coherent file at rest because (a) the atomic loop never commits before verification passes, so no half-applied state exists in git history, and (b) the resume-handler restarts any in-flight fix-group from scratch with a `git checkout -- . && git clean -fd` pre-flight cleanup.
 
 **Anti-conformity — prior-fix temporal check:** at `--fix` mode entry, inspect (1) git log for `[AUDIT-NNN]` commit-message tags and (2) state files in `~/docs/epiphany/audit/.state/` matching `file:line` or finding-id from prior `epiphany-audit` runs. **Fast-path:** the check runs once at entry with a single git-log scan + state-file directory listing; if zero matches found, the check is silent and the pipeline proceeds without per-finding overhead. Only when matches are found does the per-fix user-override prompt fire. On match: emit warning *"this finding has been addressed before — re-applying may revert intentional behavior"*; require explicit user override per such fix.
 
@@ -943,7 +950,7 @@ notes: |                        # optional
 **R-ROUTE:**
 
 - Heterogeneous monorepo → run dimensions per sub-tree; emit per-subtree maps in `subtrees: [...]` frontmatter; top-level `dimensions_activated` is the union. **Subtree count cap (cost-aware):** if R-ROUTE detects >10 distinct project-shaped subtrees, group the remaining (lowest-priority by file count) into a single synthetic `rest-of-repo` subtree with the union of detected triggers; emit warning in frontmatter `subtree_grouping_applied: true`. User can override with `--monorepo-subtree-limit N` to raise/lower the cap.
-- Binary-only repo → halt with *"no source detected, nothing to audit"*.
+- Binary-only repo → `halt-no-source-detected`: *"no source detected, nothing to audit"*.
 - Unknown language → fall through to language-agnostic dimensions only; emit *"language unidentified — running language-agnostic subset only"*.
 - Floor (CORRECTNESS + MAINTAINABILITY) always emits.
 
@@ -952,9 +959,9 @@ notes: |                        # optional
 - Input report from a different `tool_version` → F-VAL emits version-skew warning, prompts before proceeding (`halt-on-mismatched-version` if declined).
 - Input report references files that no longer exist in `audit_target` → `skipped (stale-reference)`, do NOT abort whole run.
 - Input report references files outside `audit_target` git tree → halt; refuse to write outside source tree.
-- Two findings propose conflicting edits to same `file:line` → `halt-on-conflicting-fixes`; ask user to choose ordering.
+- Two findings propose conflicting edits to same `file:line` → `halt-on-conflicting-fixes` in live mode; under `--dry-run` → recorded in `triage_summary.conflicting_groups` without halting (plan serves as the conflict report for the user to resolve before a live run).
 - Recovery manifest detected at run start → `halt-on-recovery-conflict`; user choice:
-    - `resume` — pick up from `last_known_good_sha`; skip applied; continue with pending list. **In-flight-fix-group restart semantics (per O3):** if the manifest shows `in_flight_finding_id` set without a corresponding `applied` or `failed` entry (i.e., process died inside the atomic loop between fix-group boundaries), the resume-handler runs a pre-flight cleanup (`git checkout -- .` to discard any orphaned working-tree edits from the prior run) and **restarts that fix-group from scratch** as fix-group iteration #1. The `in_flight_finding_id` is moved back to `pending` in the manifest. No half-applied state is possible because the atomic loop never commits before verification passes.
+    - `resume` — pick up from `last_known_good_sha`; skip applied; continue with pending list. **In-flight-fix-group restart semantics (per O3):** if the manifest shows `in_flight_finding_id` set without a corresponding `applied` or `failed` entry (i.e., process died inside the atomic loop between fix-group boundaries), the resume-handler runs a pre-flight cleanup (`git checkout -- . && git clean -fd` to discard both orphaned working-tree edits and any untracked new files created by the prior attempt) and **restarts that fix-group from scratch** as fix-group iteration #1. The `in_flight_finding_id` is moved back to `pending` in the manifest. No half-applied state is possible because the atomic loop never commits before verification passes.
     - `fresh` — archive existing manifest to `.recovery/.archive/<report-id>-<timestamp>.json` (preserve forensic record, do NOT overwrite); start over.
     - `abort` — halt; no changes.
 - Idempotency on re-run → state file authoritative; git-log fallback. Conflict (state says applied at sha not in current branch — possibly because of branch deletion, history rewrite, or squash merge) → emit prompt: *"State file claims F00N applied at sha &lt;X&gt; but commit not found in current branch. Options: (a) re-apply [override state], (b) skip [trust state], (c) abort. Choice?"* — answer required per affected finding; no auto-default.
@@ -1119,7 +1126,7 @@ The skill is *production-grade* iff:
 The consumer of this spec produces:
 
 1. `SKILL.md` covering §1–§6 in human-readable form, with all 13 Layer-A sections from the source prompt populated.
-2. `graph.json` declaring all 27 nodes + edges per §2 + §3, validated by `graph.schema.json`. Improvement subpipeline nodes (N24..N27) must carry `"active_in": ["improve"]` to signal that they activate only under `--improve`. The `graph.json` `active_in` field is a **single string** (one of five values): `"audit"` = audit-only mode; `"fix"` = fix-only mode; `"both"` = both audit and fix (including the audit-rerun sub-step inside N21); `"improve"` = `--improve` subpipeline only; `"always"` = all modes.
+2. `graph.json` declaring all 27 nodes + edges per §2 + §3, validated by `graph.schema.json`. Improvement subpipeline nodes (N24..N27) must carry `"active_in": "improve"` to signal that they activate only under `--improve`. The `graph.json` `active_in` field is a **single string** (one of five values): `"audit"` = audit-only mode; `"fix"` = fix-only mode; `"both"` = both audit and fix (including the audit-rerun sub-step inside N21); `"improve"` = `--improve` subpipeline only; `"always"` = all modes.
 3. `modules/N01..N27.md` — one file per node, each following the Layer-B contract template:
     - **Inputs (typed)** — prose-with-shape annotations (e.g., `project_model: { language: string, files: list[Path], build_manifest: Path | null, test_command: string | null, git_state: { head: sha, dirty: bool, ... } }`). JSON-Schema-style optional but not required; the goal is unambiguous handoff between nodes, not full machine validation of every field.
     - **Outputs (typed)** — same shape conventions as inputs.
