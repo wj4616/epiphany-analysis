@@ -67,6 +67,7 @@ The skill must be tailored to work with any project optimally — if a dimension
 - `--escalate-finding F00N` — force a specific finding to Tier-3 (per-fix confirm) regardless of N16 classification. Valid only with `--fix`; ignored with warning otherwise. Overrides `--auto` for the named finding.
 - `--demote-finding F00N` — **NOT supported.** Passing it → `halt-on-flag-rejection`: *"--demote-finding is not supported. Edit the report manually to change tier classification."*
 - `--test-cmd '<cmd>'` — explicit project test command. Always overrides auto-detection.
+- `--full-rerun` / `--no-rerun` — override the §2.5 tiered audit-rerun policy. `--full-rerun` forces full N01..N13 rerun (high-stakes runs); `--no-rerun` skips the audit-rerun sub-step entirely (token-budget-constrained runs; fix-report records `audit_rerun_delta: skipped-by-flag`). Mutually exclusive; passing both → `halt-on-flag-conflict`. Both valid only with `--fix` or no-flag (fix-mode); ignored with warning under `--audit`.
 
 **`<report>` resolution order (for `--fix`):**
 
@@ -209,25 +210,25 @@ Net effect: 26 → 23 nodes. All other input-prompt nodes are renumbered downwar
 | N07 | DimensionAnalyzer.SECURITY | analyzer | inline / subagent under `--deep` | Per-surface sub-routing (SQL/shell/auth/secrets/deserialization/prompt-injection). | participant in BACKTRACK |
 | N08 | DimensionAnalyzer.MAINTAINABILITY | analyzer | inline / subagent under `--deep` | Dead code, misleading names, stale TODOs, test coverage gaps on failure-mode branches. | participant in BACKTRACK |
 | N09 | DimensionAnalyzer.\<X\> (plugin-instantiated) | analyzer | inline / subagent under `--deep` | **Instantiated by R-ROUTE from dimension plugins** (see §2.4) — built-in (a11y, reproducibility, IaC drift, model-card, schema-evolution, prompt-injection live as plugin files in `dimensions/`) and user-installed plugins from `~/.config/epiphany-audit/dimensions/`. Concrete instances get IDs `N09.a11y`, `N09.iac-drift`, etc., recorded in `graph.json` at run time. Plugin manifest declares `activation_triggers`, `prompt_template`, and optional `kb_route_query` for KB consultation. | participant in BACKTRACK |
-| N10 | FalsePositiveVerifier (FPV) | verifier | inline | Re-reads source per finding; runs the 4 false-positive questions; demotes/discards. **Owns audit-side BACKTRACKING (single re-emit cap).** | refinement back-edge to N04..N09 |
+| N10 | FalsePositiveVerifier (FPV) | verifier | inline | Re-reads source per finding; runs the 4 false-positive questions; demotes/discards. **Owns audit-side BACKTRACKING (single re-emit cap).** **Populates the shared location-verification cache** (per §7 cache contract): for each finding's `location: <file:line>`, after Read, writes `{file, line_range, verified: true|false, last_read_at}` to an in-memory cache. N14 Pass A consumes this cache instead of re-Reading; identical `(file, line_range)` keys hit the cache. | refinement back-edge to N04..N09 |
 | N11 | FindingsAggregator | aggregator | inline | Dedup by pattern+location, merge cross-dimension overlaps, count-collapse. **Owns audit-side AGGREGATION.** | aggregator |
 | N12 | Prioritizer | scorer | inline | (Severity × Confidence) / Effort. Emits resolve-before-testing punch list. | — |
 | N13 | ReportFormatter | formatter | inline | Markdown per Audit Report Schema v1. | — |
-| N14 | Q-GATE | verifier | inline (Pass A) + subagent (Pass B) | **Folded from input-prompt N14+N15.** *Pass A* (mechanical, inline): mandatory-field check, location verification (every `file:line` re-Read), CRITICAL/HIGH × Confidence ≥ MEDIUM floor, dup merge, no-comment-echo, no-LOW-only warning. *Pass B* (adversarial, subagent — clean lens): anti-iatrogenic, evidence-rationale coherence, dimension-classification correctness. **Default's only spawn slot.** | adversarial self-review |
+| N14 | Q-GATE | verifier | inline (Pass A) + conditional subagent (Pass B) | **Folded from input-prompt N14+N15.** *Pass A* (mechanical, inline): mandatory-field check, location verification (consumes shared location-cache populated by N10 FPV — see §7 cache contract), CRITICAL/HIGH × Confidence ≥ MEDIUM floor, dup merge, no-comment-echo, no-LOW-only warning. *Pass B* (adversarial, subagent — clean lens): anti-iatrogenic, evidence-rationale coherence, dimension-classification correctness. **Pass B activation policy (cost-aware):** runs when ANY of: (a) report has ≥5 findings, (b) any finding has severity CRITICAL or HIGH, (c) `--deep` flag set. Otherwise Pass B is skipped (`q_gate.pass_b: skipped-low-volume`) — Pass A's mechanical checks are sufficient for small low-stakes reports. | adversarial self-review |
 | N15 | SaveHandler | io | inline | Offers save under `~/docs/epiphany/audit/`. **Save prompt explicitly warns about idempotency degradation** if user declines: *"declining to save means future `--fix` runs of this report cannot use state-file idempotency; they fall back to git-log only. Save anyway? (y/n)"*. Writes idempotency state file at `~/docs/epiphany/audit/.state/<report-id>.json` only on save-accept. | — |
 | N16 | FixTriage (F-VAL ingest + Triage) | validator + triage | inline | **Folded from input-prompt N17+N18.** Schema-validates input report (`schemas/audit-report-v1.schema.json`); halt with precise field/finding-id error on schema fail; SHA-256 of source audit report captured for `source_audit_report_sha256`. **Empty-or-unfixable check (early halt):** if source audit report has zero main-body findings (excluding "Unverified Hypotheses"), halt with `halt-on-empty-or-unfixable-report` *before* running idempotency / triage / suspicious-content checks. **Idempotency check at ingest time** (state file authoritative; git-log fallback). Suspicious-content prompt overrides `--auto`. Groups by file/module; topo-sorts; tier 1/2/3 classification (rules per §2.3); defer-on-uncertainty; conflicting-edit detection (`halt-on-conflicting-fixes`). **Owns fix-side CONDITIONAL ROUTING.** | aggregator (file-grouping) |
 | N17 | FixPlanner | planner | inline | Emits fix-plan doc per Dry-Run Plan Schema v1 (§4.4); awaits per-tier batch approval (default policy); Tier-1 silent under `--auto`; per-fix under `--confirm-all`. **`--dry-run` halts here after writing the plan to `~/docs/epiphany/audit/dry-run-plans/<source-report-id>-dryrun-<YYYYMMDD>-<HHMMSS>.md`** (machine-parseable, same downstream tools as fix reports). Each tier presented in order T1 → T2 → T3; decline on Tier-N → all Tier-N findings `deferred (user-declined-batch)`; pipeline proceeds to Tier-N+1. Explicit user `halt` → stop entirely. | — |
 | N18 | PreFlight | preflight | inline | Captures baseline manifest (tests/types/lint/build) **before any fix**. Creates branch `epiphany-audit/<report-id>-YYYYMMDD`. **`halt-on-baseline-failure` triggers ONLY when the runner crashes / cannot produce any output** (no exit code, missing binary, broken tool config) — pre-existing failing tests are recorded as the project's baseline state and do NOT halt. Halt on unknown test command / git-state incompatible (dirty tree, detached HEAD, no commits). Writes only the baseline-metrics file under `~/docs/epiphany/audit/.baselines/<report-id>.json`. **Does NOT write recovery manifest** (that is N19/N22 responsibility). | — |
-| N19 | FixApplier | actuator | inline (write-serial) | Atomic loop per fix-group (definition in §2.3): **apply edit (working tree only) → invoke N20 → commit `[AUDIT-NNN] <one-line>` (finding-id in commit body) on PASS, or `git checkout -- <touched-files>` on FAIL (no commit ever made for failed attempts).** Critical: **never `git revert HEAD`** — that creates redundant commits that break idempotency grep. **One concern per commit. No bundling. No "while I'm here" cleanups.** Writes/updates recovery manifest at every state transition (`in_flight_state: idle \| applying \| verifying \| committing`; `last_known_good_sha`; `applied`/`pending`/`in_flight_finding_id`). **Regression-prevention test policy: same-commit by default.** Paired follow-up commit allowed only when the language tooling rejects bundled test+source commits OR a project-level pre-commit hook rejects the bundled commit (recorded as `regression_test_added.deferred_to_followup_commit: <sha>` in fix report). Test failure during per-fix verify discards the working-tree changes (no commit). | — |
+| N19 | FixApplier | actuator | inline (write-serial) | Atomic loop per fix-group (definition in §2.3): **apply edit (working tree only) → invoke N20 → commit `[AUDIT-NNN] <one-line>` (finding-id in commit body) on PASS, or `git checkout -- <touched-files>` on FAIL (no commit ever made for failed attempts).** Critical: **never `git revert HEAD`** — that creates redundant commits that break idempotency grep. **One concern per commit. No bundling. No "while I'm here" cleanups.** **Recovery manifest write policy (cost-aware):** writes only at fix-group **boundaries** — (a) start of fix-group (manifest: `in_flight_finding_id` set, `pending` updated), (b) end of fix-group with success (manifest: `last_known_good_sha` updated, finding moved to `applied`), (c) end of fix-group with failure/cap-hit (manifest: failure recorded). The intra-loop applying/verifying/committing transitions are **NOT** persisted; if a process death occurs between fix-group boundaries, the resume-handler treats the in-flight fix-group as `failed-mid-flight` and restarts that fix-group from scratch. **Regression-prevention test policy: same-commit by default.** Paired follow-up commit allowed only when the language tooling rejects bundled test+source commits OR a project-level pre-commit hook rejects the bundled commit (recorded as `regression_test_added.deferred_to_followup_commit: <sha>` in fix report). Test failure during per-fix verify discards the working-tree changes (no commit). | — |
 | N20 | PerFixVerifier | verifier | inline | Per-fix targeted tests + type check on changed files. PASS → commit (in N19). FAIL → emit fail-signal + `failure_class` enum (`verification-failure` \| `commit-hook-failure` \| `git-operation-failure` \| `type-check-failure` \| `targeted-test-failure`); N19 discards working-tree changes; **E_repair edge-layer logic** (not N20) decides retry vs replan vs cap-hit per the rules in §3.1. | emits fail-signal; routing is E_repair's responsibility |
-| N21 | RegressionBattery (battery + audit-rerun delta) | verifier | inline (battery) + subagent under `--deep` (audit-rerun clean lens) | **Folded from input-prompt N23+N24.** Battery (always inline): full test suite vs baseline (no new failures), type check (no new errors), lint (`new_warnings_in_changed_regions == 0`), build clean, **diff-scope check** (every diff line maps to AUDIT-ID; regression-prevention test additions count as in-scope via the `[AUDIT-NNN]` commit they ride). **Audit-rerun sub-step: re-run N01..N13 only** (the analytical chain — N14 Q-GATE and N15 SaveHandler are NOT re-executed in fix mode; we do not save a second audit report). Classify new findings — those in **files touched by fixes** → `induced-regression` (route to E_rerun_fail); those in **untouched files** → `new-finding-discovered` (record in fix report body, no E_rerun_fail). | adversarial-via-rerun |
+| N21 | RegressionBattery (battery + tiered audit-rerun delta) | verifier | inline (battery) + conditional subagent under `--deep` (audit-rerun clean lens) | **Folded from input-prompt N23+N24.** Battery (always inline): full test suite vs baseline (no new failures), type check (no new errors), lint (`new_warnings_in_changed_regions == 0`), build clean, **diff-scope check** (every diff line maps to AUDIT-ID; regression-prevention test additions count as in-scope via the `[AUDIT-NNN]` commit they ride). **Audit-rerun sub-step is TIERED by the highest tier of fixes applied in this run** (per §2.5): Tier-1-only run → audit-rerun **skipped** (battery is sufficient); Tier-2-only run → **narrow audit-rerun** (re-run only the dimension analyzers matching the dimension tags of the applied fixes — e.g., all-CORRECTNESS fixes → re-run only N04); any Tier-3 fix → **full audit-rerun** (N01..N13). Classify new findings — those in **files touched by fixes** → `induced-regression` (route to E_rerun_fail); those in **untouched files** → `new-finding-discovered` (record in fix report body, no E_rerun_fail). | adversarial-via-rerun |
 | N22 | RollbackHandler | recovery | inline | `git revert HEAD` on N20/N21 failure inside atomic loop; halt-with-diagnostic on cap-hit; finalizes recovery manifest on planned termination; manifest is at-rest accurate after every state transition (incremental updates from N19). | — |
 | N23 | FixReporter | formatter | inline | Closing-the-loop fix report per Fix Report Schema v1: per-finding status, diff summary by AUDIT-ID, baseline-vs-post metrics, audit-rerun delta, deferred items, manual-edits section (if user authorized scope-creep), recovery-manifest reference (if applicable). Status-priority sort: `failed > induced-regression > deferred > verified > skipped`. | aggregator (per-fix outcomes) |
 
 ### 2.1 Spawn budget reconciliation
 
-- **Default invocation:** **1 spawn** (N14 Pass B adversarial). Inside spec's ≤2 cap.
-- **`--deep` invocation:** up to **3 spawns** — N14 Pass B + optional **analyzer fan-out spawn** + N21 audit-rerun clean-lens.
+- **Default invocation:** **0 or 1 spawn.** N14 Pass B spawns ONLY if (≥5 findings) OR (any CRITICAL/HIGH severity present). Small low-stakes audits (e.g., 3 findings, all MEDIUM/LOW) run with zero spawns. Inside spec's ≤2 cap.
+- **`--deep` invocation:** up to **3 spawns** — N14 Pass B (always, under `--deep`) + optional **analyzer fan-out spawn** + N21 audit-rerun clean-lens (only if Tier-3 fixes applied, per O2).
 - **Analyzer fan-out spawn (`--deep` only):** when more than 3 dimension analyzers (N04..N09) are activated AND the project is large (>500 files OR >50k lines), one batched subagent runs the over-cap analyzers in parallel with the inline ones. The subagent receives the project model from N01 and returns a fan-in result to N10. This is a single spawn slot regardless of how many analyzers it covers. Skipped if ≤3 analyzers or project is small.
 
 ### 2.2 Mechanism ownership
@@ -313,6 +314,22 @@ priority: low | medium | high         # affects ordering in the activation map u
 - If two user plugins share a `name`, alphabetical order wins; the loser is logged and skipped.
 
 **Built-in plugin set** (versioned with the skill): `correctness.md`, `architecture.md`, `performance.md`, `security.md`, `maintainability.md`. These are simple thin manifests; their actual prompt logic lives in `modules/N04..N08.md`. New built-ins (a11y, reproducibility, IaC drift, etc.) are added as additional bundled plugin files without changing the registry.
+
+### 2.5 Audit-rerun tier policy (cost-aware)
+
+The audit-rerun sub-step in N21 is **tiered by the highest tier of fixes successfully applied** in the current run. Rationale: Tier-1 fixes are mechanically incapable of inducing architectural regressions; the regression battery (tests/types/lint/build) covers them entirely. Re-running the full audit chain on Tier-1-only runs is wasted token spend.
+
+| Highest applied tier | Audit-rerun behavior | Rationale |
+|---|---|---|
+| Tier-1 only | **Skip** entire audit-rerun sub-step | Battery covers the failure modes Tier-1 fixes can introduce |
+| Tier-2 only | **Narrow rerun** — re-run only the dimension analyzers whose dimension tag matches the dimension tag of any applied fix (e.g., 4 CORRECTNESS fixes + 2 MAINTAINABILITY fixes → re-run N04 + N08; skip N05/N06/N07/N09.\*) | Dimension-relevant analyzers catch the failure modes; cross-dimension regressions from local-logic fixes are rare |
+| Any Tier-3 applied | **Full rerun** (N01..N13) | Cross-cutting changes can induce regressions in any dimension |
+
+**Mixed-tier runs:** the highest tier present determines policy. A run with Tier-1 + Tier-3 fixes triggers full rerun.
+
+**Override:** `--full-rerun` flag forces full rerun regardless of applied tiers (for high-stakes runs). `--no-rerun` flag forces skip regardless (for token-budget-constrained runs); when set, the fix-report records `audit_rerun_delta: skipped-by-flag`.
+
+**Recovery semantics:** the tier policy applies to fresh runs. On a *resumed* run after `halt-on-recovery-conflict`, the audit-rerun behavior is determined by the highest tier in the *combined* applied set (original + resumed).
 
 ---
 
@@ -434,8 +451,9 @@ dimensions_partial:                # populated only when intra-node soft budget 
 
 q_gate:
   pass_a: pass | pass-minimal | fail | skipped-token-cap
-  pass_b: pass | fail | exec-error | skipped-token-cap
+  pass_b: pass | fail | exec-error | skipped-token-cap | skipped-low-volume
   pass_b_lens: <subagent identifier or null>
+  pass_b_skip_reason: null | "fewer than 5 findings and no CRITICAL/HIGH severity"
 
 partial_report_warning: null | "<warning text>"   # rendered at top of body when truncated
 ```
@@ -698,7 +716,7 @@ notes: |                                    # optional
 | Gate | Node | Owner of | Failure consequence |
 |---|---|---|---|
 | Q-GATE Pass A (mechanical) | N14 inline | Mandatory-field completeness; location verification (every `file:line` re-Read at audit time); CRITICAL/HIGH × Confidence ≥ MEDIUM floor; dup merge; no-comment-echo; no-LOW-only warning; under token-cap, runs as `pass-a-minimal` (mandatory-field + location only) | `halt-on-q-gate-failure` (subreason: `pass-a`) |
-| Q-GATE Pass B (adversarial) | N14 subagent | Anti-iatrogenic check (does remediation introduce a worse defect?); evidence-rationale coherence; dimension-classification correctness | `halt-on-q-gate-failure` (subreason: `pass-b` for content-fail; `pass-b-exec-error` for subagent timeout/crash) |
+| Q-GATE Pass B (adversarial) | N14 conditional subagent | Anti-iatrogenic check (does remediation introduce a worse defect?); evidence-rationale coherence; dimension-classification correctness. **Activates only when ≥5 findings OR any CRITICAL/HIGH severity OR `--deep`.** Skipped otherwise (`pass_b: skipped-low-volume`). | `halt-on-q-gate-failure` (subreason: `pass-b` for content-fail; `pass-b-exec-error` for subagent timeout/crash). When skipped-low-volume, no halt. |
 | F-VAL ingest | N16 inline | Schema validation; SHA-256 capture; suspicious-content prompt (overrides `--auto`) | `halt-pre-fix-on-validator-failure` |
 | Idempotency | N16 inline | State file authoritative; git-log fallback. State-file-vs-git-log conflict → warn-and-prompt user (state may show applied at sha not findable in current branch). | warn + user override |
 | Tier classification | N16 inline | Tier-1/2/3 routing + defer-on-uncertainty + conflicting-edit detection | `halt-on-conflicting-fixes` |
@@ -706,7 +724,7 @@ notes: |                                    # optional
 | Pre-flight baseline | N18 inline | Baseline captured before any fix (test counts, type errors, lint warnings, build status — pre-existing failures are recorded as the project's baseline state, NOT a halt condition); branch creation | `halt-on-baseline-failure` (only when runner crashes / cannot produce any output), `halt-on-test-cmd-unknown`, `halt-on-git-state-incompatible` |
 | Per-fix verify | N20 inline | Targeted tests + type check on changed files; PASS → commit; FAIL → atomic-loop rollback + E_repair routing | After cap-hit on a group: mark group `failed`; downstream groups in topo-sort blocked → `deferred (upstream-dependency-failed)`; independent groups continue. `halt-mid-fix-on-perfix-cap-hit` only if every remaining group is blocked. |
 | Regression battery | N21 inline | Full test suite vs baseline; type check; lint (`new_warnings_in_changed_regions == 0`); build clean; **diff-scope check** (every diff line maps to AUDIT-ID; regression-prevention test additions count as in-scope) | Test/type/lint/build fail → E_repair; scope-creep → `halt-on-scope-creep` (do NOT auto-revert) |
-| Audit-rerun delta | N21 (subagent under `--deep`) | Re-run N01..N13 only (NOT N14 Q-GATE or N15 SaveHandler); classify new findings — touched-files → `induced-regression` (route to E_rerun_fail); untouched-files → `new-finding-discovered` (record only, no E_rerun_fail) | `halt-mid-fix-on-induced-regression-cap-hit` after retry cap exhaustion |
+| Audit-rerun delta | N21 (tiered; subagent under `--deep` when full rerun) | **Tiered by max applied tier (per §2.5):** Tier-1-only → SKIP audit-rerun; Tier-2-only → narrow rerun (only fix-dimension analyzers); Tier-3 present → full N01..N13 rerun. Classify new findings — touched-files → `induced-regression` (route to E_rerun_fail); untouched-files → `new-finding-discovered` (record only). | `halt-mid-fix-on-induced-regression-cap-hit` after retry cap exhaustion (only reachable when audit-rerun ran) |
 
 ### 5.2 Fix safeguard pipeline (10-step canonical sequence)
 
@@ -718,7 +736,7 @@ notes: |                                    # optional
 | 4. Pre-flight | N18 | Capture baseline (tests/types/lint/build); create branch; halt on baseline/test-cmd/git-state failures |
 | 5. Apply (atomic loop) | N19 | Per fix-group: apply edit → invoke N20 → commit `[AUDIT-NNN] <one-line>` (finding-id in commit body) on PASS, rollback on FAIL. **One concern per commit. No bundling.** Recovery manifest updated at every state transition. |
 | 6. Per-fix verify | N20 | Targeted tests + type check on changed files; embedded inside step 5 atomic loop |
-| 7. Audit-rerun | N21 (audit-rerun sub-step) | Re-run N01..N13 on fixed code (NOT N14 Q-GATE or N15 SaveHandler); classify new findings (touched vs. untouched files) |
+| 7. Audit-rerun (tiered, per §2.5) | N21 (audit-rerun sub-step) | Tier-1-only run → skip; Tier-2-only run → narrow rerun (fix-dimension analyzers only); Tier-3 present → full N01..N13 rerun. Classify new findings (touched vs. untouched files). |
 | 8. Regression battery | N21 (battery sub-step) | Full test suite + type check + lint + build clean + diff-scope check |
 | 9. Regression prevention | N19 (deferred to commit) | For behavioral fixes (not cosmetic): add a test that would have caught the original bug, in same commit (or paired follow-up if language requires separation). Test goes into per-fix verify; failing test rolls back entire commit. If no test framework detected → `regression_test_added: no (no test framework detected — manual test recommended)`, do NOT block. |
 | 10. Reporting | N23 | Closing-the-loop fix report per Schema v1; status-priority sort |
@@ -727,25 +745,37 @@ notes: |                                    # optional
 
 **Critical primitive choice:** the loop **does not commit until verification passes**. This means a verification failure leaves zero history artifacts — no failed commit, no revert commit. Use `git checkout -- <touched-files>` (or equivalent working-tree discard) on failure, NOT `git revert HEAD`.
 
+**Recovery-manifest writes happen at fix-group boundaries only**, not on every intra-loop transition. The atomic loop runs to completion (success or cap-hit) before persisting state.
+
 ```
-1. Apply edit (working tree only — no commit yet)     (manifest: in_flight_state=applying)
-2. Run targeted tests (file/module level)             ──┐
-3. Type check on changed files                        ──┤  steps 2-3 = N20 PerFixVerifier
-                                                      ──┤  (manifest: in_flight_state=verifying)
-4. PASS  → git add <touched-files> + git commit -m "[AUDIT-NNN] <one-line>"
-            (commit body includes finding-id; regression-prevention test included if behavioral fix)
-            (manifest: in_flight_state=committing → idle)
-   FAIL → git checkout -- <touched-files>             (working tree restored; no commit ever made)
-          → record failure_context (failure_class + diagnostic from N20)
-          → E_repair routing:
-              1st E_repair invocation → N19 retry-with-failure-context
-              2nd E_repair invocation → N17 replan
-              3rd E_repair invocation → cap-hit; mark group `failed`;
-                                        downstream-dependent groups → `deferred (upstream-dependency-failed)`;
-                                        independent groups continue
-5. Update recovery manifest with new last_known_good_sha + revised pending list
-   (manifest: in_flight_state=idle)
+[fix-group START]                                     (manifest write #1: in_flight_finding_id set,
+                                                                          pending list updated)
+
+  inner loop (no manifest writes in here):
+    1. Apply edit (working tree only — no commit yet)
+    2. Run targeted tests (file/module level)         ──┐
+    3. Type check on changed files                    ──┤  steps 2-3 = N20 PerFixVerifier
+    4. PASS  → git add <touched-files>
+              + git commit -m "[AUDIT-NNN] <one-line>"
+              (commit body includes finding-id; regression-prevention test included if behavioral fix)
+              → exit inner loop, fall through to fix-group END (success path)
+       FAIL → git checkout -- <touched-files>         (working tree restored; no commit ever made)
+              → record failure_context (failure_class + diagnostic from N20)
+              → E_repair routing:
+                  1st E_repair invocation → retry inner loop (with failure-context)
+                  2nd E_repair invocation → N17 replan, then retry inner loop
+                  3rd E_repair invocation → cap-hit; exit inner loop, fall through to fix-group END (failure path)
+
+[fix-group END — success path]                        (manifest write #2: last_known_good_sha = new commit;
+                                                                          finding moved from pending → applied)
+
+[fix-group END — failure path]                        (manifest write #2: finding marked failed;
+                                                                          downstream-dependent groups marked
+                                                                          deferred (upstream-dependency-failed);
+                                                                          independent groups continue)
 ```
+
+**Resume semantics on mid-flight death:** if the process dies *between* fix-group boundaries (somewhere inside the inner loop), the recovery manifest's last write was at the most recent fix-group START. On resume, the resume-handler sees `in_flight_finding_id` set without a corresponding `applied` or `failed` entry → it treats the in-flight fix-group as `failed-mid-flight` and **restarts that fix-group from scratch**. The atomic loop's git-checkout discipline guarantees no half-applied state in the working tree (any in-flight working-tree edits are orphaned and discarded by the resume's pre-flight cleanup).
 
 **Pre-commit hook failures** are routed through the same rollback path: if `git commit` fails because a hook (project-level pre-commit, formatter, linter) rejected the commit, N20 reports `failure_class: commit-hook-failure` and the working tree is restored with `git checkout -- <touched-files>`. The skill **never** passes `--no-verify` to bypass hooks (per §5.5 hard rules).
 
@@ -792,7 +822,7 @@ notes: |                                    # optional
 - **Idempotent** — re-runs skip already-applied findings (state file > git-log fallback).
 - **Fail-loud on partial state** — recovery manifest at every state transition; mid-flight death leaves a coherent file at rest.
 
-**Anti-conformity — prior-fix temporal check:** at `--fix` mode entry, inspect (1) git log for `[AUDIT-NNN]` commit-message tags and (2) state files in `~/docs/epiphany/audit/.state/` matching `file:line` or finding-id from prior `epiphany-audit` runs. On match: emit warning *"this finding has been addressed before — re-applying may revert intentional behavior"*; require explicit user override per such fix.
+**Anti-conformity — prior-fix temporal check:** at `--fix` mode entry, inspect (1) git log for `[AUDIT-NNN]` commit-message tags and (2) state files in `~/docs/epiphany/audit/.state/` matching `file:line` or finding-id from prior `epiphany-audit` runs. **Fast-path:** the check runs once at entry with a single git-log scan + state-file directory listing; if zero matches found, the check is silent and the pipeline proceeds without per-finding overhead. Only when matches are found does the per-fix user-override prompt fire. On match: emit warning *"this finding has been addressed before — re-applying may revert intentional behavior"*; require explicit user override per such fix.
 
 ---
 
@@ -807,7 +837,7 @@ notes: |                                    # optional
 
 **R-ROUTE:**
 
-- Heterogeneous monorepo → run dimensions per sub-tree; emit per-subtree maps in `subtrees: [...]` frontmatter; top-level `dimensions_activated` is the union.
+- Heterogeneous monorepo → run dimensions per sub-tree; emit per-subtree maps in `subtrees: [...]` frontmatter; top-level `dimensions_activated` is the union. **Subtree count cap (cost-aware):** if R-ROUTE detects >10 distinct project-shaped subtrees, group the remaining (lowest-priority by file count) into a single synthetic `rest-of-repo` subtree with the union of detected triggers; emit warning in frontmatter `subtree_grouping_applied: true`. User can override with `--monorepo-subtree-limit N` to raise/lower the cap.
 - Binary-only repo → halt with *"no source detected, nothing to audit"*.
 - Unknown language → fall through to language-agnostic dimensions only; emit *"language unidentified — running language-agnostic subset only"*.
 - Floor (CORRECTNESS + MAINTAINABILITY) always emits.
@@ -962,6 +992,18 @@ The consumer of this spec produces:
 7. `tests/smoke/` — minimal end-to-end smoke runs covering: default invocation, `--audit` only, `--fix` on a known-good report, `--dry-run` (verifies dry-run plan emission + schema), recovery-manifest resume, suspicious-target halt, target-conflict halt, dimension-plugin loading (a fixture user plugin in `tests/smoke/fixtures/user-dimensions/`).
 8. `tests/schema-validation/` — JSON-schema validation tests for all four schemas.
 9. `tests/determinism/` — fixture root for the ≥80% set-overlap CI gate (per §6.4).
+
+**CI policy guidance:** the determinism harness is **expensive** (runs the full audit pipeline against reference projects). Recommend running it as a **scheduled nightly/weekly workflow**, not on every commit. Per-commit CI should run only `tests/schema-validation/` (cheap, deterministic) and `tests/smoke/` (fast end-to-end). The determinism harness gates the next release tag, not the next merge.
+
+**Shared location-verification cache contract** (O4 — referenced by N10 and N14 Pass A):
+
+- Cache lives in process memory for the lifetime of one audit run; cleared between runs.
+- Key: `(canonical_file_path, line_range)` where `line_range` is normalized as `(start, end)` even for single lines (`(142, 142)`).
+- Value: `{ verified: bool, content_hash: <sha256 of bytes read>, populated_by: <node-id>, populated_at: <ISO 8601> }`.
+- N10 FPV is the **only writer**; populates the cache the first time it Reads a `(file, line)` for false-positive verification.
+- N14 Pass A is a **read-only consumer**; on cache miss, falls back to its own Read (rare — only for findings demoted to `Unverified Hypotheses` by N10 that Pass A still wants to verify).
+- Cache write happens *after* a successful Read; failed Reads (file deleted, permission denied) are recorded as `verified: false` so consumers see the failure without re-attempting.
+- Cache is **not persisted** to disk; structured event log records cache-miss events for telemetry only.
 
 The consumer does **not** invoke `writing-plans` or `executing-plans`; the implementation plan for this spec is produced separately by the brainstorming-skill caller after spec approval.
 
