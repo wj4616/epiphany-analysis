@@ -4,7 +4,7 @@
 - **Date:** 2026-04-27
 - **Author:** brainstorming session (critical-mode) on top of `~/docs/epiphany/prompts/27-04-epiphany-audit-skill-design.md`
 - **Family:** epiphany-*
-- **Implementer audience:** Claude Code agent (general-purpose / prompt-architect subagent type) producing `SKILL.md`, `graph.json`, `modules/N01..N23.md`, `schemas/*.json`, `templates/*`, and `tests/`.
+- **Implementer audience:** Claude Code agent (general-purpose / prompt-architect subagent type) producing `SKILL.md`, `graph.json`, `modules/N01..N27.md`, `schemas/*.json`, `templates/*`, and `tests/`.
 - **Hard gate:** the consumer of this spec produces the skill files; the consumer does NOT execute audits as part of consuming this spec.
 
 ---
@@ -37,7 +37,7 @@ The skill must be tailored to work with any project optimally — if a dimension
 ### 1.3 Invocation contract
 
 ```
-/epiphany-audit [<path>] [--audit | --fix <report>] [--verbose] [--deep]
+/epiphany-audit [<path>] [--audit | --fix <report>] [--verbose] [--deep] [--improve]
                 [--auto | --confirm-all | --dry-run]
                 [--escalate-finding F00N] [--test-cmd '<cmd>']
 ```
@@ -68,6 +68,7 @@ The skill must be tailored to work with any project optimally — if a dimension
 - `--demote-finding F00N` — **NOT supported.** Passing it → `halt-on-flag-rejection`: *"--demote-finding is not supported. Edit the report manually to change tier classification."*
 - `--test-cmd '<cmd>'` — explicit project test command. Always overrides auto-detection.
 - `--full-rerun` / `--no-rerun` — override the §2.5 tiered audit-rerun policy. `--full-rerun` forces full N01..N13 rerun (high-stakes runs); `--no-rerun` skips the audit-rerun sub-step entirely (token-budget-constrained runs; fix-report records `audit_rerun_delta: skipped-by-flag`). Mutually exclusive; passing both → `halt-on-flag-conflict`. Both valid only with `--fix` or no-flag (fix-mode); ignored with warning under `--audit`.
+- `--improve` — after the audit pipeline completes (post-Q-GATE, post-save), run the Improvement Analysis subpipeline (N24..N27). Analyzes the project for tangible improvement opportunities beyond the audit's defect findings. Each improvement candidate is scored for utility (1-3) vs. implementation cost (1-3); speculative suggestions and improvements where cost > utility are discarded by the Over-Engineering Filter (N26). Survivors are categorized as `quick-win`, `worthwhile`, or `notable`. Produces a separate Improvement Report at `~/docs/epiphany/audit/improvement-reports/`. **Only valid in audit mode or no-flag mode.** Emits a warning (not a halt) if combined with `--fix`; improvement analysis is then silently skipped. `--improve` is orthogonal to `--verbose`, `--deep`, `--dry-run`, and autonomy flags.
 
 **`<report>` resolution order (for `--fix`):**
 
@@ -146,12 +147,17 @@ Diagnostic: *"resolved target $TARGET looks like a wrapper/aggregator, not a pro
 │   ├── N20-per-fix-verifier.md
 │   ├── N21-regression-battery.md        # battery + audit-rerun delta (folded)
 │   ├── N22-rollback-handler.md
-│   └── N23-fix-reporter.md
+│   ├── N23-fix-reporter.md
+│   ├── N24-improvement-contextualizer.md  # --improve subpipeline
+│   ├── N25-improvement-brainstormer.md
+│   ├── N26-oef.md                         # over-engineering filter
+│   └── N27-improvement-reporter.md
 ├── schemas/
 │   ├── audit-report-v1.schema.json
 │   ├── fix-report-v1.schema.json
-│   ├── dry-run-plan-v1.schema.json     # I3 — first-class dry-run plan
-│   └── dimension-plugin-v1.schema.json # I1 — pluggable dimension manifest
+│   ├── dry-run-plan-v1.schema.json      # I3 — first-class dry-run plan
+│   ├── dimension-plugin-v1.schema.json  # I1 — pluggable dimension manifest
+│   └── improvement-report-v1.schema.json
 ├── dimensions/                          # I1 — built-in + user dimension plugins
 │   ├── correctness.md                  # built-in (mirrors N04)
 │   ├── architecture.md                 # built-in (mirrors N05)
@@ -162,7 +168,8 @@ Diagnostic: *"resolved target $TARGET looks like a wrapper/aggregator, not a pro
 ├── templates/
 │   ├── audit-report.md.template
 │   ├── fix-report.md.template
-│   └── dry-run-plan.md.template        # I3
+│   ├── dry-run-plan.md.template         # I3
+│   └── improvement-report.md.template
 └── tests/
     ├── smoke/
     ├── schema-validation/
@@ -177,6 +184,7 @@ Diagnostic: *"resolved target $TARGET looks like a wrapper/aggregator, not a pro
 - `~/docs/epiphany/audit/` — saved audit reports
 - `~/docs/epiphany/audit/fix-reports/` — saved fix reports
 - `~/docs/epiphany/audit/dry-run-plans/` — saved dry-run plans (I3)
+- `~/docs/epiphany/audit/improvement-reports/` — saved improvement reports (`--improve`)
 - `~/docs/epiphany/audit/.state/<source-report-id>.json` — idempotency state per source report
 - `~/docs/epiphany/audit/.baselines/<report-id>.json` — pre-flight baseline manifest (N18)
 - `~/docs/epiphany/audit/.recovery/<report-id>.json` — recovery manifest (in-flight fix state)
@@ -187,7 +195,7 @@ Diagnostic: *"resolved target $TARGET looks like a wrapper/aggregator, not a pro
 
 ---
 
-## 2. Node Registry (23 nodes, compressed from input's 26)
+## 2. Node Registry (27 nodes: 23 core + 4 improvement subpipeline)
 
 Compressions (vs. input prompt's 26-node registry; this spec's renumbering closes the gaps):
 
@@ -224,11 +232,17 @@ Net effect: 26 → 23 nodes. All other input-prompt nodes are renumbered downwar
 | N21 | RegressionBattery (battery + tiered audit-rerun delta) | verifier | inline (battery) + conditional subagent under `--deep` (audit-rerun clean lens) | **Folded from input-prompt N23+N24.** Battery (always inline): full test suite vs baseline (no new failures), type check (no new errors), lint (`new_warnings_in_changed_regions == 0`), build clean, **diff-scope check** (every diff line maps to AUDIT-ID; regression-prevention test additions count as in-scope via the `[AUDIT-NNN]` commit they ride). **Audit-rerun sub-step is TIERED by the highest tier of fixes applied in this run** (per §2.5): Tier-1-only run → audit-rerun **skipped** (battery is sufficient); Tier-2-only run → **narrow audit-rerun** (re-run only the dimension analyzers matching the dimension tags of the applied fixes — e.g., all-CORRECTNESS fixes → re-run only N04); any Tier-3 fix → **full audit-rerun** (N01..N13). Classify new findings — those in **files touched by fixes** → `induced-regression` (route to E_rerun_fail); those in **untouched files** → `new-finding-discovered` (record in fix report body, no E_rerun_fail). | adversarial-via-rerun |
 | N22 | RollbackHandler | recovery | inline | **No `git revert HEAD`** (the atomic loop in §5.3 uses `git checkout -- <touched-files>` to discard pre-commit working-tree state — there is nothing to revert because failed attempts never reach `git commit`). N22's responsibilities: (a) on E_repair cap-hit for a fix-group, finalize the recovery manifest with the failure record (boundary-aligned write per O3); (b) on planned termination of the run, finalize the manifest with the run-complete state; (c) emit halt-with-diagnostic when a cap-hit blocks all remaining work. **Mid-flight death case:** N22 cannot finalize after process death; the at-rest accuracy is provided by the most recent fix-group boundary write from N19, which is sufficient for the resume-handler to restart the in-flight fix-group from scratch. | — |
 | N23 | FixReporter | formatter | inline | Closing-the-loop fix report per Fix Report Schema v1: per-finding status, diff summary by AUDIT-ID, baseline-vs-post metrics, audit-rerun delta, deferred items, manual-edits section (if user authorized scope-creep), recovery-manifest reference (if applicable). Status-priority sort: `failed > induced-regression > deferred > verified > skipped`. | aggregator (per-fix outcomes) |
+| N24 | ImprovementContextualizer (IC) | analyzer | inline | **`--improve` only.** Ingests `project_model` from N01 and the post-Q-GATE findings report from N13. Synthesizes an improvement-analysis frame: what the project is and does; what it's optimizing for; what the audit findings reveal about structural weaknesses; which audit dimensions were NOT flagged (healthy areas worth preserving). Output: `improvement_context` (project capability map, health summary, improvement search constraints). Reads no new files — works only from N01's project model and N13's report already in context. Side effects: `read-only`. | — |
+| N25 | ImprovementBrainstormer (IB) | analyzer | inline / subagent under `--deep` (capped at 1 spawn, only when ≥8 candidates detected) | **`--improve` only.** GoT-style brainstorm of concrete improvement candidates. Categories explored: developer experience, testing strategy, architectural clarity, performance headroom, tooling/automation, dependency hygiene, documentation/discoverability. For each candidate: description, concreteness level, user-facing impact, rough effort estimate. **Strict exclusions:** cosmetic-only changes; re-architectures without concrete measured benefit; generic "best practices" not grounded in project-specific evidence; improvements already implied by audit findings (those are findings, not improvements — no double-counting). Output: `improvement_candidates` list. | fan-in to N26 |
+| N26 | OverEngineeringFilter (OEF) | filter | inline | **`--improve` only.** Anti-over-engineering gate. Assigns each candidate `utility_score` (1=marginal, 2=notable, 3=high) and `cost_score` (1=trivial, 2=modest, 3=significant). **Filter rule:** discard when `cost > utility` OR when utility is speculative (language: "might", "could", "potentially", "may help"). Categorizes survivors: `quick-win` (utility ≥ 2, cost = 1), `worthwhile` (utility ≥ cost ≥ 2), `notable` (utility = 3, cost ≤ 2). Discarded candidates + rationale recorded in `discarded_improvements`; surfaced only under `--verbose`. If zero survivors, N27 emits a report stating no improvements above the utility/cost threshold were found — does NOT generate improvements just to have output. | aggregator |
+| N27 | ImprovementReporter (IR) | formatter | inline | **`--improve` only.** Formats the improvement report per Improvement Report Schema v1 (§4.5). Saved to `~/docs/epiphany/audit/improvement-reports/<project-slug>-<YYYYMMDD>-<HHMMSS>-improve.md`. Sections: (1) summary (total candidates, filtered, survivors by category); (2) quick wins; (3) worthwhile improvements; (4) notable improvements. Each entry: description, utility/cost scores, specific action, how to measure success. Under `--verbose`: appends filtered improvements section with discard rationale. Links back to `source_audit_report`; populates `improvement_report_ref` in the audit report frontmatter if the audit report was saved. Pipeline failure in N24..N26 → N27 emits partial report with `improvement_partial: true`; **does NOT halt the skill** (improvement analysis failing does not invalidate the audit findings). | — |
 
 ### 2.1 Spawn budget reconciliation
 
 - **Default invocation:** **0 or 1 spawn.** N14 Pass B spawns ONLY if (≥5 findings) OR (any CRITICAL/HIGH severity present). Small low-stakes audits (e.g., 3 findings, all MEDIUM/LOW) run with zero spawns. Inside spec's ≤2 cap.
 - **`--deep` invocation:** up to **3 spawns** — N14 Pass B (always, under `--deep`) + optional **analyzer fan-out spawn** + N21 audit-rerun clean-lens (only if Tier-3 fixes applied, per O2).
+- **`--improve` invocation:** adds **0 or 1 spawn** for N25 ImprovementBrainstormer under `--deep` only, and only when ≥8 raw improvement candidates are detected. Default `--improve` without `--deep` runs N24..N27 entirely inline.
+- **`--deep --improve` invocation:** up to **4 spawns** — the 3 from `--deep` above plus the optional N25 fan-out spawn.
 - **Analyzer fan-out spawn (`--deep` only):** when more than 3 dimension analyzers (N04..N09) are activated AND the project is large (>500 files OR >50k lines), one batched subagent runs the over-cap analyzers in parallel with the inline ones. The subagent receives the project model from N01 and returns a fan-in result to N10. This is a single spawn slot regardless of how many analyzers it covers. Skipped if ≤3 analyzers or project is small.
 
 ### 2.2 Mechanism ownership
@@ -237,8 +251,10 @@ Net effect: 26 → 23 nodes. All other input-prompt nodes are renumbered downwar
 - BACKTRACKING (fix): E_repair from N20/N21 → N17/N19 (max 1 replan per fix-group, max 1 retry per fix; **1st E_repair invocation → N19 retry; 2nd → N17 replan; 3rd → cap-hit**)
 - AGGREGATION (audit): N11
 - AGGREGATION (fix): N16 (file-grouping) + N23 (per-fix outcome rollup)
+- AGGREGATION (improvement): N26 (candidate filtering + categorization)
 - CONDITIONAL ROUTING: N02 (audit dimensions), N16 (fix tier classification)
 - ADVERSARIAL SELF-REVIEW: N14 Pass B (audit), N21 audit-rerun delta (fix)
+- ANTI-OVER-ENGINEERING FILTER: N26 OEF (`--improve` only; utility/cost scoring + speculative-language discard)
 - PARALLEL VERIFICATION: read-only fan-out in N04..N09 under `--deep`; N10 may fan out across findings. **Write nodes (N19, N20, N22) never fan out.**
 
 ### 2.3 Definitions
@@ -358,6 +374,11 @@ The audit-rerun sub-step in N21 is **tiered by the highest tier of fixes success
 | E_rerun_fail | N21 audit-rerun delta detects induced regression → N16 | feedback | 1:1 (batched) | re-triage with regression context; only for new findings in **files touched by fixes**. **Batching rule:** all induced regressions from a single audit-rerun are passed to N16 in one batched re-invocation, not N separate invocations. |
 | E_diffscope | N21 diff-scope-check fail → halt | control | 1:0 | scope-creep detected; do NOT auto-revert; user authorize-or-revert |
 | E_complete | N23 → user | data | 1:1 | terminal — fix report emitted |
+| E16 | N15 → N24 | control | 1:1 | `--improve` only. Fires regardless of whether user accepted or declined save (improvement pipeline uses in-memory findings context from N13, not the saved file). Fires after save prompt resolves; does NOT fire when `--fix` mode is active (improvement pipeline skipped under `--fix`). |
+| E17 | N24 → N25 | data | 1:1 | always within `--improve` subpipeline |
+| E18 | N25 → N26 | data | 1:1 | always within `--improve` subpipeline |
+| E19 | N26 → N27 | data | 1:1 | always within `--improve` subpipeline |
+| E20 | N27 → user | data | 1:1 | terminal for `--improve` subpipeline; improvement report shown + save confirmation emitted. If audit is also in no-flag mode (fix offered after audit), E12 fires AFTER E20 resolves. |
 
 ### 3.2 State Machine
 
@@ -372,6 +393,10 @@ The audit-rerun sub-step in N21 is **tiered by the highest tier of fixes success
 | invoke | `--confirm-all` | combines (fix-mode) | combines | per-fix confirmation regardless of tier |
 | invoke | `--dry-run` | combines (fix-mode) | n/a | terminates after N17 with Dry-Run Plan v1 written to `~/docs/epiphany/audit/dry-run-plans/`; no apply, no commits, no branch |
 | invoke | `--dry-run` without `--fix` and no audit-pending offer | n/a | n/a | warning emitted: *"--dry-run has no effect without --fix or post-audit fix offer"*; ignored, run continues as if not passed |
+| invoke | `--improve` | yes | yes (default) | improvement subpipeline (N24..N27) runs after save-prompt; improvement report saved to `improvement-reports/`; fix offered after |
+| invoke | `--audit --improve` | yes | **no** | improvement subpipeline runs after save; no fix offered |
+| invoke | `--fix <report> --improve` | n/a | yes | warning emitted: *"--improve is ignored with --fix; run without --fix to include improvement analysis"*; improvement pipeline skipped; fix pipeline proceeds normally |
+| invoke | `--improve --dry-run` | yes (audit) | n/a (fix) | improvement analysis runs (produces improvement report); `--dry-run` suppresses fix application as normal; improvement report still written |
 
 ### 3.3 Halt states (first-class outcomes)
 
@@ -445,6 +470,9 @@ gap_dimensions_accepted: [...]     # subset of offered the user opted into
 token_cap_partial: false
 truncated_at_node: null            # which node was active when cap fired (if partial)
 
+improvement_report_ref: null | <absolute path>   # populated by N27 after --improve pipeline completes;
+                                                  # null if --improve not set or improvement pipeline failed
+
 dimensions_partial:                # populated only when intra-node soft budget tripped on a dimension (--deep)
   - dimension: SECURITY
     reason: "intra-node soft budget exceeded — coverage incomplete for dimension SECURITY"
@@ -468,6 +496,8 @@ allowed: [audit] | [audit, verbose] | [audit, deep] | [audit, verbose, deep]
        | []      | [verbose]        | [deep]        | [verbose, deep]
        (autonomy/oversight flags appear in fix report, not audit report)
 ```
+
+The `improve` flag is orthogonal to mode and verbosity flags. Any of the above sets may additionally include `improve` (e.g., `[audit, improve]`, `[improve, deep]`, `[verbose, improve, deep]`). The schema allows `improve` as an optional member of any set above; sets containing `fix` may also contain `improve` (the schema accepts it) but the runtime emits a warning and ignores it.
 
 **Body — one `## Finding F00N` section per finding (mandatory keys):**
 
@@ -644,12 +674,12 @@ notes: |                              # optional
 
 ### 4.3 Cross-schema invariants
 
-- `source_report_id` in fix-report = `report_id` in audit-report = `source_report_id` in dry-run plan.
+- `source_report_id` in fix-report = `report_id` in audit-report = `source_report_id` in dry-run plan = `source_report_id` in improvement report.
 - `source_audit_report_sha256` is verified at `--fix` start; halt with `halt-on-stale-source-report` if file missing or hash mismatched.
 - Status-priority sort order intentionally surfaces problems first.
 - F-VAL strict schema validation applies to **all** `--fix` ingests, including hand-edited audit reports.
 - "Unverified Hypotheses" findings are **not consumable** by `--fix`; F-VAL ingests only main-body findings.
-- Authoritative schemas: `schemas/audit-report-v1.schema.json`, `schemas/fix-report-v1.schema.json`, `schemas/dry-run-plan-v1.schema.json`, `schemas/dimension-plugin-v1.schema.json`. This section is the human-readable companion.
+- Authoritative schemas: `schemas/audit-report-v1.schema.json`, `schemas/fix-report-v1.schema.json`, `schemas/dry-run-plan-v1.schema.json`, `schemas/dimension-plugin-v1.schema.json`, `schemas/improvement-report-v1.schema.json`. This section is the human-readable companion.
 
 ### 4.4 Dry-Run Plan Schema v1 (I3)
 
@@ -712,6 +742,61 @@ notes: |                                    # optional
 
 - `plan_id` is distinct from any future `fix_report_id`. A dry-run plan and a subsequent live fix run on the same audit report produce two different artifacts; both reference the same `source_report_id`.
 - A dry-run plan can be referenced (path or SHA-256) when scheduling the corresponding live `--fix` run; if referenced, the live run's tier classifications must match the plan's, otherwise emit a `tier-drift` warning per affected finding.
+
+### 4.5 Improvement Report Schema v1
+
+Output of `--improve` mode. Saved to `~/docs/epiphany/audit/improvement-reports/<project-slug>-<YYYYMMDD>-<HHMMSS>-improve.md`. Authoritative JSON schema: `schemas/improvement-report-v1.schema.json`. Emitted by N27 after the OEF filter runs; pipeline failure in N24..N26 produces a partial report with `improvement_partial: true` rather than halting.
+
+**Frontmatter (YAML):**
+
+```yaml
+schema_version: 1
+improvement_report_id: <uuid v4>
+source_audit_report: <absolute path>
+source_report_id: <uuid from source audit>
+audit_target: <absolute path>
+improvement_timestamp: <ISO 8601>
+tool_version: <epiphany-audit semver>
+flags: [improve, ...]                  # always includes improve; verbose/deep orthogonal
+
+improvement_partial: false             # true if N24..N26 pipeline failed partway; N27 emits best-effort output
+total_candidates: 14                   # raw count from N25 before filtering
+filtered_out: 9                        # discarded by N26 OEF
+survivors: 5                           # passed OEF
+quick_wins: 2                          # utility ≥ 2, cost = 1
+worthwhile: 2                          # utility ≥ cost ≥ 2
+notable: 1                             # utility = 3, cost ≤ 2
+```
+
+**Body — sorted by category (quick-win → worthwhile → notable) then by `utility_score` descending. One entry per improvement:**
+
+```yaml
+## Improvement I001
+
+id: I001
+category: quick-win | worthwhile | notable
+area: developer-experience | testing | architecture | performance | tooling | dependencies | documentation
+utility_score: 2               # 1=marginal, 2=notable, 3=high
+cost_score: 1                  # 1=trivial, 2=modest, 3=significant
+description: |
+  <concrete description of the improvement — no hedging language; specific to this project>
+action: |
+  <specific action to take — never "consider improving X"; always "do Y to achieve Z">
+success_measure: |
+  <observable outcome that confirms the improvement worked>
+notes: |                        # optional
+  <free text>
+```
+
+**Top-of-body sections:**
+
+1. **Summary** — total candidates brainstormed, N filtered (discarded), N survivors by category. If zero survivors: *"No improvements above the utility/cost threshold were found. This is a valid result — the project may be well-optimized in its current state."*
+2. **Quick wins** (utility ≥ 2, cost = 1) — highest actionability.
+3. **Worthwhile improvements** (utility ≥ cost ≥ 2).
+4. **Notable improvements** (utility = 3, cost ≤ 2) — high-value, justify higher investment.
+5. **Filtered improvements** (only under `--verbose`) — each discarded candidate with the OEF discard rationale.
+
+**Cross-schema invariant:** `source_report_id` in improvement-report = `report_id` in the linked audit report. Improvement reports are read-only artifacts; they are NOT consumed by `--fix`. N27 patches `improvement_report_ref` into the already-saved audit report frontmatter (if save was accepted) after writing the improvement report. If the audit report was not saved (user declined), `improvement_report_ref` remains null in the in-memory report only.
 
 ---
 
@@ -948,7 +1033,40 @@ tests_present_signal: false
 }
 ```
 
-**Example 3 — Worked dimension-routing decision:**
+**Example 3 — Worked improvement entry (full mandatory fields, post-OEF survivor):**
+
+```yaml
+## Improvement I002
+
+id: I002
+category: quick-win
+area: testing
+utility_score: 2               # notable: currently test-discovery failures surface only at runtime
+cost_score: 1                  # trivial: one pytest.ini / conftest.py edit
+description: |
+  The project uses dynamic test discovery but has no conftest.py at the repo root.
+  Failures in fixture setup are silently swallowed on Python < 3.11, meaning a
+  broken fixture causes zero tests to run rather than N failures — masking breakage.
+action: |
+  Add a minimal conftest.py at the repo root with a session-scoped fixture guard:
+  assert sys.version_info >= (3, 10), "test suite requires Python 3.10+"
+  This ensures fixture failures surface as explicit errors, not silent zero-runs.
+success_measure: |
+  Running pytest with a broken fixture produces a visible ERROR line in output
+  rather than "collected 0 items".
+```
+
+**Example of a correctly-discarded candidate (appears only under `--verbose`):**
+
+```
+Discarded: "Migrate to async/await throughout the service layer"
+  utility_score: 2 (notable latency improvement in theory)
+  cost_score: 3 (significant: touches 14 files, requires test harness changes)
+  OEF rationale: cost > utility (2 < 3); also utility contains speculative language
+                 ("in theory" — no profiling evidence of latency being the bottleneck)
+```
+
+**Example 4 — Worked dimension-routing decision:**
 
 ```
 PERFORMANCE:     skipped — no hot loops detected, no perf-critical heuristic match
@@ -975,8 +1093,8 @@ The skill is *production-grade* iff:
 The consumer of this spec produces:
 
 1. `SKILL.md` covering §1–§6 in human-readable form, with all 13 Layer-A sections from the source prompt populated.
-2. `graph.json` declaring all 23 nodes + edges per §2 + §3, validated by `graph.schema.json`.
-3. `modules/N01..N23.md` — one file per node, each following the Layer-B contract template:
+2. `graph.json` declaring all 27 nodes + edges per §2 + §3, validated by `graph.schema.json`. Improvement subpipeline nodes (N24..N27) must carry `"active_in": ["improve"]` to signal that they activate only under `--improve`. The `graph.json` `active_in` vocabulary: `"audit"` = audit-only mode; `"fix"` = fix-only mode; `"both"` = both audit and fix; `"improve"` = `--improve` subpipeline only; `"always"` = all modes.
+3. `modules/N01..N27.md` — one file per node, each following the Layer-B contract template:
     - **Inputs (typed)** — prose-with-shape annotations (e.g., `project_model: { language: string, files: list[Path], build_manifest: Path | null, test_command: string | null, git_state: { head: sha, dirty: bool, ... } }`). JSON-Schema-style optional but not required; the goal is unambiguous handoff between nodes, not full machine validation of every field.
     - **Outputs (typed)** — same shape conventions as inputs.
     - **Side effects** (none / read-only / git-staged / write-state-file / write-recovery-manifest / write-baseline / write-log / write-report / network)
@@ -986,16 +1104,18 @@ The consumer of this spec produces:
         - **N19 FixApplier:** `git-staged` (working-tree edits + commits on PASS; `git checkout -- <touched-files>` on FAIL — never `git revert`) + `write-recovery-manifest` (boundary-aligned writes only — at fix-group start, end-success, end-failure; per O3) + `write-log`.
         - **N22 RollbackHandler:** `git-staged` only at run-finalization (no `git revert HEAD` calls — the atomic loop never produces failed commits to revert) + `write-recovery-manifest` (finalize on planned termination only; mid-flight death is handled by the most-recent boundary write from N19) + `write-log`.
         - **N23 FixReporter:** `write-report` (fix report) + `write-log`.
+        - **N24 ImprovementContextualizer, N25 ImprovementBrainstormer, N26 OEF:** `read-only` + `write-log`. These nodes read from in-memory context only; they do not open additional files.
+        - **N27 ImprovementReporter:** `write-report` (improvement report) + `write-log` + conditional in-place patch of `improvement_report_ref` in the already-saved audit report frontmatter (only when N15 save was accepted). The patch MUST be an in-place YAML frontmatter line update; it MUST NOT rewrite the audit report body.
         - All other nodes: `read-only` or `none`, plus `write-log` for structured event emission.
     - **Halt conditions** (mapping to halt states in §3.3)
     - **Token budget hint** (per-node soft budget; analyzer nodes 30k under `--deep` per §6.1 intra-node cap)
     - **Backtrack/aggregation participation**
     - **Fan-out cardinality** (N04..N09 under `--deep`; N10 across findings)
     - **Back-edge endpoints** (N20 fail-signal → E_repair → N17/N19; N21 induced-regression → E_rerun_fail → N16)
-4. `schemas/audit-report-v1.schema.json`, `schemas/fix-report-v1.schema.json`, `schemas/dry-run-plan-v1.schema.json`, `schemas/dimension-plugin-v1.schema.json` — authoritative JSON schemas matching §4 and §2.4.
-5. `templates/audit-report.md.template`, `templates/fix-report.md.template`, `templates/dry-run-plan.md.template`.
+4. `schemas/audit-report-v1.schema.json`, `schemas/fix-report-v1.schema.json`, `schemas/dry-run-plan-v1.schema.json`, `schemas/dimension-plugin-v1.schema.json`, `schemas/improvement-report-v1.schema.json` — authoritative JSON schemas matching §4 and §2.4.
+5. `templates/audit-report.md.template`, `templates/fix-report.md.template`, `templates/dry-run-plan.md.template`, `templates/improvement-report.md.template`.
 6. `dimensions/` — built-in dimension plugins per §2.4 (`correctness.md`, `architecture.md`, `performance.md`, `security.md`, `maintainability.md`); these mirror the prompts in `modules/N04..N08.md` but conform to the dimension-plugin-v1 schema so R-ROUTE can load them through the same code path as user plugins.
-7. `tests/smoke/` — minimal end-to-end smoke runs covering: default invocation, `--audit` only, `--fix` on a known-good report, `--dry-run` (verifies dry-run plan emission + schema), recovery-manifest resume, suspicious-target halt, target-conflict halt, dimension-plugin loading (a fixture user plugin in `tests/smoke/fixtures/user-dimensions/`).
+7. `tests/smoke/` — minimal end-to-end smoke runs covering: default invocation, `--audit` only, `--fix` on a known-good report, `--dry-run` (verifies dry-run plan emission + schema), recovery-manifest resume, suspicious-target halt, target-conflict halt, dimension-plugin loading (a fixture user plugin in `tests/smoke/fixtures/user-dimensions/`), `--improve` mode (verifies improvement report emission + schema + `improvement_report_ref` patch into audit report), `--fix --improve` warning (verifies improvement pipeline is skipped and warning is emitted without halting).
 8. `tests/schema-validation/` — JSON-schema validation tests for all four schemas.
 9. `tests/determinism/` — fixture root for the ≥80% set-overlap CI gate (per §6.4).
 
@@ -1020,3 +1140,4 @@ The consumer does **not** invoke `writing-plans` or `executing-plans`; the imple
 - Original input prompt: `~/docs/epiphany/prompts/27-04-epiphany-audit-skill-design.md`
 - Brainstorm critiques resolved (10): node-count compression, default-confirm-tier-batch flipped, write-serial/read-parallel, R-ROUTE floor, state-file idempotency, per-node inline/subagent annotation, suspicious-target gate, B-FIND non-interactive default, token-cap checkpoints, file-layout choice (`epiphany-graph-genius` style).
 - Self-audit fixes applied across all 6 design sections: 7 + 13 + 14 + 13 + 13 = 60 corrections.
+- Post-session addition: `--improve` flag + N24-N27 improvement subpipeline (ImprovementContextualizer, ImprovementBrainstormer, OverEngineeringFilter, ImprovementReporter) + E16-E20 edges + §4.5 Improvement Report Schema v1 + `improvement_report_ref` audit-report field + `improvement-report-v1.schema.json`.
