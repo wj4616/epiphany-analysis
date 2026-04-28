@@ -6124,7 +6124,7 @@ edges = len(graph['edges'])
 print(f'graph.json OK — {nodes} nodes, {edges} edges')
 "
 ```
-Expected: `graph.json OK — 27 nodes, 26 edges` (or near that edge count).
+Expected: `graph.json OK — 27 nodes, 27 edges`.
 
 - [ ] **Step 10: Final file-count check**
 
