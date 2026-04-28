@@ -88,3 +88,10 @@ node_modules/
 run-with-api-key.sh
 *api-key*
 *api_key*
+
+# Conversation exports / session logs (may contain tokens)
+conversation_full.md
+claude_export_*/
+claude_exports/
+claude_sessions/
+sessions/
