@@ -277,3 +277,284 @@ MEDIUM   = degraded UX, recoverable error mishandled, maintainability cliff
 LOW      = code smell with concrete future cost
 INFO     = observation, no action required
 ```
+
+---
+
+## 8. Verification-Gate Ordering
+
+Gates run in this fixed order during the fix pipeline. Later gates do not run if an earlier gate fails.
+
+| # | Gate | Node | Failure consequence |
+|---|------|------|---------------------|
+| 1 | F-VAL ingest | N16 | `halt-pre-fix-on-validator-failure` |
+| 2 | Empty-report check | N16 | `halt-on-empty-or-unfixable-report` |
+| 3 | Idempotency check | N16 | warn + user override |
+| 4 | Tier classification | N16 | defer-on-uncertainty; `halt-on-conflicting-fixes` in live mode |
+| 5 | Fix-plan approval | N17 | per-tier outcome (decline = deferred; halt = stop) |
+| 6 | Pre-flight baseline | N18 | `halt-on-baseline-failure`, `halt-on-test-cmd-unknown`, `halt-on-git-state-incompatible` |
+| 7 | Per-fix verify | N20 | atomic rollback + E_repair routing |
+| 8 | Regression battery | N21 (battery sub-step) | E_repair; `halt-on-scope-creep` |
+| 9 | Audit-rerun delta | N21 (audit-rerun sub-step) | E_rerun_fail (induced regression) |
+
+**Q-GATE** (audit pipeline):
+- Pass A (inline): mandatory fields, location verification (from N10 cache), CRITICAL/HIGH×confidence floor, dup merge, no-comment-echo, no-LOW-only warning
+- Pass B (conditional subagent): anti-iatrogenic, evidence-rationale coherence, dimension-classification correctness
+
+**Shared location-verification cache contract (N10 + N14 Pass A):**
+- Lives in process memory for one skill invocation only (never persisted)
+- Key: `(canonical_file_path, line_range)` normalized as `(start_line, end_line)`
+- Value: `{ verified, content_hash, populated_by: "N10", populated_at }`
+- N10 FPV is the only writer; N14 Pass A is read-only (falls back to its own Read on cache miss)
+- Failed Reads recorded as `verified: false`
+
+---
+
+## 9. Tier + Autonomy Policy
+
+### Tier classification rules (N16, deterministic)
+
+**Tier-1 (mechanical):** ALL of:
+- Remediation diff ≤ 2 lines edited within a single file
+- No function/method signature changes
+- No new identifiers introduced
+- Target file imported by ≤ 5 other files
+- `confidence: HIGH`
+- `effort: trivial`
+
+**Tier-2 (local logic):** ALL of:
+- Remediation bounded to a single function body
+- May add local symbols (locals, in-scope helper functions)
+- No public-API change (no exported identifier renamed/removed/signature-changed)
+- Target file imported by ≤ 20 other files
+
+**Tier-3 (cross-cutting):** anything not satisfying Tier-1 or Tier-2, including:
+- Multi-file remediation
+- Any signature change to an exported identifier
+- Schema/migration/config files
+- New files
+- Findings flagged via `--escalate-finding`
+- Non-literal remediation (numbered steps without a literal patch) → Tier-3, `tier_classification_reason: "non-literal remediation"`
+
+### Autonomy policy matrix
+
+| Tier | Default | `--auto` | `--confirm-all` | `--dry-run` |
+|------|---------|----------|-----------------|-------------|
+| 1 | Batch confirm | Silent apply | Per-fix confirm | No apply |
+| 2 | Batch confirm | Batch confirm | Per-fix confirm | No apply |
+| 3 | Per-fix confirm | Per-fix confirm | Per-fix confirm | No apply |
+
+**Per-fix-opt-in floor (anti-conformity):** even under `--auto`, any finding with `confidence < HIGH OR effort > trivial` requires per-fix opt-in. Only HIGH-confidence, trivial-effort fixes auto-apply.
+
+**Tier decline behavior:** T1 → T2 → T3 presented in order. Decline on Tier-N → all Tier-N findings `deferred (user-declined-batch)`; pipeline proceeds to Tier-N+1. Explicit `halt` → stop entirely.
+
+**`--demote-finding` is NOT supported** (`halt-on-flag-rejection`). Edit the report manually.
+
+---
+
+## 10. Recovery Semantics
+
+### Recovery manifest lifecycle
+
+Written by N19 at fix-group **boundaries only** (start / end-success / end-failure). NOT written during intra-loop transitions.
+
+**States:**
+- `in_flight_finding_id` set → a fix-group is currently executing
+- Finding in `applied` → committed successfully
+- Finding in `failed` → cap-hit; downstream dependents marked `deferred (upstream-dependency-failed)`
+- Finding in `pending` → not yet started
+
+**Planned termination (E_finalize):** N23 writes fix report → N22 reads `fix_report_id` from it → N22 archives manifest to `.recovery/.archive/<report-id>-completed-<ISO-timestamp>.json` → removes live `<report-id>.json` → E_complete → user.
+
+**Halt-mid-fix:** manifest stays live at `~/docs/epiphany/audit/.recovery/<report-id>.json`. Resume on next run.
+
+**Archive states:** `completed` (planned termination), `superseded` (user chose `fresh` over interrupted run), `aborted` (reserved).
+
+### `halt-on-recovery-conflict` options
+
+When a recovery manifest is detected at `--fix` entry:
+
+- **`resume`**: continue from `last_known_good_sha`; skip applied; continue with pending list.
+  - Resume-handler sub-step (first action in N16): tree-divergence safety check → `git checkout -- . && git clean -fd` (only after safety check passes or user authorizes) → move `in_flight_finding_id` back to `pending`.
+  - Audit-rerun tier policy on resume: determined by combined highest tier (original + resumed run).
+- **`fresh`**: archive existing manifest as `superseded-<ISO-timestamp>.json` (forensic record preserved); start over.
+- **`abort`**: halt; no changes.
+
+### Idempotency state file
+
+Written by N15 SaveHandler on save-accept. Located at `~/docs/epiphany/audit/.state/<report-id>.json`. Authoritative over git-log for idempotency checks. Conflict resolution:
+- `(a) re-apply`: replaces sha in state file; adds `previous_sha_unreachable: <old-sha>` metadata.
+- `(b) skip`: annotates state entry with `reachable: false, last_checked: <ISO>`. Cleared by `--reverify-state`.
+- `(c) abort`: state file untouched.
+
+---
+
+## 11. Hard Rules (Audit + Fix)
+
+### Audit hard rules
+
+- Every finding has ALL mandatory schema fields (id, location, dimensions, severity, confidence, evidence_excerpt, evidence_excerpt_extended, rationale, remediation, false_positive_check, effort, priority_score, tests_present_signal, provenance). Findings missing any mandatory field → demote to "Unverified Hypotheses".
+- Every `file:line` is verified against the actual file via Read at audit time. **No hallucinated lines.**
+- Every CRITICAL/HIGH finding has Confidence ≥ MEDIUM. HIGH-severity at LOW-confidence → demote severity OR upgrade confidence with stated evidence.
+- LOW-confidence findings include `verify_by: <what would lift confidence>`.
+- Duplicate patterns merged with count.
+- Q-GATE Pass A no-comment-echo: no finding text quotes the project's own TODO/FIXME without independent verification.
+- `tests_present_signal` must be set when test-dir grep matches the involved function/class/module. Elevates the confidence floor for that finding.
+
+### Fix hard rules
+
+- **DO NOT** apply fixes outside source tree.
+- **DO NOT** modify files audit didn't flag — **except** regression-prevention test additions in the same commit as the fix (test files containing only new test cases exercising the audit-flagged failure mode).
+- **DO NOT** skip post-fix verification.
+- **DO NOT** batch-apply fixes spanning the same file without staged review.
+- **DO NOT** continue after verification failure without explicit user authorization (or per E_repair bounded retry).
+- **Never** expand scope beyond audit findings. Spotted unrelated bug → log as new finding; do not fix it now.
+- **Never** bypass safety checks (`--no-verify`, `--force-push`, hook skipping).
+- **Never** amend prior commits — always new commits, even on retry.
+- **Defer over guess** — if root cause is unclear, mark `deferred` with a question.
+- **Idempotent** — re-runs skip already-applied findings (state file > git-log fallback).
+- **Fail-loud on partial state** — recovery manifest written at boundaries; mid-flight death leaves coherent at-rest state.
+
+---
+
+## 12. Anti-Patterns
+
+### Audit findings — MUST NOT exhibit
+
+- Stylistic preferences disguised as bugs ("could use `auto` here")
+- Findings without reading the actual code (hallucinated `file:line`)
+- Generic advice applicable to any project ("add more tests")
+- Refactors with no concrete defect or measured cost
+- Duplicate findings (collapse with count)
+- Wall of LOW-severity nitpicks burying real defects
+- Rewrites without a concrete defect driving them
+- Echoing project's own TODO/FIXME comments (covered by Q-GATE Pass A no-comment-echo)
+- "I would have written it differently" ≠ "this is wrong"
+- Reporting findings the existing tests already cover without verifying the test doesn't cover the failure path
+
+### Fix application — MUST NOT exhibit
+
+- Fixes outside source tree
+- Modifying files audit didn't flag (except regression-prevention tests in same commit)
+- Skipping post-fix verification
+- Batch-applying fixes across same file without staged review
+- Continuing after verification failure without authorization
+- Expanding scope beyond audit findings
+- Bypassing safety checks
+- Amending prior commits
+- Guessing root cause when unclear
+- Silent re-application of already-applied findings
+- Silent partial state on mid-flight death
+
+---
+
+## 13. Worked Examples
+
+### Example 1 — Worked Finding (full mandatory fields)
+
+```yaml
+## Finding F001
+
+id: F001
+location: src/parser.py:142
+dimensions: [CORRECTNESS]
+severity: HIGH
+confidence: HIGH
+evidence_excerpt: |
+  for i in range(len(tokens) - 1):
+      emit(tokens[i])
+  # final token never emitted
+evidence_excerpt_extended: false
+rationale: Loop bound drops final token; downstream consumer expects all N tokens.
+remediation: |
+  -    for i in range(len(tokens) - 1):
+  +    for i in range(len(tokens)):
+false_positive_check:
+  intentional:           { value: false, justification: "no test or comment justifies the -1" }
+  file_symbol_verified:  { value: true,  justification: "Read at src/parser.py:140-145" }
+  reachable_from_entry:  { value: true,  justification: "called by parse_input in main.py:23" }
+  fix_breaks_dependents: { value: false, justification: "grep shows no caller relies on N-1 emission" }
+effort: trivial
+priority_score: 9.0   # (3 × 3) / 1
+verify_by: null
+tests_present_signal: false
+provenance:
+  node: N04
+  mode: inline
+  model: claude-sonnet-4-6
+  pass_b_model: null
+  prompt_hash: a3f9e2c1d4b8f7e0a1b2c3d4e5f60718
+  plugin_name: null
+  plugin_version: null
+  audit_rerun_iteration: 0
+  q_gate_pass_b_demoted: false
+```
+
+### Example 2 — Worked graph.json node entry
+
+```json
+{
+  "id": "N02",
+  "name": "RelevanceRouter",
+  "type": "router",
+  "mode": "inline",
+  "active_in": "audit",
+  "inputs": ["project_model from N01", "dimension_plugins_from_disk"],
+  "outputs": ["dimension_activation_map", "plugin_registry"],
+  "aggregation_policy": "n/a",
+  "halt_conditions": ["halt-on-floor-plugin-missing"]
+}
+```
+
+### Example 3 — Worked improvement entry (post-OEF survivor)
+
+```yaml
+## Improvement I002
+
+id: I002
+category: quick-win
+area: testing
+utility_score: 2
+cost_score: 1
+description: |
+  The project uses dynamic test discovery but has no conftest.py at the repo root.
+  Failures in fixture setup are silently swallowed on Python < 3.11, meaning a broken
+  fixture causes zero tests to run rather than N failures — masking breakage.
+action: |
+  Add a minimal conftest.py at the repo root with a session-scoped fixture guard:
+    assert sys.version_info >= (3, 10), "test suite requires Python 3.10+"
+success_measure: |
+  Running pytest with a broken fixture produces a visible ERROR line in output
+  rather than "collected 0 items".
+```
+
+### Example 4 — Worked dimension-routing decision
+
+```
+CORRECTNESS:     activated (floor — always on)
+MAINTAINABILITY: activated (floor — always on)
+PERFORMANCE:     skipped — no hot loops detected, no perf-critical heuristic match
+SECURITY:        activated for [shell-injection, secrets-in-source];
+                 skipped sub-surfaces [SQL] — no DB layer detected
+ARCHITECTURE:    activated — >3 modules with cross-imports detected
+```
+
+### Example 5 — Commit message format
+
+```
+[AUDIT-001] fix off-by-one in parser token loop
+
+Finding-id: F001
+Dimensions: CORRECTNESS
+Severity: HIGH
+Source: myproject-20260427-100000.md
+```
+
+Paired regression-test follow-up commit (if required):
+```
+[AUDIT-001-test] regression test for fix off-by-one in parser token loop
+
+Test-for-finding: F001
+Dimensions: CORRECTNESS
+Severity: HIGH
+Source: myproject-20260427-100000.md
+```
