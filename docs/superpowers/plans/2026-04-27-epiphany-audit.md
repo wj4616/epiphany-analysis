@@ -17,7 +17,7 @@
 ```
 ~/.claude/skills/epiphany-audit/
 ├── SKILL.md                                    # 13 Layer-A sections, orchestrator
-├── graph.json                                  # 27 nodes + 28 edges
+├── graph.json                                  # 27 nodes + 27 edges
 ├── graph.schema.json                           # validates graph.json
 ├── README.md
 ├── CHANGELOG.md
@@ -136,29 +136,17 @@ Run:
 ```bash
 find ~/.claude/skills/epiphany-audit -type d | sort
 ```
-Expected: 10 directories total (skill root + 8 subdirs listed above).
+Expected: 14 directories total (skill root + 13 subdirs).
 
 - [ ] **Step 3: Write tests/conftest.py**
 
 ```python
-import json
+# conftest.py — pytest session config; shared constants only.
+# Each test file defines its own load_schema()/load_fixture() to avoid
+# cross-file import coupling (all helpers are 3-line wrappers anyway).
 import os
-import pytest
 
 SKILL_DIR = os.path.expanduser("~/.claude/skills/epiphany-audit")
-SCHEMAS_DIR = os.path.join(SKILL_DIR, "schemas")
-MODULES_DIR = os.path.join(SKILL_DIR, "modules")
-FIXTURES_DIR = os.path.join(SKILL_DIR, "tests/schema-validation/fixtures")
-
-def load_schema(name):
-    path = os.path.join(SCHEMAS_DIR, f"{name}.schema.json")
-    with open(path) as f:
-        return json.load(f)
-
-def load_fixture(name):
-    path = os.path.join(FIXTURES_DIR, f"{name}.json")
-    with open(path) as f:
-        return json.load(f)
 ```
 
 - [ ] **Step 4: Write README.md**
@@ -295,7 +283,7 @@ Run:
 ```bash
 cd ~/.claude/skills/epiphany-audit && python -m pytest tests/schema-validation/test_graph_schema.py -v 2>&1 | head -20
 ```
-Expected: FAIL (FileNotFoundError — graph.schema.json not yet written).
+Expected: FAIL (FileNotFoundError — valid_graph.json fixture not yet written).
 
 - [ ] **Step 3: Write valid_graph.json fixture**
 
@@ -1159,9 +1147,15 @@ def load_fixture(name):
 def test_valid_dry_run_plan_passes():
     jsonschema.validate(load_fixture("valid_dry_run_plan"), load_schema())
 
-def test_count_mismatch_fails():
-    with pytest.raises(jsonschema.ValidationError):
-        jsonschema.validate(load_fixture("invalid_dry_run_plan_count_mismatch"), load_schema())
+def test_count_mismatch_fixture_has_mismatch():
+    # JSON Schema Draft-07 cannot enforce arithmetic invariants; this test
+    # verifies the fixture itself has a mismatch so Step 5 Python assertions
+    # can detect it. The schema structural check (flags, required fields) is
+    # still exercised by test_valid_dry_run_plan_passes via the valid fixture.
+    doc = load_fixture("invalid_dry_run_plan_count_mismatch")
+    ts = doc["triage_summary"]
+    computed = ts["tier_1_count"] + ts["tier_2_count"] + ts["tier_3_count"] + ts["deferred_at_triage"]
+    assert ts["total_findings"] != computed, "fixture should encode a count mismatch"
 
 def test_flags_must_include_dry_run():
     schema = load_schema()
@@ -1722,7 +1716,7 @@ git -C ~/.claude commit -m "feat(epiphany-audit): improvement-report-v1 schema +
 
 ---
 
-## Task 8: graph.json (27 nodes + 28 edges)
+## Task 8: graph.json (27 nodes + 27 edges)
 
 **Files:**
 - Create: `~/.claude/skills/epiphany-audit/graph.json`
@@ -2061,7 +2055,7 @@ git -C ~/.claude commit -m "feat(epiphany-audit): improvement-report-v1 schema +
     {"id": "E10",          "source": "N13", "target": "N14",             "channel": "control",     "cardinality": "1:1",  "activation": "always"},
     {"id": "E11",          "source": "N14", "target": "N15",             "channel": "data",        "cardinality": "1:1",  "activation": "Pass A succeeds AND (Pass B succeeds OR skipped-low-volume); Pass B exec-error -> halt"},
     {"id": "E12",          "source": "N15", "target": "user",            "channel": "interactive", "cardinality": "1:1",  "activation": "save? prompt after N15 save-decision resolves"},
-    {"id": "E13",          "source": "N16", "target": ["N17","N18","N19","N20","N21","N23"], "channel": "data", "cardinality": "1:1 each", "activation": "fix pipeline chain; entry from --fix or post-E21 fix-offer consent"},
+    {"id": "E13",          "source": "N16", "target": ["N17","N18","N19","N20","N21","N23"], "channel": "data", "cardinality": "1:1 each", "activation": "fix pipeline chain; entry from --fix or post-E21 fix-offer consent", "notes": "sequential chain N17→N18→N19→N20→N21→N23; array lists all downstream nodes reachable via this entry edge, not simultaneous fan-out"},
     {"id": "E14",          "source": "E_repair cap-hit", "target": "N22", "channel": "control",   "cardinality": "1:1",  "activation": "E_repair 3rd invocation (cap-hit) -> N22 finalizes recovery manifest for failed fix-group"},
     {"id": "E_halt_partial","source": "halt-mid-fix-*", "target": ["N23","user"], "channel": "control", "cardinality": "1:1", "activation": "perfix-cap-hit or induced-regression-cap-hit AND every remaining group blocked"},
     {"id": "E15",          "source": "N20", "target": "N19",            "channel": "feedback",    "cardinality": "1:1",  "activation": "on PerFixVerify success -> next fix-group"},
@@ -2110,7 +2104,7 @@ Expected: `nodes: 27   edges: 27` (or close — the exact count includes E_repai
 
 ```bash
 git -C ~/.claude add ~/.claude/skills/epiphany-audit/graph.json
-git -C ~/.claude commit -m "feat(epiphany-audit): graph.json — 27 nodes + 26 edges"
+git -C ~/.claude commit -m "feat(epiphany-audit): graph.json — 27 nodes + 27 edges"
 ```
 
 ---
@@ -2571,6 +2565,7 @@ recovery_manifest_ref: {{recovery_manifest_ref}}
 last_known_good_sha: {{last_known_good_sha}}
 ---
 
+{{! deferred_items = body entries where status == "deferred"; derived at render time }}
 {{#deferred_items}}
 ## Deferred Items
 
@@ -2581,6 +2576,8 @@ last_known_good_sha: {{last_known_good_sha}}
 ---
 {{/deferred_items}}
 
+{{! manual_edits = user-authorized out-of-scope edits logged at halt-on-scope-creep; }}
+{{! not a fix-report-v1 schema field — rendered from session context only when present }}
 {{#manual_edits}}
 ## Manual Edits (user-authorized scope)
 
@@ -2743,7 +2740,6 @@ No improvements above the utility/cost threshold were found. This is a valid res
 {{#notable_entries}}
 ## Notable Improvements (high utility, low-to-medium cost)
 
-{{#notable_entries}}
 ### {{id}}
 
 ```yaml
@@ -2759,7 +2755,6 @@ action: |
 success_measure: |
   {{success_measure}}
 ```
-{{/notable_entries}}
 {{/notable_entries}}
 
 ## Quick Wins
@@ -4455,8 +4450,10 @@ unmapped_hunks: DiffHunk[]
 audit_rerun_delta: {
   scope: "full" | "narrow" | "skipped-tier-policy" | "skipped-by-flag" | null,
   reran_dimensions: string[],
-  induced_regressions: Finding[],  // new findings in touched files
-  new_findings_discovered: Finding[]  // new findings in untouched files
+  resolved: string[],                    // finding IDs confirmed fixed by the rerun
+  fix_induced_regressions: string[],     // finding IDs newly introduced in touched files
+  unchanged: string[],                   // finding IDs still present after fixes
+  new_findings_discovered: Finding[]     // new findings in untouched files (record only; no E_rerun_fail)
 }
 ```
 
@@ -4793,7 +4790,7 @@ None. Subagent failures produce partial candidates; N26/N27 handle gracefully.
 
 ## Two-Phase Execution
 
-**Phase 1 (always inline):** Generate lightweight raw candidate list. For each candidate: one-line tag + category seed (one of: developer-experience, testing, architectural-clarity, performance-headroom, tooling-automation, dependency-hygiene, documentation-discoverability). No full description/action/success_measure yet — keeps phase 1 fast and token-cheap.
+**Phase 1 (always inline):** Generate lightweight raw candidate list. For each candidate: one-line tag + category seed — must be one of the `area` enum values from improvement-report-v1 schema: `developer-experience`, `testing`, `architecture`, `performance`, `tooling`, `dependencies`, `documentation`. No full description/action/success_measure yet — keeps phase 1 fast and token-cheap.
 
 **Phase 2:** Elaborate each candidate with full `description`, `action`, `success_measure`.
 - If `--deep` is set AND ≥8 raw candidates from phase 1: spawn one subagent to elaborate all candidates in parallel.
@@ -5163,8 +5160,9 @@ For each node's full Layer-B contract see `modules/N0N-*.md`. For the graph decl
 invoke
   └─ N01 ContextIntake
        └─ N02 R-ROUTE (loads dimension plugins; floor: CORRECTNESS + MAINTAINABILITY always on)
-            └─ N03 B-FIND (auto-add HIGH-confidence gaps; --deep: interactive)
-                 └─ N04..N09 DimensionAnalyzers (per activation map; parallel fan-out under --deep)
+            ├─ N03 B-FIND (E02; auto-add HIGH-confidence gaps; --deep: interactive)
+            │    [N03 updates activation map; N04..N09 consume the updated map]
+            └─ N04..N09 DimensionAnalyzers (E03 from N02; per updated activation map; parallel fan-out under --deep)
                       └─ N10 FPV (false-positive check + location cache; BACKTRACK single cap)
                            └─ N11 Aggregator (dedup, merge, count-collapse)
                                 └─ N12 Prioritizer (priority_score, punch list)
@@ -5934,13 +5932,16 @@ def count_unique(items):
 
 ```python
 """Entry point for the python-small determinism fixture."""
-from parser import parse_tokens, count_unique
+import sys
+import os
+sys.path.insert(0, os.path.dirname(__file__))
+import parser as token_parser  # stdlib 'parser' removed in 3.13; use path insert above
 
 
 def main():
     tokens = ["a", "b", "c", "d"]
-    parsed = parse_tokens(tokens)
-    unique = count_unique(parsed)
+    parsed = token_parser.parse_tokens(tokens)
+    unique = token_parser.count_unique(parsed)
     print(f"parsed {unique} unique tokens")
 
 
@@ -6145,7 +6146,7 @@ Expected:
 --- modules ---
 27
 --- schemas ---
-5
+6
 --- dimensions ---
 6
 --- templates ---
