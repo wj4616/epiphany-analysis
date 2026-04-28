@@ -1,0 +1,22 @@
+{
+  "kb_name": "dsp-kb",
+  "topic": "audio plugin latency compensation",
+  "filename": "audio-plugin-latency-compensation.json",
+  "status": "harvested",
+  "harvested_at": "2026-03-30T23:25:57.022483+00:00",
+  "sources": 3,
+  "rejected": 32,
+  "credits_used": 74,
+  "search_queries": [
+    "audio plugin latency compensation delay compensation buffer DSP",
+    "audio plugin latency compensation tutorial",
+    "audio plugin latency compensation implementation",
+    "audio plugin latency compensation guide"
+  ],
+  "quality_thresholds": {
+    "min_content_length": 500,
+    "min_relevance_score": 0.2,
+    "max_noise_ratio": 0.5
+  },
+  "notes": "Auto-harvested via harvest-data skill"
+}

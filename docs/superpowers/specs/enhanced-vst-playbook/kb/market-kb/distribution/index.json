@@ -1,0 +1,15 @@
+{
+  "id": "placeholder-market-distribution",
+  "title": "PLACEHOLDER: VST Plugin Distribution",
+  "category": "distribution",
+  "status": "placeholder",
+  "needed_by": ["Phase 10"],
+  "description": "Distribution channels and platforms for VST plugins including GitHub releases, plugin stores, and direct sales",
+  "confidence": 0.0,
+  "source": {
+    "type": "pending_harvest",
+    "priority": "high"
+  },
+  "tags": ["distribution", "platforms", "release"],
+  "notes": "Research from plugin stores, direct sales strategies"
+}

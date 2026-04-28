@@ -1,0 +1,951 @@
+{
+  "playbook_version": "1.0.0",
+  "source_sessions": [
+    "attempt build.xml (c3337709-2136-4a3e-9f3d-f1a6e71247d9)",
+    "cog-after-build-phases.xml (a47f1033-bbfc-4727-bbaf-27c374c38e05)",
+    "cog vst develop.xml"
+  ],
+  "generated_date": "2026-03-29",
+  "target_domain": "JUCE VST Audio Plugin Development",
+
+  "phases": [
+    {
+      "phase_id": 1,
+      "phase_name": "Project Setup & Scaffolding",
+      "skill": "executing-plans",
+      "owner": "ai",
+      "description": "Initialize JUCE project structure with CMake, create basic plugin scaffold",
+      "output_artifacts": ["CMakeLists.txt", "PluginProcessor.h/cpp", "PluginEditor.h/cpp"],
+      "next_phase_context": "Build system ready, basic plugin compiles. Need DSP architecture.",
+      "drop": ["IDE configuration details", "temporary build files"],
+      "checklist": [
+        {"task": "Create project directory structure", "instruction": "mkdir -p src/DSP src/GUI src/Presets tests", "validation": "All directories exist"},
+        {"task": "Create CMakeLists.txt with JUCE fetch", "instruction": "Use FetchContent for JUCE 7.0.x, enable VST3 and Standalone formats", "validation": "cmake -B build succeeds"},
+        {"task": "Create PluginProcessor.h/cpp skeleton", "instruction": "Extend juce::AudioProcessor, implement required overrides", "validation": "Plugin compiles without errors"},
+        {"task": "Create PluginEditor.h/cpp skeleton", "instruction": "Extend juce::AudioProcessorEditor, basic setSize call", "validation": "Plugin loads in DAW"},
+        {"task": "Create createParameterLayout()", "instruction": "Return ParameterLayout with all parameters", "validation": "Parameters visible in DAW generic UI"}
+      ],
+      "common_errors": [
+        {
+          "error": "JucePlugin_Name macro not defined in tests",
+          "symptom": "Compilation error in test files",
+          "root_cause": "Test target doesn't include JUCE header generation",
+          "fix": "Return literal string from getName() instead of macro in test context",
+          "prevention": "Add JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 to test target definitions"
+        },
+        {
+          "error": "GTK headers not found",
+          "symptom": "Linker error for GUI components in tests",
+          "root_cause": "Tests don't need GUI but CMakeLists includes GUI modules",
+          "fix": "Remove GUI-related compile definitions from test target",
+          "prevention": "Use minimal module set for tests: juce_audio_processors, juce_audio_basics, juce_dsp"
+        }
+      ],
+      "juce_patterns": [
+        {
+          "pattern": "AudioProcessor scaffold",
+          "code": "class MyPluginProcessor : public juce::AudioProcessor {\npublic:\n    MyPluginProcessor();\n    ~MyPluginProcessor() override;\n    void prepareToPlay(double sampleRate, int samplesPerBlock) override;\n    void releaseResources() override;\n    void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiBuffer) override;\n    juce::AudioProcessorEditor* createEditor() override;\n    bool hasEditor() const override { return true; }\n    const juce::String getName() const override { return \"MyPlugin\"; }\n    // ... other required overrides\n};"
+        },
+        {
+          "pattern": "APVTS parameter layout",
+          "code": "juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {\n    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;\n    params.push_back(std::make_unique<juce::AudioParameterFloat>(\"gain\", \"Gain\", 0.0f, 1.0f, 0.5f));\n    return { params.begin(), params.end() };\n}"
+        }
+      ]
+    },
+    {
+      "phase_id": 2,
+      "phase_name": "DSP Architecture & Specification",
+      "skill": "brainstorming",
+      "owner": "human_only",
+      "description": "Define signal flow, DSP modules, and their parameters. Human decides sound design direction.",
+      "output_artifacts": ["SPEC.md or design document", "DSP module list", "Parameter mapping"],
+      "next_phase_context": "Signal flow diagram, DSP module interfaces, parameter ranges. Ready for implementation.",
+      "drop": ["Exploratory discussions", "rejected approaches", "why-not decisions"],
+      "checklist": [
+        {"task": "Define signal flow diagram", "instruction": "Draw signal path from input to output", "validation": "human_approval", "human_only": true},
+        {"task": "List all DSP modules needed", "instruction": "Document each module's purpose and parameters", "validation": "human_approval", "human_only": true},
+        {"task": "Define parameter ranges and defaults", "instruction": "Each parameter needs: ID, name, range, default, skew factor if non-linear", "validation": "human_approval", "human_only": true},
+        {"task": "Document latency requirements", "instruction": "Identify modules that introduce latency (FFT, delay compensation)", "validation": "Latency values documented"}
+      ],
+      "common_errors": [
+        {
+          "error": "Underspecified module behavior",
+          "symptom": "Implementation doesn't match expectation during DAW testing",
+          "root_cause": "Spec didn't define edge cases or parameter interactions",
+          "fix": "Add detailed behavior spec for each module",
+          "prevention": "Phase 9 DAW testing catches this; iterate spec based on findings"
+        }
+      ],
+      "dsp_catalog_reference": "See dsp_catalog section for module templates"
+    },
+    {
+      "phase_id": 3,
+      "phase_name": "Test Framework Setup",
+      "skill": "executing-plans",
+      "owner": "ai",
+      "description": "Set up Catch2 test framework, create initial tests for DSP modules",
+      "output_artifacts": ["tests/CMakeLists.txt", "tests/dsp_tests.cpp", "tests/plugin_tests.cpp"],
+      "next_phase_context": "Test framework ready, basic tests pass. Need DSP implementation.",
+      "drop": ["Test implementation details", "CI configuration (add in Phase 10)"],
+      "checklist": [
+        {"task": "Add Catch2 to CMakeLists.txt", "instruction": "FetchContent Catch2 v3.5.x, create CogVSTTests target", "validation": "Test target compiles"},
+        {"task": "Create tests/dsp_tests.cpp", "instruction": "Add tests for FastMath, DelayLine, DCBlocker, ResonantFilter", "validation": "./build/CogVSTTests passes"},
+        {"task": "Create tests/plugin_tests.cpp", "instruction": "Test instantiation, prepareToPlay at various sample rates", "validation": "Plugin creates and prepares without crash"},
+        {"task": "Create tests/parameter_tests.cpp", "instruction": "Test parameter ranges, state save/restore", "validation": "All parameter tests pass"}
+      ],
+      "common_errors": [
+        {
+          "error": "createPluginFilter() undefined in tests",
+          "symptom": "Linker error: undefined reference to createPluginFilter",
+          "root_cause": "PluginProcessor.cpp not added to test sources",
+          "fix": "Add PluginProcessor.cpp and PluginEditor.cpp to CogVSTTests target_sources",
+          "prevention": "Include all plugin source files in test target except GUI-specific files"
+        },
+        {
+          "error": "Protected isBusesLayoutSupported() inaccessible",
+          "symptom": "Cannot call protected method in tests",
+          "root_cause": "isBusesLayoutSupported() is protected in JUCE 7.0",
+          "fix": "Remove tests that call protected methods, or use public wrapper",
+          "prevention": "Only test public API in unit tests"
+        }
+      ]
+    },
+    {
+      "phase_id": 4,
+      "phase_name": "DSP Module Implementation",
+      "skill": "executing-plans",
+      "owner": "ai",
+      "description": "Implement each DSP module from spec with tests",
+      "output_artifacts": ["src/DSP/*.h", "src/DSP/*.cpp", "updated tests"],
+      "next_phase_context": "DSP modules pass tests. Need integration into PluginProcessor.",
+      "drop": ["Debugging iterations", "temporary test files", "prototype code"],
+      "checklist": [
+        {"task": "Implement FastMath.h approximations", "instruction": "fastTanh, fastAtan, lerp, equalPowerCrossfade - Padé approximants", "validation": "Tests pass: bounded [-1.05,1.05], accurate within 3%"},
+        {"task": "Implement DelayLine.h", "instruction": "Fractional delay with linear interpolation, maxDelayMs parameter", "validation": "Test: impulse after N samples matches delay"},
+        {"task": "Implement DCBlocker.h", "instruction": "First-order HPF at ~5Hz, remove DC offset from feedback paths", "validation": "Test: DC input → output near zero after settling"},
+        {"task": "Implement ResonantFilter.h/cpp", "instruction": "TPT SVF with auto-gain compensation, LP/HP/BP/Notch modes", "validation": "Test: Q mapping correct, no NaN at high Q"},
+        {"task": "Implement Waveshaper.h/cpp", "instruction": "Soft and hard curves, latency compensation for parallel paths", "validation": "Test: bypass at zero drive, correct latency"},
+        {"task": "Implement SpectralDroneEngine.h/cpp", "instruction": "FFT-based processing at 48kHz internal rate with resampling", "validation": "Test: freeze/smear work, no clicks on freeze toggle"},
+        {"task": "Implement ChorusEnsemble.h/cpp", "instruction": "4-voice chorus with prime-ish delays, thickness parameter", "validation": "Test: bypass at zero thickness works correctly"},
+        {"task": "Implement DriveCircuit.h/cpp", "instruction": "3-stage drive with adaptive pre-gain, RMS tracking per-channel", "validation": "Test: RMS computed correctly, tone tilt affects stereo properly"},
+        {"task": "Implement StereoWidener.h/cpp", "instruction": "LR2 crossover at 250Hz, M/S processing for highs", "validation": "Test: bypass skips only widening, not crossover"},
+        {"task": "Implement ModulationEngine.h/cpp", "instruction": "Ring-modulated LFOs with audio reactivity", "validation": "Test: modulation output is bounded"}
+      ],
+      "common_errors": [
+        {
+          "error": "SmoothedValue.setRampLength() not available",
+          "symptom": "Compilation error: 'class juce::SmoothedValue<float>' has no member named 'setRampLength'",
+          "root_cause": "JUCE 7.0 changed SmoothedValue API - use reset(sampleRate, rampTimeSeconds)",
+          "fix": "Replace smoothedValue.reset(sr); smoothedValue.setRampLength(time); with smoothedValue.reset(sr, time);",
+          "prevention": "Use JUCE 7.0 API: reset(sampleRate, rampTimeSeconds)"
+        },
+        {
+          "error": "FFT as member needs unique_ptr",
+          "symptom": "error: use of deleted function 'juce::dsp::FFT::FFT()'",
+          "root_cause": "juce::dsp::FFT has no default constructor, must be created with order parameter",
+          "fix": "Use std::unique_ptr<juce::dsp::FFT> fft; and fft = std::make_unique<juce::dsp::FFT>(order); in prepare()",
+          "prevention": "FFT and similar DSP objects need unique_ptr when members"
+        },
+        {
+          "error": "Heap allocation in processBlock",
+          "symptom": "Audio thread allocation warnings, potential glitches",
+          "root_cause": "std::vector.resize() or new in audio callback",
+          "fix": "Pre-allocate all buffers in prepareToPlay(), use reserve() for vectors",
+          "prevention": "Check processBlock for any allocations, move to prepareToPlay()"
+        },
+        {
+          "error": "Stack allocation in processBlock",
+          "symptom": "Stack overflow on some DAW thread stacks",
+          "root_cause": "C-style arrays on stack: float tempRe[numBins] where numBins is large",
+          "fix": "Make arrays member variables, allocate in prepare()",
+          "prevention": "Avoid C-style arrays in processBlock, use pre-allocated member arrays"
+        },
+        {
+          "error": "SmoothedValue queried once per block",
+          "symptom": "Audible zipper noise during parameter automation",
+          "root_cause": "Calling getNextValue() once and using result for entire block",
+          "fix": "Call getNextValue() inside the per-sample loop, or use isSmoothing() check for block optimization",
+          "prevention": "Pattern: for each sample { auto val = smoothed.getNextValue(); } NOT: auto val = smoothed.getNextValue(); for each sample { use val; }"
+        },
+        {
+          "error": "Delay line reads return same sample every iteration",
+          "symptom": "Phase cancellation, wrong output",
+          "root_cause": "Delay line read() returns buffer[writePos - delay] which is constant during block",
+          "fix": "Read at writePos - delay - i for walking backward through buffer, or use process() method",
+          "prevention": "Delay line must account for samples written during block"
+        },
+        {
+          "error": "Double scaling of texture coefficient",
+          "symptom": "Path A output too quiet",
+          "root_cause": "Texture coefficient applied in split stage AND inside module",
+          "fix": "Apply coefficient once - either in split or inside module, not both",
+          "prevention": "Trace signal flow, check each gain stage doesn't multiply unexpectedly"
+        },
+        {
+          "error": "Latency compensation wrong at non-48kHz rates",
+          "symptom": "Phase misalignment at 96kHz/192kHz",
+          "root_cause": "Hardcoded latency in samples, not accounting for internal resampling",
+          "fix": "spectralLatencySamples = fftSize * decimationFactor (query from spectralEngine)",
+          "prevention": "Always compute latency from actual processing, account for sample rate conversion"
+        },
+        {
+          "error": "Decimation counter resets every block",
+          "symptom": "Clicks at block boundaries when resampling",
+          "root_cause": "Counter declared as local variable in process()",
+          "fix": "Make counter a member variable, reset only in reset()",
+          "prevention": "State that persists across blocks must be member variables"
+        },
+        {
+          "error": "Output gain after limiter",
+          "symptom": "Clipping at DAW with high output gain",
+          "root_cause": "Gain applied after tanh limiter, output can exceed [-1,1]",
+          "fix": "Move gain before limiter, or add final clamp(-1,1)",
+          "prevention": "Ensure final output is always clamped to [-1,1]"
+        },
+        {
+          "error": "RMS tracking shared between L/R channels",
+          "symptom": "Envelope jumps between channels",
+          "root_cause": "Single envelope member updated alternately by L and R",
+          "fix": "Track per-channel RMS or compute mono RMS before per-sample loop",
+          "prevention": "State for stereo processing must be per-channel or pre-computed"
+        },
+        {
+          "error": "Thread safety - GUI/audio thread race",
+          "symptom": "Rare crashes, parameter flickering",
+          "root_cause": "std::set modified from GUI thread, read from audio thread",
+          "fix": "Use std::atomic<bool> flags per parameter, or lock-free queue",
+          "prevention": "Any state touched by both threads needs atomic or lock-free sync"
+        },
+        {
+          "error": "Bypass skips filter state update",
+          "symptom": "Click when enabling effect after bypass",
+          "root_cause": "if (bypass) return; skips filter processing, stale state",
+          "fix": "Always process filters; only skip the effect output or crossfade",
+          "prevention": "Filters must always process to maintain state, bypass only affects output"
+        },
+        {
+          "error": "Filter coefficients computed every sample",
+          "symptom": "Unnecessary CPU usage",
+          "root_cause": "Constant coefficients computed inside per-sample loop",
+          "fix": "Compute once before loop, store in member or local variable",
+          "prevention": "Move invariant computations outside loops"
+        }
+      ],
+      "juce_patterns": [
+        {
+          "pattern": "SmoothedValue usage (JUCE 7.0)",
+          "code": "// In prepare():\nsmoothedValue.reset(sampleRate, 0.02); // 20ms smoothing\nsmoothedValue.setCurrentAndTargetValue(initialValue);\n\n// In processBlock per-sample loop:\nfor (int i = 0; i < numSamples; ++i) {\n    float value = smoothedValue.getNextValue();\n    // use value\n}\n\n// For block optimization when not smoothing:\nif (!smoothedValue.isSmoothing()) {\n    float value = smoothedValue.getTargetValue();\n    // use value for entire block\n}"
+        },
+        {
+          "pattern": "FFT as member (JUCE 7.0)",
+          "code": "// Header:\nstd::unique_ptr<juce::dsp::FFT> fft;\n\n// Implementation prepare():\nfft = std::make_unique<juce::dsp::FFT>(static_cast<int>(std::log2(fftSize)));\n\n// Usage:\nfft->perform(inputData, outputData, false);"
+        },
+        {
+          "pattern": "Pre-allocated buffers",
+          "code": "// Header:\nstd::vector<float> buffer;\n\n// prepare():\nbuffer.resize(samplesPerBlock * 2); // *2 for safety\n\n// processBlock:\n// No allocations - just use buffer.data() and buffer.size()"
+        }
+      ]
+    },
+    {
+      "phase_id": 5,
+      "phase_name": "Processor Integration",
+      "skill": "executing-plans",
+      "owner": "ai",
+      "description": "Integrate DSP modules into PluginProcessor, implement signal chain",
+      "output_artifacts": ["src/PluginProcessor.cpp (complete)", "src/PluginProcessor.h (complete)"],
+      "next_phase_context": "Full signal chain processes audio. Need GUI for parameters.",
+      "drop": ["Debugging traces", "intermediate integration attempts"],
+      "checklist": [
+        {"task": "Create parameter layout", "instruction": "All parameters with AudioParameterFloat/Choice/Bool", "validation": "DAW shows all parameters"},
+        {"task": "Implement prepareToPlay()", "instruction": "Initialize all DSP modules, pre-allocate buffers, report latency", "validation": "Plugin prepares at 44.1k, 48k, 96k, 192k"},
+        {"task": "Implement processBlock()", "instruction": "Signal chain from spec, proper order, no allocations", "validation": "CPU usage reasonable, no glitches"},
+        {"task": "Implement state save/restore", "instruction": "getStateInformation/setStateInformation via APVTS", "validation": "Test: save project, close, reopen - parameters restored"},
+        {"task": "Set latency compensation", "instruction": "setLatencySamples() for DAW delay compensation", "validation": "Dry/wet mix aligns in time"}
+      ],
+      "common_errors": [
+        {
+          "error": "State save/restore doesn't preserve parameters",
+          "symptom": "Parameters reset on DAW reload",
+          "root_cause": "Using getParameters() instead of APVTS parameters",
+          "fix": "Use apvts.getRawParameterValue() or apvts.getParameter() for tests",
+          "prevention": "APVTS handles state serialization; test with round-trip"
+        },
+        {
+          "error": "Latency reported incorrectly",
+          "symptom": "Dry/wet misaligned",
+          "root_cause": "Not accounting for FFT hop size or resampling",
+          "fix": "latencySamples = fftSize / 2 * decimationFactor for spectral engines",
+          "prevention": "Query latency from each module that introduces it"
+        }
+      ]
+    },
+    {
+      "phase_id": 6,
+      "phase_name": "GUI Implementation",
+      "skill": "executing-plans",
+      "owner": "ai",
+      "description": "Create parameter controls, layout, look-and-feel",
+      "output_artifacts": ["src/PluginEditor.h/cpp (complete)", "src/GUI/* (if custom components)"],
+      "next_phase_context": "GUI functional in DAW. Need build verification and testing.",
+      "drop": ["Unused GUI iterations", "deprecated component designs"],
+      "checklist": [
+        {"task": "Create slider attachments", "instruction": "Use AudioProcessorValueTreeState::SliderAttachment for each parameter", "validation": "Sliders control parameters"},
+        {"task": "Create button attachments", "instruction": "Use AudioProcessorValueTreeState::ButtonAttachment for bypass/freeze", "validation": "Buttons toggle state"},
+        {"task": "Implement resized()", "instruction": "Layout all controls, use flexbox or absolute positioning", "validation": "Window resizable or fixed size"},
+        {"task": "Implement paint()", "instruction": "Background, title, any custom graphics", "validation": "Visual appearance matches design intent"}
+      ],
+      "common_errors": [
+        {
+          "error": "GTK headers not found (Linux)",
+          "symptom": "juce_gui_basics compilation fails",
+          "root_cause": "JUCE GUI requires GTK development libraries",
+          "fix": "sudo apt install libgtk-3-dev, or remove GUI from test target",
+          "prevention": "Install GTK dev packages, or use minimal JUCE modules for tests"
+        }
+      ],
+      "juce_patterns": [
+        {
+          "pattern": "Slider with attachment",
+          "code": "// In editor constructor:\nslider.setSliderStyle(juce::Slider::RotaryVerticalDrag);\nslider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20);\naddAndMakeVisible(slider);\nattachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(\n    processor.getAPVTS(), \"paramId\", slider);"
+        }
+      ]
+    },
+    {
+      "phase_id": 7,
+      "phase_name": "Build Verification & Stress Tests",
+      "skill": "executing-plans",
+      "owner": "ai",
+      "description": "Clean build, run all tests, stress test edge cases",
+      "output_artifacts": ["Test results", "Build logs", "Performance measurements"],
+      "next_phase_context": "All tests pass, clean build. Ready for DAW testing.",
+      "drop": ["Failed test iterations", "debug output"],
+      "checklist": [
+        {"task": "Clean build from scratch", "instruction": "cmake --build build --clean-first", "validation": "No errors, no warnings (or minimal warnings)"},
+        {"task": "Run all unit tests", "instruction": "./build/CogVSTTests", "validation": "All tests pass"},
+        {"task": "Test at multiple sample rates", "instruction": "Test prepareToPlay at 44.1k, 48k, 96k, 192k", "validation": "No crashes, reasonable CPU at all rates"},
+        {"task": "Test at multiple buffer sizes", "instruction": "Test 64, 128, 256, 512, 1024 samples", "validation": "No buffer overflow, no clicks"},
+        {"task": "Test parameter extremes", "instruction": "All parameters at 0, 1, and random values", "validation": "No NaN, no inf, no crashes"},
+        {"task": "Test state persistence", "instruction": "Save/load DAW project", "validation": "Parameters restored exactly"}
+      ],
+      "common_errors": [
+        {
+          "error": "Test: fastTanh overshoots at extreme values",
+          "symptom": "fastTanh(-100) returns value outside [-1,1]",
+          "root_cause": "Padé approximation not bounded at extremes",
+          "fix": "Relax test bounds to [-1.05, 1.05] or add clamp to implementation",
+          "prevention": "Know approximation limits; test at realistic values only (±10 typical)"
+        },
+        {
+          "error": "Test: DCBlocker doesn't settle fast enough",
+          "symptom": "Test expects output near zero after 1000 samples",
+          "root_cause": "5Hz HPF needs more time to settle",
+          "fix": "Increase test settling time to 5000+ samples",
+          "prevention": "Time constants: 5Hz HPF needs ~5/5 = 1 second to settle"
+        }
+      ]
+    },
+    {
+      "phase_id": 8,
+      "phase_name": "DAW Testing & Sound Approval",
+      "skill": "brainstorming",
+      "owner": "human_only",
+      "description": "Load in REAPER/DAW, verify sound, tune parameters by ear",
+      "output_artifacts": ["Sound check notes", "Parameter tuning decisions"],
+      "next_phase_context": "Sound approved. Ready for release.",
+      "drop": ["Audio recordings of tests", "A/B comparison notes"],
+      "checklist": [
+        {"task": "Load plugin in REAPER", "instruction": "Install VST3, create track, insert plugin", "validation": "human_approval", "human_only": true},
+        {"task": "Test all parameters", "instruction": "Sweep each parameter, listen for artifacts", "validation": "human_approval", "human_only": true},
+        {"task": "Test automation", "instruction": "Record parameter automation, play back", "validation": "human_approval", "human_only": true},
+        {"task": "Test preset save/load", "instruction": "Create presets, save, load", "validation": "human_approval", "human_only": true},
+        {"task": "Tune parameter ranges", "instruction": "Adjust defaults and ranges based on sound", "validation": "human_approval", "human_only": true},
+        {"task": "CPU load test", "instruction": "Run multiple instances, check CPU usage", "validation": "CPU < 5% per instance at 48kHz"}
+      ],
+      "common_errors": [
+        {
+          "error": "Sound doesn't match expectation",
+          "symptom": "Parameter A doesn't do what spec says",
+          "root_cause": "Spec underspecified or implementation wrong",
+          "fix": "Iterate between Phase 4 and Phase 8 until sound matches intent",
+          "prevention": "Human testing catches spec/impl mismatches"
+        }
+      ]
+    },
+    {
+      "phase_id": 9,
+      "phase_name": "Release Preparation",
+      "skill": "executing-plans",
+      "owner": "ai",
+      "description": "Create README, final build, verify plugin metadata",
+      "output_artifacts": ["README.md", "Final VST3 binary", "Plugin metadata"],
+      "next_phase_context": "Release ready. Optional optimization phase.",
+      "drop": ["Draft documentation", "temporary build artifacts"],
+      "checklist": [
+        {"task": "Create README.md", "instruction": "Document parameters, signal flow, build instructions", "validation": "README complete"},
+        {"task": "Verify plugin metadata", "instruction": "Check manufacturer code, plugin ID, version", "validation": "DAW shows correct info"},
+        {"task": "Create release build", "instruction": "cmake -DCMAKE_BUILD_TYPE=Release", "validation": "Binary size reasonable, optimized"},
+        {"task": "Test release build", "instruction": "Load release VST3 in DAW", "validation": "Same behavior as debug"}
+      ]
+    },
+    {
+      "phase_id": 10,
+      "phase_name": "Optimization & Hardening",
+      "skill": "executing-plans",
+      "owner": "ai",
+      "description": "Profile CPU, optimize hot paths, add safety checks",
+      "output_artifacts": ["Optimized code", "Performance report"],
+      "next_phase_context": "Optimized plugin ready.",
+      "drop": ["Profiling data", "optimization notes"],
+      "checklist": [
+        {"task": "Profile processBlock", "instruction": "Use profiler or timing macros to find hotspots", "validation": "Hotspots identified"},
+        {"task": "Optimize hot paths", "instruction": "SIMD, lookup tables, avoid divisions", "validation": "CPU reduced if possible"},
+        {"task": "Add safety clamps", "instruction": "Final output clamp, NaN checks", "validation": "No crashes on extreme input"},
+        {"task": "Verify no allocations", "instruction": "Check processBlock for any heap operations", "validation": "Clean Valgrind/ASan run"}
+      ]
+    },
+    {
+      "phase_id": 11,
+      "phase_name": "Retrospective",
+      "skill": "brainstorming",
+      "owner": "human_only",
+      "description": "Document lessons learned, update playbook",
+      "output_artifacts": ["Retrospective notes", "Updated playbook sections"],
+      "next_phase_context": "Knowledge captured for next project.",
+      "drop": ["Project-specific implementation details"],
+      "checklist": [
+        {"task": "List what went well", "instruction": "Document successful patterns", "validation": "human_approval", "human_only": true},
+        {"task": "List what went wrong", "instruction": "Document issues and how they were resolved", "validation": "human_approval", "human_only": true},
+        {"task": "Update this playbook", "instruction": "Add new patterns, errors, lessons", "validation": "Playbook improved"}
+      ]
+    }
+  ],
+
+  "juce_patterns": {
+    "AudioProcessor": {
+      "description": "Core plugin class that JUCE hosts",
+      "methods": {
+        "prepareToPlay": "Called before playback - allocate buffers, initialize DSP",
+        "releaseResources": "Called after playback - free resources",
+        "processBlock": "Called each audio buffer - THE hot path, no allocations!",
+        "createEditor": "Return your editor subclass",
+        "getStateInformation": "Serialize parameters to MemoryBlock",
+        "setStateInformation": "Restore from MemoryBlock"
+      },
+      "patterns": [
+        {
+          "name": "Parameter access",
+          "code": "// In processor header:\nstd::atomic<float>* paramGain;\n\n// In constructor:\nparamGain = apvts.getRawParameterValue(\"gain\");\n\n// In processBlock:\nfloat gain = paramGain->load();"
+        },
+        {
+          "name": "State serialization",
+          "code": "void getStateInformation(juce::MemoryBlock& destData) override {\n    auto state = apvts.copyState();\n    std::unique_ptr<juce::XmlElement> xml(state.createXml());\n    copyXmlToBinary(*xml, destData);\n}\n\nvoid setStateInformation(const void* data, int size) override {\n    std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, size));\n    if (xml && xml->hasTagName(apvts.state.getType())) {\n        apvts.replaceState(juce::ValueTree::fromXml(*xml));\n    }\n}"
+        }
+      ]
+    },
+    "AudioProcessorValueTreeState": {
+      "description": "JUCE's parameter management with state",
+      "patterns": [
+        {
+          "name": "Create parameters",
+          "code": "juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {\n    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;\n    params.push_back(std::make_unique<juce::AudioParameterFloat>(\"gain\", \"Gain\", 0.0f, 1.0f, 0.5f));\n    params.push_back(std::make_unique<juce::AudioParameterChoice>(\"mode\", \"Mode\", juce::StringArray{\"A\", \"B\", \"C\"}, 0));\n    params.push_back(std::make_unique<juce::AudioParameterBool>(\"bypass\", \"Bypass\", false));\n    return { params.begin(), params.end() };\n}"
+        },
+        {
+          "name": "Access parameters",
+          "code": "auto* param = apvts.getParameter(\"gain\");\nparam->setValueNotifyingHost(0.5f); // normalized\n\nauto* rawParam = apvts.getRawParameterValue(\"gain\");\nfloat value = rawParam->load();"
+        }
+      ]
+    },
+    "SmoothedValue": {
+      "description": "Parameter smoothing to avoid zipper noise",
+      "api_version": "JUCE 7.0+",
+      "patterns": [
+        {
+          "name": "Basic usage",
+          "code": "// Header:\njuce::SmoothedValue<float> smoothedValue;\n\n// prepare():\nsmoothedValue.reset(sampleRate, 0.02); // 20ms ramp\nsmoothedValue.setCurrentAndTargetValue(initialValue);\n\n// processBlock (per-sample smoothing):\nfor (int i = 0; i < numSamples; ++i) {\n    float value = smoothedValue.getNextValue();\n    // use value\n}\n\n// processBlock (block optimization):\nif (!smoothedValue.isSmoothing()) {\n    float value = smoothedValue.getTargetValue();\n    // use value for entire block\n} else {\n    for (int i = 0; i < numSamples; ++i) {\n        float value = smoothedValue.getNextValue();\n        // use value\n    }\n}"
+        }
+      ],
+      "common_errors": [
+        "setRampLength() removed in JUCE 7.0 - use reset(sampleRate, rampTimeSeconds)",
+        "Don't call skip(numSamples) then getCurrentValue() - this bypasses smoothing",
+        "Always call getNextValue() inside the sample loop for smooth automation"
+      ]
+    },
+    "FFT": {
+      "description": "Fast Fourier Transform for spectral processing",
+      "patterns": [
+        {
+          "name": "FFT as member (JUCE 7.0)",
+          "code": "// Header:\nstd::unique_ptr<juce::dsp::FFT> fft;\nstatic constexpr int fftSize = 2048;\n\n// prepare():\nfft = std::make_unique<juce::dsp::FFT>(static_cast<int>(std::log2(fftSize)));\n\n// Usage (forward):\nfft->perform(inputData, outputData, false); // forward\nfft->perform(inputData, outputData, true);  // inverse"
+        }
+      ]
+    },
+    "AudioBuffer": {
+      "description": "Container for audio samples",
+      "patterns": [
+        {
+          "name": "Process block",
+          "code": "void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiBuffer) override {\n    auto* left = buffer.getWritePointer(0);\n    auto* right = buffer.getNumChannels() > 1 ? buffer.getWritePointer(1) : left;\n    \n    for (int i = 0; i < buffer.getNumSamples(); ++i) {\n        // process left[i], right[i]\n    }\n}"
+        }
+      ]
+    }
+  },
+
+  "dsp_catalog": [
+    {
+      "name": "FastMath",
+      "file": "DSP/FastMath.h",
+      "algorithm": "Padé approximants for fast tanh and atan",
+      "parameters": {
+        "fastTanh": "Input: float. Output: float in [-1.05, 1.05]. Accurate within 3% for |x| < 2.",
+        "fastAtan": "Input: float. Output: float in [-1.6, 1.6] (approx ±PI/2).",
+        "lerp": "Linear interpolation: a + t * (b - a)",
+        "equalPowerCrossfade": "Returns {dry, wet} gains where dry² + wet² = 1"
+      },
+      "sample_rate_handling": "None - pure function",
+      "cpu_cost": "~5-10x faster than std::tanh, suitable for per-sample use",
+      "known_issues": [
+        "Overshoots by ~5% at extreme values (|x| > 20)",
+        "Not suitable for applications requiring exact bounds"
+      ],
+      "session_reference": "attempt build.xml - Task 4"
+    },
+    {
+      "name": "DCBlocker",
+      "file": "DSP/DCBlocker.h",
+      "algorithm": "First-order high-pass filter at ~5Hz",
+      "parameters": {
+        "cutoff": "~5Hz (fixed)"
+      },
+      "sample_rate_handling": "Coefficient computed in prepare(): coeff = exp(-2π * 5 / sampleRate)",
+      "cpu_cost": "Single multiply-add per sample",
+      "known_issues": [
+        "Needs ~100ms to settle on DC offset change",
+        "5Hz cutoff means it removes DC but passes all audio"
+      ],
+      "session_reference": "attempt build.xml"
+    },
+    {
+      "name": "DelayLine",
+      "file": "DSP/DelayLine.h",
+      "algorithm": "Fractional delay with linear interpolation",
+      "parameters": {
+        "maxDelayMs": "Maximum delay time in milliseconds (e.g., 100)",
+        "delayMs": "Current delay time (can be fractional)"
+      },
+      "sample_rate_handling": "maxDelaySamples = ceil(maxDelayMs * sampleRate / 1000)",
+      "cpu_cost": "O(1) per sample - buffer read with linear interpolation",
+      "known_issues": [
+        "Must use process() method for per-sample delay, not read() in loop",
+        "writePos advances with each process() call"
+      ],
+      "session_reference": "attempt build.xml - Bug #1 critical"
+    },
+    {
+      "name": "TextureBodyDetector",
+      "file": "DSP/TextureBodyDetector.h/cpp",
+      "algorithm": "Dual envelope followers (fast 2ms/80ms, slow 80ms/400ms) + spectral flux",
+      "parameters": {
+        "sensitivity": "0-1, how reactive to transients"
+      },
+      "sample_rate_handling": "Coefficients computed in prepare()",
+      "cpu_cost": "Envelope: O(1) per sample. FFT: O(N log N) every hopSize samples.",
+      "known_issues": [
+        "FFT requires unique_ptr in JUCE 7.0",
+        "performRealForward replaced by perform()"
+      ],
+      "session_reference": "cog-after-build-phases.xml"
+    },
+    {
+      "name": "Waveshaper",
+      "file": "DSP/Waveshaper.h/cpp",
+      "algorithm": "Soft (tanh-based) and hard (atan-based) curves with drive control",
+      "parameters": {
+        "drive": "0-1, where 0 = bypass, 0.5 = blend of soft/hard, 1 = maximum hard curve"
+      },
+      "sample_rate_handling": "None - stateless per-sample",
+      "cpu_cost": "Uses fastTanh and fastAtan approximations",
+      "known_issues": [
+        "Must bypass at drive < 0.001 to avoid numerical issues",
+        "Latency compensation needed for parallel paths"
+      ],
+      "session_reference": "attempt build.xml - Double-scaling bug"
+    },
+    {
+      "name": "SpectralDroneEngine",
+      "file": "DSP/SpectralDroneEngine.h/cpp",
+      "algorithm": "FFT-based spectral processing at 48kHz internal rate with sample rate conversion",
+      "parameters": {
+        "droneDensity": "0-1, spectral smear amount",
+        "spectralDrift": "-1 to +1, bin rotation/phase modulation",
+        "freeze": "Hold spectral content"
+      },
+      "sample_rate_handling": "Resamples to/from 48kHz for consistent FFT",
+      "cpu_cost": "O(N log N) per FFT, every hopSize samples",
+      "known_issues": [
+        "decimCount must be member variable, not local",
+        "Latency = fftSize / 2 * decimationFactor",
+        "FFT needs unique_ptr, not direct member"
+      ],
+      "session_reference": "attempt build.xml - Bugs #3, #4, #11"
+    },
+    {
+      "name": "ChorusEnsemble",
+      "file": "DSP/ChorusEnsemble.h/cpp",
+      "algorithm": "4-voice chorus with LFO-modulated delays",
+      "parameters": {
+        "thickness": "0-1, wet/dry mix"
+      },
+      "sample_rate_handling": "Delay times in ms, computed from sample rate",
+      "cpu_cost": "4 delay reads + 4 LFO calculations per sample",
+      "known_issues": [
+        "kBaseDelaysMs should be constexpr std::array for ODR-use",
+        "Always process to maintain state, bypass only affects output mix"
+      ],
+      "session_reference": "attempt build.xml - Bug #15"
+    },
+    {
+      "name": "ResonantFilter",
+      "file": "DSP/ResonantFilter.h/cpp",
+      "algorithm": "TPT State Variable Filter with auto-gain compensation",
+      "parameters": {
+        "cutoff": "20-20000 Hz",
+        "resonance": "0-1, maps to Q ~0.5 to 100",
+        "mode": "LP, HP, BP, Notch"
+      },
+      "sample_rate_handling": "Coefficients computed from sample rate and cutoff",
+      "cpu_cost": "O(1) per sample - 2 state variables",
+      "known_issues": [
+        "Auto-gain: 1/sqrt(Q) compensation for resonance",
+        "No denormals produced at high resonance"
+      ],
+      "session_reference": "attempt build.xml"
+    },
+    {
+      "name": "DriveCircuit",
+      "file": "DSP/DriveCircuit.h/cpp",
+      "algorithm": "3-stage drive with adaptive pre-gain, saturation, and tone tilt",
+      "parameters": {
+        "drive": "0-1, bypass at 0, warm at 0.5, grit at 1",
+        "tone": "0-1, dark to bright tilt at 1kHz"
+      },
+      "sample_rate_handling": "Tone filter coefficients computed once in process(), not per sample",
+      "cpu_cost": "O(1) per sample",
+      "known_issues": [
+        "RMS tracking must be per-channel or pre-computed mono",
+        "Tone tilt uses separate state for L/R"
+      ],
+      "session_reference": "attempt build.xml - Bugs #8, #12, #13"
+    },
+    {
+      "name": "StereoWidener",
+      "file": "DSP/StereoWidener.h/cpp",
+      "algorithm": "LR2 crossover at 250Hz, M/S processing for highs",
+      "parameters": {
+        "width": "0-1, where 0 = no widening, 1 = tripled side signal"
+      },
+      "sample_rate_handling": "Crossover coefficients computed from sample rate",
+      "cpu_cost": "4 biquad filters per channel",
+      "known_issues": [
+        "Always process crossover filters, skip only M/S widening when width=0",
+        "LR2 = two cascaded Butterworth stages"
+      ],
+      "session_reference": "attempt build.xml - Bug #10"
+    },
+    {
+      "name": "ModulationEngine",
+      "file": "DSP/ModulationEngine.h/cpp",
+      "algorithm": "3 ring-modulated LFOs with audio reactivity",
+      "parameters": {
+        "evolutionSpeed": "0-1, LFO rate",
+        "complexity": "0-1, modulation depth",
+        "reactivity": "0-1, audio-reactive modulation amount"
+      },
+      "sample_rate_handling": "LFO phases computed from sample rate",
+      "cpu_cost": "O(1) per sample - 3 sin() + envelope",
+      "known_issues": [
+        "Envelope needs separate attack (10ms) and release (100ms) coefficients",
+        "LFOs ring-modulated: A×B→C, B×C→A, C×A→B"
+      ],
+      "session_reference": "attempt build.xml - Bug #7"
+    }
+  ],
+
+  "failure_modes": [
+    {
+      "phase": "4",
+      "error_id": "FM001",
+      "symptom": "SmoothedValue compilation error: no member named 'setRampLength'",
+      "root_cause": "JUCE 7.0 API change",
+      "fix": "Use reset(sampleRate, rampTime) instead of reset(sr); setRampLength(t);",
+      "prevention_rule": "CHECKLIST: Use JUCE 7.0 SmoothedValue API: reset(sampleRate, time)"
+    },
+    {
+      "phase": "4",
+      "error_id": "FM002",
+      "symptom": "FFT compilation error: no default constructor",
+      "root_cause": "juce::dsp::FFT requires order parameter in constructor",
+      "fix": "Use std::unique_ptr<juce::dsp::FFT> and make_unique in prepare()",
+      "prevention_rule": "CHECKLIST: FFT and similar DSP objects need unique_ptr when members"
+    },
+    {
+      "phase": "4",
+      "error_id": "FM003",
+      "symptom": "Audio thread allocations, potential glitches",
+      "root_cause": "std::vector::resize() or new in processBlock()",
+      "fix": "Pre-allocate all buffers in prepareToPlay()",
+      "prevention_rule": "CHECKLIST: No allocations in processBlock - all buffers pre-allocated"
+    },
+    {
+      "phase": "4",
+      "error_id": "FM004",
+      "symptom": "Stack overflow in audio callback",
+      "root_cause": "C-style arrays on stack in processBlock: float temp[size]",
+      "fix": "Make arrays member variables, allocate in prepare()",
+      "prevention_rule": "CHECKLIST: No large stack arrays in processBlock"
+    },
+    {
+      "phase": "4",
+      "error_id": "FM005",
+      "symptom": "Zipper noise during parameter automation",
+      "root_cause": "SmoothedValue.getNextValue() called once per block, not per sample",
+      "fix": "Call getNextValue() inside per-sample loop",
+      "prevention_rule": "CHECKLIST: SmoothedValue must use getNextValue() per sample OR check isSmoothing() for block optimization"
+    },
+    {
+      "phase": "4",
+      "error_id": "FM006",
+      "symptom": "Wrong output from delay line",
+      "root_cause": "Delay line read() returns same sample during block iteration",
+      "fix": "Use process() method or read at writePos - delay - i",
+      "prevention_rule": "CHECKLIST: Delay line reads must account for samples written in current block"
+    },
+    {
+      "phase": "4",
+      "error_id": "FM007",
+      "symptom": "Double-scaled signal (too quiet)",
+      "root_cause": "Gain coefficient applied twice: in split stage and inside module",
+      "fix": "Apply coefficient only once in signal chain",
+      "prevention_rule": "CHECKLIST: Trace all gain stages, ensure no unintended multiplication"
+    },
+    {
+      "phase": "4",
+      "error_id": "FM008",
+      "symptom": "Phase misalignment at non-48kHz rates",
+      "root_cause": "Hardcoded latency not accounting for internal resampling",
+      "fix": "Compute latency from actual processing: fftSize * decimationFactor",
+      "prevention_rule": "CHECKLIST: Query latency from each module, account for sample rate conversion"
+    },
+    {
+      "phase": "4",
+      "error_id": "FM009",
+      "symptom": "Clicks at block boundaries when resampling",
+      "root_cause": "Decimation counter declared local in process(), resets each block",
+      "fix": "Make counter a member variable, reset only in reset() method",
+      "prevention_rule": "CHECKLIST: State that persists across blocks must be member variables"
+    },
+    {
+      "phase": "4",
+      "error_id": "FM010",
+      "symptom": "Output clips when output gain is high",
+      "root_cause": "Gain applied after tanh limiter, can exceed [-1,1]",
+      "fix": "Move gain before limiter OR add final clamp",
+      "prevention_rule": "CHECKLIST: Final output must be clamped to [-1,1]"
+    },
+    {
+      "phase": "4",
+      "error_id": "FM011",
+      "symptom": "Envelope jumps between L/R channels",
+      "root_cause": "Single RMS envelope updated by alternating L/R samples",
+      "fix": "Compute mono RMS before loop OR use per-channel envelopes",
+      "prevention_rule": "CHECKLIST: Stereo processing state must be per-channel or pre-computed"
+    },
+    {
+      "phase": "4",
+      "error_id": "FM012",
+      "symptom": "Rare crashes, parameter flickering",
+      "root_cause": "std::set modified from GUI thread, read from audio thread",
+      "fix": "Use std::atomic<bool> flags or lock-free queue",
+      "prevention_rule": "CHECKLIST: Any state touched by both threads needs atomic or lock-free sync"
+    },
+    {
+      "phase": "4",
+      "error_id": "FM013",
+      "symptom": "Click when enabling effect after bypass",
+      "root_cause": "if (bypass) return skips filter state update, filters stale",
+      "fix": "Always process filters, only skip the effect output or crossfade",
+      "prevention_rule": "CHECKLIST: Filters must always process to maintain state"
+    },
+    {
+      "phase": "4",
+      "error_id": "FM014",
+      "symptom": "Unnecessary CPU usage",
+      "root_cause": "Constant filter coefficients computed inside per-sample loop",
+      "fix": "Compute once before loop",
+      "prevention_rule": "CHECKLIST: Move invariant computations outside loops"
+    },
+    {
+      "phase": "5",
+      "error_id": "FM015",
+      "symptom": "Parameters reset on DAW reload",
+      "root_cause": "Using getParameters() instead of APVTS for state save/restore",
+      "fix": "Use apvts.getRawParameterValue() and apvts.getParameter() in tests",
+      "prevention_rule": "CHECKLIST: APVTS handles state; test round-trip save/restore"
+    },
+    {
+      "phase": "5",
+      "error_id": "FM016",
+      "symptom": "Dry/wet misaligned",
+      "root_cause": "Not accounting for FFT hop size and resampling",
+      "fix": "setLatencySamples(fftSize/2 * decimationFactor)",
+      "prevention_rule": "CHECKLIST: Query latency from each module that introduces it"
+    },
+    {
+      "phase": "7",
+      "error_id": "FM017",
+      "symptom": "GUI compilation fails on Linux",
+      "root_cause": "JUCE GUI requires GTK development libraries",
+      "fix": "sudo apt install libgtk-3-dev, or remove GUI from test target",
+      "prevention_rule": "CHECKLIST: Install GTK dev packages, or use minimal modules for tests"
+    }
+  ],
+
+  "session_management": {
+    "description": "When to start fresh sessions and what context to carry",
+    "principles": [
+      "Each phase can be a fresh session with appropriate handoff context",
+      "Never inherit full session history - construct minimal context for next phase",
+      "Subagent tasks get isolated context, not session history"
+    ],
+    "when_to_start_fresh": [
+      "After completing a phase, before starting next phase",
+      "When context window fills (>150k tokens)",
+      "When switching between 'planning' and 'implementation' modes",
+      "Before Phase 8 (DAW testing) - human takes over",
+      "After bug fixing - start clean for optimization"
+    ],
+    "what_to_carry": {
+      "spec_document": "Always - the spec drives implementation",
+      "architecture_decisions": "Summary of key decisions from Phase 2",
+      "current_phase": "Which phase we're in",
+      "pending_tasks": "Outstanding items from previous phase",
+      "test_status": "Which tests pass, which fail"
+    },
+    "what_to_drop": [
+      "Full debugging history",
+      "Rejected approaches and why",
+      "Exploratory tangents",
+      "Tool call transcripts (use extracted patterns)",
+      "Temporary code snippets that didn't work"
+    ],
+    "handoff_template": {
+      "phase_from": "Phase N",
+      "phase_to": "Phase N+1",
+      "context": [
+        "SPEC: [brief summary of spec]",
+        "ARCHITECTURE: [key decisions]",
+        "COMPLETED: [what was built]",
+        "TESTS: [what passes]",
+        "PENDING: [what's left]"
+      ],
+      "files_modified": ["list of modified files"],
+      "next_actions": ["specific tasks for next phase"]
+    }
+  },
+
+  "cost_optimization": {
+    "description": "Context window budget allocation by phase",
+    "total_budget_tokens": 200000,
+    "allocations": {
+      "Phase_1_setup": {
+        "budget": 30000,
+        "usage": "Project structure, CMakeLists, basic files"
+      },
+      "Phase_2_spec": {
+        "budget": 40000,
+        "usage": "Spec document, architecture decisions, human Q&A"
+      },
+      "Phase_3_tests": {
+        "budget": 20000,
+        "usage": "Test framework setup, initial test files"
+      },
+      "Phase_4_dsp": {
+        "budget": 80000,
+        "usage": "DSP implementation, iterative debugging, test fixes"
+      },
+      "Phase_5_integration": {
+        "budget": 30000,
+        "usage": "Processor integration, signal chain"
+      },
+      "Phase_6_gui": {
+        "budget": 30000,
+        "usage": "Editor implementation, parameter attachments"
+      },
+      "Phase_7_testing": {
+        "budget": 20000,
+        "usage": "Build verification, stress tests"
+      },
+      "Phase_8_daw_testing": {
+        "budget": 10000,
+        "usage": "Human-driven, minimal AI context needed"
+      },
+      "Phase_9_release": {
+        "budget": 15000,
+        "usage": "README, final build"
+      },
+      "Phase_10_optimization": {
+        "budget": 20000,
+        "usage": "Profiling, optimization"
+      },
+      "Phase_11_retrospective": {
+        "budget": 15000,
+        "usage": "Lessons learned, playbook update"
+      }
+    },
+    "token_saving_patterns": [
+      "Use Grep/Glob instead of reading entire files",
+      "Summarize debugging iterations, don't include full history",
+      "Extract patterns and errors, drop transcripts",
+      "Use Read with offset/limit for large files",
+      "Reference existing files instead of copying content"
+    ]
+  },
+
+  "gap_analysis": {
+    "phases_with_thin_coverage": [
+      {
+        "phase": 2,
+        "issue": "No session data for initial specification - spec was pre-existing",
+        "questions": ["What creative decisions were made?", "What alternatives were rejected?"]
+      },
+      {
+        "phase": 6,
+        "issue": "GUI implementation minimal - only parameter controls",
+        "questions": ["Custom components needed?", "Look-and-feel requirements?"]
+      },
+      {
+        "phase": 8,
+        "issue": "DAW testing is human_only - no automated validation",
+        "questions": ["What specific tests should human run?", "What metrics define 'good sound'?"]
+      },
+      {
+        "phase": 11,
+        "issue": "Optimization not fully explored",
+        "questions": ["What are the CPU hotspots?", "Is SIMD applicable?"]
+      }
+    ],
+    "missing_validation_steps": [
+      "Automated frequency response testing",
+      "Automated THD+N measurement",
+      "Automated latency verification",
+      "Memory leak testing",
+      "Long-running stability test"
+    ],
+    "questions_to_fill_gaps": [
+      "What was the original plugin concept before implementation?",
+      "Were there any preset design sessions?",
+      "How were filter frequencies and resonance ranges chosen?",
+      "What drove the choice of 48kHz internal rate for spectral engine?",
+      "Any performance benchmarks from DAW testing?"
+    ]
+  }
+}

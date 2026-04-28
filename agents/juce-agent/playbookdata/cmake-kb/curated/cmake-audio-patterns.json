@@ -1,0 +1,28 @@
+{
+  "title": "CMake Patterns for Audio Development",
+  "description": "Common CMake patterns for audio plugin development including testing, CI/CD, and cross-platform builds",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "build",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "markdown": "# CMake Patterns for Audio Development\n\n## Testing with Catch2\n\n```cmake\n# Enable testing\nenable_testing()\n\n# Fetch Catch2\nFetchContent_Declare(\n    Catch2\n    GIT_REPOSITORY https://github.com/catchorg/Catch2.git\n    GIT_TAG v3.5.0\n)\nFetchContent_MakeAvailable(Catch2)\n\n# Test executable\nadd_executable(MyPluginTests\n    tests/DSPTests.cpp\n    tests/ProcessorTests.cpp\n)\n\ntarget_link_libraries(MyPluginTests PRIVATE\n    Catch2::Catch2\n    juce::juce_audio_processors\n)\n\n# Register tests\nadd_test(NAME MyPluginTests COMMAND MyPluginTests)\n```\n\n## CI/CD Configuration\n\n```cmake\n# Detect CI environment\nif(DEFINED ENV{CI})\n    message(STATUS \"Running in CI environment\")\n    \n    # Use consistent settings\n    set(CMAKE_CXX_STANDARD 17)\n    set(CMAKE_BUILD_TYPE Release)\n    \n    # Enable warnings as errors\n    if(MSVC)\n        add_compile_options(/W4 /WX)\n    else()\n        add_compile_options(-Wall -Wextra -Werror)\n    endif()\nendif()\n```\n\n## Cross-Platform Plugin Output\n\n```cmake\nfunction(setup_plugin_output PLUGIN_NAME)\n    if(APPLE)\n        set(VST3_OUTPUT ~/Library/Audio/Plug-Ins/VST3)\n        set(AU_OUTPUT ~/Library/Audio/Plug-Ins/Components)\n    elseif(WIN32)\n        set(VST3_OUTPUT $ENV{LOCALAPPDATA}/Programs/Common/VST3)\n    else()\n        set(VST3_OUTPUT ~/.vst3)\n        set(LV2_OUTPUT ~/.lv2)\n    endif()\n    \n    # Set per-format output\n    if(TARGET ${PLUGIN_NAME}_VST3)\n        set_target_properties(${PLUGIN_NAME}_VST3 PROPERTIES\n            LIBRARY_OUTPUT_DIRECTORY \"${VST3_OUTPUT}\"\n        )\n    endif()\nendfunction()\n```\n\n## Release Build Optimization\n\n```cmake\nif(CMAKE_BUILD_TYPE STREQUAL \"Release\")\n    if(MSVC)\n        # MSVC optimizations\n        target_compile_options(MyPlugin PRIVATE /O2 /GL)\n        target_link_options(MyPlugin PRIVATE /LTCG)\n    else()\n        # GCC/Clang optimizations\n        target_compile_options(MyPlugin PRIVATE\n            -O3\n            -march=native\n            -ffast-math\n            -fno-exceptions\n        )\n    endif()\nendif()\n```",
+  "implementation_examples": [
+    {
+      "title": "Complete Test Setup",
+      "code": "enable_testing()\n\nFetchContent_Declare(\n    Catch2\n    GIT_REPOSITORY https://github.com/catchorg/Catch2.git\n    GIT_TAG v3.5.0\n)\nFetchContent_MakeAvailable(Catch2)\n\n# DSP tests\nadd_executable(DSPTests\n    tests/OscillatorTest.cpp\n    tests/FilterTest.cpp\n)\n\ntarget_link_libraries(DSPTests PRIVATE\n    Catch2::Catch2\n    juce::juce_dsp\n)\n\nadd_test(NAME DSPTests COMMAND DSPTests)"
+    }
+  ],
+  "tags": [
+    "cmake",
+    "testing",
+    "ci-cd",
+    "cross-platform",
+    "optimization",
+    "audio"
+  ],
+  "related_topics": [
+    "juce-cmake-best-practices",
+    "target_compile_definitions"
+  ]
+}

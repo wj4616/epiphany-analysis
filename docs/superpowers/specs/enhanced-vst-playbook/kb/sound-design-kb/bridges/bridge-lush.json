@@ -1,0 +1,47 @@
+{
+  "id": "bridge-lush",
+  "title": "Lush Sound Translation",
+  "category": "bridges",
+  "sonic_description": "Lush, wide, rich sound with detuned oscillators and spatial processing",
+  "sonic_keywords": ["lush", "wide", "rich", "thick", "spacious"],
+  "translation": {
+    "filter": {
+      "cutoff_range": [0.4, 0.7],
+      "resonance_range": [0.1, 0.2]
+    },
+    "amplitude": {
+      "attack_range": [0.02, 0.1],
+      "decay_range": [0.1, 0.3],
+      "sustain_range": [0.7, 0.9],
+      "release_range": [0.5, 1.5]
+    },
+    "oscillator": [{
+      "waveforms": ["sawtooth", "triangle"],
+      "detune_range": [0.05, 0.15],
+      "unison_voices": 4,
+      "unison_detune": [0.1, 0.2],
+      "unison_spread": [0.5, 0.8]
+    }],
+    "effects": [{
+      "type": "chorus",
+      "mix_range": [0.3, 0.5],
+      "parameters": {
+        "rate": [0.1, 0.3],
+        "depth": [0.2, 0.4]
+      }
+    }, {
+      "type": "reverb",
+      "mix_range": [0.3, 0.6],
+      "decay_range": [1.5, 4.0]
+    }]
+  },
+  "why": "Detuned oscillators create beating and thickness. Chorus adds movement and width. Reverb adds space and depth. Long release extends the tail.",
+  "how_to_apply": "Use for pads, strings, and atmospheric sounds. Combine with unison for maximum thickness. Adjust detune for desired amount of beating.",
+  "confidence": 0.85,
+  "source": {
+    "type": "expert_interview",
+    "reference": "Synthesizer sound design consensus"
+  },
+  "presets": ["lush-pad", "rich-strings"],
+  "phase_usage": [0, 4, 5, 9]
+}

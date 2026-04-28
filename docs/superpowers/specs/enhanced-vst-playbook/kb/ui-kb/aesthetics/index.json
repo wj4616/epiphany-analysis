@@ -1,0 +1,15 @@
+{
+  "id": "placeholder-ui-modern",
+  "title": "PLACEHOLDER: Modern Plugin UI Design",
+  "category": "aesthetics",
+  "status": "placeholder",
+  "needed_by": ["Phase 7"],
+  "description": "Modern plugin UI aesthetics including color theory, visual hierarchy, and contemporary design patterns",
+  "confidence": 0.0,
+  "source": {
+    "type": "pending_harvest",
+    "priority": "medium"
+  },
+  "tags": ["ui", "design", "aesthetics", "modern"],
+  "notes": "Research from professional plugin designers, UI/UX principles"
+}

@@ -1,0 +1,65 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+
+namespace CogDSP
+{
+
+// DC Blocker - First-order high-pass filter at 5Hz
+// Sample-rate-scaled coefficient calculated in prepare()
+// Transparent to all audible content
+class DCBlocker
+{
+public:
+    DCBlocker() = default;
+    ~DCBlocker() = default;
+
+    void prepare(double sampleRate)
+    {
+        // Coefficient for ~5Hz cutoff
+        // H(z) = (1 - z^-1) / (1 - R*z^-1)
+        // R = 1 - 2*PI*fc/fs
+        coeff = static_cast<float>(1.0 - 2.0 * 3.14159265358979323846 * 5.0 / sampleRate);
+
+        // Ensure stability
+        coeff = std::clamp(coeff, 0.99f, 0.9999f);
+
+        reset();
+    }
+
+    void process(float* samples, int numSamples)
+    {
+        for (int i = 0; i < numSamples; ++i)
+        {
+            // First-order HPF: y[n] = x[n] - x[n-1] + R*y[n-1]
+            const float x = samples[i];
+            const float y = x - x1 + coeff * y1;
+            x1 = x;
+            y1 = y;
+            samples[i] = y;
+        }
+    }
+
+    // Process single sample (for inner loops)
+    float processSample(float x)
+    {
+        const float y = x - x1 + coeff * y1;
+        x1 = x;
+        y1 = y;
+        return y;
+    }
+
+    void reset()
+    {
+        x1 = 0.0f;
+        y1 = 0.0f;
+    }
+
+private:
+    float coeff = 0.999f;  // R coefficient
+    float x1 = 0.0f;       // Previous input
+    float y1 = 0.0f;       // Previous output
+};
+
+} // namespace CogDSP

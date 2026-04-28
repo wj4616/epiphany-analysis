@@ -1,0 +1,177 @@
+# Requirements Document
+
+## Domain Requirements
+
+### DR-01: VST3 Plugin Development
+The playbook must produce working VST3 audio plugins that:
+- Load in REAPER DAW on Linux Mint
+- Process or generate audio correctly
+- Have functional modern UI
+- Save and load presets
+- Pass audio thread safety validation
+- Handle sample rates 44.1kHz - 192kHz
+- Handle buffer sizes 64 - 2048 samples
+
+### DR-02: Sound Design Integration
+The playbook must bridge subjective sound descriptors to technical parameters:
+- Translate "warm", "bright", "lush", "psychedelic" to filter cutoff ranges, saturation amounts
+- Provide preset creation methodology
+- Support synthesis types: subtractive, FM, wavetable, granular, additive
+
+### DR-03: Commercial Readiness
+The playbook must produce plugins ready for commercial distribution:
+- Licensing system integration
+- Marketplace listing preparation
+- Pricing strategy documentation
+- Marketing timeline execution
+
+### DR-04: Knowledge Base Architecture
+The playbook must specify a multi-layer KB:
+- **Technical Layer:** C++17, JUCE, CMake, DSP, audio thread safety
+- **Sound Design Layer:** Synthesis theory, patch methodology, creative techniques
+- **UI/UX Layer:** Audio plugin interface standards, control layout, visual design
+- **Commercial Layer:** Marketplaces, licensing, pricing, marketing
+- **Reference Layer:** Academic sources, textbooks, expert material
+- **Bridge Layer:** Subjective-to-parameter translation
+
+## Quality Requirements
+
+### QR-01: Audio Thread Safety
+- No allocations in processBlock()
+- No locks in audio thread
+- Lock-free inter-thread communication
+- Parameter smoothing on all modulatable parameters
+
+### QR-02: Code Quality
+- CMake-based build with FetchContent
+- Catch2 unit tests for DSP modules
+- pluginval validation passing
+- No static mutable state across instances
+
+### QR-03: User Experience
+- Professional UI following audio plugin standards
+- Intuitive control layout
+- Proper gain staging (effects audible at all parameter ranges)
+- Preset system with meaningful names
+
+### QR-04: Documentation
+- All code reviewed for audio thread safety
+- DSP algorithms documented with math
+- Prevention rules from failure modes
+- Session boundary documentation
+
+## Strategic Requirements
+
+### SR-01: Budget Compliance
+- Claude AI: $200/month maximum
+- Prefer free/open-source tools
+- Document any paid tool justification
+
+### SR-02: Platform Constraints
+- Linux Mint as primary development platform
+- REAPER for DAW testing
+- C++17 minimum
+- JUCE 8.0.x
+- FetchContent for dependency management
+
+### SR-03: Workflow Model
+- Single developer + AI assistant (role-based-single-agent)
+- Human makes all creative decisions
+- AI handles implementation, research, boilerplate
+- Session boundaries respect token limits
+
+### SR-04: Timeline Considerations
+- Multiple Claude sessions per feature expected
+- Knowledge base population before heavy implementation
+- Marketing activities before launch (30+ days)
+
+## Platform Requirements
+
+### PR-01: Development Environment
+| Requirement | Specification |
+|-------------|---------------|
+| OS | Linux Mint |
+| Compiler | GCC 7+ or Clang 6+ |
+| Build System | CMake 3.22+ with Ninja |
+| Framework | JUCE 8.0.x via FetchContent |
+| DAW | REAPER |
+| Testing | Catch2, pluginval |
+
+### PR-02: Plugin Formats
+| Format | Priority | Platform |
+|--------|----------|----------|
+| VST3 | Required | Linux |
+| Standalone | Required | Linux |
+| AU | Future | macOS |
+| AAX | Future | macOS, Windows |
+
+### PR-03: System Dependencies
+All JUCE GUI dependencies for Linux Mint:
+```
+libx11-xcb-dev libxcb-util-dev libxcb-cursor-dev libxcb-xkb-dev
+libxkbcommon-dev libxkbcommon-x11-dev libfontconfig1-dev libcairo2-dev
+libgtkmm-3.0-dev libsqlite3-dev libxcb-keysyms1-dev
+```
+
+## Cross-Cutting Requirements
+
+### CCR-01: Cross-Cutting Concerns
+All concerns from `research/cross-cutting-concerns.md` must be woven throughout:
+- Audio thread safety (all code phases)
+- Human creative authority (all creative phases)
+- Knowledge base integration (all phases)
+- Session boundary management (planning phase)
+- Build verification (all implementation phases)
+- Gain staging audit (specification, DSP, testing phases)
+- Cross-platform compatibility (build system)
+- Parameter formula verification (DSP phase)
+- Documentation completeness (all phases)
+- Marketplace readiness (commercial phases)
+
+## User Requirements
+
+### UR-01: Skill Level Calibration
+The playbook must be usable by:
+- C++ beginner (knows Python/JavaScript well)
+- Basic C++ theory (knows concepts, not fluent)
+- No JUCE framework experience
+- No DSP implementation experience
+- Strong VST usage experience as musician
+
+### UR-02: Creative Direction
+The playbook must respect:
+- Human makes all sound identity decisions
+- Human approves all GUI aesthetics
+- Human names all presets
+- AI proposes options, never single defaults
+
+### UR-03: Reproducibility
+Another developer with similar skills should be able to:
+- Follow the playbook to produce comparable results
+- Understand all decisions from documentation
+- Build on knowledge base for future projects
+
+## Success Criteria Synthesis
+
+| Category | Criteria | Verification |
+|----------|----------|--------------|
+| Product | Working VST3 in REAPER | DAW test pass |
+| Quality | Thread-safe, tested | pluginval pass, unit test pass |
+| Commercial | Licensing integrated, marketplace ready | Listing checklist |
+| Business | Marketing strategy executable | Timeline documented |
+| Knowledge | Five-layer KB populated | Content completeness check |
+| Reproducibility | Another developer can follow | Documentation completeness |
+
+## Requirements Prioritization
+
+| Priority | Requirement | Phase Coverage |
+|----------|-------------|----------------|
+| P0 | DR-01: VST3 development | Phases 0-9 |
+| P0 | QR-01: Audio thread safety | Phases 1, 4, 9 |
+| P0 | SR-03: Workflow model | All phases |
+| P1 | DR-02: Sound design integration | Phases 0, 4, 7 |
+| P1 | DR-04: KB architecture | Phase 2 |
+| P1 | QR-02: Code quality | Phases 3, 8 |
+| P2 | DR-03: Commercial readiness | Phases 13-15 |
+| P2 | UR-01: Skill level calibration | All phases |
+| P3 | PR-02: Multi-format support | Future phases |

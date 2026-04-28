@@ -1,0 +1,23 @@
+{
+  "title": "LFO Shapes",
+  "description": "Custom LFO waveforms and rate sync",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:48:53.183146Z",
+  "kb_type": "sound-design",
+  "audio_relevance": 7,
+  "difficulty": "intermediate",
+  "markdown": "# LFO Shapes\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "LFO shapes",
+    "custom LFO waveform",
+    "LFO rate sync",
+    "LFO phase"
+  ],
+  "sources": [
+    "Synth documentation",
+    "musicdsp.org"
+  ]
+}

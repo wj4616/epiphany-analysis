@@ -1,0 +1,24 @@
+{
+  "markdown": "# Not Found\n\nThe requested URL /~jos/pasp/Filters.html was not found on this server.",
+  "metadata": {
+    "title": "404 Not Found",
+    "scrapeId": "019d3906-7c4b-7198-9116-1fe9c4842013",
+    "sourceURL": "https://ccrma.stanford.edu/~jos/pasp/Filters.html",
+    "url": "https://ccrma.stanford.edu/~jos/pasp/Filters.html",
+    "statusCode": 404,
+    "error": "Not Found",
+    "contentType": "text/html; charset=iso-8859-1",
+    "timezone": "America/New_York",
+    "proxyUsed": "basic",
+    "cacheState": "miss",
+    "indexId": "fe5f88d0-57b6-46dc-b46d-473dbbb8db0e",
+    "creditsUsed": 1,
+    "concurrencyLimited": false
+  },
+  "html": "<!DOCTYPE html><html><body>\n<h1>Not Found</h1>\n<p>The requested URL /~jos/pasp/Filters.html was not found on this server.</p>\n\n</body></html>",
+  "links": [],
+  "source_url": "https://ccrma.stanford.edu/~jos/pasp/Filters.html",
+  "source": "stanford-ccrma",
+  "harvested_at": "2026-03-29T02:57:00.236336",
+  "kb_type": "technical"
+}

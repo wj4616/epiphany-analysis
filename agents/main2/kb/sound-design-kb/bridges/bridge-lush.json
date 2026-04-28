@@ -1,0 +1,46 @@
+{
+  "id": "bridge_lush_default",
+  "category": "lush",
+  "descriptor": "lush",
+  "parameters": [
+    {
+      "parameter": "detune",
+      "value_range": [0.05, 0.15],
+      "typical_default": 0.10,
+      "why": "Detuning creates rich, wide stereo image"
+    },
+    {
+      "parameter": "unison_voices",
+      "value_range": [2, 8],
+      "typical_default": 4,
+      "why": "Multiple detuned voices create thickness"
+    },
+    {
+      "parameter": "chorus_mix",
+      "value_range": [0.2, 0.5],
+      "typical_default": 0.35,
+      "why": "Chorus adds movement and width"
+    },
+    {
+      "parameter": "reverb_mix",
+      "value_range": [0.3, 0.5],
+      "typical_default": 0.4,
+      "why": "Reverb adds spatial depth"
+    }
+  ],
+  "source": "Sound Design KB",
+  "confidence": 0.80,
+  "why": "Lush sounds use detuned unison, chorus, and reverb to create rich, wide, spatial textures.",
+  "anti_patterns": [
+    {
+      "avoid": "Excessive detune (>0.2)",
+      "reason": "Creates dissonance rather than richness"
+    }
+  ],
+  "related_descriptors": ["ambient", "warm"],
+  "example_plugins": [
+    {"name": "u-he Diva", "how_used": "Unison detune + slow filter + reverb"},
+    {"name": "Omnisphere", "how_used": "Layered patches with unison"}
+  ],
+  "user_feedback": []
+}

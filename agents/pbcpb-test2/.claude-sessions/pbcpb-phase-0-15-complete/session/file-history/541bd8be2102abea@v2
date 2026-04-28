@@ -1,0 +1,16 @@
+{
+  "id": "commercial_pricing_positioning",
+  "kb": "commercial",
+  "topic": "pricing",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Market Positioning for Plugin Pricing",
+  "summary": "Placeholder: Budget vs premium positioning, competitor analysis.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["pricing", "positioning", "competition", "market"],
+  "related_topics": ["pricing", "strategy"],
+  "difficulty": "intermediate",
+  "domain_relevance": 8
+}

@@ -1,0 +1,44 @@
+{
+  "session_id": "20260418-input-run-3",
+  "created_utc": "2026-04-18T00:00:00Z",
+  "node_a": {
+    "source_kind": "file",
+    "source_path": "/home/myuser/docs/epiphany/genius/20260418-vst-audio-plugin-playbook/input.md",
+    "content_hash": "f5a82d5ca1a1fe4b128ceccf7e6da9e7e86244113a0d99a61b915b3b1478aefe"
+  },
+  "node_b": {
+    "source_kind": "file",
+    "source_path": "/home/myuser/docs/epiphany/genius/20260418-vst-audio-plugin-playbook/report.md",
+    "genius_detection": "genius-current",
+    "matched_sections": [
+      "Headline Insight",
+      "Theory Collisions",
+      "Discovery vs. Proof",
+      "Independence-Verified Bridges",
+      "Alternative Hypotheses",
+      "Density-Checked Falsification",
+      "Scope Limits",
+      "Coherence Signals",
+      "Generalization Checks",
+      "Open Questions & Next Probes"
+    ],
+    "drift_notes": ""
+  },
+  "modules": {
+    "m-intake":    { "status": "complete", "start_utc": "2026-04-18T00:00:00Z", "end_utc": "2026-04-18T00:01:00Z", "notes": "HG-1 pass; genius-current detected (10/10 canonical headers)" },
+    "m-analyze":   { "status": "complete", "a1_complete": true, "b1_complete": true, "start_utc": "2026-04-18T00:01:00Z", "end_utc": "2026-04-18T00:08:00Z" },
+    "m-ideate":    { "status": "complete", "passes_run": 3, "ideas_total": 43, "stop_reason": "pass-cap" },
+    "m-filter":    { "status": "complete", "ideas_in": 43, "accepted_out": 38 },
+    "m-engineer":  { "status": "complete", "d_entries_processed": 38, "e_entries_produced": 38, "double_fail_count": 0 },
+    "m-integrate": { "status": "complete", "refinement_cycles": 0, "audit_verdict": "PASS", "start_utc": "2026-04-18T00:08:00Z", "end_utc": "2026-04-18T00:10:00Z" }
+  },
+  "caps_applied": {
+    "ideation_passes": 3,
+    "ideation_total": 50,
+    "drafts_per_d": 2,
+    "refinement_cycles": 1,
+    "global_wall_clock_sec": 900
+  },
+  "stop_reasons": [],
+  "argv_flags": { "start_at": null, "stop_at": null }
+}

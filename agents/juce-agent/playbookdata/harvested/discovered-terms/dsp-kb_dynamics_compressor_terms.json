@@ -1,0 +1,14 @@
+{
+  "source_file": "/home/myuser/agents/juce-agent/playbookdata/dsp-kb/dynamics/compressor.json",
+  "seed_terms": [
+    "audio compressor design",
+    "feedforward compression",
+    "feedback compression",
+    "RMS compression",
+    "peak compression"
+  ],
+  "discovered_terms": [],
+  "crawled_urls": [],
+  "credits_used": 0,
+  "timestamp": "2026-03-30T13:16:30.484702+00:00"
+}

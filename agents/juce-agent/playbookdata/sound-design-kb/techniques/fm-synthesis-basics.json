@@ -1,0 +1,93 @@
+{
+  "id": "sound-design-kb_techniques_fm-synthesis-basics",
+  "kb": "sound-design-kb",
+  "topic": "techniques",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "FM (Frequency Modulation) synthesis creates complex timbres by modulating the frequency of one oscillator (carrier) with another (modulator).",
+  "concepts": [
+    {
+      "name": "Carrier",
+      "description": "Output oscillator that produces audible sound",
+      "related": []
+    },
+    {
+      "name": "Modulator",
+      "description": "Oscillator that modulates the carrier's frequency",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Basic FM equation\ncarrierFrequency = baseFrequency + (modulatorOutput * modulationIndex);\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class SimpleFMVoice\n{\npublic:\n    SimpleFMVoice()\n    {\n        carrier.setFrequency(440.0f);\n        modulator.setFrequency(440.0f);  // Often same or ratio\n        modulationIndex = 1.0f;\n    }\n    \n    void noteOn(int midiNote, float velocity)\n    {\n        auto freq = MidiMessage::getMidiNoteInHertz(midiNote);\n        carrier.setFrequency(freq);\n        modulator.setFrequency(freq * modulatorRatio);\n        carrierEnv.noteOn();\n        modulatorEnv.noteOn();\n    }\n    \n    void renderNextBlock(AudioBuffer<float>& buffer, int startSample, int numSamples)\n    {\n        auto* channelData = buffer.getWritePointer(0);\n        \n        for (int i = 0; i < numSamples; ++i)\n        {\n            // Modulator modulates carrier frequency\n            float modSig = modulator.process() * modulatorEnv.getNextSample();\n            carrier.setFrequency(baseFreq + modSig * modulationIndex);\n            \n            float sample = carrier.process() * carrierEnv.getNextSample();\n            channelData[startSample + i] = sample;\n        }\n    }\n    \nprivate:\n    Oscillator carrier;\n    Oscillator modulator;\n    ADSR carrierEnv;\n    ADSR modulatorEnv;\n    float modulationIndex = 1.0f;\n    float modulatorRatio = 1.0f;  // C:M ratio\n    float baseFreq = 440.0f;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Low index (< 1): Subtle vibrato-like effect\n// Medium index (1-5): Rich harmonics, bell-like tones\n// High index (> 5): Noise-like, inharmonic\n\nvoid setModulationIndex(float index)\n{\n    modulationIndex = index;\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Ratio 1:1 - Harmonic series (saw-like)\n// Ratio 2:1 - Octave harmonics\n// Ratio 3:1 - Fifth harmonics\n// Ratio non-integer - Inharmonic (bells, metallic)\n\nvoid setRatio(float ratio)\n{\n    modulatorRatio = ratio;\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "text",
+      "code": "Modulator \u2192 Carrier \u2192 Output\n",
+      "preserved": true
+    },
+    {
+      "language": "text",
+      "code": "Mod1 \u2192 Carrier \u2192 Output\nMod2 \u2197\n",
+      "preserved": true
+    },
+    {
+      "language": "text",
+      "code": "Mod2 \u2192 Mod1 \u2192 Carrier \u2192 Output\n",
+      "preserved": true
+    },
+    {
+      "language": "text",
+      "code": "Modulator \u2190 (feedback) \u2510\n    \u2193                   \u2502\nCarrier \u2192 Output \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class FMSynthSound : public SynthesiserSound\n{\npublic:\n    bool appliesToNote(int) override { return true; }\n    bool appliesToChannel(int) override { return true; }\n};\n\nclass FMSynthVoice : public SynthesiserVoice\n{\npublic:\n    bool canPlaySound(SynthesiserSound* sound) override\n    {\n        return dynamic_cast<FMSynthSound*>(sound) != nullptr;\n    }\n    \n    void startNote(int midiNoteNumber, float velocity,\n                    SynthesiserSound*, int) override\n    {\n        currentNote = midiNoteNumber;\n        baseFreq = MidiMessage::getMidiNoteInHertz(midiNoteNumber);\n        carrier.setFrequency(baseFreq);\n        modulator.setFrequency(baseFreq * modRatio);\n        ampEnv.noteOn();\n    }\n};\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# FM Synthesis Basics\n\n## Overview\n\nFM (Frequency Modulation) synthesis creates complex timbres by modulating the frequency of one oscillator (carrier) with another (modulator).\n\n## Core Concepts\n\n```cpp\n// Basic FM equation\ncarrierFrequency = baseFrequency + (modulatorOutput * modulationIndex);\n```\n\n### Operator Types\n- **Carrier**: Output oscillator that produces audible sound\n- **Modulator**: Oscillator that modulates the carrier's frequency\n\n## Simple FM Voice\n\n```cpp\nclass SimpleFMVoice\n{\npublic:\n    SimpleFMVoice()\n    {\n        carrier.setFrequency(440.0f);\n        modulator.setFrequency(440.0f);  // Often same or ratio\n        modulationIndex = 1.0f;\n    }\n    \n    void noteOn(int midiNote, float velocity)\n    {\n        auto freq = MidiMessage::getMidiNoteInHertz(midiNote);\n        carrier.setFrequency(freq);\n        modulator.setFrequency(freq * modulatorRatio);\n        carrierEnv.noteOn();\n        modulatorEnv.noteOn();\n    }\n    \n    void renderNextBlock(AudioBuffer<float>& buffer, int startSample, int numSamples)\n    {\n        auto* channelData = buffer.getWritePointer(0);\n        \n        for (int i = 0; i < numSamples; ++i)\n        {\n            // Modulator modulates carrier frequency\n            float modSig = modulator.process() * modulatorEnv.getNextSample();\n            carrier.setFrequency(baseFreq + modSig * modulationIndex);\n            \n            float sample = carrier.process() * carrierEnv.getNextSample();\n            channelData[startSample + i] = sample;\n        }\n    }\n    \nprivate:\n    Oscillator carrier;\n    Oscillator modulator;\n    ADSR carrierEnv;\n    ADSR modulatorEnv;\n    float modulationIndex = 1.0f;\n    float modulatorRatio = 1.0f;  // C:M ratio\n    float baseFreq = 440.0f;\n};\n```\n\n## Modulation Index\n\nThe modulation index determines harmonic complexity:\n\n```cpp\n// Low index (< 1): Subtle vibrato-like effect\n// Medium index (1-5): Rich harmonics, bell-like tones\n// High index (> 5): Noise-like, inharmonic\n\nvoid setModulationIndex(float index)\n{\n    modulationIndex = index;\n}\n```\n\n## C:M Ratio\n\nThe carrier-to-modulator ratio determines harmonic structure:\n\n```cpp\n// Ratio 1:1 - Harmonic series (saw-like)\n// Ratio 2:1 - Octave harmonics\n// Ratio 3:1 - Fifth harmonics\n// Ratio non-integer - Inharmonic (bells, metallic)\n\nvoid setRatio(float ratio)\n{\n    modulatorRatio = ratio;\n}\n```\n\n## Common FM Algorithms\n\n### Algorithm 1: Simple FM\n```\nModulator \u2192 Carrier \u2192 Output\n```\n\n### Algorithm 2: Parallel Modulators\n```\nMod1 \u2192 Carrier \u2192 Output\nMod2 \u2197\n```\n\n### Algorithm 3: Series FM\n```\nMod2 \u2192 Mod1 \u2192 Carrier \u2192 Output\n```\n\n### Algorithm 4: Feedback FM\n```\nModulator \u2190 (feedback) \u2510\n    \u2193                   \u2502\nCarrier \u2192 Output \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n```\n\n## Classic FM Sounds\n\n### Electric Piano\n- C:M ratio: 1:14 (slightly detuned)\n- Mod index: 1-2\n- Fast decay\n- Velocity-sensitive modulator\n\n### Bell\n- C:M ratio: 1:1.4 (inharmonic)\n- Mod index: 2-4\n- Long decay, no sustain\n- Pure FM, no feedback\n\n### Brass\n- C:M ratio: 1:1\n- Mod index: 2-3\n- Filter envelope shape\n- Velocity brightness\n\n### Bass\n- C:M ratio: 1:0.5 (suboctave modulator)\n- Mod index: 3-5\n- Strong fundamental\n- Tight envelope\n\n## JUCE Implementation Tips\n\n```cpp\nclass FMSynthSound : public SynthesiserSound\n{\npublic:\n    bool appliesToNote(int) override { return true; }\n    bool appliesToChannel(int) override { return true; }\n};\n\nclass FMSynthVoice : public SynthesiserVoice\n{\npublic:\n    bool canPlaySound(SynthesiserSound* sound) override\n    {\n        return dynamic_cast<FMSynthSound*>(sound) != nullptr;\n    }\n    \n    void startNote(int midiNoteNumber, float velocity,\n                    SynthesiserSound*, int) override\n    {\n        currentNote = midiNoteNumber;\n        baseFreq = MidiMessage::getMidiNoteInHertz(midiNoteNumber);\n        carrier.setFrequency(baseFreq);\n        modulator.setFrequency(baseFreq * modRatio);\n        ampEnv.noteOn();\n    }\n};\n```\n\n## Best Practices\n\n1. **Start simple** - Master 2-operator FM before complex algorithms\n2. **Use ratios** - Integer ratios create harmonic sounds\n3. **Velocity maps** - Map velocity to modulation index for expressiveness\n4. **CPU efficient** - FM is cheaper than many oscillators\n5. **Alias awareness** - High modulation indices can cause aliasing",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.823586+00:00"
+  },
+  "title": "FM Synthesis Basics",
+  "description": "Fundamentals of frequency modulation synthesis for audio plugins",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "sound-design",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "implementation_examples": 2,
+  "tags": [
+    "fm",
+    "synthesis",
+    "operator",
+    "carrier",
+    "modulation"
+  ],
+  "related_topics": [
+    "oscillator",
+    "dsp",
+    "parameters"
+  ]
+}

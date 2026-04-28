@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_oscillators_sync",
+  "kb": "sound-design",
+  "topic": "oscillators",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Oscillator Sync for Aggressive Timbres",
+  "summary": "Placeholder: Hard and soft sync for creating harmonically rich sounds.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["oscillator", "sync", "harmonic", "aggressive"],
+  "related_topics": ["oscillators", "synthesis-types"],
+  "difficulty": "intermediate",
+  "domain_relevance": 8
+}

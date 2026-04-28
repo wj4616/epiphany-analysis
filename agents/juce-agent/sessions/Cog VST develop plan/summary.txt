@@ -1,0 +1,16 @@
+Claude Code Session Summary
+==========================
+
+Session ID: 94431dcf-77f8-4eac-8eeb-4f1ce8a6d0d2
+Export Time: 2026-03-28 17:07:53
+Project Directory: /home/myuser/EpiphanyMachine
+Duration: 2026-03-28T18:16:16.326Z to 2026-03-28T23:49:52.905Z
+
+Statistics:
+- Total Messages: 461
+- User Messages: 130
+- Assistant Messages: 170
+- Tool Uses: 74
+- Models: <synthetic>, claude-opus-4-6
+
+Exported to: /home/myuser/claude_sessions/exports/2026-03-28_17-07-53_94431dcf

@@ -1,0 +1,21 @@
+{
+  "id": "fm-07-thread-safety",
+  "title": "Thread Safety Violation in Parameter Callback",
+  "category": "audio-thread",
+  "tags": ["critical", "thread-safety", "parameters", "realtime"],
+  "created": "2026-04-02",
+  "updated": "2026-04-02",
+  "confidence": 1.0,
+  "source": {
+    "type": "community_best_practice",
+    "reference": "melatonin.dev, JUCE best practices"
+  },
+  "symptom": "Intermittent crashes, data races, UI freezes",
+  "cause": "Calling `repaint()`, heavy computation, or non-atomic operations from `parameterChanged()` (which can run on audio thread)",
+  "fix": "Set `std::atomic<bool>` flag in callback, check in `Timer` or `VBlankAttachment`",
+  "prevention": "Never do anything non-trivial in parameter callbacks",
+  "detection": "Code audit for repaint() in parameter callbacks",
+  "severity": "critical",
+  "phase": ["6", "7", "9"],
+  "see_also": ["fm-01-allocation", "fm-06-listener"]
+}

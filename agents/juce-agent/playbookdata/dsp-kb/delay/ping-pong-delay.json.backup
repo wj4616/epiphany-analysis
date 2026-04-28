@@ -1,0 +1,22 @@
+{
+  "title": "Ping-Pong Delay",
+  "description": "Stereo delay with cross-feedback",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:47:30.947288Z",
+  "kb_type": "dsp",
+  "audio_relevance": 7,
+  "difficulty": "intermediate",
+  "markdown": "# Ping-Pong Delay\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "ping pong delay",
+    "stereo delay",
+    "cross feedback",
+    "delay panning"
+  ],
+  "sources": [
+    "Plugin development forums"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "reference_textbooks_zolzer-dafx",
+  "kb": "reference",
+  "topic": "textbooks",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "DAFX: Digital Audio Effects by Udo Zölzer",
+  "summary": "Placeholder: Comprehensive reference for audio DSP algorithms.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "textbook", "author": "Udo Zölzer"},
+  "concepts": [],
+  "tags": ["textbook", "dsp", "zolzer", "dafx", "audio"],
+  "related_topics": ["dsp-algorithms", "filters"],
+  "difficulty": "advanced",
+  "domain_relevance": 9
+}

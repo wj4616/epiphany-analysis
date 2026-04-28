@@ -1,0 +1,13 @@
+{
+  "source_file": "/home/myuser/agents/juce-agent/playbookdata/dsp-kb/reverb/convolution-reverb.json",
+  "seed_terms": [
+    "convolution reverb",
+    "FFT convolution",
+    "partitioned convolution",
+    "zero latency convolution"
+  ],
+  "discovered_terms": [],
+  "crawled_urls": [],
+  "credits_used": 0,
+  "timestamp": "2026-03-30T13:08:28.403955+00:00"
+}

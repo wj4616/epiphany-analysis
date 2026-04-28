@@ -1,0 +1,20 @@
+{
+  "harvest_metadata": {
+    "kb_type": "dsp-kb",
+    "topic": "soft knee compression",
+    "harvested_at": "2026-03-31T00:24:51.929667+00:00",
+    "quality_filter": {
+      "passed": 0,
+      "rejected": 0,
+      "rejection_reasons": {}
+    },
+    "thresholds": {
+      "min_content_length": 500,
+      "min_relevance_score": 0.15,
+      "max_noise_ratio": 0.6
+    }
+  },
+  "result": {
+    "data": []
+  }
+}

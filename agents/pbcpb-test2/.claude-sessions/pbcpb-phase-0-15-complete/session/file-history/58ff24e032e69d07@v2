@@ -1,0 +1,16 @@
+{
+  "id": "reference_tutorials_community-tutorials",
+  "kb": "reference",
+  "topic": "tutorials",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Community Tutorials and Blog Posts",
+  "summary": "Placeholder: Curated community tutorials for JUCE and audio development.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "tutorials"},
+  "concepts": [],
+  "tags": ["tutorials", "community", "blog", "juce"],
+  "related_topics": ["juce-patterns", "dsp-algorithms"],
+  "difficulty": "beginner",
+  "domain_relevance": 8
+}

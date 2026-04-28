@@ -1,0 +1,120 @@
+{
+  "kb_name": "ui-kb",
+  "topic": "design-principles",
+  "version": "1.0.0",
+  "last_updated": "2026-03-29T07:00:00Z",
+  "content": {
+    "title": "Core UI Design Principles for Audio Plugins",
+    "overview": "Essential principles for designing professional audio plugin interfaces that balance aesthetics, usability, and performance.",
+    "principles": [
+      {
+        "id": "visual-hierarchy",
+        "title": "Visual Hierarchy",
+        "description": "Establish clear importance levels through size, position, and visual weight",
+        "guidelines": [
+          "Use size to indicate importance - larger controls for frequently used parameters",
+          "Position primary controls in prime locations (top-left for Western audiences)",
+          "Create clear visual grouping for related parameters",
+          "Use contrast to highlight active/modulated parameters"
+        ]
+      },
+      {
+        "id": "grid-system",
+        "title": "Modular Grid System",
+        "description": "Apply grid-based layouts for organized, balanced interfaces",
+        "guidelines": [
+          "Use rule of thirds and golden ratio for pleasing proportions",
+          "Maintain consistent spacing and margins",
+          "Align elements to create visual rhythm",
+          "Apply 60-30-10 rule for layout distribution"
+        ]
+      },
+      {
+        "id": "color-theory",
+        "title": "Color Theory Application",
+        "description": "Strategic use of color for visual appeal and functional clarity",
+        "guidelines": [
+          "Limit palette to 2-3 primary colors plus accents",
+          "Ensure 4.5:1 contrast ratio for text (WCAG AA)",
+          "Use color psychology - blue for trust, orange for energy",
+          "Don't rely solely on color - use icons and labels too"
+        ]
+      },
+      {
+        "id": "typography",
+        "title": "Typography & Legibility",
+        "description": "Clear, readable text throughout the interface",
+        "guidelines": [
+          "Maximum 2-3 typefaces across 2-3 sizes",
+          "Prioritize legibility over style",
+          "Use appropriate font sizes for different contexts",
+          "Ensure sufficient contrast between text and background"
+        ]
+      },
+      {
+        "id": "lighting-materials",
+        "title": "Lighting & Materials",
+        "description": "Apply realistic lighting and material properties",
+        "guidelines": [
+          "Use soft, photorealistic lighting",
+          "Apply believable glow effects for active elements",
+          "Choose pleasant material textures",
+          "Avoid extreme textures that cause visual fatigue"
+        ]
+      }
+    ],
+    "ux_patterns": [
+      {
+        "pattern": "buttons-pads-tabs",
+        "description": "Size and position correlate with usage frequency",
+        "implementation": "Larger buttons for more frequently used functions"
+      },
+      {
+        "pattern": "knobs",
+        "description": "Dial indicator width impacts visual character",
+        "implementation": "Choose between thin or thick styles deliberately"
+      },
+      {
+        "pattern": "sliders-faders",
+        "description": "Orientation matches parameter conceptual model",
+        "implementation": "Vertical for volume/level, horizontal for pan/spread"
+      },
+      {
+        "pattern": "checkboxes-switches",
+        "description": "Avoid circular checkboxes that confuse with radio buttons",
+        "implementation": "Use square or rounded squares instead"
+      },
+      {
+        "pattern": "led-indicators",
+        "description": "Clear visual feedback for states and modulation",
+        "implementation": "Ensure sufficient width for easy interaction"
+      }
+    ],
+    "design_workflow": {
+      "step_1": "Define 'The Feel' - establish emotional response with visual references",
+      "step_2": "UX Layout First - create wireframes with forms, sizes, positions",
+      "step_3": "Apply Modular Grids - use grid systems for clean organization",
+      "step_4": "Limit Typefaces - maximum 2-3 typefaces across 2-3 sizes",
+      "step_5": "Master Lighting - apply studio-quality lighting principles",
+      "step_6": "Choose Materials - select pleasant virtual materials"
+    },
+    "accessibility": {
+      "contrast": "Minimum 4.5:1 for normal text, 3:1 for UI components",
+      "color": "Don't rely solely on color - use icons and labels",
+      "motion": "Support reduced motion for vestibular disorders",
+      "keyboard": "All controls must be keyboard navigable",
+      "screen_readers": "Implement proper ARIA labels"
+    },
+    "performance": {
+      "rendering": "Maintain 60fps for smooth animations",
+      "optimization": "Use bitmap caching for static elements",
+      "lazy_loading": "Load heavy visualizations only when visible",
+      "gpu_acceleration": "Consider OpenGL for highly animated UIs"
+    }
+  },
+  "sources": [
+    "https://vogerdesign.com/blog/basic-ux-patterns-in-the-development-of-synthesizer-plugins-awesome/",
+    "https://www.numberanalytics.com/blog/best-practices-audio-plugin-ui",
+    "https://mikolajszawerda.github.io/2024-03-25/audio-plugins"
+  ]
+}

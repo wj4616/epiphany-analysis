@@ -1,0 +1,16 @@
+{
+  "id": "commercial_distribution_updates",
+  "kb": "commercial",
+  "topic": "distribution",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Plugin Update Management",
+  "summary": "Placeholder: Versioning, update notifications, and backward compatibility.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["distribution", "update", "version", "compatibility"],
+  "related_topics": ["distribution", "support"],
+  "difficulty": "intermediate",
+  "domain_relevance": 8
+}

@@ -1,0 +1,39 @@
+{
+  "harvest_metadata": {
+    "kb_type": "dsp-kb",
+    "topic": "envelope generator ADSR",
+    "harvested_at": "2026-03-30T23:40:42.475260+00:00",
+    "quality_filter": {
+      "passed": 1,
+      "rejected": 34,
+      "rejection_reasons": {
+        "not_relevant": 34
+      }
+    },
+    "thresholds": {
+      "min_content_length": 500,
+      "min_relevance_score": 0.2,
+      "max_noise_ratio": 0.5
+    }
+  },
+  "result": {
+    "data": [
+      {
+        "url": "https://avonsynth.com/wp-content/uploads/2018/11/AVS-ADSR-1-User-Guide-Rev1.pdf",
+        "title": "[PDF] Envelope Generator User Guide - AvonSynth",
+        "markdown": "The AvonSynth AVS-ADSR-1 Envelope User Guide Generator\n\n# Thank you for purchasing from AvonSynth\n\nCongratulations on your purchase of a brand new AvonSynth AVS-ADSR-1 Envelope Generator Eurorack Module. We trust that it will both serve and inspire you as you create beautiful music with it for years to come.\n\nIn order to get the most out of your module, please ensure that you read this User Guide in its entirety so that you fully understand all of its functionality, and that you follow all necessary safety directions during use.\n\n# Included in the Box\n\n# 1 x ADSR Module\n\n$\\\\tt { 1 \\\\times 1 0 }$ pin to 16 pin flat-cable power cord\n\n![](https://avonsynth.com/wp-content/uploads/2018/11/images/2b7a149adcaab0f3f39b592beb482b867c6443476602e3672d5a6f89876d419c.jpg)\n\n0\n\n![](https://avonsynth.com/wp-content/uploads/2018/11/images/113b777e945ac251575afbf6e74759bc2b3dd1698354e3d8fba3dbbd4563f1b2.jpg)\n\n# Installation\n\nStep 1: Power your system off. Place the module in your Eurorack-compatible rack in any convenient position. Affix the module to your rails using the included mounting screws and nylon washers. Neglecting to use these washers may result in unnecessary marking of the unit.\n\nStep 2: Triple check the polarity of the power connector before connecting the power cord to your power supply. Ensure that the -12v line marked on the back of the module connects to the same end of the flat-cable that also connects to the $\\\\mathbf { - } \\\\mathbf { 1 } \\\\mathbf { 2 } \\\\mathbf { v }$ line on your power supply. While AvonSynth modules use shrouded connectors that make this process safer and more reliable, some systems do not conform to this polarity standard, so careful checking is always necessary. Connecting the module with incorrect polarity can result in irreversable damage done to the module which cannot be covered by warranty.\n\nStep 3: Power up your system and start patching!\n\nThe AvonSynth User Guide\n\n# AVS-ADSR-1 Envelope Generator\n\n# Features & Specifications\n\nFully Analogue Envelope Generator 6 HP wide (30mm), 20mm deep Independent Attack, Decay, Sustain, and Release controls Current consumption: $+ 1 2 \\\\lor$ 10ma, -12V 10ma Linked gate input and manual gate button Simultaneous standard and inverse envelope outputs Positive output swing 0 to $\\_ { 1 0 \\\\vee }$ , inverted swing 0 to $\\\\mathtt { - 1 0 v }$ Large time range for parameters, from 10ms to 10s Easily activated, with gate on/off threshold of 0.5v\n\n# Description of Functionality\n\n# Attack\n\nControls the length of the first stage of the envelope. Dictates the amount of time taken for the output CV to reach its peak after a gate input is received.\n\n![](https://avonsynth.com/wp-content/uploads/2018/11/images/471d913284c50076c1c430ccf195d02d535c8bf9a8289ccf17824e957035037e.jpg)\n\n# Decay\n\nControls the length of the second stage of the envelope. Dictates the amount of time taken for the output CV to reach the sustain level from the peak after the attack stage is completed.\n\n# Release\n\nControls the length of the final stage of the envelope. Dictates the amount of\n\ntime taken for the output CV to reach zero\n\nfrom the sustain level after the Gate signal has been lowered.\n\n# Gate Input\n\nAn input CV that rises above the\n\nthreshold of 0.5v triggers the evelope to\n\nbegin at the Attack stage. While the input\n\nCV is held above the threshold, the Sustain\n\nlevel is held at the output. When the input\n\nCV falls below the threshold, the Release section of the envelope is triggered. When no input is connected to the Gate input, pressing and releasing the push-button manually pushes the Gate input high and low respectively.\n\n# Envelope Behaviour\n\n|     |     |     |\n| --- | --- | --- |\n| 0.5vov |  |  |\n|  | Gate Input |\n|  |\n\n+10v\\| Release Attack Decay Sustain Ov Envelope Output\n\n-10v\n\n+10v\\| Inverted Output Ov Attack Decay Sustain Release -10v\n\n# LED Indicator\n\nThe brightness of this LED light is proportional to the current level of the non-inverted output. This indicator of operation is especially useful when setting up patches to visually confirm the receipt of gate signal and current output level.\n\n# Sustain\n\nSets the output CV level that is held after the Attack and Decay sections have been completed, and while the Gate signal remains high.\n\n# Envelope Outputs\n\nProvides a 0 to 10v range (bottom) or 0 to -10v range (top) CV output which evolves over time according to the Attack, Decay, Sustain, and Release parameters.\n\n# Safety Precautions\n\nPlease use this module in accordance with the following safety guidelines in order to maximize the life of the module and ensure warranty from AvonSynth.\n\n![](https://avonsynth.com/wp-content/uploads/2018/11/images/ccee96a077a3fd2c403b4698bebb83361e9e6886fcd40bae31dca390e1c4b155.jpg)\n\nKeep water and other conductive liquids and materials away from this module. It is not water proof, or even water resistant. Exposure to these can cause short-circuits that can render the equipment unusable.\n\n![](https://avonsynth.com/wp-content/uploads/2018/11/images/4741875595ba63ac7e7962b206328e38b02f81e429098120e738d94e10ebf3a3.jpg)\n\nBe sure to keep this equipment in an environment with an ambient temperature above ${ \\\\mathfrak { - 2 0 } } \\\\mathbb { C }$ and below $+ 5 0 ^ { \\\\circ } C$ Excessively hot or cold temperatures can be damaging to the electronic circuits used.\n\nModules with exposed circuit-boards are delicate. Take the utmost care when handling and transporting this equipment, making sure not to subject it to excessive forces. Ensure that the module is installed correctly while being transported and that the original packing materials are used when sending the module anywhere by post.\n\n# Warranty & Support\n\nThis product is covered by AvonSynth's warranty for one year from the manufacturing date. Within this timeframe, any manufacturing defect will be repaired or replaced by AvonSynth. Damage caused to the product due to not following the safety precautions above, unauthorized modification of the hardware, or misuse such as subjecting the unit to reverse or excessive voltages will void this warranty.\n\nIf you have any concerns about your AvonSynth hardware, please get in touch via [info@AvonSynth.com](mailto:info@AvonSynth.com) to discuss any issues. We will do our best to assist you in getting your hardware operating correctly, and if necessary, we will provide an RMA (Return Merchandise Authorization) to send back the unit for inspection. Any postal costs incurred in this process will be the responsibility of the customer. Please do not send back merchandise before receiving this authorization.",
+        "quality_report": {
+          "url": "https://avonsynth.com/wp-content/uploads/2018/11/AVS-ADSR-1-User-Guide-Rev1.pdf",
+          "title": "[PDF] Envelope Generator User Guide - AvonSynth",
+          "content_length": 6590,
+          "has_code": false,
+          "code_blocks": 0,
+          "relevance_score": 0.212443095599393,
+          "noise_ratio": 0.08695652173913043,
+          "passed": true,
+          "rejection_reason": null
+        }
+      }
+    ]
+  }
+}

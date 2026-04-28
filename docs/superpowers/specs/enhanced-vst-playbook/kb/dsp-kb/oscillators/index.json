@@ -1,0 +1,15 @@
+{
+  "id": "placeholder-dsp-oscillator",
+  "title": "PLACEHOLDER: Oscillator Design",
+  "category": "oscillators",
+  "status": "placeholder",
+  "needed_by": ["Phase 4"],
+  "description": "Oscillator implementations including sawtooth, square, triangle, wavetable, and PolyBLEP",
+  "confidence": 0.0,
+  "source": {
+    "type": "pending_harvest",
+    "priority": "high"
+  },
+  "tags": ["oscillator", "wavetable", "polyblep", "dsp"],
+  "notes": "Harvest from Will Pirkle, DSP theory"
+}

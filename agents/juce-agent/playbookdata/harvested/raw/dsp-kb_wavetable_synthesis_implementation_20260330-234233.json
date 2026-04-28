@@ -1,0 +1,22 @@
+{
+  "harvest_metadata": {
+    "kb_type": "dsp-kb",
+    "topic": "wavetable synthesis implementation",
+    "harvested_at": "2026-03-30T23:42:33.701038+00:00",
+    "quality_filter": {
+      "passed": 0,
+      "rejected": 34,
+      "rejection_reasons": {
+        "not_relevant": 34
+      }
+    },
+    "thresholds": {
+      "min_content_length": 500,
+      "min_relevance_score": 0.2,
+      "max_noise_ratio": 0.5
+    }
+  },
+  "result": {
+    "data": []
+  }
+}

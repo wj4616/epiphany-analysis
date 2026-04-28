@@ -1,0 +1,45 @@
+# juce-vst-business-trial2
+
+## Status
+Phase 0: Commission & Scoping — Gate Passed
+
+## Project Overview
+Playbook for developing and commercially releasing creative VST audio plugins using JUCE framework and C++.
+
+## Purpose Statement
+
+Build a playbook for developing and commercially releasing creative VST audio plugins using the JUCE framework in C++. The playbook guides a single developer — assisted by Claude Code — through the full product lifecycle: from sound design research and DSP implementation through UI design, DAW testing, licensing integration, marketplace listing, and sales strategy.
+
+### Problem Being Solved
+
+The VST plugin marketplace in 2026 is saturated with uninspired, overpriced products that lack creative ambition. Most plugins copy existing designs rather than exploring novel sonic territory. Meanwhile, the tools to build creative alternatives (JUCE, C++, AI coding assistants) have become accessible to solo developers. This playbook enables an enthusiast developer to create genuinely creative, high-quality plugins and bring them to market at consumer-friendly price points — competing on imagination rather than budget.
+
+### Playbook Type
+**New** — This playbook is being created to test the playbook creator playbook system itself (dogfooding/validation).
+
+## Target User
+
+Single developer using AI and AI agents to develop the product and entire business:
+
+| Skill Area | Level |
+|------------|-------|
+| Python/JavaScript | Strong |
+| General programming | Strong |
+| VST usage (musician) | Strong |
+| C++ theory | Basic (knows concepts, not fluent) |
+| Sound design fundamentals | Basic |
+| JUCE framework | None |
+| DSP algorithm implementation | None |
+| Commercial plugin distribution | None |
+
+**AI Tooling:** Claude Code ($200/month plan maximum), multiple sessions per feature, multiple limit-hits expected per build cycle
+
+**Platform:** Linux Mint, REAPER for DAW testing
+
+## Structure
+- `research/` — Domain research documents
+- `architecture/` — Design documents
+- `drafts/` — Work-in-progress content
+- `audits/` — Quality audit results
+- `testing/` — Test scenarios and results
+- `final/` — Completed playbook output

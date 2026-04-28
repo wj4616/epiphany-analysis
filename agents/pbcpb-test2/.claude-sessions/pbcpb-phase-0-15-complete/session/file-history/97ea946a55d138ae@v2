@@ -1,0 +1,61 @@
+{
+  "id": "bridge_reverb-space",
+  "category": "space-depth",
+  "parameters": ["reverb_decay", "reverb_mix", "reverb_size"],
+  "intent_mappings": {
+    "ambient": {
+      "parameter": "reverb_decay",
+      "value_range": [2.0, 8.0],
+      "typical_default": 4.0,
+      "confidence": 0.85,
+      "source": "sound-design_genre-techniques_ambient",
+      "why": "Long decay times create expansive, atmospheric spaces"
+    },
+    "dry": {
+      "parameter": "reverb_mix",
+      "value_range": [0.0, 0.15],
+      "typical_default": 0.05,
+      "confidence": 0.90,
+      "source": "sound-design_effects_reverb",
+      "why": "Minimal reverb keeps sound direct and present"
+    },
+    "wide": {
+      "parameter": "reverb_size",
+      "value_range": [0.6, 1.0],
+      "typical_default": 0.8,
+      "confidence": 0.75,
+      "source": "sound-design_genre-techniques_pad",
+      "why": "Large room sizes create sense of width and space"
+    },
+    "deep": {
+      "parameter": "reverb_mix",
+      "value_range": [0.3, 0.6],
+      "typical_default": 0.45,
+      "confidence": 0.70,
+      "source": "sound-design_effects_reverb",
+      "why": "High wet mix creates depth and distance"
+    }
+  },
+  "anti_patterns": [
+    "Very long decay (>10s) can muddy the mix",
+    "High reverb mix (>0.7) loses direct signal clarity"
+  ],
+  "combinations": [
+    {
+      "with": "bridge_oscillator-character",
+      "result": "lush + ambient",
+      "confidence_modifier": 0.85
+    },
+    {
+      "with": "bridge_envelope-shape",
+      "result": "swelling + ambient",
+      "parameter_adjustments": {
+        "reverb_decay": [4.0, 8.0]
+      },
+      "confidence_modifier": 0.80
+    }
+  ],
+  "status": "seeded",
+  "version": "1.0.0",
+  "created_from": "research"
+}

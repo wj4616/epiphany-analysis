@@ -1,0 +1,14 @@
+{
+  "kb": "sound-design",
+  "status_summary": {
+    "placeholder": 23,
+    "harvested": 0,
+    "curated": 0,
+    "synced": 0
+  },
+  "sync_history": [
+    {"date": "2026-04-02", "action": "directory_created", "entries_added": 0},
+    {"date": "2026-04-02", "action": "placeholders_seeded", "entries_added": 23}
+  ],
+  "curation_queue": []
+}

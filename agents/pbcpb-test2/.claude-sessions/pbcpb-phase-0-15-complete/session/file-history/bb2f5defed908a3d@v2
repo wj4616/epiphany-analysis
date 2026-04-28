@@ -1,0 +1,248 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Sound Design Bridge Entry Schema",
+  "description": "Schema for bridge entries that translate subjective sound descriptors to technical parameters",
+  "type": "object",
+  "required": [
+    "id",
+    "category",
+    "parameters",
+    "intent_mappings",
+    "status",
+    "version"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^bridge_[a-z0-9-]+$",
+      "description": "Unique identifier: bridge_{descriptor-or-category}",
+      "examples": ["bridge_warm-filter", "bridge_lush-pad", "bridge_punchy-bass"]
+    },
+    "category": {
+      "type": "string",
+      "description": "Sound design category this bridge applies to",
+      "examples": ["filter-character", "oscillator-character", "effect-type", "envelope-shape", "space-depth"]
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Technical parameters this bridge can affect",
+      "examples": [["filter_cutoff", "filter_resonance", "filter_type"]]
+    },
+    "intent_mappings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["parameter", "value_range", "typical_default", "confidence", "source", "why"],
+        "properties": {
+          "parameter": {
+            "type": "string",
+            "description": "Technical parameter name (must match APVTS parameter ID)"
+          },
+          "value_range": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Min and max values [min, max] in normalized 0-1 range"
+          },
+          "typical_default": {
+            "type": "number",
+            "description": "Suggested default value in normalized range"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "How confident this mapping is correct (0-1)"
+          },
+          "source": {
+            "type": "string",
+            "description": "Reference to sound-design KB entry or origin"
+          },
+          "why": {
+            "type": "string",
+            "description": "Human-readable rationale for this mapping"
+          }
+        }
+      },
+      "description": "Keyed by subjective descriptor (e.g., 'warm', 'bright')"
+    },
+    "anti_patterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Combinations or values to avoid",
+      "examples": [["High resonance (>0.5) with low cutoff — creates harsh whistle"]]
+    },
+    "combinations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["with", "result"],
+        "properties": {
+          "with": {
+            "type": "string",
+            "description": "Bridge ID to combine with"
+          },
+          "result": {
+            "type": "string",
+            "description": "Resulting combined descriptor"
+          },
+          "parameter_adjustments": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "Parameter name -> adjusted range"
+            }
+          },
+          "confidence_modifier": {
+            "type": "number",
+            "description": "Multiply base confidence by this (usually <1)"
+          }
+        }
+      },
+      "description": "How this bridge combines with others"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["placeholder", "seeded", "validated", "refined"],
+      "default": "placeholder",
+      "description": "placeholder (needs mapping), seeded (pre-populated), validated (human confirmed), refined (feedback-improved)"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semver version"
+    },
+    "created_from": {
+      "type": "string",
+      "description": "Source: 'research' for pre-seeded, 'auto-generate' for agent-discovered, 'user-feedback' for refined"
+    },
+    "last_validated": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of last human validation"
+    },
+    "validation_notes": {
+      "type": "string",
+      "description": "Notes from validation process"
+    }
+  },
+  "examples": [
+    {
+      "id": "bridge_warm-filter",
+      "category": "filter-character",
+      "parameters": ["filter_cutoff", "filter_resonance"],
+      "intent_mappings": {
+        "warm": {
+          "parameter": "filter_cutoff",
+          "value_range": [0.2, 0.4],
+          "typical_default": 0.3,
+          "confidence": 0.75,
+          "source": "sound-design-kb:warm-filter-characteristics",
+          "why": "Lower cutoff frequencies emphasize low-mid harmonics, reducing harsh high frequency content"
+        },
+        "bright": {
+          "parameter": "filter_cutoff",
+          "value_range": [0.6, 1.0],
+          "typical_default": 0.8,
+          "confidence": 0.85,
+          "source": "sound-design-kb:bright-filter-characteristics",
+          "why": "Higher cutoff allows more high frequency harmonics through"
+        }
+      },
+      "anti_patterns": [
+        "High resonance (>0.5) with low cutoff for 'warm' — creates harsh whistle",
+        "Very low cutoff (<0.1) loses fundamental and sounds muffled"
+      ],
+      "combinations": [
+        {
+          "with": "bridge_saturation",
+          "result": "warm + gritty",
+          "parameter_adjustments": {
+            "filter_resonance": [0.1, 0.2]
+          },
+          "confidence_modifier": 0.9
+        }
+      ],
+      "status": "seeded",
+      "version": "1.0.0",
+      "created_from": "research"
+    },
+    {
+      "id": "bridge_lush-pad",
+      "category": "oscillator-character",
+      "parameters": ["osc_detune", "osc_count", "lfo_rate", "lfo_depth"],
+      "intent_mappings": {
+        "lush": {
+          "parameter": "osc_detune",
+          "value_range": [0.05, 0.15],
+          "typical_default": 0.1,
+          "confidence": 0.8,
+          "source": "sound-design-kb:lush-pad-techniques",
+          "why": "Moderate detune creates chorusing effect without losing pitch definition"
+        },
+        "lush": {
+          "parameter": "osc_count",
+          "value_range": [2, 4],
+          "typical_default": 3,
+          "confidence": 0.75,
+          "source": "sound-design-kb:lush-pad-techniques",
+          "why": "Multiple detuned oscillators create thickness"
+        }
+      },
+      "anti_patterns": [
+        "Single oscillator cannot achieve 'lush' — detune requires multiple sources",
+        "Excessive detune (>0.2) sounds out of tune rather than lush"
+      ],
+      "combinations": [
+        {
+          "with": "bridge_reverb-space",
+          "result": "lush + ambient",
+          "confidence_modifier": 0.85
+        }
+      ],
+      "status": "seeded",
+      "version": "1.0.0",
+      "created_from": "research"
+    },
+    {
+      "id": "bridge_punchy-envelope",
+      "category": "envelope-shape",
+      "parameters": ["amp_attack", "amp_decay", "filter_env_amount"],
+      "intent_mappings": {
+        "punchy": {
+          "parameter": "amp_attack",
+          "value_range": [0.0, 0.01],
+          "typical_default": 0.001,
+          "confidence": 0.9,
+          "source": "sound-design-kb:punchy-envelope",
+          "why": "Near-instant attack emphasizes transient"
+        },
+        "punchy": {
+          "parameter": "filter_env_amount",
+          "value_range": [0.3, 0.7],
+          "typical_default": 0.5,
+          "confidence": 0.8,
+          "source": "sound-design-kb:punchy-envelope",
+          "why": "Filter envelope adds punch by emphasizing attack harmonics"
+        }
+      },
+      "anti_patterns": [
+        "Long attack (>0.05) cannot achieve 'punchy' — transient is lost"
+      ],
+      "status": "seeded",
+      "version": "1.0.0",
+      "created_from": "research"
+    }
+  ]
+}

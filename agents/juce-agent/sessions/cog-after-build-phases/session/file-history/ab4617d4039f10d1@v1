@@ -1,0 +1,28 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+
+// Waveshaper - Nonlinear waveshaping distortion
+// TODO: Implement in future task
+
+namespace CogDSP
+{
+
+class Waveshaper
+{
+public:
+    Waveshaper() = default;
+    ~Waveshaper() = default;
+
+    void prepare(double sampleRate);
+    void process(float* samples, int numSamples);
+    void setDrive(float driveDb);
+    void reset();
+
+private:
+    float drive = 0.0f;
+    double sampleRate = 44100.0;
+};
+
+} // namespace CogDSP

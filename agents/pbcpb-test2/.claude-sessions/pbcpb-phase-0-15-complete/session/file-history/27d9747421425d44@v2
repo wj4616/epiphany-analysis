@@ -1,0 +1,31 @@
+{
+  "kb": "bridge",
+  "version": "1.0.0",
+  "descriptor_categories": {
+    "filter-character": {
+      "entries": ["bridge_filter-character"],
+      "descriptors": ["warm", "bright", "dark", "sharp"],
+      "last_updated": "2026-04-02"
+    },
+    "oscillator-character": {
+      "entries": ["bridge_oscillator-character"],
+      "descriptors": ["lush", "thin", "rich", "fat"],
+      "last_updated": "2026-04-02"
+    },
+    "envelope-shape": {
+      "entries": ["bridge_envelope-shape"],
+      "descriptors": ["punchy", "smooth", "plucky", "swelling"],
+      "last_updated": "2026-04-02"
+    },
+    "space-depth": {
+      "entries": ["bridge_reverb-space"],
+      "descriptors": ["ambient", "dry", "wide", "deep"],
+      "last_updated": "2026-04-02"
+    },
+    "saturation-character": {
+      "entries": ["bridge_saturation-character"],
+      "descriptors": ["gritty", "subtle", "driven", "clean"],
+      "last_updated": "2026-04-02"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "title": "Memory Pooling for Audio",
+  "description": "Object pools and preallocated buffers",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:49:32.436194Z",
+  "kb_type": "juce",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "markdown": "# Memory Pooling for Audio\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "memory pool audio",
+    "object pool C++",
+    "audio memory management",
+    "preallocated buffers"
+  ],
+  "sources": [
+    "JUCE forum",
+    "CCRMA"
+  ]
+}

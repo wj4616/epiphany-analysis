@@ -1,0 +1,41 @@
+{
+  "kb_name": "sound-design-kb",
+  "version": "1.0.0",
+  "description": "Sound design knowledge with sonic-to-parameter bridges",
+  "created": "2026-04-02",
+  "updated": "2026-04-02",
+  "bridge_count": 6,
+  "entry_count": 7,
+  "categories": {
+    "bridges": {
+      "description": "Sonic description to parameter translations",
+      "count": 6,
+      "entries": ["bridge-warm", "bridge-bright", "bridge-lush", "bridge-psychedelic", "bridge-ambient", "bridge-punchy"]
+    },
+    "synthesis-techniques": {
+      "description": "Synthesis method techniques",
+      "count": 0,
+      "entries": []
+    },
+    "ambient-textures": {
+      "description": "Ambient and atmospheric sound design",
+      "count": 1,
+      "entries": ["placeholder-psychedelic-design"]
+    },
+    "creative-effects": {
+      "description": "Creative effect chains and processing",
+      "count": 0,
+      "entries": []
+    },
+    "preset-templates": {
+      "description": "Preset templates with parameter ranges",
+      "count": 0,
+      "entries": []
+    },
+    "sound-identity": {
+      "description": "Sound identity and description methodology",
+      "count": 0,
+      "entries": []
+    }
+  }
+}

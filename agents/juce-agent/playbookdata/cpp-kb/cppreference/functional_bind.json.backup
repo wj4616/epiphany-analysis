@@ -1,0 +1,26 @@
+{
+  "markdown": "# 404 Not Found\n\nThe requested URL (/w/cpp/functional/bind)\nwas not found on this server.",
+  "metadata": {
+    "title": "404 Not Found",
+    "language": "en",
+    "scrapeId": "019d39b2-093a-72d7-a24b-95f972a6fde1",
+    "sourceURL": "https://en.cppreference.com/w/cpp/functional/bind",
+    "url": "https://en.cppreference.com/w/cpp/functional/bind",
+    "statusCode": 404,
+    "error": "Not Found",
+    "contentType": "text/html; charset=iso-8859-1",
+    "timezone": "America/New_York",
+    "proxyUsed": "basic",
+    "cacheState": "miss",
+    "indexId": "b5d37215-95c7-450d-ae40-11f4061b7a66",
+    "creditsUsed": 1,
+    "concurrencyLimited": false
+  },
+  "html": "<!DOCTYPE html><html lang=\"en\">\n<body>\n\n\n\n<div>\n\n<h1>404 Not Found</h1>\n\n<p>\nThe requested URL (/w/cpp/functional/bind)\nwas not found on this server.\n</p>\n\n</div>\n\n\n\n\n\n</body></html>",
+  "links": [],
+  "source_url": "https://en.cppreference.com/w/cpp/functional/bind",
+  "source": "cppreference",
+  "topic": "functional/bind",
+  "harvested_at": "2026-03-29T06:04:23.338500",
+  "kb_type": "cpp"
+}

@@ -1,0 +1,132 @@
+#include "ModulationEngine.h"
+#include <cmath>
+
+namespace CogDSP
+{
+
+// Static member definitions
+constexpr std::array<float, 3> ModulationEngine::baseRates;
+
+void ModulationEngine::prepare(double sr, int samplesPerBlock)
+{
+    sampleRate = sr;
+
+    // Initialize LFO base rates
+    for (int i = 0; i < 3; ++i)
+    {
+        lfos[i].baseRate = baseRates[i];
+        lfos[i].rate = baseRates[i];
+        lfos[i].phase = static_cast<float>(i) / 3.0f * Constants::TWO_PI;  // Offset phases
+    }
+
+    // Envelope follower time constants
+    // 10ms attack, 100ms release
+    envelopeAttack = static_cast<float>(std::exp(-1.0 / (0.01 * sampleRate)));
+    envelopeRelease = static_cast<float>(std::exp(-1.0 / (0.1 * sampleRate)));
+
+    reset();
+}
+
+void ModulationEngine::setEvolutionSpeed(float speed)
+{
+    evolutionSpeed = std::clamp(speed, 0.0f, 1.0f);
+
+    // Map 0-1 to speed multiplier 0.1x - 10x
+    // Using exponential mapping for musical response
+    const float multiplier = std::pow(100.0f, evolutionSpeed);  // 0.1 to 10
+    const float scale = 0.1f + 0.9f * evolutionSpeed;  // Smooth mapping
+
+    // Update LFO base rates
+    for (int i = 0; i < 3; ++i)
+    {
+        lfos[i].baseRate = baseRates[i] * multiplier;
+        // Clamp to allowed range
+        lfos[i].baseRate = std::clamp(lfos[i].baseRate, minRate, maxRate);
+    }
+}
+
+void ModulationEngine::process(int numSamples)
+{
+    // Update audio-reactive envelope follower
+    // Attack: 10ms, Release: 100ms
+    if (audioInputLevel > envelopeFollower)
+    {
+        envelopeFollower = envelopeAttack * envelopeFollower + (1.0f - envelopeAttack) * audioInputLevel;
+    }
+    else
+    {
+        envelopeFollower = envelopeRelease * envelopeFollower + (1.0f - envelopeRelease) * audioInputLevel;
+    }
+
+    // Audio-reactive modulation: envelope * reactivity
+    // Range: 0 to reactivity (mapped to ±2 octaves)
+    audioReactiveMod = envelopeFollower * reactivity * 2.0f;  // Up to ±2 octaves when reactivity=1
+
+    // Spectral flux modulation (slower, tonal changes)
+    // Use a slower envelope for spectral flux
+    spectralFluxMod = spectralFluxValue * reactivity;
+
+    // Update LFOs (ring modulation between them)
+    updateLFOs();
+
+    // Skip phase update - done in updateLFOs()
+}
+
+void ModulationEngine::updateLFOs()
+{
+    // Ring modulation: A → B → C → A
+    // Formula: rate = base_rate * 2^(output_of_previous * complexity * 2)
+
+    const float speedMultiplier = 0.1f + evolutionSpeed * 9.9f;  // 0.1 to 10
+
+    for (int i = 0; i < 3; ++i)
+    {
+        // Get modulating LFO output (previous in ring)
+        const int prevIndex = (i + 2) % 3;  // A←C, B←A, C←B
+        const float modulatorOutput = lfos[prevIndex].output;
+
+        // Apply ring modulation to rate
+        // Rate = base_rate * 2^(modulator * complexity * 2)
+        const float modulationFactor = std::pow(2.0f, modulatorOutput * complexity * 2.0f);
+        lfos[i].rate = lfos[i].baseRate * modulationFactor * speedMultiplier;
+
+        // Hard bounds: [base_rate * 0.25, base_rate * 4.0] AND absolute [0.01Hz, 20Hz]
+        lfos[i].rate = std::clamp(lfos[i].rate, minRate, maxRate);
+        lfos[i].rate = std::clamp(lfos[i].rate, lfos[i].baseRate * 0.25f, lfos[i].baseRate * 4.0f);
+
+        // Update phase
+        const float phaseIncrement = lfos[i].rate * Constants::TWO_PI / static_cast<float>(sampleRate);
+        lfos[i].phase += phaseIncrement;
+
+        // Keep phase in [0, 2π]
+        while (lfos[i].phase >= Constants::TWO_PI)
+            lfos[i].phase -= Constants::TWO_PI;
+
+        // Compute output (sine wave, -1 to +1)
+        lfos[i].output = std::sin(lfos[i].phase);
+    }
+
+    // Convert LFO outputs to octave modulation
+    // Each LFO: ±2 octaves maximum
+    lfoOutputs[0] = lfos[0].output * maxLFOModOctaves;  // LFO A
+    lfoOutputs[1] = lfos[1].output * maxLFOModOctaves;  // LFO B
+    lfoOutputs[2] = lfos[2].output * maxLFOModOctaves;  // LFO C
+}
+
+void ModulationEngine::reset()
+{
+    for (int i = 0; i < 3; ++i)
+    {
+        lfos[i].reset();
+        lfos[i].baseRate = baseRates[i];
+        lfos[i].rate = baseRates[i];
+        lfos[i].phase = static_cast<float>(i) / 3.0f * Constants::TWO_PI;
+    }
+
+    envelopeFollower = 0.0f;
+    audioReactiveMod = 0.0f;
+    spectralFluxMod = 0.0f;
+    lfoOutputs = { 0.0f, 0.0f, 0.0f };
+}
+
+} // namespace CogDSP

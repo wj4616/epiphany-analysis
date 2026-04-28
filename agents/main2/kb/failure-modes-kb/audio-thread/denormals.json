@@ -1,0 +1,25 @@
+{
+  "id": "failure-modes-kb_audio-thread_denormals",
+  "kb": "failure-modes-kb",
+  "topic": "audio-thread",
+  "status": "harvested",
+  "version": "1.0.0",
+  "title": "FM-04: Denormal CPU Spikes",
+  "summary": "Critical failure mode: subnormal floating-point values cause CPU spikes on silence.",
+  "description": "## Symptom\n\nCPU spikes to 100% when processing silence or very quiet signals.\n\n## Cause\n\nSubnormal (denormal) floating-point values in:\n- Feedback loops (reverbs, delays)\n- Filter tails\n- Any state that accumulates small values\n\n## Fix\n\n```cpp\nvoid processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override {\n    juce::ScopedNoDenormals noDenormals;  // Always first line!\n    // ... rest of processing\n}\n```\n\nAdditionally, add DC offset in feedback paths:\n\n```cpp\n// In feedback path\nfeedbackSample = feedbackSample * feedbackGain + 1e-18f;  // Tiny offset\n```\n\n## Prevention\n\n- Always start processBlock with ScopedNoDenormals\n- Add 1e-18 offset in feedback loops\n- Test with 60 seconds of silence and monitor CPU",
+  "source": "VST Playbook v7 FM-04",
+  "concepts": [
+    {"name": "ScopedNoDenormals", "description": "JUCE RAII class that disables denormals on current thread"}
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override {\n    juce::ScopedNoDenormals noDenormals;\n    \n    // Feedback path with denormal prevention\n    for (int i = 0; i < buffer.getNumSamples(); ++i) {\n        float input = buffer.getReadPointer(0)[i];\n        float output = input + feedbackBuffer[feedbackPos];\n        feedbackBuffer[feedbackPos] = output * feedbackGain + 1e-18f;  // Denormal offset\n        feedbackPos = (feedbackPos + 1) % feedbackBuffer.size();\n        buffer.getWritePointer(0)[i] = output;\n    }\n}",
+      "preserved": true
+    }
+  ],
+  "tags": ["audio-thread", "denormals", "cpu", "critical"],
+  "related_topics": ["dsp-algorithms"],
+  "difficulty": "beginner",
+  "domain_relevance": 10
+}

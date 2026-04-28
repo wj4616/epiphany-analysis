@@ -1,0 +1,27 @@
+#include "PluginEditor.h"
+
+CogVSTAudioProcessorEditor::CogVSTAudioProcessorEditor(CogVSTAudioProcessor& p)
+    : AudioProcessorEditor(&p), audioProcessor(p)
+{
+    // Initial size for the plugin window
+    setSize(800, 600);
+}
+
+CogVSTAudioProcessorEditor::~CogVSTAudioProcessorEditor()
+{
+}
+
+void CogVSTAudioProcessorEditor::paint(juce::Graphics& g)
+{
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+
+    // Placeholder text
+    g.setColour(juce::Colours::white);
+    g.setFont(24.0f);
+    g.drawFittedText("Cog VST", getLocalBounds(), juce::Justification::centred, 1);
+}
+
+void CogVSTAudioProcessorEditor::resized()
+{
+    // TODO: Implement component layout in future tasks
+}

@@ -1,0 +1,24 @@
+{
+  "markdown": "# Not Found\n\nThe requested URL /~jos/filters/Fundamentals.html was not found on this server.",
+  "metadata": {
+    "title": "404 Not Found",
+    "scrapeId": "019d3906-9b6c-7518-8e1d-3f964591c9c4",
+    "sourceURL": "https://ccrma.stanford.edu/~jos/filters/Fundamentals.html",
+    "url": "https://ccrma.stanford.edu/~jos/filters/Fundamentals.html",
+    "statusCode": 404,
+    "error": "Not Found",
+    "contentType": "text/html; charset=iso-8859-1",
+    "timezone": "America/New_York",
+    "proxyUsed": "basic",
+    "cacheState": "miss",
+    "indexId": "1f3273c2-2c18-4813-9f8a-094ac1a8d692",
+    "creditsUsed": 1,
+    "concurrencyLimited": false
+  },
+  "html": "<!DOCTYPE html><html><body>\n<h1>Not Found</h1>\n<p>The requested URL /~jos/filters/Fundamentals.html was not found on this server.</p>\n\n</body></html>",
+  "links": [],
+  "source_url": "https://ccrma.stanford.edu/~jos/filters/Fundamentals.html",
+  "source": "stanford-ccrma",
+  "harvested_at": "2026-03-29T02:57:08.188582",
+  "kb_type": "technical"
+}

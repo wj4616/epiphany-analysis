@@ -1,0 +1,16 @@
+{
+  "id": "commercial_distribution_support",
+  "kb": "commercial",
+  "topic": "distribution",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Customer Support for Plugin Developers",
+  "summary": "Placeholder: Support channels, common issues, and response templates.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["distribution", "support", "customer", "issues"],
+  "related_topics": ["distribution", "updates"],
+  "difficulty": "beginner",
+  "domain_relevance": 7
+}

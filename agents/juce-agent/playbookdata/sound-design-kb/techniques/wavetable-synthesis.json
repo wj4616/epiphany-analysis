@@ -1,0 +1,113 @@
+{
+  "title": "Wavetable Synthesis Sound Design",
+  "description": "Comprehensive guide to wavetable synthesis techniques for audio plugins including sound design, modulation strategies, and plugin implementation",
+  "source": "web-research",
+  "harvested_at": "2026-03-29T08:00:00.000000",
+  "kb_type": "sound-design",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "content": {
+    "overview": "Wavetable synthesis creates evolving timbres by scanning through a sequence of single-cycle waveforms stored in a wavetable",
+    "core_concepts": {
+      "wavetable_position": {
+        "description": "The fundamental parameter that scans through different waveform frames",
+        "techniques": [
+          "Manual scanning for timbral morphing",
+          "LFO modulation for continuous evolution",
+          "Envelope control for articulation",
+          "Multi-dimensional modulation with independent LFOs"
+        ]
+      },
+      "warp_modes": {
+        "description": "Advanced deformation algorithms that add harmonic movement",
+        "modes": [
+          "Bend +/- - asymmetric waveform bending",
+          "Sync - hard sync simulation",
+          "Mirror - reflective waveform manipulation",
+          "FM/AM/RM - frequency/amplitude/ring modulation"
+        ]
+      },
+      "interpolation": {
+        "description": "Smooths transitions between waveform frames",
+        "types": [
+          "Linear interpolation - basic smoothing",
+          "Cubic interpolation - higher quality, more CPU"
+        ]
+      }
+    },
+    "sound_design_workflow": {
+      "step_1": "Wavetable Selection - choose based on spectral content and variation",
+      "step_2": "Layering - combine multiple wavetables or oscillators",
+      "step_3": "FX Processing - add distortion, chorus, reverb, filtering",
+      "step_4": "Resampling - bounce processed audio back into new wavetables"
+    },
+    "modulation_strategies": [
+      "LFO to wavetable position for evolving pads and basses",
+      "Envelope to position for articulation control",
+      "Multi-dimensional modulation - position, warp, pitch, filter simultaneously",
+      "Different LFO rates for complex movement"
+    ],
+    "plugin_implementation": {
+      "juce_architecture": {
+        "wavetable_synth_class": "Main container managing multiple oscillators",
+        "wavetable_oscillator_class": {
+          "methods": ["getSample()", "setFrequency()", "interpolateLinearly()"],
+          "members": ["index", "indexIncrement", "wavetableData"]
+        },
+        "polyphony": "128 oscillators for full MIDI range"
+      },
+      "key_implementation_details": [
+        "Pre-calculate one period (64-128 samples)",
+        "Index calculation: indexIncrement = frequency * tableSize / sampleRate",
+        "Linear interpolation between adjacent samples",
+        "MIDI note to frequency: f(p) = 440 * 2^((p-69)/12)"
+      ]
+    },
+    "key_parameters": {
+      "synthesis_parameters": [
+        {"name": "Table Index/Position", "range": "0.0 to 1.0", "description": "Current frame in wavetable"},
+        {"name": "Interpolation Mode", "type": "Enum", "options": ["Linear", "Cubic"]},
+        {"name": "Frequency", "range": "20Hz - 20kHz", "description": "Playback pitch"},
+        {"name": "Table Size", "range": "64-2048 samples", "description": "Resolution of each frame"},
+        {"name": "Mip Mapping", "type": "Boolean", "description": "Pre-filtered tables for high notes"}
+      ],
+      "modulation_parameters": [
+        "Table Index Modulation - LFO/envelope depth and rate",
+        "Warp Amount - intensity of waveform deformation",
+        "Unison Detune - multiple voice detuning",
+        "Blend - mix between different wavetables"
+      ]
+    },
+    "performance_considerations": [
+      "CPU Optimization - pre-compute wavetables, efficient interpolation",
+      "Memory - store multiple tables for different pitches (mip maps)",
+      "Anti-Aliasing - filter harmonics above Nyquist",
+      "Block Processing - process between MIDI events"
+    ],
+    "recommended_tools": {
+      "free": [
+        "Vital - 3 oscillators, spectral warping, text-to-wavetable",
+        "Ableton Live Wavetable - native integration",
+        "Logic Pro Retro Synth (Table Mode)"
+      ],
+      "commercial": [
+        "Xfer Serum - industry standard with visual feedback",
+        "Native Instruments Massive X - advanced voicing",
+        "Arturia Pigments 3 - hybrid analog/wavetable",
+        "Kilohearts Phase Plant - modular wavetable"
+      ]
+    },
+    "creative_techniques": [
+      "FM between wavetables for complex growls",
+      "Custom wavetable creation from drawings or samples",
+      "Resampling processed audio into new wavetables",
+      "Hybrid synthesis combining with subtractive/FM/additive"
+    ]
+  },
+  "sources": [
+    "https://www.numberanalytics.com/blog/wavetable-synthesis-ultimate-guide",
+    "https://www.edmprod.com/wavetable-synthesis/",
+    "https://thewolfsound.com/sound-synthesis/wavetable-synth-plugin-in-juce/",
+    "https://docs.juce.com/master/tutorial_wavetable_synth.html"
+  ]
+}

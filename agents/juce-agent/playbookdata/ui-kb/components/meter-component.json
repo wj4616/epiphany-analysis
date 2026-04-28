@@ -1,0 +1,88 @@
+{
+  "id": "ui-kb_components_meter-component",
+  "kb": "ui-kb",
+  "topic": "components",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "Meters visualize audio levels in real-time. They should:",
+  "concepts": [
+    {
+      "name": "Thread safety",
+      "description": "Use `std::atomic` for level values",
+      "related": []
+    },
+    {
+      "name": "Smooth decay",
+      "description": "Apply exponential decay for natural look",
+      "related": []
+    },
+    {
+      "name": "Peak hold",
+      "description": "Hold peaks briefly for visibility",
+      "related": []
+    },
+    {
+      "name": "dB scaling",
+      "description": "Show dB levels, not linear amplitude",
+      "related": []
+    },
+    {
+      "name": "Color coding",
+      "description": "Green (safe) \u2192 Yellow (caution) \u2192 Red (clipping)",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "class VuMeter : public Component, public Timer\n{\npublic:\n    VuMeter()\n    {\n        startTimerHz(30);  // 30 FPS refresh\n        level.store(0.0f);\n    }\n    \n    ~VuMeter() override\n    {\n        stopTimer();\n    }\n    \n    void paint(Graphics& g) override\n    {\n        auto bounds = getLocalBounds().toFloat();\n        \n        // Background\n        g.setColour(Colours::black);\n        g.fillRoundedRectangle(bounds, 4.0f);\n        \n        // Calculate meter level\n        auto currentLevel = level.load();\n        auto meterHeight = bounds.getHeight() * currentLevel;\n        \n        // Draw meter fill\n        auto meterBounds = bounds.withY(bounds.getHeight() - meterHeight)\n                                  .withHeight(meterHeight);\n        \n        // Gradient from green to red\n        auto gradient = ColourGradient(Colours::green,\n                                        bounds.getBottomLeft(),\n                                        Colours::red,\n                                        bounds.getTopLeft(),\n                                        false);\n        g.setGradientFill(gradient);\n        g.fillRoundedRectangle(meterBounds, 4.0f);\n        \n        // Peak marker\n        if (peak > 0.0f)\n        {\n            auto peakY = bounds.getY() + bounds.getHeight() * (1.0f - peak);\n            g.setColour(Colours::white);\n            g.drawHorizontalLine((int)peakY, bounds.getX(), bounds.getRight());\n        }\n    }\n    \n    void timerCallback() override\n    {\n        // Smooth decay\n        auto current = level.load();\n        auto decayed = current * 0.95f;  // Decay factor\n        level.store(decayed);\n        repaint();\n    }\n    \n    void setLevel(float newLevel)\n    {\n        level.store(newLevel);\n        if (newLevel > peak)\n            peak = newLevel;\n    }\n    \nprivate:\n    std::atomic<float> level;\n    float peak = 0.0f;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class StereoMeter : public Component, public Timer\n{\npublic:\n    StereoMeter()\n    {\n        startTimerHz(60);\n    }\n    \n    void paint(Graphics& g) override\n    {\n        auto bounds = getLocalBounds().toFloat();\n        auto meterWidth = bounds.getWidth() / 2.0f - 2.0f;\n        \n        // Left channel\n        drawMeter(g, bounds.withWidth(meterWidth), leftLevel);\n        \n        // Right channel\n        drawMeter(g, bounds.withX(bounds.getX() + meterWidth + 4.0f)\n                       .withWidth(meterWidth), rightLevel);\n    }\n    \nprivate:\n    void drawMeter(Graphics& g, Rectangle<float> bounds, float level)\n    {\n        // Background\n        g.setColour(Colours::darkgrey);\n        g.fillRoundedRectangle(bounds, 2.0f);\n        \n        // Level bars\n        auto numBars = 20;\n        auto barHeight = bounds.getHeight() / numBars;\n        \n        for (int i = 0; i < numBars; ++i)\n        {\n            auto barY = bounds.getY() + i * barHeight;\n            auto threshold = 1.0f - (float)i / numBars;\n            \n            if (level >= threshold)\n            {\n                // Color based on level\n                if (i < 3)  // Top 3 bars (high level)\n                    g.setColour(Colours::red);\n                else if (i < 6)  // Warning zone\n                    g.setColour(Colours::yellow);\n                else\n                    g.setColour(Colours::green);\n                    \n                g.fillRoundedRectangle(bounds.withY(barY).withHeight(barHeight - 1.0f), 1.0f);\n            }\n        }\n    }\n    \n    std::atomic<float> leftLevel{0.0f};\n    std::atomic<float> rightLevel{0.0f};\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class PeakMeter : public Component, public Timer\n{\npublic:\n    PeakMeter()\n    {\n        startTimerHz(30);\n    }\n    \n    void pushSample(float sample)\n    {\n        auto absSample = std::abs(sample);\n        if (absSample > currentPeak.load())\n        {\n            currentPeak.store(absSample);\n            peakHoldTime = 0;\n        }\n    }\n    \n    void timerCallback() override\n    {\n        // Peak hold decay\n        peakHoldTime++;\n        if (peakHoldTime > holdDuration)\n        {\n            auto current = currentPeak.load();\n            currentPeak.store(current * decayFactor);\n        }\n        repaint();\n    }\n    \n    void paint(Graphics& g) override\n    {\n        auto bounds = getLocalBounds().toFloat();\n        auto peak = currentPeak.load();\n        \n        // Convert to dB\n        auto dB = Decibels::gainToDecibels(peak);\n        auto dBRange = 60.0f;  // -60 to 0 dB range\n        auto normalized = jlimit(0.0f, 1.0f, (dB + dBRange) / dBRange);\n        \n        // Draw meter\n        g.setColour(Colours::darkgrey);\n        g.fillRoundedRectangle(bounds, 3.0f);\n        \n        auto meterBounds = bounds.withWidth(bounds.getWidth() * normalized);\n        \n        // Color based on dB level\n        Colour meterColour;\n        if (dB > -6.0f)\n            meterColour = Colours::red;\n        else if (dB > -18.0f)\n            meterColour = Colours::yellow;\n        else\n            meterColour = Colours::green;\n            \n        g.setColour(meterColour);\n        g.fillRoundedRectangle(meterBounds, 3.0f);\n    }\n    \nprivate:\n    std::atomic<float> currentPeak{0.0f};\n    int peakHoldTime = 0;\n    int holdDuration = 30;  // Frames to hold\n    float decayFactor = 0.98f;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class MeterProcessor\n{\npublic:\n    void process(AudioBuffer<float>& buffer)\n    {\n        auto numChannels = buffer.getNumChannels();\n        auto numSamples = buffer.getNumSamples();\n        \n        for (int channel = 0; channel < numChannels; ++channel)\n        {\n            auto* channelData = buffer.getReadPointer(channel);\n            \n            // Calculate RMS\n            float sumSquared = 0.0f;\n            for (int i = 0; i < numSamples; ++i)\n            {\n                sumSquared += channelData[i] * channelData[i];\n            }\n            auto rms = std::sqrt(sumSquared / numSamples);\n            \n            // Calculate Peak\n            auto peak = 0.0f;\n            for (int i = 0; i < numSamples; ++i)\n            {\n                peak = std::max(peak, std::abs(channelData[i]));\n            }\n            \n            // Store levels (atomic for thread safety)\n            if (channel == 0)\n                leftLevel.store(rms);\n            else if (channel == 1)\n                rightLevel.store(rms);\n        }\n    }\n    \n    float getLeftLevel() const { return leftLevel.load(); }\n    float getRightLevel() const { return rightLevel.load(); }\n    \nprivate:\n    std::atomic<float> leftLevel{0.0f};\n    std::atomic<float> rightLevel{0.0f};\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Avoid unnecessary repaints\nvoid setLevel(float newLevel)\n{\n    if (std::abs(newLevel - currentLevel) > 0.01f)\n    {\n        currentLevel = newLevel;\n        repaint();\n    }\n}\n\n// Use lower refresh rate for meters\nstartTimerHz(30);  // 30 FPS is sufficient for meters\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Meter Component\n\n## Overview\n\nMeters visualize audio levels in real-time. They should:\n\n1. Respond smoothly to level changes\n2. Show peak and RMS levels\n3. Provide clear visual feedback\n4. Handle stereo correctly\n\n## Basic VU Meter\n\n```cpp\nclass VuMeter : public Component, public Timer\n{\npublic:\n    VuMeter()\n    {\n        startTimerHz(30);  // 30 FPS refresh\n        level.store(0.0f);\n    }\n    \n    ~VuMeter() override\n    {\n        stopTimer();\n    }\n    \n    void paint(Graphics& g) override\n    {\n        auto bounds = getLocalBounds().toFloat();\n        \n        // Background\n        g.setColour(Colours::black);\n        g.fillRoundedRectangle(bounds, 4.0f);\n        \n        // Calculate meter level\n        auto currentLevel = level.load();\n        auto meterHeight = bounds.getHeight() * currentLevel;\n        \n        // Draw meter fill\n        auto meterBounds = bounds.withY(bounds.getHeight() - meterHeight)\n                                  .withHeight(meterHeight);\n        \n        // Gradient from green to red\n        auto gradient = ColourGradient(Colours::green,\n                                        bounds.getBottomLeft(),\n                                        Colours::red,\n                                        bounds.getTopLeft(),\n                                        false);\n        g.setGradientFill(gradient);\n        g.fillRoundedRectangle(meterBounds, 4.0f);\n        \n        // Peak marker\n        if (peak > 0.0f)\n        {\n            auto peakY = bounds.getY() + bounds.getHeight() * (1.0f - peak);\n            g.setColour(Colours::white);\n            g.drawHorizontalLine((int)peakY, bounds.getX(), bounds.getRight());\n        }\n    }\n    \n    void timerCallback() override\n    {\n        // Smooth decay\n        auto current = level.load();\n        auto decayed = current * 0.95f;  // Decay factor\n        level.store(decayed);\n        repaint();\n    }\n    \n    void setLevel(float newLevel)\n    {\n        level.store(newLevel);\n        if (newLevel > peak)\n            peak = newLevel;\n    }\n    \nprivate:\n    std::atomic<float> level;\n    float peak = 0.0f;\n};\n```\n\n## Stereo Meter\n\n```cpp\nclass StereoMeter : public Component, public Timer\n{\npublic:\n    StereoMeter()\n    {\n        startTimerHz(60);\n    }\n    \n    void paint(Graphics& g) override\n    {\n        auto bounds = getLocalBounds().toFloat();\n        auto meterWidth = bounds.getWidth() / 2.0f - 2.0f;\n        \n        // Left channel\n        drawMeter(g, bounds.withWidth(meterWidth), leftLevel);\n        \n        // Right channel\n        drawMeter(g, bounds.withX(bounds.getX() + meterWidth + 4.0f)\n                       .withWidth(meterWidth), rightLevel);\n    }\n    \nprivate:\n    void drawMeter(Graphics& g, Rectangle<float> bounds, float level)\n    {\n        // Background\n        g.setColour(Colours::darkgrey);\n        g.fillRoundedRectangle(bounds, 2.0f);\n        \n        // Level bars\n        auto numBars = 20;\n        auto barHeight = bounds.getHeight() / numBars;\n        \n        for (int i = 0; i < numBars; ++i)\n        {\n            auto barY = bounds.getY() + i * barHeight;\n            auto threshold = 1.0f - (float)i / numBars;\n            \n            if (level >= threshold)\n            {\n                // Color based on level\n                if (i < 3)  // Top 3 bars (high level)\n                    g.setColour(Colours::red);\n                else if (i < 6)  // Warning zone\n                    g.setColour(Colours::yellow);\n                else\n                    g.setColour(Colours::green);\n                    \n                g.fillRoundedRectangle(bounds.withY(barY).withHeight(barHeight - 1.0f), 1.0f);\n            }\n        }\n    }\n    \n    std::atomic<float> leftLevel{0.0f};\n    std::atomic<float> rightLevel{0.0f};\n};\n```\n\n## Peak Meter with Hold\n\n```cpp\nclass PeakMeter : public Component, public Timer\n{\npublic:\n    PeakMeter()\n    {\n        startTimerHz(30);\n    }\n    \n    void pushSample(float sample)\n    {\n        auto absSample = std::abs(sample);\n        if (absSample > currentPeak.load())\n        {\n            currentPeak.store(absSample);\n            peakHoldTime = 0;\n        }\n    }\n    \n    void timerCallback() override\n    {\n        // Peak hold decay\n        peakHoldTime++;\n        if (peakHoldTime > holdDuration)\n        {\n            auto current = currentPeak.load();\n            currentPeak.store(current * decayFactor);\n        }\n        repaint();\n    }\n    \n    void paint(Graphics& g) override\n    {\n        auto bounds = getLocalBounds().toFloat();\n        auto peak = currentPeak.load();\n        \n        // Convert to dB\n        auto dB = Decibels::gainToDecibels(peak);\n        auto dBRange = 60.0f;  // -60 to 0 dB range\n        auto normalized = jlimit(0.0f, 1.0f, (dB + dBRange) / dBRange);\n        \n        // Draw meter\n        g.setColour(Colours::darkgrey);\n        g.fillRoundedRectangle(bounds, 3.0f);\n        \n        auto meterBounds = bounds.withWidth(bounds.getWidth() * normalized);\n        \n        // Color based on dB level\n        Colour meterColour;\n        if (dB > -6.0f)\n            meterColour = Colours::red;\n        else if (dB > -18.0f)\n            meterColour = Colours::yellow;\n        else\n            meterColour = Colours::green;\n            \n        g.setColour(meterColour);\n        g.fillRoundedRectangle(meterBounds, 3.0f);\n    }\n    \nprivate:\n    std::atomic<float> currentPeak{0.0f};\n    int peakHoldTime = 0;\n    int holdDuration = 30;  // Frames to hold\n    float decayFactor = 0.98f;\n};\n```\n\n## Level Calculation in Processor\n\n```cpp\nclass MeterProcessor\n{\npublic:\n    void process(AudioBuffer<float>& buffer)\n    {\n        auto numChannels = buffer.getNumChannels();\n        auto numSamples = buffer.getNumSamples();\n        \n        for (int channel = 0; channel < numChannels; ++channel)\n        {\n            auto* channelData = buffer.getReadPointer(channel);\n            \n            // Calculate RMS\n            float sumSquared = 0.0f;\n            for (int i = 0; i < numSamples; ++i)\n            {\n                sumSquared += channelData[i] * channelData[i];\n            }\n            auto rms = std::sqrt(sumSquared / numSamples);\n            \n            // Calculate Peak\n            auto peak = 0.0f;\n            for (int i = 0; i < numSamples; ++i)\n            {\n                peak = std::max(peak, std::abs(channelData[i]));\n            }\n            \n            // Store levels (atomic for thread safety)\n            if (channel == 0)\n                leftLevel.store(rms);\n            else if (channel == 1)\n                rightLevel.store(rms);\n        }\n    }\n    \n    float getLeftLevel() const { return leftLevel.load(); }\n    float getRightLevel() const { return rightLevel.load(); }\n    \nprivate:\n    std::atomic<float> leftLevel{0.0f};\n    std::atomic<float> rightLevel{0.0f};\n};\n```\n\n## Best Practices\n\n1. **Thread safety**: Use `std::atomic` for level values\n2. **Smooth decay**: Apply exponential decay for natural look\n3. **Peak hold**: Hold peaks briefly for visibility\n4. **dB scaling**: Show dB levels, not linear amplitude\n5. **Color coding**: Green (safe) \u2192 Yellow (caution) \u2192 Red (clipping)\n\n## Performance Tips\n\n```cpp\n// Avoid unnecessary repaints\nvoid setLevel(float newLevel)\n{\n    if (std::abs(newLevel - currentLevel) > 0.01f)\n    {\n        currentLevel = newLevel;\n        repaint();\n    }\n}\n\n// Use lower refresh rate for meters\nstartTimerHz(30);  // 30 FPS is sufficient for meters\n```",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.856340+00:00"
+  },
+  "title": "Meter Component",
+  "description": "Creating real-time audio level meter components for plugin UIs",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "ui",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "implementation_examples": 4,
+  "tags": [
+    "meter",
+    "vu",
+    "peak",
+    "level",
+    "visualization"
+  ],
+  "related_topics": [
+    "gui",
+    "audio_processing",
+    "realtime"
+  ]
+}

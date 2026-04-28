@@ -1,0 +1,196 @@
+{
+  "kb_name": "midi-kb",
+  "version": "1.0.0",
+  "created": "2026-03-30T12:24:56.308719+00:00",
+  "last_sync": "2026-03-30T12:24:56.308720+00:00",
+  "status": "ready",
+  "topics": [
+    {
+      "name": "advanced",
+      "files": {
+        "midi-2.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308393+00:00",
+          "synced_at": "2026-03-30T12:24:56.308395+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 208
+        },
+        "midi-clock.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308410+00:00",
+          "synced_at": "2026-03-30T12:24:56.308411+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 219
+        },
+        "sysex.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308426+00:00",
+          "synced_at": "2026-03-30T12:24:56.308427+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 221
+        }
+      }
+    },
+    {
+      "name": "realtime",
+      "files": {
+        "midi-buffering.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308460+00:00",
+          "synced_at": "2026-03-30T12:24:56.308460+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 214
+        },
+        "midi-latency.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308475+00:00",
+          "synced_at": "2026-03-30T12:24:56.308475+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 212
+        },
+        "midi-timing.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308489+00:00",
+          "synced_at": "2026-03-30T12:24:56.308490+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 226
+        },
+        "jitter-compensation.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308504+00:00",
+          "synced_at": "2026-03-30T12:24:56.308504+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 224
+        }
+      }
+    },
+    {
+      "name": "protocol",
+      "files": {
+        "midi-basics.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308538+00:00",
+          "synced_at": "2026-03-30T12:24:56.308539+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 220
+        },
+        "system-messages.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308552+00:00",
+          "synced_at": "2026-03-30T12:24:56.308553+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 220
+        },
+        "midi-messages.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308566+00:00",
+          "synced_at": "2026-03-30T12:24:56.308567+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 218
+        },
+        "channel-messages.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308580+00:00",
+          "synced_at": "2026-03-30T12:24:56.308581+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 221
+        }
+      }
+    },
+    {
+      "name": "mpe",
+      "files": {
+        "mpe-implementation.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308613+00:00",
+          "synced_at": "2026-03-30T12:24:56.308614+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 218
+        },
+        "mpe-basics.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308627+00:00",
+          "synced_at": "2026-03-30T12:24:56.308628+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 216
+        },
+        "mpe-mapping.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308640+00:00",
+          "synced_at": "2026-03-30T12:24:56.308641+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 221
+        }
+      }
+    },
+    {
+      "name": "controllers",
+      "files": {
+        "midi-learn.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308671+00:00",
+          "synced_at": "2026-03-30T12:24:56.308671+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 225
+        },
+        "parameter-automation.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308685+00:00",
+          "synced_at": "2026-03-30T12:24:56.308686+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 225
+        },
+        "hardware-integration.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308699+00:00",
+          "synced_at": "2026-03-30T12:24:56.308700+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 225
+        },
+        "controller-mapping.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308713+00:00",
+          "synced_at": "2026-03-30T12:24:56.308714+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 223
+        }
+      }
+    }
+  ]
+}

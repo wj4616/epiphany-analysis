@@ -1,0 +1,23 @@
+{
+  "title": "MIDI Message Types",
+  "description": "MIDI status bytes and message formats",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:45:42.397009Z",
+  "kb_type": "midi",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "markdown": "# MIDI Message Types\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "MIDI message types",
+    "MIDI status byte",
+    "MIDI data bytes",
+    "MIDI message format"
+  ],
+  "sources": [
+    "MIDI Association",
+    "musicdsp.org"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "kb_name": "technical-kb",
+  "schema_version": "1.0.0",
+  "last_updated": "2026-04-02",
+  "authority_score": 0.95,
+  "topics": {
+    "cpp-audio": {
+      "entry_count": 1,
+      "entries": [
+        {"id": "technical-kb_cpp-audio_real-time-safety", "status": "harvested", "version": "1.0.0"}
+      ]
+    },
+    "juce-patterns": {
+      "entry_count": 1,
+      "entries": [
+        {"id": "technical-kb_juce-patterns_apvts-setup", "status": "harvested", "version": "1.0.0"}
+      ]
+    },
+    "dsp-algorithms": {
+      "entry_count": 0,
+      "entries": []
+    },
+    "audio-thread-safety": {
+      "entry_count": 0,
+      "entries": []
+    },
+    "cmake-build": {
+      "entry_count": 0,
+      "entries": []
+    },
+    "vst3-sdk": {
+      "entry_count": 0,
+      "entries": []
+    },
+    "parameter-management": {
+      "entry_count": 0,
+      "entries": []
+    },
+    "state-persistence": {
+      "entry_count": 0,
+      "entries": []
+    }
+  },
+  "status_counts": {
+    "placeholder": 0,
+    "harvested": 2,
+    "curated": 0,
+    "synced": 0
+  },
+  "sync_history": [
+    {"date": "2026-04-02", "action": "initial_population", "entries_added": 2}
+  ]
+}

@@ -1,0 +1,382 @@
+{
+    "title": "JUCE VST Plugin Development Playbook",
+    "version": 1,
+    "description": "End-to-end development playbook for building VST audio plugins with JUCE and AI assistance. Covers the full plugin lifecycle from concept through release: spec development, DSP architecture, implementation, GUI, testing, DAW validation, optimization, and release. Designed for a single developer retaining full creative control with AI handling code generation, review, and validation. Each phase is gated — nothing advances until acceptance criteria are met.",
+
+    "workflow_model": "human-in-the-loop",
+    "roles": {
+        "you": "Creative director, sound designer, final decision-maker on all audio/UX choices. You define WHAT the plugin does and HOW it should sound.",
+        "ai": "Code architect, implementation engine, reviewer, test generator. AI handles HOW to build what you've defined. Never makes creative decisions autonomously."
+    },
+
+    "integration_notes": {
+        "superpowers_mapping": {
+            "brainstorming": "Use in Phase 0 to develop the plugin concept and spec",
+            "writing_plans": "Use in Phase 1 to produce the architecture doc and task breakdown",
+            "executing_plans": "Use in Phases 2-5 to implement each task from the plan"
+        },
+        "juce_docs": "Feed JUCE module docs as context for the relevant phase (juce_dsp for Phase 2, juce_gui_basics for Phase 3, juce_audio_processors for Phase 4)",
+        "session_history": "After each completed phase, extract the working conversation into a phase summary. This becomes the context seed for the next phase — prevents token waste from carrying full history."
+    },
+
+    "checklists": [
+        {
+            "title": "Phase 0: Plugin Concept & Spec",
+            "purpose": "Define exactly what you're building before writing any code. The AI should be ASKING YOU questions here, not proposing solutions. This phase produces the spec that drives everything else.",
+            "items": [
+                {
+                    "title": "Define plugin type and signal flow",
+                    "owner": "you",
+                    "ai_role": "interviewer",
+                    "description": "Answer these — the AI should prompt you for each:\n- Plugin type: Synthesizer, effect, analyzer, or hybrid?\n- Signal flow: mono/stereo in, mono/stereo out? Sidechain input?\n- DSP chain: what processing blocks exist and in what order?\n- Parameter count estimate: how many knobs/sliders/switches?\n\nDon't overthink — this is a sketch, not a contract. But it needs to exist before architecture starts."
+                },
+                {
+                    "title": "Define the sound identity",
+                    "owner": "you",
+                    "ai_role": "none — this is purely creative",
+                    "description": "What should this plugin SOUND like? Reference:\n- Existing plugins or hardware it's inspired by (e.g., 'Moog filter warmth', 'OTT-style multiband compression')\n- Genre context: what kind of music is this for?\n- Character words: warm, harsh, glitchy, clean, saturated, surgical, etc.\n- What makes this different from existing plugins in the same category?\n\nThis is YOUR north star. The AI never overrides this."
+                },
+                {
+                    "title": "Define technical constraints",
+                    "owner": "you + ai",
+                    "ai_role": "advisor",
+                    "description": "Lock down the build environment:\n- JUCE version (e.g., JUCE 7.x or 8.x)\n- Target formats: VST3, AU, AAX, standalone — pick what you'll actually test\n- Target OS: Windows, macOS, Linux — pick what you have DAWs on\n- Target DAWs for validation: list 1-3 you'll actually load the plugin in\n- Sample rates to support: 44.1k, 48k, 96k, 192k?\n- Buffer size assumptions: what range?\n- CPU budget: 'should run fine on a laptop' vs 'studio machine only'\n\nThe AI should flag JUCE compatibility issues with your choices."
+                },
+                {
+                    "title": "Write the one-page spec",
+                    "owner": "ai drafts, you approve",
+                    "ai_role": "writer",
+                    "description": "AI compiles everything from this phase into a single structured spec:\n- Plugin name and type\n- Sound identity (your words, not paraphrased)\n- Signal flow diagram (text-based)\n- Parameter list with ranges and defaults\n- Technical constraints\n- Out of scope (what this plugin does NOT do — prevents creep)\n\nYou review and redline. Nothing moves forward until you sign off on this doc.",
+                    "output": "plugin-spec.md"
+                },
+                {
+                    "title": "PHASE GATE: Spec approved",
+                    "gate_conditions": [
+                        "Plugin type and signal flow defined",
+                        "Sound identity documented in your words",
+                        "Technical constraints locked (JUCE version, formats, target DAWs)",
+                        "One-page spec written and approved by you",
+                        "Out-of-scope list exists (even if short)"
+                    ],
+                    "blocker_examples": [
+                        "You're still unsure whether it's a synth or an effect — resolve before proceeding",
+                        "No target DAW identified — you can't validate without one",
+                        "Spec references features that conflict with JUCE's capabilities — AI must flag these"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 1: Architecture & Task Breakdown",
+            "purpose": "Turn the spec into a buildable plan. This is where the AI earns its keep — translating your creative vision into JUCE class structure, DSP math, and a task list you'll execute phase by phase.",
+            "items": [
+                {
+                    "title": "Design the JUCE class architecture",
+                    "owner": "ai proposes, you approve",
+                    "ai_role": "architect",
+                    "description": "AI produces a class diagram (text-based) showing:\n- PluginProcessor (AudioProcessor subclass) — what it owns, what it delegates\n- PluginEditor (AudioProcessorEditor subclass) — component hierarchy\n- DSP modules — one class per processing block from the signal flow\n- Parameter layout — AudioProcessorValueTreeState structure\n- State management — how presets/state save and restore\n\nJUCE-specific rules the AI must follow:\n- Use APVTS (AudioProcessorValueTreeState) for all parameters — no raw member variables\n- Use juce::dsp module processors where they exist (don't reinvent IIR filters)\n- Keep PluginProcessor thread-safe — no GUI objects, no allocations in processBlock\n- Editor talks to Processor ONLY through APVTS attachments and listeners\n\nYou review for: does this structure match what I described in the spec?",
+                    "output": "architecture.md"
+                },
+                {
+                    "title": "Specify DSP algorithms",
+                    "owner": "ai proposes, you validate by ear",
+                    "ai_role": "engineer",
+                    "description": "For each DSP block in the signal flow:\n- Algorithm choice and rationale (e.g., 'Butterworth IIR for the low-pass — clean rolloff, low CPU')\n- Mathematical description (transfer function, difference equation, or block diagram)\n- JUCE implementation path (juce::dsp::IIR vs custom, juce::dsp::Oversampling, etc.)\n- Expected CPU cost (rough: negligible / moderate / heavy)\n- Known gotchas (denormals, zipper noise on parameter changes, aliasing)\n\nYou don't need to understand all the math. You DO need to hear the result and say 'yes that's the sound' or 'no, try X instead.' The AI handles implementation, you handle the ears.",
+                    "output": "dsp-design.md"
+                },
+                {
+                    "title": "Break into ordered task list",
+                    "owner": "ai generates, you sequence",
+                    "ai_role": "planner",
+                    "description": "AI decomposes the architecture into individual implementation tasks:\n- Each task is ONE thing: one class, one DSP block, one GUI component\n- Each task lists: files to create/modify, JUCE classes used, estimated complexity (S/M/L)\n- Tasks are ordered by dependency (can't build the filter GUI before the filter DSP exists)\n- Tasks are grouped by phase (DSP first, then GUI, then integration)\n\nYou reorder based on what you want to hear/see first. Maybe you want the oscillator before the filter, or the gain stage before the saturation. Your call.\n\nThis task list IS the execution plan for Phases 2-3.",
+                    "output": "task-list.md"
+                },
+                {
+                    "title": "PHASE GATE: Architecture approved, tasks ordered",
+                    "gate_conditions": [
+                        "Class architecture uses APVTS, respects processBlock thread safety",
+                        "DSP algorithms specified for every block in the signal flow",
+                        "Task list exists with dependencies and ordering",
+                        "You've reordered tasks to match your creative priorities",
+                        "No task is vague — each one names specific files and JUCE classes"
+                    ],
+                    "blocker_examples": [
+                        "Architecture has the Editor directly modifying DSP state — thread safety violation, redesign",
+                        "A DSP block has no algorithm specified — 'we'll figure it out later' is not a plan",
+                        "Tasks are too large — 'build the synth engine' is not a task, it's a phase"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 2: Core DSP Implementation",
+            "purpose": "Build the audio engine. Every task from the Phase 1 DSP group gets implemented here. You compile, load in your DAW, and listen after each significant block. The AI writes code; you validate by ear.",
+            "items": [
+                {
+                    "title": "Scaffold the JUCE project",
+                    "owner": "ai generates, you build",
+                    "ai_role": "implementer",
+                    "description": "AI produces:\n- CMakeLists.txt or .jucer project file with correct JUCE modules enabled\n- PluginProcessor.h/cpp skeleton with APVTS setup and empty processBlock\n- PluginEditor.h/cpp skeleton with basic window\n- All parameter definitions from the spec registered in APVTS\n\nYou: build it. Confirm it compiles, loads in your DAW as a plugin, passes audio through (even if it does nothing to it). This is your baseline.\n\nIf it doesn't compile or load: STOP. Fix before writing any DSP.",
+                    "validation": "Plugin compiles, loads in target DAW, passes audio without crashing"
+                },
+                {
+                    "title": "Implement DSP blocks (iterate per task list)",
+                    "owner": "ai writes code, you listen",
+                    "ai_role": "implementer",
+                    "description": "For EACH DSP task from the task list:\n\n1. AI writes the implementation (header + cpp)\n2. AI writes the processBlock integration code\n3. You review the code for obvious issues (or have AI review its own code)\n4. You compile and load in DAW\n5. You LISTEN — does it sound right?\n6. If yes: mark task complete, move to next\n7. If no: describe what's wrong ('too harsh', 'latency feel', 'clicks on parameter change') and iterate\n\nCRITICAL RULES:\n- One DSP block at a time. Do not batch.\n- Compile and test after EVERY block. Do not accumulate untested code.\n- If a block breaks audio output, fix it before adding the next block.\n- AI must handle denormal protection (juce::ScopedNoDenormals in processBlock)\n- AI must handle sample rate changes (prepareToPlay must recalculate coefficients)\n- AI must use juce::SmoothedValue for parameter changes to avoid zipper noise\n\nThis is the longest phase. Take your time — this is where the sound lives.",
+                    "validation_per_task": "Compiles, no crashes, no audio glitches, sounds correct to your ear"
+                },
+                {
+                    "title": "Parameter smoothing and automation",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "After all DSP blocks work individually:\n- Verify all parameters use SmoothedValue or equivalent\n- Test automation recording/playback in DAW\n- Test rapid parameter changes (no clicks, no zippers, no denormals)\n- Test with different buffer sizes (64, 128, 256, 512, 1024, 2048)\n\nAutomation is how your users interact with the plugin over time. If it clicks or glitches on parameter changes, the plugin is broken regardless of how good the static sound is."
+                },
+                {
+                    "title": "State save/restore",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Implement getStateInformation / setStateInformation:\n- All parameters serialize and deserialize correctly via APVTS\n- Save a preset in your DAW, close the project, reopen — all parameters restored\n- Edge case: what happens when loading a preset from a future version with more parameters? (Forward compatibility)\n\nBroken state save = lost presets = angry users. Test this early, not at release."
+                },
+                {
+                    "title": "PHASE GATE: DSP complete and validated",
+                    "gate_conditions": [
+                        "All DSP blocks from task list implemented and individually tested",
+                        "Full signal chain works end-to-end (input → processing → output)",
+                        "Parameter automation works without artifacts",
+                        "State save/restore verified in target DAW",
+                        "No crashes across buffer sizes 64-2048",
+                        "YOU have listened and approved the sound"
+                    ],
+                    "blocker_examples": [
+                        "One DSP block clicks on parameter changes — fix smoothing before moving to GUI",
+                        "Plugin crashes at 96kHz — sample rate handling is broken",
+                        "Sound is 'close but not right' — iterate on the DSP, don't paper over it with GUI"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 3: GUI / Editor Implementation",
+            "purpose": "Build the visual interface. The DSP is done and sounds right — now give it a face. This is a creative phase: you direct the look and feel, the AI implements it in JUCE's component system.",
+            "items": [
+                {
+                    "title": "Define GUI layout and visual identity",
+                    "owner": "you",
+                    "ai_role": "interviewer — ask about layout preferences, then propose",
+                    "description": "Before writing any GUI code, define:\n- Overall dimensions (width x height in pixels)\n- Layout sketch: where do the knobs, sliders, buttons, and displays go?\n- Visual style: skeuomorphic (hardware-inspired), flat/modern, minimal, retro, custom?\n- Color palette: background, knob colors, text colors, accent colors\n- Typography: JUCE default, or custom fonts?\n- Metering: do you need level meters, waveform displays, spectrum analyzers?\n\nSketch it on paper, describe it in words, or reference existing plugins. The AI translates your vision into JUCE components.\n\nThis is 100% your creative call. The AI's job is to make it real, not to redesign it."
+                },
+                {
+                    "title": "Implement custom LookAndFeel",
+                    "owner": "ai implements, you review visually",
+                    "ai_role": "implementer",
+                    "description": "AI creates a custom LookAndFeel class that defines:\n- Knob/slider rendering (drawRotarySlider, drawLinearSlider)\n- Button styles\n- Label fonts and colors\n- Background rendering\n- Popup menu styling\n- Any custom component painting\n\nJUCE rules:\n- Subclass juce::LookAndFeel_V4 (not V1/V2/V3 unless you need legacy style)\n- Apply the LookAndFeel to the top-level editor — it cascades to children\n- Use juce::Colour, not hardcoded hex — makes theming easier later\n\nYou: load the plugin and evaluate visually. Does it look like what you described?"
+                },
+                {
+                    "title": "Build component hierarchy",
+                    "owner": "ai implements, you review layout",
+                    "ai_role": "implementer",
+                    "description": "AI builds the Editor's component tree:\n- SliderAttachment / ButtonAttachment for every parameter (connected to APVTS)\n- Custom components for any non-standard UI elements (XY pads, waveform displays, etc.)\n- Layout using either setBounds() with calculated positions or juce::FlexBox/Grid\n- Resizable support if desired (using constrainer)\n\nCRITICAL RULES:\n- Every parameter control uses an APVTS Attachment — no manual value syncing\n- Editor never directly touches Processor member variables\n- All painting in paint(), all layout in resized()\n- Timer-based updates for meters/visualizations (don't block the audio thread)\n\nTest: every knob/slider/button should control the corresponding DSP parameter. Wiggle each one while audio plays."
+                },
+                {
+                    "title": "Visual polish iteration",
+                    "owner": "you direct, ai implements",
+                    "ai_role": "implementer",
+                    "description": "This is the creative iteration loop:\n1. You load the plugin and look at it\n2. You describe what to change ('knob labels too small', 'need more space between sections', 'background color is wrong')\n3. AI makes the changes\n4. Repeat until you're satisfied\n\nNo gate conditions here — this is done when YOU say it looks right. But don't let it become infinite. Set a personal timebox (e.g., 2 sessions max) and ship what you have. You can always v2 the GUI."
+                },
+                {
+                    "title": "PHASE GATE: GUI complete and connected",
+                    "gate_conditions": [
+                        "All parameters have GUI controls with working APVTS attachments",
+                        "Custom LookAndFeel applied and visually consistent",
+                        "Layout is clean at the target window size",
+                        "All controls actually affect the audio when moved",
+                        "No GUI actions cause audio glitches or crashes",
+                        "YOU have approved the visual design"
+                    ],
+                    "blocker_examples": [
+                        "A slider is connected to the wrong parameter — fix the attachment",
+                        "Moving a knob causes audio dropouts — GUI is blocking the audio thread, fix threading",
+                        "Plugin window is blank on load — paint/resized not called, component not visible"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 4: Build Validation & Cross-Platform Testing",
+            "purpose": "Verify the plugin works correctly across formats, DAWs, and configurations. This is where you catch the bugs your users would find.",
+            "items": [
+                {
+                    "title": "Format validation",
+                    "owner": "ai generates test plan, you execute",
+                    "ai_role": "test planner",
+                    "description": "For each target format (VST3, AU, AAX, Standalone):\n- Build succeeds without warnings\n- Plugin appears in DAW's plugin scanner\n- Plugin loads without errors\n- Audio processes correctly\n- Parameters automate correctly\n- State saves and restores correctly\n- Plugin unloads cleanly (no crash on close)\n\nCommon failures:\n- AU validation fails (run auval -v aufx/aumu and fix reported issues)\n- VST3 doesn't appear in scan (check plugin category, manufacturer code)\n- AAX requires specific signing (iLok/PACE) — skip if not targeting Pro Tools"
+                },
+                {
+                    "title": "DAW compatibility testing",
+                    "owner": "you",
+                    "ai_role": "checklist generator",
+                    "description": "In each target DAW, verify:\n- Plugin loads on an audio track (effect) or instrument track (synth)\n- Audio plays through correctly\n- Bypass works (DAW bypass, not just your bypass)\n- Automation lanes work (write, read, touch modes)\n- Preset save/load from DAW's preset browser\n- Plugin window opens/closes without artifacts\n- Multiple instances don't interfere with each other\n- Session save/close/reopen restores plugin state\n- CPU usage is reasonable (check DAW's performance meter)\n\nCommon DAW-specific gotchas:\n- Ableton: check plugin in both Session and Arrangement view\n- FL Studio: verify wrapper settings (fixed buffer vs flexible)\n- Reaper: test with different media item settings\n- Logic: verify AU validation passes (Logic is strict)"
+                },
+                {
+                    "title": "Edge case stress testing",
+                    "owner": "ai writes tests, you run them",
+                    "ai_role": "test engineer",
+                    "description": "Stress tests to run:\n- Process silence for 60 seconds — CPU should be near-zero (denormal check)\n- Process full-scale noise — no NaN, no inf, no crackling\n- Rapidly bypass/unbypass — no clicks or state corruption\n- Change sample rate while plugin is loaded (if DAW supports it)\n- Set all parameters to minimum, then maximum — no crashes at extremes\n- Open 10+ instances simultaneously — no cross-talk, no memory explosion\n- Change buffer size while playing — no crash, no glitch lasting more than one buffer"
+                },
+                {
+                    "title": "PHASE GATE: Build validated",
+                    "gate_conditions": [
+                        "All target formats build and pass validation",
+                        "All target DAWs load and run the plugin correctly",
+                        "Automation, state save/restore, and bypass all work",
+                        "Stress tests pass (no crashes, no NaN, no denormals)",
+                        "CPU usage is within your defined budget"
+                    ],
+                    "blocker_examples": [
+                        "AU validation fails — fix before distributing to any macOS users",
+                        "Plugin crashes when reopening a saved session — state serialization is broken",
+                        "CPU spikes to 80% with silence input — denormal issue in DSP chain"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 5: Optimization & Hardening",
+            "purpose": "Make it fast, make it stable, make it ready for other people to use. This is the 'professional polish' phase — the difference between a prototype and a product.",
+            "items": [
+                {
+                    "title": "CPU profiling and optimization",
+                    "owner": "ai analyzes, you approve changes",
+                    "ai_role": "optimizer",
+                    "description": "Profile processBlock and identify hotspots:\n- Use JUCE's built-in performance counters or Instruments/VTune\n- Identify: unnecessary allocations, redundant calculations, cache-unfriendly access patterns\n- Optimization targets: SIMD (juce::dsp::SIMDRegister), lookup tables for expensive functions, coefficient caching\n\nRULES:\n- Never optimize before profiling — measure first\n- Never sacrifice sound quality for CPU — ask before any tradeoff\n- Re-run your listening test after every optimization (confirm sound hasn't changed)\n- Benchmark before/after each change with actual CPU measurement, not guesswork"
+                },
+                {
+                    "title": "Memory audit",
+                    "owner": "ai",
+                    "ai_role": "reviewer",
+                    "description": "Review all code for:\n- Heap allocations in processBlock (FORBIDDEN — audio thread must be allocation-free)\n- Memory leaks (all new has a corresponding delete, or better: use RAII/smart pointers)\n- Uninitialized variables in DSP path\n- Thread safety: any shared state between Editor and Processor uses atomic or lock-free patterns\n\nJUCE helpers:\n- juce::HeapBlock for audio buffers allocated in prepareToPlay\n- juce::AbstractFifo for lock-free Producer/Consumer between threads\n- juce::Atomic for simple shared flags"
+                },
+                {
+                    "title": "Code review pass",
+                    "owner": "ai reviews, you approve fixes",
+                    "ai_role": "reviewer",
+                    "description": "AI does a full code review against JUCE best practices:\n- processBlock is realtime-safe (no locks, no allocs, no I/O, no exceptions)\n- All parameters go through APVTS\n- No raw pointers where smart pointers are appropriate\n- Consistent naming conventions\n- No dead code, no commented-out blocks, no TODOs in production code\n- Header include hygiene (no unnecessary includes, forward declarations where possible)\n\nOutput: list of issues ranked by severity (crash-risk > correctness > style)"
+                },
+                {
+                    "title": "PHASE GATE: Optimized and hardened",
+                    "gate_conditions": [
+                        "CPU profiled — hotspots identified and addressed",
+                        "No heap allocations in processBlock",
+                        "No memory leaks",
+                        "Code review pass completed — all crash-risk and correctness issues fixed",
+                        "Sound verified unchanged after optimization"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 6: Release Prep & Preset Pack",
+            "purpose": "Package it for distribution. Factory presets, installer, documentation.",
+            "items": [
+                {
+                    "title": "Create factory presets",
+                    "owner": "you create sounds, ai helps with file management",
+                    "ai_role": "utility",
+                    "description": "This is 100% creative work — you make the presets:\n- Design 5-20 factory presets that showcase the plugin's range\n- Name them clearly (users browse by name)\n- Cover different use cases / genres / intensity levels\n- Export as XML/binary state files\n\nAI can help with: batch export scripts, preset file organization, preset naming conventions, building a preset browser if you want one in the GUI."
+                },
+                {
+                    "title": "Build installer / distribution package",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Package for distribution:\n- macOS: .pkg installer or .component/.vst3 in a DMG\n- Windows: NSIS or Inno Setup installer placing VST3 in the standard path\n- Include: plugin binary, factory presets, README, license\n- Codesigning (if you have a certificate — optional for personal/free plugins)\n\nStandard install paths:\n- VST3 Windows: C:\\Program Files\\Common Files\\VST3\\\n- VST3 macOS: /Library/Audio/Plug-Ins/VST3/\n- AU macOS: /Library/Audio/Plug-Ins/Components/"
+                },
+                {
+                    "title": "Write user documentation",
+                    "owner": "ai drafts, you edit",
+                    "ai_role": "writer",
+                    "description": "At minimum:\n- What the plugin does (one paragraph)\n- System requirements\n- Installation instructions per OS\n- Parameter reference (what each knob does)\n- Quick start: 'load the plugin, try preset X, adjust knob Y'\n\nCan be a PDF, a README, or a simple website. Users WILL need this — even 'obvious' plugins get support questions."
+                },
+                {
+                    "title": "PHASE GATE: Release ready",
+                    "gate_conditions": [
+                        "Factory presets created and packaged",
+                        "Installer tested on a clean system (not your dev machine)",
+                        "Documentation exists and is accurate",
+                        "You have done one final end-to-end test: install from package, open in DAW, load preset, play"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 7: Retrospective & Next Version",
+            "purpose": "What worked, what didn't, what's next. This is how your process improves. Without this phase, you repeat mistakes on the next plugin.",
+            "items": [
+                {
+                    "title": "Process retrospective",
+                    "owner": "you + ai",
+                    "ai_role": "facilitator",
+                    "description": "Review the build process:\n- What phases took longest? Why?\n- Where did the AI produce the best code on first try?\n- Where did you burn the most iteration cycles?\n- What should be added to this playbook for next time?\n- What JUCE patterns will you reuse? Extract them as templates.\n\nUpdate this playbook with lessons learned. The next plugin should be faster."
+                },
+                {
+                    "title": "Extract reusable components",
+                    "owner": "ai extracts, you curate",
+                    "ai_role": "implementer",
+                    "description": "Identify code worth keeping as your personal JUCE library:\n- Custom DSP blocks that could be reused (filters, oscillators, utilities)\n- Your LookAndFeel customizations\n- APVTS parameter setup boilerplate\n- Build system configuration\n- Testing scripts\n\nSave these as a template project or a personal JUCE module. Each plugin you build should start further ahead than the last."
+                },
+                {
+                    "title": "Define v2 scope (optional)",
+                    "owner": "you",
+                    "ai_role": "note-taker",
+                    "description": "If you want to continue development:\n- Features you cut to ship v1\n- User feedback (if distributed)\n- New ideas that emerged during development\n- Performance improvements you deferred\n\nThis becomes Phase 0 input for the next run of this playbook."
+                },
+                {
+                    "title": "PHASE GATE: Retrospective complete",
+                    "gate_conditions": [
+                        "Process retrospective documented",
+                        "Reusable components extracted to template/library",
+                        "This playbook updated with lessons learned",
+                        "v2 scope captured (if applicable)"
+                    ]
+                }
+            ]
+        }
+    ],
+
+    "usage_instructions": {
+        "how_to_run_this": [
+            "1. Start a new AI session. Paste the Phase 0 section as context along with the superpowers 'brainstorming' skill.",
+            "2. Work through Phase 0 items in order. The AI asks you questions, you answer. When the spec is done, check the gate conditions.",
+            "3. Start a new session for Phase 1. Paste the spec from Phase 0 + the Phase 1 section + the 'writing-plans' skill.",
+            "4. For Phases 2-5, start sessions per task (not per phase — sessions get too long). Paste: spec + architecture + the specific task + 'executing-plans' skill.",
+            "5. At each phase gate, review all conditions before starting the next phase. If a condition isn't met, fix it — don't skip it.",
+            "6. After each session, save the key output (code, decisions, test results). This is your session history — feed relevant parts into the next session."
+        ],
+        "when_to_break_sessions": [
+            "After completing a phase gate",
+            "After implementing a major DSP block (compile and listen before continuing)",
+            "When the AI starts losing context (repeating itself, forgetting earlier decisions)",
+            "When you've been going for 2+ hours — fresh context produces better code"
+        ],
+        "cost_optimization": [
+            "Don't carry full conversation history — summarize and start fresh",
+            "Front-load context: spec + architecture + current task. That's all the AI needs.",
+            "Use the playbook structure to avoid 'what should we do next?' conversations — the plan already exists",
+            "One task per session for implementation phases. Clean in, clean out.",
+            "The spec and architecture docs ARE your memory between sessions — keep them updated"
+        ]
+    },
+
+    "juce_reference_context": {
+        "description": "Feed these JUCE module docs as context to the AI for the relevant phase. Don't dump all of them — use only what's needed for the current task.",
+        "phase_mapping": {
+            "phase_0": [],
+            "phase_1": ["juce_audio_processors overview", "juce_dsp module list"],
+            "phase_2": ["juce_dsp (full)", "juce_audio_basics", "juce_audio_processors (AudioProcessor, APVTS)"],
+            "phase_3": ["juce_gui_basics (Component, LookAndFeel)", "juce_gui_extra (if needed)"],
+            "phase_4": ["juce_audio_plugin_client", "JUCE CMake API docs"],
+            "phase_5": ["juce_dsp (SIMD, performance)", "juce_core (threading, memory)"],
+            "phase_6": ["JUCE CMake packaging docs"]
+        }
+    }
+}

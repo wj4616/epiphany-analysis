@@ -1,0 +1,102 @@
+# Domain Analysis: VST Plugin Development & Commercial Distribution
+
+## Industry Overview
+
+The VST (Virtual Studio Technology) plugin market in 2026 is a mature but highly competitive space. Key characteristics:
+
+- **Market size:** 34,844+ products tracked on KVR Audio alone
+- **Free ecosystem:** 7,707+ free plugins available
+- **Platform dominance:** VST3 (Steinberg), AU (Apple), AAX (Avid)
+- **DAW ecosystem:** Ableton Live, FL Studio, Logic Pro, Pro Tools, REAPER, Cubase, Bitwig
+
+## Standard Development Process
+
+### Traditional VST Development Workflow (7 Stages)
+
+| Stage | Activities | Key Deliverables |
+|-------|-----------|------------------|
+| **1. Setup** | Install DAW, VST3 SDK, IDE, configure environment | Development environment |
+| **2. Definition** | Define functionality, parameters, ranges, UI elements | Specification document |
+| **3. Interface** | Design GUI, create controls, bind parameters | Working GUI prototype |
+| **4. DSP Implementation** | Write audio processing algorithms, handle buffers | Core audio processing |
+| **5. Testing** | Cross-platform testing, DAW compatibility, performance optimization | Validated plugin |
+| **6. Packaging** | Create installers, documentation, licensing | Distribution package |
+| **7. Distribution** | Deploy to marketplaces, marketing, support | Market presence |
+
+### AI-Assisted Workflow (5 Phases - Audio Plugin Coder Model)
+
+1. **DREAM** — Define concept (e.g., "vintage tape delay with wow/flutter")
+2. **PLAN** — AI designs DSP architecture and UI approach
+3. **DESIGN** — Generate GUI mockups
+4. **IMPLEMENT** — AI writes core logic, parameters, signal chain
+5. **SHIP** — Build distribution-ready installers
+
+## Common Failure Modes
+
+### Development Failures
+| Failure | Description | Prevention |
+|---------|-------------|------------|
+| Audio thread allocation | Heap allocations in processBlock | Pre-allocate in prepareToPlay() |
+| Priority inversion | GUI locks blocking audio thread | Use lock-free structures |
+| Static state sharing | Data races across instances | Per-instance state only |
+| Parameter O(N) lookup | Performance bottleneck | Cache parameter indices |
+| Buffer overflow | Incorrect size calculations | Compute for max sample rate (192kHz) |
+| Formula boundary errors | Incorrect values at param=0/1 | Verify at all boundaries |
+
+### Business Failures
+| Failure | Description | Prevention |
+|---------|-------------|------------|
+| No email list | Launching without audience | Start list 30+ days before launch |
+| Generic product | Me-too plugin without differentiation | Invest in unique UI and sound |
+| Platform limitation | Windows-only in multi-DAW world | Test on multiple DAWs and OS |
+| No marketing plan | "Build and they will come" mentality | Multi-channel launch strategy |
+
+## Terminology Glossary
+
+| Term | Definition |
+|------|------------|
+| **APVTS** | AudioProcessorValueTreeState — JUCE's thread-safe parameter management |
+| **DSP** | Digital Signal Processing |
+| **processBlock** | JUCE method called by DAW for audio processing — must be real-time safe |
+| **prepareToPlay** | JUCE method called before audio starts — safe for allocations |
+| **VST3** | Steinberg's plugin format (successor to VST2) |
+| **AU** | Audio Units — Apple's plugin format for macOS |
+| **AAX** | Avid Audio Extension — Pro Tools plugin format |
+| **DAW** | Digital Audio Workstation |
+| **FFT** | Fast Fourier Transform |
+| **ADSR** | Attack, Decay, Sustain, Release — envelope shape |
+| **LFO** | Low Frequency Oscillator |
+| **Wavetable** | Synthesis using stored waveforms scanned/morphed over time |
+| **FM** | Frequency Modulation synthesis |
+| **Granular** | Synthesis by manipulating tiny audio fragments |
+| **iLok** | PACE Anti-Piracy licensing system |
+
+## Key Performance Indicators
+
+| KPI | Target | Measurement |
+|-----|--------|-------------|
+| CPU usage | <5% per instance | DAW CPU meter |
+| Latency | 0 samples (real-time) | DAW latency compensation |
+| Memory | <100MB | Process monitor |
+| Load time | <2 seconds | Stopwatch test |
+| Crash rate | 0 crashes | DAW stability testing |
+| Multi-instance | 16+ instances stable | Stress testing |
+
+## Regulatory/Compliance Requirements
+
+### Code Signing
+- **macOS:** Notarization required for distribution outside App Store
+- **Windows:** Code signing certificate recommended (not strictly required for small devs)
+- **AAX:** Requires Avid developer account and PACE signing
+
+### License Management
+- VST3 SDK requires Steinberg license agreement (free)
+- AAX SDK requires Avid developer program
+- Commercial plugins may require third-party licensing (iLok, custom)
+
+## Sources
+
+- [How To Learn Audio Plugin Development With JUCE in 2026 (ADC)](https://conference.audio.dev/how-to-learn-audio-plugin-development-with-juce-in-2026-for-free-jan-wilczek-tom-poole-adc/)
+- [JUCE Official Course](https://juce.com/learn/course/)
+- [Audio Developer Conference Sessions](https://conference.audio.dev/)
+- [JUCE Forum Best Practices](https://forum.juce.com/)

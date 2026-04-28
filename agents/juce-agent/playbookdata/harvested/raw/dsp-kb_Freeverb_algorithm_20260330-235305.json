@@ -1,0 +1,55 @@
+{
+  "harvest_metadata": {
+    "kb_type": "dsp-kb",
+    "topic": "Freeverb algorithm",
+    "harvested_at": "2026-03-30T23:53:05.309531+00:00",
+    "quality_filter": {
+      "passed": 2,
+      "rejected": 24,
+      "rejection_reasons": {
+        "not_relevant": 24
+      }
+    },
+    "thresholds": {
+      "min_content_length": 500,
+      "min_relevance_score": 0.15,
+      "max_noise_ratio": 0.6
+    }
+  },
+  "result": {
+    "data": [
+      {
+        "url": "https://www.youtube.com/watch?v=KSG9TjVyezA",
+        "title": "Freeverb on PiPicoFX - YouTube",
+        "markdown": "![Thumbnail (1920x1080)](https://i.ytimg.com/vi/KSG9TjVyezA/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGGUgVChTMA8=&rs=AOn4CLBHk0ItuE0KDkijuS2Qi5sKYb0CkA)\n# [Freeverb on PiPicoFX](https://www.youtube.com/watch?v=KSG9TjVyezA)\n\n**Visibility**: Public\n**Uploaded by**: [linsoft23](http://www.youtube.com/@linsoft23)\n**Uploaded at**: 2025-09-29T13:35:37-07:00\n**Published at**: 2025-09-29T13:35:37-07:00\n**Length**: 10:13\n**Views**: 326\n**Likes**: 16\n**Category**: Science & Technology\n\n## Description\n\n```\nImplementation of the OpenSource Reverb Algorithm Freeverb along with some sound demos.\nGithub: https://github.com/StoneRose35/cortexguitarfx/tree/rp2040_cpp\nHomepage: https://www.stonerose35.ch\n```\n\n",
+        "quality_report": {
+          "url": "https://www.youtube.com/watch?v=KSG9TjVyezA",
+          "title": "Freeverb on PiPicoFX - YouTube",
+          "content_length": 730,
+          "has_code": true,
+          "code_blocks": 2,
+          "relevance_score": 0.547945205479452,
+          "noise_ratio": 0.09523809523809523,
+          "passed": true,
+          "rejection_reason": null
+        }
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=jKZgz84T4gw",
+        "title": "Algorithmic Reverb on the Daisy Seed STM32 Platform (Music Tech ...",
+        "markdown": "![Thumbnail (1920x1080)](https://i.ytimg.com/vi/jKZgz84T4gw/maxresdefault.jpg)\n# [Algorithmic Reverb on the Daisy Seed STM32 Platform (Music Tech Capstone Project at Georgia Tech)](https://www.youtube.com/watch?v=jKZgz84T4gw)\n\n**Visibility**: Public\n**Uploaded by**: [Lantertronics](http://www.youtube.com/@Lantertronics)\n**Uploaded at**: 2024-05-02T19:18:04-07:00\n**Published at**: 2024-05-02T19:18:04-07:00\n**Length**: 06:14\n**Views**: 6732\n**Likes**: 374\n**Category**: Education\n\n## Description\n\n```\nProject GitHub: https://github.com/adion12/DaisyVerb\nI advised Andrew Ionascu on this capstone project for his Bachelor of Science in Music Technology degree. \nThe diagrams in the poster are from Julius O. Smith III: https://ccrma.stanford.edu/~jos/pasp/Artificial_Reverberation.html\n\nSupport this channel via a special purpose donation to the Georgia Tech Foundation (GTF210000920), earmarked for my work: https://youtu.be/VBu-LST1p9c\n```\n\n",
+        "quality_report": {
+          "url": "https://www.youtube.com/watch?v=jKZgz84T4gw",
+          "title": "Algorithmic Reverb on the Daisy Seed STM32 Platform (Music Tech ...",
+          "content_length": 944,
+          "has_code": true,
+          "code_blocks": 2,
+          "relevance_score": 0.21186440677966104,
+          "noise_ratio": 0.17391304347826086,
+          "passed": true,
+          "rejection_reason": null
+        }
+      }
+    ]
+  }
+}

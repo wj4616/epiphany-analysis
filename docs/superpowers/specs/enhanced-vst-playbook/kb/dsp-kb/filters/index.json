@@ -1,0 +1,15 @@
+{
+  "id": "placeholder-dsp-lowpass",
+  "title": "PLACEHOLDER: Lowpass Filter",
+  "category": "filters",
+  "status": "placeholder",
+  "needed_by": ["Phase 4"],
+  "description": "Low-pass filter implementations for VST plugins",
+  "confidence": 0.0,
+  "source": {
+    "type": "pending_harvest",
+    "priority": "high"
+  },
+  "tags": ["filter", "lowpass", "dsp"],
+  "notes": "Harvest from Will Pirkle, Julius Smith, and existing playbook"
+}

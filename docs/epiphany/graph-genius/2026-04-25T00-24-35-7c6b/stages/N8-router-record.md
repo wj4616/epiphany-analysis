@@ -1,0 +1,10 @@
+---
+resolved_gate: gate-open-only
+falsification_digest: |
+  key_findings:     [H-CONS1: populate() has non-uniform side effects across adapters — RAG_MCP returns manifest artifact (no write); callers treating populate() uniformly will silently mishandle RAG_MCP (confidence: 0.88); H-CONS2: schema_definition cycle guard absent — cyclic dependency graph causes tier-scoring divergence; SCC alternative (Kosaraju) should be used for cyclic inputs (0.85); H-CONS3: PBCPB error handling complete at user-owned boundaries but undefined for PBCPB-internal failures (JSON_DB refused, MCP timeout, malformed config) (0.80); H-CONS4 (recalibrated): PBCPB is primarily a coordination scaffold but also directly executes for JSON_DB/CUSTOM_API — strong form partially falsified; recalibrated to 0.55; H-CONS5: CUSTOM_API semantic duality (intended backend vs. extension placeholder) unresolved in spec (0.65); H-CONS6: manifest-only RAG_MCP constraint is operational, not permanent architectural invariant — scope-bounded (0.62); Extreme scenarios: dispatch total-function claim fails at partial enum (Regime 3); config validation absent exposes adversarial typo failure (Regime 7); Millikan: primary conclusion asymmetrically easy to support; H-CONS3 and H-CONS6 undervalued due to easy refutation paths; Density: HIGH (10 disconfirming items); weakest mechanism link: schema_definition → Dify gap_id namespace mapping]
+  named_entities:   [H-CONS1, H-CONS2, H-CONS3, H-CONS4, H-CONS5, H-CONS6, populate-heterogeneity, schema_definition-cycle-guard, Kosaraju-SCC, RAG_MCP-manifest-only, CUSTOM_API-semantic-duality, Leaky-Abstraction-Law, Impedance-Mismatch, dispatch-total-function, config-validation-gap, gap_id-namespace-mismatch, Dify-upload-manifest, deferred-backlog.json, MARKDOWN_FOLDER-skill_ref]
+  confidence_flags: [H, H, H, M, M, M]
+  signal_flags:     []
+signal_flags_checked: []
+decision_rationale: "S6_no_alternatives not raised in N6 signal_flags; gate-open edge 16 to N7 fires unconditionally; no back-edge to N3.1"
+---

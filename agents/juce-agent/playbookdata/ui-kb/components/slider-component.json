@@ -1,0 +1,103 @@
+{
+  "id": "ui-kb_components_slider-component",
+  "kb": "ui-kb",
+  "topic": "components",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "Custom sliders provide precise control over continuous parameters. They should:",
+  "concepts": [
+    {
+      "name": "Responsive feel",
+      "description": "Use velocity-based mode for natural dragging",
+      "related": []
+    },
+    {
+      "name": "Value bounds",
+      "description": "Always clamp values to valid range",
+      "related": []
+    },
+    {
+      "name": "Visual feedback",
+      "description": "Change appearance on hover/drag",
+      "related": []
+    },
+    {
+      "name": "Accessibility",
+      "description": "Support keyboard navigation",
+      "related": []
+    },
+    {
+      "name": "Automation",
+      "description": "Ensure slider updates from host automation",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "class CustomSlider : public Slider\n{\npublic:\n    CustomSlider()\n    {\n        setSliderStyle(Slider::LinearHorizontal);\n        setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);\n        setRange(0.0, 1.0, 0.01);\n        setVelocityBasedMode(true);\n    }\n    \n    void paint(Graphics& g) override\n    {\n        auto bounds = getLocalBounds().toFloat();\n        auto sliderArea = bounds;\n        \n        // Draw track background\n        g.setColour(Colours::darkgrey);\n        g.fillRoundedRectangle(sliderArea, 4.0f);\n        \n        // Draw filled portion\n        auto fillWidth = sliderArea.getWidth() * getValue();\n        auto fillArea = sliderArea.withWidth(fillWidth);\n        g.setColour(findColour(accentColourId));\n        g.fillRoundedRectangle(fillArea, 4.0f);\n        \n        // Draw thumb\n        auto thumbX = sliderArea.getX() + fillWidth;\n        auto thumbBounds = Rectangle<float>(thumbX - 8, sliderArea.getY(), 16, sliderArea.getHeight());\n        g.setColour(Colours::white);\n        g.fillEllipse(thumbBounds);\n        \n        Slider::paint(g);\n    }\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class LinearSlider : public Slider\n{\npublic:\n    LinearSlider()\n    {\n        setSliderStyle(Slider::LinearHorizontal);\n        setTextBoxStyle(Slider::NoTextBox, false, 0, 0);\n    }\n    \n    void paint(Graphics& g) override\n    {\n        auto bounds = getLocalBounds();\n        auto trackHeight = 4;\n        auto trackBounds = bounds.withHeight(trackHeight).withY((bounds.getHeight() - trackHeight) / 2);\n        \n        // Track background\n        g.setColour(Colours::grey.withAlpha(0.3f));\n        g.fillRoundedRectangle(trackBounds.toFloat(), 2.0f);\n        \n        // Filled track\n        auto fillAmount = (float)proportionOfLength(getValue());\n        auto fillBounds = trackBounds.withWidth((int)(trackBounds.getWidth() * fillAmount));\n        g.setColour(findColour(Slider::trackColourId));\n        g.fillRoundedRectangle(fillBounds.toFloat(), 2.0f);\n        \n        // Thumb\n        auto thumbX = trackBounds.getX() + trackBounds.getWidth() * fillAmount;\n        auto thumbRadius = 10.0f;\n        auto thumbCentre = Point<float>(thumbX, trackBounds.getCentreY());\n        \n        g.setColour(findColour(Slider::thumbColourId));\n        g.fillEllipse(thumbCentre, thumbRadius);\n        \n        if (isMouseOver())\n        {\n            g.setColour(Colours::white.withAlpha(0.2f));\n            g.drawEllipse(thumbCentre, thumbRadius + 2.0f, 1.5f);\n        }\n    }\n    \n    void mouseDown(const MouseEvent& e) override\n    {\n        dragStartValue = getValue();\n        Slider::mouseDown(e);\n    }\n    \n    void mouseDrag(const MouseEvent& e) override\n    {\n        auto mousePos = e.getPosition().toFloat();\n        auto bounds = getLocalBounds().toFloat();\n        \n        // Convert mouse position to slider value\n        auto proportion = (mousePos.x - bounds.getX()) / bounds.getWidth();\n        proportion = jlimit(0.0f, 1.0f, proportion);\n        \n        setValue(proportion, sendNotification);\n    }\n    \nprivate:\n    double dragStartValue = 0.0;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class VolumeFader : public Slider\n{\npublic:\n    VolumeFader()\n    {\n        setSliderStyle(Slider::LinearVertical);\n        setTextBoxStyle(Slider::TextBoxBelow, false, 60, 18);\n        setRange(-60.0, 12.0, 0.1);\n        setSkewFactorFromMidPoint(0.0);  // Linear dB response\n    }\n    \n    void paint(Graphics& g) override\n    {\n        auto bounds = getLocalBounds();\n        auto trackWidth = 20;\n        auto trackBounds = bounds.withWidth(trackWidth).withX((bounds.getWidth() - trackWidth) / 2);\n        \n        // Track background\n        g.setColour(Colours::darkgrey);\n        g.fillRoundedRectangle(trackBounds.reduced(2).toFloat(), 3.0f);\n        \n        // Filled portion (from bottom)\n        auto normalisedValue = (getValue() - getMinimum()) / (getMaximum() - getMinimum());\n        auto fillHeight = trackBounds.getHeight() * normalisedValue;\n        auto fillBounds = trackBounds.withY(trackBounds.getBottom() - fillHeight).withHeight(fillHeight);\n        \n        // Gradient fill\n        auto gradient = ColourGradient(Colours::green.darker(),\n                                        trackBounds.getBottomLeft().toFloat(),\n                                        Colours::green.brighter(),\n                                        trackBounds.toFloat().getTopLeft(),\n                                        false);\n        g.setGradientFill(gradient);\n        g.fillRoundedRectangle(fillBounds.reduced(2).toFloat(), 3.0f);\n        \n        // Draw dB markers\n        g.setColour(Colours::grey);\n        g.setFont(10.0f);\n        for (float db = -60.0f; db <= 12.0f; db += 12.0f)\n        {\n            auto y = trackBounds.getBottom() - (db + 60.0f) / 72.0f * trackBounds.getHeight();\n            g.drawHorizontalLine((int)y, trackBounds.getRight() + 5, trackBounds.getRight() + 10);\n        }\n    }\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class SliderWithValueDisplay : public Slider\n{\npublic:\n    SliderWithValueDisplay()\n    {\n        setTextBoxStyle(Slider::NoTextBox, false, 0, 0);\n    }\n    \n    String getTextFromValue(double value) override\n    {\n        if (parameter != nullptr)\n        {\n            return parameter->getText(value, 4);\n        }\n        \n        // Default formatting\n        if (value >= 1000.0)\n            return String(value / 1000.0, 1) + \" kHz\";\n        if (value >= 1.0)\n            return String(value, 1) + \" Hz\";\n        \n        return String(value, 2);\n    }\n    \n    void paint(Graphics& g) override\n    {\n        // Draw slider track and thumb...\n        \n        // Draw value text\n        g.setColour(findColour(Slider::textColourId));\n        g.setFont(12.0f);\n        g.drawText(getTextFromValue(getValue()), \n                   getLocalBounds().removeFromBottom(20),\n                   Justification::centred);\n    }\n    \nprivate:\n    AudioProcessorParameter* parameter = nullptr;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// In your AudioProcessorEditor\nstd::unique_ptr<Slider> slider;\nstd::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attachment;\n\nvoid setupSlider(AudioProcessorValueTreeState& apvts, const String& paramID)\n{\n    slider = std::make_unique<CustomSlider>();\n    addAndMakeVisible(slider.get());\n    \n    attachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(\n        apvts, paramID, *slider);\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "setSliderStyle(Slider::LinearHorizontal);\nsetSliderSnapsToMousePosition(false);  // Fix: Snap to mouse\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Ensure proper contrast\ng.setColour(findColour(Slider::textColourId));\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Use Attachment class for proper host integration\nauto attachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(\n    apvts, \"paramID\", slider);\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Custom Slider Component\n\n## Overview\n\nCustom sliders provide precise control over continuous parameters. They should:\n\n1. Support horizontal, vertical, and rotary styles\n2. Provide smooth mouse interaction\n3. Display value appropriately\n4. Support automation from the host\n\n## Basic Slider Setup\n\n```cpp\nclass CustomSlider : public Slider\n{\npublic:\n    CustomSlider()\n    {\n        setSliderStyle(Slider::LinearHorizontal);\n        setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);\n        setRange(0.0, 1.0, 0.01);\n        setVelocityBasedMode(true);\n    }\n    \n    void paint(Graphics& g) override\n    {\n        auto bounds = getLocalBounds().toFloat();\n        auto sliderArea = bounds;\n        \n        // Draw track background\n        g.setColour(Colours::darkgrey);\n        g.fillRoundedRectangle(sliderArea, 4.0f);\n        \n        // Draw filled portion\n        auto fillWidth = sliderArea.getWidth() * getValue();\n        auto fillArea = sliderArea.withWidth(fillWidth);\n        g.setColour(findColour(accentColourId));\n        g.fillRoundedRectangle(fillArea, 4.0f);\n        \n        // Draw thumb\n        auto thumbX = sliderArea.getX() + fillWidth;\n        auto thumbBounds = Rectangle<float>(thumbX - 8, sliderArea.getY(), 16, sliderArea.getHeight());\n        g.setColour(Colours::white);\n        g.fillEllipse(thumbBounds);\n        \n        Slider::paint(g);\n    }\n};\n```\n\n## Linear Slider with Custom Track\n\n```cpp\nclass LinearSlider : public Slider\n{\npublic:\n    LinearSlider()\n    {\n        setSliderStyle(Slider::LinearHorizontal);\n        setTextBoxStyle(Slider::NoTextBox, false, 0, 0);\n    }\n    \n    void paint(Graphics& g) override\n    {\n        auto bounds = getLocalBounds();\n        auto trackHeight = 4;\n        auto trackBounds = bounds.withHeight(trackHeight).withY((bounds.getHeight() - trackHeight) / 2);\n        \n        // Track background\n        g.setColour(Colours::grey.withAlpha(0.3f));\n        g.fillRoundedRectangle(trackBounds.toFloat(), 2.0f);\n        \n        // Filled track\n        auto fillAmount = (float)proportionOfLength(getValue());\n        auto fillBounds = trackBounds.withWidth((int)(trackBounds.getWidth() * fillAmount));\n        g.setColour(findColour(Slider::trackColourId));\n        g.fillRoundedRectangle(fillBounds.toFloat(), 2.0f);\n        \n        // Thumb\n        auto thumbX = trackBounds.getX() + trackBounds.getWidth() * fillAmount;\n        auto thumbRadius = 10.0f;\n        auto thumbCentre = Point<float>(thumbX, trackBounds.getCentreY());\n        \n        g.setColour(findColour(Slider::thumbColourId));\n        g.fillEllipse(thumbCentre, thumbRadius);\n        \n        if (isMouseOver())\n        {\n            g.setColour(Colours::white.withAlpha(0.2f));\n            g.drawEllipse(thumbCentre, thumbRadius + 2.0f, 1.5f);\n        }\n    }\n    \n    void mouseDown(const MouseEvent& e) override\n    {\n        dragStartValue = getValue();\n        Slider::mouseDown(e);\n    }\n    \n    void mouseDrag(const MouseEvent& e) override\n    {\n        auto mousePos = e.getPosition().toFloat();\n        auto bounds = getLocalBounds().toFloat();\n        \n        // Convert mouse position to slider value\n        auto proportion = (mousePos.x - bounds.getX()) / bounds.getWidth();\n        proportion = jlimit(0.0f, 1.0f, proportion);\n        \n        setValue(proportion, sendNotification);\n    }\n    \nprivate:\n    double dragStartValue = 0.0;\n};\n```\n\n## Vertical Slider (Volume Fader Style)\n\n```cpp\nclass VolumeFader : public Slider\n{\npublic:\n    VolumeFader()\n    {\n        setSliderStyle(Slider::LinearVertical);\n        setTextBoxStyle(Slider::TextBoxBelow, false, 60, 18);\n        setRange(-60.0, 12.0, 0.1);\n        setSkewFactorFromMidPoint(0.0);  // Linear dB response\n    }\n    \n    void paint(Graphics& g) override\n    {\n        auto bounds = getLocalBounds();\n        auto trackWidth = 20;\n        auto trackBounds = bounds.withWidth(trackWidth).withX((bounds.getWidth() - trackWidth) / 2);\n        \n        // Track background\n        g.setColour(Colours::darkgrey);\n        g.fillRoundedRectangle(trackBounds.reduced(2).toFloat(), 3.0f);\n        \n        // Filled portion (from bottom)\n        auto normalisedValue = (getValue() - getMinimum()) / (getMaximum() - getMinimum());\n        auto fillHeight = trackBounds.getHeight() * normalisedValue;\n        auto fillBounds = trackBounds.withY(trackBounds.getBottom() - fillHeight).withHeight(fillHeight);\n        \n        // Gradient fill\n        auto gradient = ColourGradient(Colours::green.darker(),\n                                        trackBounds.getBottomLeft().toFloat(),\n                                        Colours::green.brighter(),\n                                        trackBounds.toFloat().getTopLeft(),\n                                        false);\n        g.setGradientFill(gradient);\n        g.fillRoundedRectangle(fillBounds.reduced(2).toFloat(), 3.0f);\n        \n        // Draw dB markers\n        g.setColour(Colours::grey);\n        g.setFont(10.0f);\n        for (float db = -60.0f; db <= 12.0f; db += 12.0f)\n        {\n            auto y = trackBounds.getBottom() - (db + 60.0f) / 72.0f * trackBounds.getHeight();\n            g.drawHorizontalLine((int)y, trackBounds.getRight() + 5, trackBounds.getRight() + 10);\n        }\n    }\n};\n```\n\n## Value Display Formatting\n\n```cpp\nclass SliderWithValueDisplay : public Slider\n{\npublic:\n    SliderWithValueDisplay()\n    {\n        setTextBoxStyle(Slider::NoTextBox, false, 0, 0);\n    }\n    \n    String getTextFromValue(double value) override\n    {\n        if (parameter != nullptr)\n        {\n            return parameter->getText(value, 4);\n        }\n        \n        // Default formatting\n        if (value >= 1000.0)\n            return String(value / 1000.0, 1) + \" kHz\";\n        if (value >= 1.0)\n            return String(value, 1) + \" Hz\";\n        \n        return String(value, 2);\n    }\n    \n    void paint(Graphics& g) override\n    {\n        // Draw slider track and thumb...\n        \n        // Draw value text\n        g.setColour(findColour(Slider::textColourId));\n        g.setFont(12.0f);\n        g.drawText(getTextFromValue(getValue()), \n                   getLocalBounds().removeFromBottom(20),\n                   Justification::centred);\n    }\n    \nprivate:\n    AudioProcessorParameter* parameter = nullptr;\n};\n```\n\n## Parameter Attachment\n\n```cpp\n// In your AudioProcessorEditor\nstd::unique_ptr<Slider> slider;\nstd::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attachment;\n\nvoid setupSlider(AudioProcessorValueTreeState& apvts, const String& paramID)\n{\n    slider = std::make_unique<CustomSlider>();\n    addAndMakeVisible(slider.get());\n    \n    attachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(\n        apvts, paramID, *slider);\n}\n```\n\n## Best Practices\n\n1. **Responsive feel**: Use velocity-based mode for natural dragging\n2. **Value bounds**: Always clamp values to valid range\n3. **Visual feedback**: Change appearance on hover/drag\n4. **Accessibility**: Support keyboard navigation\n5. **Automation**: Ensure slider updates from host automation\n\n## Common Issues\n\n### Slider jumps to click position\n```cpp\nsetSliderStyle(Slider::LinearHorizontal);\nsetSliderSnapsToMousePosition(false);  // Fix: Snap to mouse\n```\n\n### Value text unreadable\n```cpp\n// Ensure proper contrast\ng.setColour(findColour(Slider::textColourId));\n```\n\n### Automation not working\n```cpp\n// Use Attachment class for proper host integration\nauto attachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(\n    apvts, \"paramID\", slider);\n```",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.856700+00:00"
+  },
+  "title": "Custom Slider Component",
+  "description": "Creating custom slider components for audio plugin UIs with custom drawing and behavior",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "ui",
+  "audio_relevance": 8,
+  "difficulty": "intermediate",
+  "implementation_examples": 4,
+  "tags": [
+    "slider",
+    "linear",
+    "vertical",
+    "component",
+    "lookandfeel"
+  ],
+  "related_topics": [
+    "knob",
+    "parameters",
+    "gui"
+  ]
+}

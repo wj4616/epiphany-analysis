@@ -1,0 +1,212 @@
+{
+  "kb_name": "ui-kb",
+  "topic": "juce-lookandfeel",
+  "version": "1.0.0",
+  "last_updated": "2026-03-29T07:00:00Z",
+  "content": {
+    "title": "JUCE LookAndFeel Customization for Audio Plugins",
+    "overview": "Complete guide to creating custom UIs for audio plugins using JUCE's LookAndFeel system.",
+    "getting_started": {
+      "description": "The LookAndFeel class allows complete customization of JUCE component appearance",
+      "capabilities": [
+        "Override colors for standard components",
+        "Customize drawing of controls (buttons, sliders, etc.)",
+        "Create cohesive visual themes",
+        "Apply different styles to different components"
+      ]
+    },
+    "basic_implementation": {
+      "step_1": {
+        "title": "Create Custom LookAndFeel Class",
+        "description": "Inherit from LookAndFeel_V4 to avoid implementing all pure virtual functions",
+        "code": "class CustomLookAndFeel : public juce::LookAndFeel_V4\n{\npublic:\n    CustomLookAndFeel()\n    {\n        // Set default colors\n        setColour (juce::Slider::thumbColourId, juce::Colours::red);\n        setColour (juce::TextButton::buttonColourId, juce::Colours::blue);\n    }\n    \n    // Override specific drawing methods here\n    \n    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CustomLookAndFeel)\n};",
+        "important_note": "Always declare LookAndFeel object BEFORE components that use it"
+      },
+      "step_2": {
+        "title": "Apply to Plugin Editor",
+        "description": "Apply custom look and feel to entire editor or specific components",
+        "code": "class MyAudioProcessorEditor : public juce::AudioProcessorEditor\n{\nprivate:\n    CustomLookAndFeel customLookAndFeel; // Declare FIRST\n    juce::Slider gainSlider;\n    juce::TextButton bypassButton;\n    \npublic:\n    MyAudioProcessorEditor (MyAudioProcessor& p)\n        : AudioProcessorEditor (&p)\n    {\n        // Apply to entire editor or specific components\n        setLookAndFeel (&customLookAndFeel);\n        \n        // Or apply to individual components\n        gainSlider.setLookAndFeel (&customLookAndFeel);\n        \n        // Remember to clear on shutdown\n        ~MyAudioProcessorEditor() override\n        {\n            setLookAndFeel (nullptr);\n        }\n    }\n};"
+      }
+    },
+    "custom_component_drawing": {
+      "rotary_sliders": {
+        "title": "Custom Rotary Sliders (Essential for Audio Plugins)",
+        "description": "Complete implementation of custom rotary knob drawing",
+        "code": "void drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height, \n                      float sliderPos, const float rotaryStartAngle, \n                      const float rotaryEndAngle, juce::Slider& slider) override\n{\n    auto radius = (float) juce::jmin (width / 2, height / 2) - 4.0f;\n    auto centreX = (float) x + (float) width * 0.5f;\n    auto centreY = (float) y + (float) height * 0.5f;\n    auto rx = centreX - radius;\n    auto ry = centreY - radius;\n    auto rw = radius * 2.0f;\n    auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);\n    \n    // Background arc\n    g.setColour (slider.findColour (juce::Slider::rotarySliderFillColourId).withAlpha (0.3f));\n    {\n        juce::Path backgroundArc;\n        backgroundArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, rotaryEndAngle, 0.0);\n        g.fillPath (backgroundArc);\n    }\n    \n    // Value arc\n    g.setColour (slider.findColour (juce::Slider::rotarySliderFillColourId));\n    {\n        juce::Path valueArc;\n        valueArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, angle, 0.0);\n        g.fillPath (valueArc);\n    }\n    \n    // Outline\n    auto lineThickness = juce::jmin (15.0f, (float) juce::jmin (width, height) * 0.45f) * 0.1f;\n    g.setColour (slider.findColour (juce::Slider::rotarySliderOutlineColourId));\n    g.strokePath (outlineArc, juce::PathStrokeType (lineThickness));\n    \n    // Thumb/pointer\n    juce::Path p;\n    auto pointerLength = radius * 0.33f;\n    auto pointerThickness = 2.0f;\n    p.addRectangle (-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);\n    p.applyTransform (juce::AffineTransform::rotation (angle).translated (centreX, centreY));\n    \n    g.setColour (juce::Colours::white);\n    g.fillPath (p);\n}"
+      },
+      "custom_buttons": {
+        "title": "Custom Button Drawing",
+        "description": "Implement custom button appearance with proper state handling",
+        "code": "void drawButtonBackground (juce::Graphics& g, juce::Button& button, \n                      const juce::Colour& backgroundColour,\n                      bool isMouseOverButton, bool isButtonDown) override\n{\n    auto baseColour = backgroundColour.withMultipliedSaturation (button.hasKeyboardFocus (true) ? 1.3f : 0.9f)\n                                      .withMultipliedAlpha (button.isEnabled() ? 0.9f : 0.5f);\n    \n    if (isButtonDown || isMouseOverButton)\n        baseColour = baseColour.contrasting (isButtonDown ? 0.2f : 0.1f);\n    \n    auto cornerSize = juce::jmin (15.0f, juce::jmin (button.getWidth(), button.getHeight()) * 0.45f);\n    \n    g.setColour (baseColour);\n    g.fillRoundedRectangle (button.getLocalBounds().toFloat(), cornerSize);\n}"
+      }
+    },
+    "color_scheme_management": {
+      "title": "Complete Color Scheme Setup",
+      "description": "Define comprehensive color scheme in constructor",
+      "code": "void setupCustomLookAndFeelColours()\n{\n    // Sliders\n    setColour (juce::Slider::thumbColourId,               juce::Colour (0xff00b5f6));\n    setColour (juce::Slider::rotarySliderFillColourId,    juce::Colour (0xff00b5f6));\n    setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::white);\n    setColour (juce::Slider::trackColourId,               juce::Colours::darkgrey);\n    setColour (juce::Slider::textBoxOutlineColourId,      juce::Colours::transparentWhite);\n    \n    // Buttons\n    setColour (juce::TextButton::buttonColourId,  juce::Colours::white);\n    setColour (juce::TextButton::textColourOffId, juce::Colour (0xff00b5f6));\n    setColour (juce::TextButton::buttonOnColourId, juce::Colours::lightblue);\n    \n    // Labels\n    setColour (juce::Label::textColourId, juce::Colours::white);\n    setColour (juce::Label::backgroundColourId, juce::Colours::transparentBlack);\n    \n    // ComboBox\n    setColour (juce::ComboBox::backgroundColourId, juce::Colours::darkgrey);\n    setColour (juce::ComboBox::textColourId, juce::Colours::white);\n    \n    // PopupMenu\n    setColour (juce::PopupMenu::backgroundColourId, juce::Colours::darkgrey);\n    setColour (juce::PopupMenu::textColourId, juce::Colours::white);\n    setColour (juce::PopupMenu::highlightedBackgroundColourId, juce::Colour (0xff00b5f6));\n    setColour (juce::PopupMenu::highlightedTextColourId, juce::Colours::white);\n}",
+      "color_ids": {
+        "sliders": [
+          "Slider::backgroundColourId",
+          "Slider::thumbColourId",
+          "Slider::trackColourId",
+          "Slider::rotarySliderFillColourId",
+          "Slider::rotarySliderOutlineColourId",
+          "Slider::textBoxTextColourId",
+          "Slider::textBoxBackgroundColourId",
+          "Slider::textBoxHighlightColourId",
+          "Slider::textBoxOutlineColourId"
+        ],
+        "buttons": [
+          "TextButton::buttonColourId",
+          "TextButton::buttonOnColourId",
+          "TextButton::textColourOffId",
+          "TextButton::textColourOnId"
+        ],
+        "labels": [
+          "Label::textColourId",
+          "Label::backgroundColourId",
+          "Label::outlineColourId"
+        ]
+      }
+    },
+    "responsive_controls": {
+      "title": "Responsive Control Implementation",
+      "description": "Check component state for professional interaction feedback",
+      "code": "bool isDownOrDragging = slider.isEnabled() && \n                   (slider.isMouseOverOrDragging() || slider.isMouseButtonDown());",
+      "implementation_notes": [
+        "Always check isEnabled() before applying hover/active states",
+        "Consider keyboard focus for accessibility",
+        "Provide visual feedback for all interaction states"
+      ]
+    },
+    "performance_considerations": {
+      "title": "UI Performance Best Practices",
+      "guidelines": [
+        "Cache paths and gradients that don't change between paint calls",
+        "Use juce::Path for complex shapes instead of multiple draw calls",
+        "Avoid heavy calculations in paint routines - pre-compute when possible",
+        "Consider OpenGL renderer for highly animated UIs",
+        "Use Component::setBufferedToImage(true) for static content",
+        "Implement dirty region tracking for efficient updates"
+      ]
+    },
+    "common_audio_plugin_components": {
+      "title": "Essential Audio Plugin UI Components",
+      "components": [
+        {
+          "name": "Rotary Knobs",
+          "use_case": "Gain, frequency, Q factor, time parameters",
+          "customization": "drawRotarySlider() method",
+          "best_practices": [
+            "Use thick dial indicators for better visibility",
+            "Show value arcs for feedback",
+            "Include center detents where appropriate"
+          ]
+        },
+        {
+          "name": "Linear Faders",
+          "use_case": "Volume sliders, mix controls",
+          "customization": "drawLinearSlider() method",
+          "best_practices": [
+            "Vertical orientation for level controls",
+            "Include track coloring for value indication",
+            "Add scale markings for reference"
+          ]
+        },
+        {
+          "name": "Toggle Buttons",
+          "use_case": "Bypass, mute, solo, on/off switches",
+          "customization": "drawButtonBackground() method",
+          "best_practices": [
+            "Clear on/off state indication",
+            "Use different colors for states",
+            "Include LED-style indicators"
+          ]
+        },
+        {
+          "name": "Meter Displays",
+          "use_case": "VU meters, peak meters, spectrum analyzers",
+          "customization": "Custom component with paint() override",
+          "best_practices": [
+            "Real-time updates without blocking audio thread",
+            "Use gradient fills for professional look",
+            "Include peak hold indicators"
+          ]
+        },
+        {
+          "name": "Visually Grouped Controls",
+          "use_case": "EQ bands, compressor sections, oscillator controls",
+          "customization": "Panel backgrounds and borders",
+          "best_practices": [
+            "Use subtle background coloring",
+            "Add section labels",
+            "Maintain consistent spacing"
+          ]
+        }
+      ]
+    },
+    "key_methods_to_override": {
+      "description": "Essential LookAndFeel methods for audio plugin customization",
+      "methods": [
+        {
+          "component": "Slider",
+          "methods": ["drawRotarySlider()", "drawLinearSlider()", "drawLinearSliderThumb()", "drawLinearSliderBackground()"]
+        },
+        {
+          "component": "Button",
+          "methods": ["drawButtonBackground()", "drawButtonText()", "drawTickBox()", "drawToggleButton()"]
+        },
+        {
+          "component": "Label",
+          "methods": ["drawLabel()", "drawTextLayout()", "createLabelFont()"]
+        },
+        {
+          "component": "ComboBox",
+          "methods": ["drawComboBox()", "drawPopupMenuItem()", "positionComboBoxText()"]
+        },
+        {
+          "component": "PopupMenu",
+          "methods": ["drawPopupMenuBackground()", "drawPopupMenuItem()", "getPopupMenuFont()"]
+        },
+        {
+          "component": "TextEditor",
+          "methods": ["drawTextEditorOutline()", "fillTextEditorBackground()", "drawCaret()"]
+        }
+      ]
+    },
+    "complete_example": {
+      "title": "Complete Plugin Editor Structure",
+      "header_file": "// PluginEditor.h\nclass MyPluginEditor : public juce::AudioProcessorEditor\n{\nprivate:\n    CustomLookAndFeel customLNF;\n    juce::Slider gainKnob;\n    juce::Slider mixFader;\n    juce::TextButton bypassButton;\n    \npublic:\n    MyPluginEditor (MyPluginProcessor&);\n    ~MyPluginEditor();\n    void paint (juce::Graphics&) override;\n    void resized() override;\n};",
+      "implementation_file": "// PluginEditor.cpp\nMyPluginEditor::MyPluginEditor (MyPluginProcessor& p)\n    : AudioProcessorEditor (&p), processor (p)\n{\n    setSize (400, 300);\n    \n    // Setup and apply look and feel\n    addAndMakeVisible (gainKnob);\n    gainKnob.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);\n    gainKnob.setLookAndFeel (&customLNF);\n    gainKnob.setRange (-48.0, 12.0, 0.1);\n    gainKnob.setTextValueSuffix (\" dB\");\n    \n    // Setup other components...\n    \n    // Start timer for meters if needed\n    startTimerHz (30);\n}\n\nMyPluginEditor::~MyPluginEditor()\n{\n    setLookAndFeel (nullptr); // Important cleanup\n    gainKnob.setLookAndFeel (nullptr);\n    // ... cleanup other components\n}\n\nvoid MyPluginEditor::paint (juce::Graphics& g)\n{\n    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));\n}\n\nvoid MyPluginEditor::resized()\n{\n    gainKnob.setBounds (20, 20, 100, 100);\n    // ... layout other components\n}"
+    },
+    "advanced_techniques": {
+      "multiple_themes": {
+        "description": "Support multiple themes in one plugin",
+        "implementation": "Create multiple LookAndFeel classes and switch between them",
+        "example": "void setTheme (Theme newTheme)\n{\n    if (newTheme == Theme::dark)\n        setLookAndFeel (&darkLookAndFeel);\n    else\n        setLookAndFeel (&lightLookAndFeel);\n    \n    // Update all child components\n    for (auto* child : getChildren())\n        child->repaint();\n}"
+      },
+      "custom_fonts": {
+        "description": "Embed custom fonts in your plugin",
+        "implementation": "Use juce::Typeface::createSystemTypefaceFor() or embed as binary data"
+      },
+      "vector_graphics": {
+        "description": "Use SVG for scalable graphics",
+        "implementation": "juce::Drawable::createFromSVG() for resolution-independent icons"
+      }
+    },
+    "testing_and_debugging": {
+      "tips": [
+        "Test at different UI scaling factors (100%, 150%, 200%)",
+        "Verify on both light and dark system themes",
+        "Check performance with many animated controls",
+        "Validate accessibility with screen readers",
+        "Test on multiple DAWs and operating systems"
+      ]
+    }
+  },
+  "sources": [
+    "https://docs.juce.com/master/tutorial_look_and_feel_customisation.html",
+    "https://juce.com/tutorials/tutorial_look_and_feel_customisation/",
+    "https://github.com/juce-framework/JUCE/blob/master/examples/GUI/LookAndFeelDemo.h"
+  ]
+}

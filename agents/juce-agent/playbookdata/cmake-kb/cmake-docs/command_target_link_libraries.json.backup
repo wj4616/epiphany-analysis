@@ -1,0 +1,29 @@
+{
+  "title": "CMake target_link_libraries Command",
+  "description": "Link libraries to targets - essential for connecting JUCE modules to audio plugins",
+  "source": "cmake.org",
+  "harvested_at": "2026-03-29T06:05:16.079801",
+  "kb_type": "build",
+  "audio_relevance": 10,
+  "difficulty": "beginner",
+  "markdown": "# target_link_libraries\n\nSpecify libraries to link to a target. Essential for connecting JUCE modules.\n\n## Syntax\n\n```cmake\ntarget_link_libraries(<target>\n    [<PRIVATE|PUBLIC|INTERFACE>] <item>...\n)\n```\n\n### Visibility Keywords\n\n- **PRIVATE** - Library only used by this target\n- **PUBLIC** - Library used by this target and dependents\n- **INTERFACE** - Library only used by dependents\n\n## JUCE Module Linking\n\n```cmake\ntarget_link_libraries(MyPlugin\n    PRIVATE\n        juce::juce_audio_utils\n        juce::juce_audio_processors\n        juce::juce_dsp\n        juce::juce_gui_basics\n)\n```\n\n## Common JUCE Module Groups\n\n```cmake\n# Core modules\njuce::juce_core\njuce::juce_data_structures\njuce::juce_events\n\n# Audio modules\njuce::juce_audio_basics\njuce::juce_audio_devices\njuce::juce_audio_processors\njuce::juce_audio_utils\njuce::juce_dsp\n\n# GUI modules\njuce::juce_gui_basics\njuce::juce_gui_extra\n\n# Graphics\njuce::juce_graphics\njuce::juce_opengl\n```\n\n## Modern CMake Pattern\n\n```cmake\n# Use PRIVATE for implementation dependencies\ntarget_link_libraries(MyPlugin\n    PRIVATE\n        juce::juce_audio_utils\n        juce::juce_dsp\n    PUBLIC\n        MyAudioLibrary  # Headers exposed in MyPlugin.h\n)\n```",
+  "implementation_examples": [
+    {
+      "title": "Complete JUCE Plugin Setup",
+      "code": "juce_add_plugin(MySynth\n    PLUGIN_NAME \"MySynth\"\n    PLUGIN_MANUFACTURER \"SynthCo\"\n    PLUGIN_MANUFACTURER_CODE \"SntC\"\n    PLUGIN_CODE \"MSyn\"\n    FORMATS VST3 AU Standalone\n)\n\ntarget_link_libraries(MySynth\n    PRIVATE\n        # Audio\n        juce::juce_audio_utils\n        juce::juce_audio_processors\n        juce::juce_dsp\n        \n        # GUI\n        juce::juce_gui_basics\n        juce::juce_gui_extra\n)"
+    }
+  ],
+  "tags": [
+    "cmake",
+    "link",
+    "libraries",
+    "juce",
+    "modules",
+    "target"
+  ],
+  "related_topics": [
+    "add_library",
+    "target_include_directories",
+    "target_compile_definitions"
+  ]
+}

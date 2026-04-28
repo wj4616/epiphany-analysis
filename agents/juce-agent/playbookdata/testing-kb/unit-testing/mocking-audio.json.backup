@@ -1,0 +1,23 @@
+{
+  "title": "Mocking Audio Components",
+  "description": "Mocking AudioProcessor and audio buffers for testing",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:45:30.380475Z",
+  "kb_type": "testing",
+  "audio_relevance": 8,
+  "difficulty": "intermediate",
+  "markdown": "# Mocking Audio Components\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "mocking audio",
+    "mock AudioProcessor",
+    "fake audio buffer",
+    "test double audio"
+  ],
+  "sources": [
+    "JUCE forum",
+    "testing blogs"
+  ]
+}

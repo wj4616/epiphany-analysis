@@ -1,0 +1,35 @@
+{
+  "kb_name": "failure-modes-kb",
+  "version": "1.0.0",
+  "description": "Documented failure modes for VST plugin development",
+  "created": "2026-04-02",
+  "updated": "2026-04-02",
+  "entry_count": 5,
+  "categories": {
+    "audio-thread": {
+      "description": "Audio thread safety violations",
+      "count": 4,
+      "entries": ["fm-01-allocation", "fm-07-thread-safety", "fm-04-denormals", "fm-05-feedback"]
+    },
+    "parameters": {
+      "description": "Parameter handling failures",
+      "count": 1,
+      "entries": ["fm-09-smoothedvalue"]
+    },
+    "state": {
+      "description": "State persistence failures",
+      "count": 0,
+      "entries": []
+    },
+    "memory": {
+      "description": "Memory management failures",
+      "count": 0,
+      "entries": []
+    },
+    "platform": {
+      "description": "Platform-specific failures",
+      "count": 0,
+      "entries": []
+    }
+  }
+}

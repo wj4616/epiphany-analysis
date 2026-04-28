@@ -1,0 +1,16 @@
+{
+  "id": "reference_talks_adc-presentations",
+  "kb": "reference",
+  "topic": "talks",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Audio Developer Conference Presentations",
+  "summary": "Placeholder: Key presentations from ADC on JUCE, DSP, and audio development.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "talks", "reference": "https://conference.audio.dev/"},
+  "concepts": [],
+  "tags": ["talks", "adc", "conference", "audio", "development"],
+  "related_topics": ["juce-patterns", "dsp-algorithms"],
+  "difficulty": "intermediate",
+  "domain_relevance": 9
+}

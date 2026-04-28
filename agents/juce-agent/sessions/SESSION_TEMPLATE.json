@@ -1,0 +1,144 @@
+{
+  "session_state": {
+    "project_name": "",
+    "created": "",
+    "last_updated": "",
+    "current_phase": 0,
+    "phase_status": {
+      "phase_0": {
+        "name": "Plugin Concept & Specification",
+        "status": "not_started",
+        "completed_tasks": [],
+        "pending_tasks": [],
+        "started": null,
+        "completed": null
+      },
+      "phase_1": {
+        "name": "Performance Audit",
+        "status": "not_started",
+        "completed_tasks": [],
+        "pending_tasks": [],
+        "started": null,
+        "completed": null
+      },
+      "phase_2": {
+        "name": "Architecture & Task Breakdown",
+        "status": "not_started",
+        "completed_tasks": [],
+        "pending_tasks": [],
+        "started": null,
+        "completed": null
+      },
+      "phase_3": {
+        "name": "Project Setup & Test Framework",
+        "status": "not_started",
+        "completed_tasks": [],
+        "pending_tasks": [],
+        "started": null,
+        "completed": null
+      },
+      "phase_4": {
+        "name": "DSP Implementation",
+        "status": "not_started",
+        "completed_tasks": [],
+        "pending_tasks": [],
+        "started": null,
+        "completed": null
+      },
+      "phase_5": {
+        "name": "State Management",
+        "status": "not_started",
+        "completed_tasks": [],
+        "pending_tasks": [],
+        "started": null,
+        "completed": null
+      },
+      "phase_6": {
+        "name": "Processor Integration",
+        "status": "not_started",
+        "completed_tasks": [],
+        "pending_tasks": [],
+        "started": null,
+        "completed": null
+      },
+      "phase_7": {
+        "name": "GUI Implementation",
+        "status": "not_started",
+        "completed_tasks": [],
+        "pending_tasks": [],
+        "started": null,
+        "completed": null
+      },
+      "phase_8": {
+        "name": "Build Verification",
+        "status": "not_started",
+        "completed_tasks": [],
+        "pending_tasks": [],
+        "started": null,
+        "completed": null
+      },
+      "phase_9": {
+        "name": "DAW Testing",
+        "status": "not_started",
+        "completed_tasks": [],
+        "pending_tasks": [],
+        "started": null,
+        "completed": null
+      },
+      "phase_10": {
+        "name": "Release Preparation",
+        "status": "not_started",
+        "completed_tasks": [],
+        "pending_tasks": [],
+        "started": null,
+        "completed": null
+      },
+      "phase_11": {
+        "name": "Profiling & Optimization",
+        "status": "not_started",
+        "completed_tasks": [],
+        "pending_tasks": [],
+        "started": null,
+        "completed": null
+      },
+      "phase_12": {
+        "name": "Retrospective",
+        "status": "not_started",
+        "completed_tasks": [],
+        "pending_tasks": [],
+        "started": null,
+        "completed": null
+      }
+    },
+    "artifacts": {
+      "spec_file": "",
+      "plan_file": "",
+      "source_directory": "",
+      "build_directory": ""
+    },
+    "key_decisions": [],
+    "pending_issues": [],
+    "creative_language": {
+      "sound_identity": "",
+      "character_words": [],
+      "reference_plugins": [],
+      "genre_context": ""
+    },
+    "plugin_info": {
+      "plugin_type": "",
+      "plugin_name": "",
+      "formats": [],
+      "target_os": [],
+      "target_daw": ""
+    },
+    "session_history": [
+      {
+        "session_id": "",
+        "date": "",
+        "phase_worked": 0,
+        "tasks_completed": [],
+        "notes": ""
+      }
+    ]
+  }
+}

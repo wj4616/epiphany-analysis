@@ -1,0 +1,177 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VST Playbook KB Entry Schema",
+  "description": "Schema for all knowledge base entries in the VST Plugin Development Playbook",
+  "type": "object",
+  "required": [
+    "id",
+    "kb",
+    "topic",
+    "status",
+    "version",
+    "title",
+    "summary",
+    "description",
+    "source",
+    "tags",
+    "difficulty",
+    "domain_relevance"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z]+-[a-z]+_[a-z0-9-]+$",
+      "description": "Unique identifier: {kb-name}_{topic}_{entry-name}",
+      "examples": ["technical-kb_juce-patterns_apvts-setup", "sound-design-kb_psychedelic_delay-feedback"]
+    },
+    "kb": {
+      "type": "string",
+      "enum": ["technical-kb", "sound-design-kb", "ui-ux-kb", "commercial-kb", "reference-kb"],
+      "description": "Which knowledge base layer this entry belongs to"
+    },
+    "topic": {
+      "type": "string",
+      "description": "Topic within the KB layer",
+      "examples": ["juce-patterns", "dsp-algorithms", "psychedelic", "marketplaces"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["placeholder", "harvested", "curated", "synced"],
+      "default": "placeholder",
+      "description": "Entry lifecycle status"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "default": "0.1.0",
+      "description": "Semantic version of this entry"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "Human-readable title",
+      "examples": ["APVTS Parameter Setup Pattern", "Wavetable Oscillator Implementation"]
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "One-sentence description of what this entry covers"
+    },
+    "description": {
+      "type": "string",
+      "description": "Full content of the entry (markdown supported)"
+    },
+    "source": {
+      "type": "string",
+      "description": "Where this knowledge came from",
+      "examples": ["JUCE documentation", "Designing Audio Effect Plugins (Pirkle)", "Session experience"]
+    },
+    "concepts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "description": {"type": "string"},
+          "related": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        },
+        "required": ["name", "description"]
+      },
+      "description": "Key concepts covered in this entry"
+    },
+    "code_blocks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string",
+            "enum": ["cpp", "cmake", "bash", "json", "yaml", "markdown"]
+          },
+          "code": {"type": "string"},
+          "preserved": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, code is copy-paste ready; if false, may need adaptation"
+          }
+        },
+        "required": ["language", "code"]
+      },
+      "description": "Code examples (for Technical KB entries)"
+    },
+    "tags": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Searchable tags",
+      "examples": [["audio", "real-time", "thread-safety", "juce"]]
+    },
+    "related_topics": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Cross-references to other topics"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["beginner", "intermediate", "advanced"],
+      "description": "Target audience experience level"
+    },
+    "domain_relevance": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "How central this is to the domain (1=peripheral, 10=essential)"
+    },
+    "audio_thread_safe": {
+      "type": "boolean",
+      "description": "Technical KB only: Is this pattern safe for audio thread?"
+    },
+    "failure_modes": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Related failure mode IDs (e.g., FM-01, EM-13)"
+    },
+    "marketplace_requirements": {
+      "type": "object",
+      "description": "Commercial KB only: Specific marketplace requirements",
+      "properties": {
+        "marketplace": {"type": "string"},
+        "fee_percentage": {"type": "number"},
+        "review_time_days": {"type": "integer"}
+      }
+    }
+  },
+  "additionalProperties": true,
+  "examples": [
+    {
+      "id": "technical-kb_juce-patterns_apvts-setup",
+      "kb": "technical-kb",
+      "topic": "juce-patterns",
+      "status": "curated",
+      "version": "1.0.0",
+      "title": "APVTS Parameter Setup Pattern",
+      "summary": "Standard pattern for setting up AudioProcessorValueTreeState parameters in JUCE plugins.",
+      "description": "## Overview\n\nAudioProcessorValueTreeState (APVTS) is JUCE's recommended way to manage plugin parameters...",
+      "source": "JUCE documentation + session experience",
+      "concepts": [
+        {"name": "AudioProcessorValueTreeState", "description": "JUCE class for parameter management"},
+        {"name": "Parameter layout", "description": "Collection of parameter definitions"}
+      ],
+      "code_blocks": [
+        {
+          "language": "cpp",
+          "code": "juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {\n    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;\n    params.push_back(std::make_unique<juce::AudioParameterFloat>(\"gain\", \"Gain\", 0.0f, 1.0f, 0.5f));\n    return { params.begin(), params.end() };\n}",
+          "preserved": true
+        }
+      ],
+      "tags": ["juce", "parameters", "apvts", "audio"],
+      "related_topics": ["parameter-management", "state-persistence"],
+      "difficulty": "intermediate",
+      "domain_relevance": 10,
+      "audio_thread_safe": true,
+      "failure_modes": ["FM-03", "FM-09"]
+    }
+  ]
+}

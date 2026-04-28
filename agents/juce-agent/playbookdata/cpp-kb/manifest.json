@@ -1,0 +1,307 @@
+{
+  "kb_name": "cpp-kb",
+  "version": "1.0.0",
+  "created": "2026-03-30T12:24:56.307816+00:00",
+  "last_sync": "2026-03-30T22:51:00.000000+00:00",
+  "status": "ready",
+  "topics": [
+    {
+      "name": "cppreference",
+      "files": {
+        "algorithm_sort.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.301681+00:00",
+          "synced_at": "2026-03-30T12:24:56.301683+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 35571
+        },
+        "algorithm_transform.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.302022+00:00",
+          "synced_at": "2026-03-30T12:24:56.302023+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 37552
+        },
+        "thread_shared_mutex.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.302241+00:00",
+          "synced_at": "2026-03-30T12:24:56.302242+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 33110
+        },
+        "container_vector.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.302687+00:00",
+          "synced_at": "2026-03-30T12:24:56.302689+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 45781
+        },
+        "utility_function.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_timestamp": 1775029860,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 5400
+        },
+        "container_array.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.302943+00:00",
+          "synced_at": "2026-03-30T12:24:56.302945+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 34882
+        },
+        "thread_condition_variable.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.303188+00:00",
+          "synced_at": "2026-03-30T12:24:56.303189+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 36309
+        },
+        "thread_mutex.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.303408+00:00",
+          "synced_at": "2026-03-30T12:24:56.303409+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 31451
+        },
+        "thread_unique_lock.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.303621+00:00",
+          "synced_at": "2026-03-30T12:24:56.303622+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 36723
+        },
+        "memory_make_shared.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_timestamp": 1775029860,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 5200
+        },
+        "memory_allocator.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.303954+00:00",
+          "synced_at": "2026-03-30T12:24:56.303955+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 34741
+        },
+        "algorithm_find.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.304253+00:00",
+          "synced_at": "2026-03-30T12:24:56.304254+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 39262
+        },
+        "thread_lock_guard.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.304456+00:00",
+          "synced_at": "2026-03-30T12:24:56.304458+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 29233
+        },
+        "string_string_view.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_timestamp": 1775029860,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 4800
+        },
+        "memory_make_unique.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_timestamp": 1775029860,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 4600
+        },
+        "algorithm.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.305357+00:00",
+          "synced_at": "2026-03-30T12:24:56.305359+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 120197
+        },
+        "functional_bind.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_timestamp": 1775029860,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 5100
+        },
+        "memory_unique_ptr.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.305671+00:00",
+          "synced_at": "2026-03-30T12:24:56.305672+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 46022
+        },
+        "string.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.305780+00:00",
+          "synced_at": "2026-03-30T12:24:56.305781+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 17362
+        },
+        "algorithm_copy.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.306022+00:00",
+          "synced_at": "2026-03-30T12:24:56.306023+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 38760
+        },
+        "utility_any.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.306227+00:00",
+          "synced_at": "2026-03-30T12:24:56.306228+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 26638
+        },
+        "utility_optional.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.306465+00:00",
+          "synced_at": "2026-03-30T12:24:56.306467+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 40363
+        },
+        "memory_weak_ptr.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.306689+00:00",
+          "synced_at": "2026-03-30T12:24:56.306690+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 35561
+        },
+        "thread_atomic.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_timestamp": 1775029860,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 4500
+        },
+        "memory_shared_ptr.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.306989+00:00",
+          "synced_at": "2026-03-30T12:24:56.306990+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 51062
+        },
+        "utility_variant.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.307206+00:00",
+          "synced_at": "2026-03-30T12:24:56.307207+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 33295
+        },
+        "thread.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.307564+00:00",
+          "synced_at": "2026-03-30T12:24:56.307565+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 65160
+        },
+        "container_span.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.307796+00:00",
+          "synced_at": "2026-03-30T12:24:56.307797+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cppreference",
+          "markdown_length": 33262
+        }
+      }
+    },
+    {
+      "name": "realtime-safety",
+      "files": {
+        "overview.md": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_timestamp": 1775029860,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 3200
+        },
+        "atomic-audio.md": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_timestamp": 1775029860,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 4100
+        },
+        "lock-free-patterns.md": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_timestamp": 1775029860,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 4500
+        },
+        "pitfalls.md": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_at": "2026-03-30T22:51:00.000000+00:00",
+          "synced_timestamp": 1775029860,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 6800
+        }
+      }
+    }
+  ]
+}

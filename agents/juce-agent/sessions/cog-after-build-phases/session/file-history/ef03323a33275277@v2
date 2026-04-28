@@ -1,0 +1,339 @@
+#include "SpectralDroneEngine.h"
+#include <cmath>
+#include <complex>
+#include <algorithm>
+
+namespace CogDSP
+{
+
+void SpectralDroneEngine::prepare(double sr, int samplesPerBlock)
+{
+    sampleRate = sr;
+
+    // Determine if we need resampling
+    needsResampling = (sampleRate != internalRate);
+    if (needsResampling)
+    {
+        resampleRatio = static_cast<int>(std::round(sampleRate / internalRate));
+    }
+    else
+    {
+        resampleRatio = 1;
+    }
+
+    // Initialize FFT
+    fft = std::make_unique<juce::dsp::FFT>(static_cast<int>(std::log2(fftSize)));
+
+    // Allocate buffers for 48kHz processing
+    const int maxFrames = static_cast<int>(internalRate * 0.1);  // 100ms max at 48kHz
+    inputBuffer48k.resize(fftSize * 4, 0.0f);
+    outputBuffer48k.resize(fftSize * 4, 0.0f);
+    overlapAddBuffer.resize(fftSize * 4, 0.0f);
+
+    // Pre-compute Hann window
+    hannWindow.resize(fftSize);
+    for (int i = 0; i < fftSize; ++i)
+    {
+        hannWindow[i] = 0.5f * (1.0f - std::cos(2.0f * Constants::PI * i / (fftSize - 1)));
+    }
+
+    // Allocate spectral workspace
+    fftWorkspace.resize(fftSize);
+    prevFrame.resize(fftSize / 2 + 1, std::complex<float>(0.0f, 0.0f));
+    frozenFrame.resize(fftSize / 2 + 1, std::complex<float>(0.0f, 0.0f));
+
+    // Filter state
+    antiAliasState.resize(2, 0.0f);  // 2nd-order Butterworth
+    antiImageState.resize(2, 0.0f);
+
+    // Initialize smoothed values
+    smoothedDensity.reset(internalRate, 0.02);
+    smoothedDensity.setCurrentAndTargetValue(droneDensity);
+
+    smoothedDrift.reset(internalRate, 0.02);
+    smoothedDrift.setCurrentAndTargetValue(spectralDrift);
+
+    reset();
+}
+
+void SpectralDroneEngine::process(const float* input, float* leftOut, float* rightOut, int numSamples)
+{
+    // Downsample to mono 48kHz
+    downsampleToMono48k(input, numSamples);
+
+    // Process spectral engine
+    processSpectral(numSamples);
+
+    // Upsample to stereo native rate
+    upsampleToStereoNative(leftOut, rightOut, numSamples);
+}
+
+void SpectralDroneEngine::downsampleToMono48k(const float* input, int numSamples)
+{
+    if (needsResampling)
+    {
+        // Downsample: sum stereo to mono, then decimate
+        int outIndex = 0;
+
+        for (int i = 0; i < numSamples && outIndex < inputBuffer48k.size(); i += resampleRatio)
+        {
+            float mono = 0.0f;
+            int count = 0;
+
+            // Average over resampleRatio samples
+            for (int j = 0; j < resampleRatio && (i + j) < numSamples; ++j)
+            {
+                mono += input[i + j];
+                ++count;
+            }
+
+            mono /= static_cast<float>(count);
+
+            // Apply anti-alias filter
+            applyAntiAliasFilter(&mono, 1);
+
+            // Write to input buffer
+            inputBuffer48k[inputWritePos] = mono;
+            inputWritePos = (inputWritePos + 1) % inputBuffer48k.size();
+            ++outIndex;
+        }
+    }
+    else
+    {
+        // No resampling needed - copy mono directly
+        for (int i = 0; i < numSamples; ++i)
+        {
+            inputBuffer48k[inputWritePos] = input[i];
+            inputWritePos = (inputWritePos + 1) % inputBuffer48k.size();
+        }
+    }
+}
+
+void SpectralDroneEngine::processSpectral(int numSamples)
+{
+    // Update smoothed parameters
+    smoothedDensity.setTargetValue(droneDensity);
+    smoothedDrift.setTargetValue(spectralDrift);
+
+    // Process FFT frames on hop boundaries
+    hopCounter += needsResampling ? (numSamples / resampleRatio) : numSamples;
+
+    if (hopCounter >= hopSize)
+    {
+        hopCounter = 0;
+        computeFFTFrame();
+    }
+
+    // Handle freeze crossfade
+    if (frozen != wasFrozen)
+    {
+        freezeCrossfade = 0.0f;
+        wasFrozen = frozen;
+    }
+
+    if (freezeCrossfade < 1.0f)
+    {
+        freezeCrossfade += freezeCrossfadeRate;
+        freezeCrossfade = std::min(freezeCrossfade, 1.0f);
+    }
+}
+
+void SpectralDroneEngine::computeFFTFrame()
+{
+    // Copy input with Hann window to workspace
+    for (int i = 0; i < fftSize; ++i)
+    {
+        const int readPos = (inputWritePos - fftSize + i + inputBuffer48k.size()) % inputBuffer48k.size();
+        fftWorkspace[i] = std::complex<float>(inputBuffer48k[readPos] * hannWindow[i], 0.0f);
+    }
+
+    // Perform FFT
+    fft->perform(fftWorkspace.data(), fftWorkspace.data(), false);
+
+    // Process spectral domain
+    processSpectralFrame(fftWorkspace.data());
+
+    // Perform inverse FFT
+    fft->perform(fftWorkspace.data(), fftWorkspace.data(), true);
+
+    // Overlap-add to output buffer
+    for (int i = 0; i < fftSize; ++i)
+    {
+        const int writePos = (outputReadPos + i) % overlapAddBuffer.size();
+        overlapAddBuffer[writePos] += fftWorkspace[i].real() * hannWindow[i];
+    }
+}
+
+void SpectralDroneEngine::processSpectralFrame(std::complex<float>* frame)
+{
+    const float density = smoothedDensity.getCurrentValue();
+    const float drift = smoothedDrift.getCurrentValue();
+    const int numBins = fftSize / 2 + 1;
+
+    // Apply spectral freeze/smear and drift
+    for (int bin = 0; bin < numBins; ++bin)
+    {
+        std::complex<float> currentBin = frame[bin];
+
+        if (frozen)
+        {
+            // Freeze: hold previous content, allow drift to modulate it
+            if (freezeCrossfade < 1.0f)
+            {
+                // Crossfade from live to frozen
+                currentBin = currentBin * (1.0f - freezeCrossfade) + frozenFrame[bin] * freezeCrossfade;
+            }
+            else
+            {
+                currentBin = frozenFrame[bin];
+            }
+        }
+        else
+        {
+            // Normal operation: blend current with previous
+            if (freezeCrossfade < 1.0f)
+            {
+                // Crossfade from frozen to live
+                currentBin = currentBin * freezeCrossfade + frozenFrame[bin] * (1.0f - freezeCrossfade);
+            }
+
+            // Spectral blend (smear/freeze amount)
+            // blendCoeff = density (0-1), or 1.0 when frozen
+            frame[bin] = currentBin * (1.0f - density) + prevFrame[bin] * density;
+        }
+
+        // Spectral drift: rotate bins
+        if (std::abs(drift) > 0.001f)
+        {
+            const float driftAmount = drift * 0.5f;  // Scale drift sensitivity
+
+            // Simple bin rotation with phase modulation
+            float phaseShift = driftAmount * bin * 0.01f;
+            float re = frame[bin].real();
+            float im = frame[bin].imag();
+
+            // Rotate phase
+            frame[bin] = std::complex<float>(
+                re * std::cos(phaseShift) - im * std::sin(phaseShift),
+                re * std::sin(phaseShift) + im * std::cos(phaseShift)
+            );
+        }
+
+        // Store for next frame
+        prevFrame[bin] = frame[bin];
+
+        if (frozen && freezeCrossfade >= 1.0f)
+        {
+            frozenFrame[bin] = frame[bin];
+        }
+    }
+}
+
+void SpectralDroneEngine::upsampleToStereoNative(float* leftOut, float* rightOut, int numSamples)
+{
+    // Read from overlap-add buffer and output to both channels
+    for (int i = 0; i < numSamples; ++i)
+    {
+        float sample = overlapAddBuffer[outputReadPos];
+
+        // Apply anti-image filter if upsampling
+        if (needsResampling)
+        {
+            applyAntiImageFilter(&sample, 1);
+
+            // Zero-stuff and interpolate
+            // For each output sample, interpolate between spectral samples
+            const float frac = static_cast<float>(i % resampleRatio) / static_cast<float>(resampleRatio);
+            const int pos0 = outputReadPos;
+            const int pos1 = (outputReadPos + 1) % overlapAddBuffer.size();
+
+            sample = lerp(overlapAddBuffer[pos0], overlapAddBuffer[pos1], frac);
+
+            // Increment read position after each resample ratio samples
+            if ((i + 1) % resampleRatio == 0)
+            {
+                outputReadPos = (outputReadPos + 1) % overlapAddBuffer.size();
+            }
+        }
+        else
+        {
+            outputReadPos = (outputReadPos + 1) % overlapAddBuffer.size();
+        }
+
+        // Output to both channels (mono -> stereo)
+        leftOut[i] = sample;
+        rightOut[i] = sample;
+
+        // Clear overlap-add buffer after reading
+        overlapAddBuffer[outputReadPos] = 0.0f;
+    }
+}
+
+void SpectralDroneEngine::applyAntiAliasFilter(float* samples, int numSamples)
+{
+    // 2nd-order Butterworth lowpass at 20kHz
+    // Coefficients for 48kHz sample rate
+    constexpr float wc = 2.0f * Constants::PI * 20000.0f / 48000.0f;
+    constexpr float c = 1.0f / std::tan(wc / 2.0f);
+    constexpr float b0 = 1.0f / (1.0f + c * 1.41421356f + c * c);
+    constexpr float b1 = 2.0f * b0;
+    constexpr float b2 = b0;
+    constexpr float a1 = 2.0f * (1.0f - c * c) * b0;
+    constexpr float a2 = (1.0f - c * 1.41421356f + c * c) * b0;
+
+    for (int i = 0; i < numSamples; ++i)
+    {
+        const float input = samples[i];
+        const float output = b0 * input + b1 * antiAliasState[0] + b2 * antiAliasState[1]
+                           - a1 * antiAliasState[0] - a2 * antiAliasState[1];
+
+        antiAliasState[1] = antiAliasState[0];
+        antiAliasState[0] = input;
+        samples[i] = output;
+    }
+}
+
+void SpectralDroneEngine::applyAntiImageFilter(float* samples, int numSamples)
+{
+    // Same as anti-alias filter - 2nd-order Butterworth lowpass at 20kHz
+    constexpr float wc = 2.0f * Constants::PI * 20000.0f / 48000.0f;
+    constexpr float c = 1.0f / std::tan(wc / 2.0f);
+    constexpr float b0 = 1.0f / (1.0f + c * 1.41421356f + c * c);
+    constexpr float b1 = 2.0f * b0;
+    constexpr float b2 = b0;
+    constexpr float a1 = 2.0f * (1.0f - c * c) * b0;
+    constexpr float a2 = (1.0f - c * 1.41421356f + c * c) * b0;
+
+    for (int i = 0; i < numSamples; ++i)
+    {
+        const float input = samples[i];
+        const float output = b0 * input + b1 * antiImageState[0] + b2 * antiImageState[1]
+                           - a1 * antiImageState[0] - a2 * antiImageState[1];
+
+        antiImageState[1] = antiImageState[0];
+        antiImageState[0] = input;
+        samples[i] = output;
+    }
+}
+
+void SpectralDroneEngine::reset()
+{
+    std::fill(inputBuffer48k.begin(), inputBuffer48k.end(), 0.0f);
+    std::fill(outputBuffer48k.begin(), outputBuffer48k.end(), 0.0f);
+    std::fill(overlapAddBuffer.begin(), overlapAddBuffer.end(), 0.0f);
+    std::fill(prevFrame.begin(), prevFrame.end(), std::complex<float>(0.0f, 0.0f));
+    std::fill(frozenFrame.begin(), frozenFrame.end(), std::complex<float>(0.0f, 0.0f));
+    std::fill(fftWorkspace.begin(), fftWorkspace.end(), std::complex<float>(0.0f, 0.0f));
+
+    inputWritePos = 0;
+    outputReadPos = 0;
+    hopCounter = 0;
+    frozen = false;
+    wasFrozen = false;
+    freezeCrossfade = 1.0f;
+
+    smoothedDensity.setCurrentAndTargetValue(droneDensity);
+    smoothedDrift.setCurrentAndTargetValue(spectralDrift);
+}
+
+} // namespace CogDSP

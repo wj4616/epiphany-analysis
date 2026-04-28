@@ -1,0 +1,43 @@
+{
+  "id": "juce-kb_formats_au-specifics",
+  "kb": "juce-kb",
+  "topic": "formats",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Content to be harvested]",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Example code placeholder\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Audio Unit Development\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:39.974300+00:00"
+  },
+  "title": "Audio Unit Development",
+  "description": "AU-specific requirements for macOS",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:49:05.700736Z",
+  "kb_type": "juce",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "Audio Unit development",
+    "AU plugin",
+    "AU parameters",
+    "macOS AU",
+    "AudioUnit framework"
+  ],
+  "sources": [
+    "Apple docs",
+    "JUCE forum"
+  ]
+}

@@ -1,0 +1,314 @@
+{
+  "bridge_version": "1.0.0",
+  "translations": [
+    {
+      "id": "BRIDGE-001",
+      "descriptor": "warm",
+      "category": "timbre",
+      "translations": {
+        "filter_cutoff": {
+          "range": [0.2, 0.4],
+          "normalized": true,
+          "notes": "Lower cutoff removes harsh high frequencies"
+        },
+        "filter_resonance": {
+          "range": [0.05, 0.15],
+          "normalized": true,
+          "notes": "Subtle resonance adds character without harshness"
+        },
+        "saturation_type": {
+          "value": "soft_clip",
+          "notes": "Soft clipping adds even-order harmonics"
+        },
+        "saturation_amount": {
+          "range": [0.1, 0.3],
+          "normalized": true,
+          "notes": "Subtle saturation for warmth"
+        }
+      },
+      "genre_affinity": ["ambient", "psybient"],
+      "conflicts_with": ["bright", "aggressive"],
+      "examples": ["Analog pad", "Vinyl warmth", "Tube saturation"]
+    },
+    {
+      "id": "BRIDGE-002",
+      "descriptor": "bright",
+      "category": "timbre",
+      "translations": {
+        "filter_cutoff": {
+          "range": [0.6, 1.0],
+          "normalized": true,
+          "notes": "High cutoff preserves high frequencies"
+        },
+        "presence_boost": {
+          "frequency_hz": [2000, 5000],
+          "gain_db": [2, 6],
+          "notes": "Presence band emphasis"
+        },
+        "high_shelf": {
+          "frequency_hz": [8000, 12000],
+          "gain_db": [1, 4],
+          "notes": "Air band sparkle"
+        }
+      },
+      "genre_affinity": ["lead", "electronic"],
+      "conflicts_with": ["warm", "dark"],
+      "examples": ["Digital bell", "Crystalline lead"]
+    },
+    {
+      "id": "BRIDGE-003",
+      "descriptor": "lush",
+      "category": "texture",
+      "translations": {
+        "detune": {
+          "range": [0.05, 0.15],
+          "normalized": true,
+          "notes": "Slight pitch spread for width"
+        },
+        "chorus_mix": {
+          "range": [0.3, 0.5],
+          "normalized": true,
+          "notes": "Chorus for movement"
+        },
+        "reverb_mix": {
+          "range": [0.3, 0.6],
+          "normalized": true,
+          "notes": "Reverb for space"
+        },
+        "reverb_decay": {
+          "range": [1.5, 3.0],
+          "unit": "seconds",
+          "notes": "Long reverb tail"
+        },
+        "modulation_rate": {
+          "range": [0.05, 0.2],
+          "unit": "Hz",
+          "notes": "Slow modulation for evolution"
+        }
+      },
+      "genre_affinity": ["ambient", "psybient", "pad"],
+      "conflicts_with": ["dry", "punchy"],
+      "examples": ["Eno-style pad", "Ambient texture"]
+    },
+    {
+      "id": "BRIDGE-004",
+      "descriptor": "punchy",
+      "category": "envelope",
+      "translations": {
+        "amp_attack": {
+          "range": [0.001, 0.01],
+          "unit": "seconds",
+          "notes": "Very fast attack"
+        },
+        "filter_attack": {
+          "range": [0.001, 0.02],
+          "unit": "seconds",
+          "notes": "Fast filter envelope"
+        },
+        "filter_decay": {
+          "range": [0.1, 0.5],
+          "unit": "seconds",
+          "notes": "Quick decay for transient"
+        },
+        "filter_env_amount": {
+          "range": [0.3, 0.8],
+          "normalized": true,
+          "notes": "Strong filter modulation"
+        },
+        "transient_emphasis": {
+          "value": true,
+          "notes": "Enhance transient if available"
+        }
+      },
+      "genre_affinity": ["bass", "lead", "percussive"],
+      "conflicts_with": ["ethereal", "lush"],
+      "examples": ["303 bass", "Punchy lead"]
+    },
+    {
+      "id": "BRIDGE-005",
+      "descriptor": "ethereal",
+      "category": "texture",
+      "translations": {
+        "reverb_decay": {
+          "range": [2.0, 6.0],
+          "unit": "seconds",
+          "notes": "Very long reverb"
+        },
+        "reverb_mix": {
+          "range": [0.5, 0.8],
+          "normalized": true,
+          "notes": "Heavy reverb"
+        },
+        "high_pass_filter": {
+          "range": [200, 500],
+          "unit": "Hz",
+          "notes": "Remove low end for air"
+        },
+        "modulation_depth": {
+          "range": [0.1, 0.3],
+          "normalized": true,
+          "notes": "Slow, subtle modulation"
+        },
+        "lfo_rate": {
+          "range": [0.02, 0.1],
+          "unit": "Hz",
+          "notes": "Very slow LFO for drift"
+        }
+      },
+      "genre_affinity": ["ambient", "psybient", "soundscape"],
+      "conflicts_with": ["punchy", "aggressive"],
+      "examples": ["Space pad", "Drifting texture"]
+    },
+    {
+      "id": "BRIDGE-006",
+      "descriptor": "aggressive",
+      "category": "timbre",
+      "translations": {
+        "distortion_type": {
+          "value": "hard_clip",
+          "notes": "Hard clipping for odd harmonics"
+        },
+        "distortion_amount": {
+          "range": [0.4, 0.9],
+          "normalized": true,
+          "notes": "Heavy distortion"
+        },
+        "filter_resonance": {
+          "range": [0.3, 0.6],
+          "normalized": true,
+          "notes": "Resonant filter for edge"
+        },
+        "amp_release": {
+          "range": [0.05, 0.2],
+          "unit": "seconds",
+          "notes": "Quick release for tightness"
+        }
+      },
+      "genre_affinity": ["industrial", "dubstep", "metal"],
+      "conflicts_with": ["warm", "ethereal"],
+      "examples": ["Distorted bass", "Industrial lead"]
+    },
+    {
+      "id": "BRIDGE-007",
+      "descriptor": "deep",
+      "category": "timbre",
+      "translations": {
+        "low_shelf": {
+          "frequency_hz": [80, 200],
+          "gain_db": [3, 8],
+          "notes": "Bass emphasis"
+        },
+        "sub_oscillator": {
+          "value": true,
+          "notes": "Add sub if available"
+        },
+        "filter_cutoff": {
+          "range": [0.1, 0.3],
+          "normalized": true,
+          "notes": "Lower cutoff for depth"
+        },
+        "lfo_rate": {
+          "range": [0.01, 0.1],
+          "unit": "Hz",
+          "notes": "Slow modulation"
+        }
+      },
+      "genre_affinity": ["bass", "ambient", "dub"],
+      "conflicts_with": ["bright", "crisp"],
+      "examples": ["Deep house bass", "Ambient drone"]
+    },
+    {
+      "id": "BRIDGE-008",
+      "descriptor": "crisp",
+      "category": "timbre",
+      "translations": {
+        "high_shelf": {
+          "frequency_hz": [6000, 10000],
+          "gain_db": [2, 5],
+          "notes": "High frequency emphasis"
+        },
+        "amp_attack": {
+          "range": [0.001, 0.005],
+          "unit": "seconds",
+          "notes": "Very fast attack"
+        },
+        "compression_ratio": {
+          "range": [2, 4],
+          "notes": "Light compression for control"
+        }
+      },
+      "genre_affinity": ["drums", "percussion", "electronic"],
+      "conflicts_with": ["dark", "deep"],
+      "examples": ["Crispy snare", "Percussive synth"]
+    },
+    {
+      "id": "BRIDGE-009",
+      "descriptor": "dark",
+      "category": "timbre",
+      "translations": {
+        "filter_cutoff": {
+          "range": [0.05, 0.25],
+          "normalized": true,
+          "notes": "Low cutoff"
+        },
+        "high_cut": {
+          "frequency_hz": [2000, 5000],
+          "notes": "Reduce high frequencies"
+        },
+        "saturation_type": {
+          "value": "tube",
+          "notes": "Tube-style warmth without brightness"
+        }
+      },
+      "genre_affinity": ["ambient", "drone", "dark-ambient"],
+      "conflicts_with": ["bright", "crisp"],
+      "examples": ["Dark pad", "Brooding bass"]
+    },
+    {
+      "id": "BRIDGE-010",
+      "descriptor": "glassy",
+      "category": "timbre",
+      "translations": {
+        "synthesis_type": {
+          "value": "fm",
+          "notes": "FM synthesis for glassy tones"
+        },
+        "fm_ratio": {
+          "range": [1.0, 2.0],
+          "notes": "Simple FM ratios"
+        },
+        "filter_cutoff": {
+          "range": [0.7, 1.0],
+          "normalized": true,
+          "notes": "High cutoff for clarity"
+        },
+        "filter_resonance": {
+          "range": [0.1, 0.3],
+          "normalized": true,
+          "notes": "Some resonance for ring"
+        }
+      },
+      "genre_affinity": ["ambient", "electronic"],
+      "conflicts_with": ["warm", "aggressive"],
+      "examples": ["FM bell", "Glassy pad"]
+    }
+  ],
+  "conflict_resolution": [
+    {
+      "conflict": "warm + bright",
+      "resolution": "Split frequency bands: warm lows (filter), bright highs (presence boost)"
+    },
+    {
+      "conflict": "aggressive + ethereal",
+      "resolution": "Unusual but valid: distorted reverb, industrial ambient"
+    },
+    {
+      "conflict": "deep + punchy",
+      "resolution": "Conflicting: prioritize one or use different frequency bands"
+    },
+    {
+      "conflict": "lush + punchy",
+      "resolution": "Can work: punchy attack with lush tail"
+    }
+  ]
+}

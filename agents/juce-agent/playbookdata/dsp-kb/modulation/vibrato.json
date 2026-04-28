@@ -1,0 +1,41 @@
+{
+  "id": "dsp-kb_modulation_vibrato",
+  "kb": "dsp-kb",
+  "topic": "modulation",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Content to be harvested]",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Example code placeholder\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Vibrato Effect\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.783978+00:00"
+  },
+  "title": "Vibrato Effect",
+  "description": "Pitch modulation via delay modulation",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:47:27.397158Z",
+  "kb_type": "dsp",
+  "audio_relevance": 7,
+  "difficulty": "intermediate",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "vibrato effect",
+    "pitch modulation",
+    "delay vibrato",
+    "depth vibrato"
+  ],
+  "sources": [
+    "musicdsp.org"
+  ]
+}

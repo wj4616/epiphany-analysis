@@ -1,0 +1,97 @@
+{
+  "id": "ui-kb_components_knob-component",
+  "kb": "ui-kb",
+  "topic": "components",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "Custom knobs provide visual feedback and intuitive control for audio parameters. They should:",
+  "concepts": [
+    {
+      "name": "Responsive feel",
+      "description": "Use velocity-sensitive drag for natural control",
+      "related": []
+    },
+    {
+      "name": "Visual feedback",
+      "description": "Animate knob position in real-time",
+      "related": []
+    },
+    {
+      "name": "Context menu",
+      "description": "Right-click for parameter options",
+      "related": []
+    },
+    {
+      "name": "Keyboard support",
+      "description": "Arrow keys for fine adjustment",
+      "related": []
+    },
+    {
+      "name": "Automation",
+      "description": "Support host automation recording",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "class CustomKnob : public Slider\n{\npublic:\n    CustomKnob()\n    {\n        setSliderStyle(RotaryVerticalDrag);\n        setTextBoxStyle(NoTextBox, false, 0, 0);\n        setLookAndFeel(&customLookAndFeel);\n    }\n    \n    void paint(Graphics& g) override\n    {\n        auto bounds = getLocalBounds().toFloat();\n        auto centre = bounds.getCentre();\n        auto radius = jmin(bounds.getWidth(), bounds.getHeight()) / 2.0f;\n        \n        // Draw track\n        g.setColour(Colours::grey);\n        Path track;\n        track.addArc(bounds.getX(), bounds.getY(), radius * 2, radius * 2,\n                     radiansToDegrees(startAngle), radiansToDegrees(endAngle), true);\n        g.strokePath(track, PathStrokeType(3.0f));\n        \n        // Draw value arc\n        g.setColour(findColour(accentColourId));\n        Path valueArc;\n        auto valueAngle = startAngle + (endAngle - startAngle) * valueToProportionOfLength(getValue());\n        valueArc.addArc(bounds.getX(), bounds.getY(), radius * 2, radius * 2,\n                        radiansToDegrees(startAngle), radiansToDegrees(valueAngle), true);\n        g.strokePath(valueArc, PathStrokeType(3.0f));\n        \n        // Draw knob pointer\n        g.setColour(Colours::white);\n        auto pointer = centre.getPointOnCircumference(radius * 0.8f, valueAngle);\n        g.drawLine(centre.getX(), centre.getY(), pointer.getX(), pointer.getY(), 2.0f);\n    }\n    \n    void mouseDown(const MouseEvent& e) override\n    {\n        if (e.mods.isPopupMenu())\n        {\n            // Show context menu for parameter assignment\n            showParameterMenu();\n        }\n        else\n        {\n            Slider::mouseDown(e);\n        }\n    }\n    \n    void mouseDrag(const MouseEvent& e) override\n    {\n        // Custom drag sensitivity\n        auto dragSensitivity = 0.01f;\n        auto deltaY = e.getDistanceFromDragStartY();\n        auto newValue = getValue() + deltaY * dragSensitivity;\n        setValue(newValue, sendNotification);\n    }\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class CustomKnobLookAndFeel : public LookAndFeel_V4\n{\npublic:\n    void drawRotarySlider(Graphics& g, int x, int y, int width, int height,\n                          float sliderPos, float rotaryStartAngle, float rotaryEndAngle,\n                          Slider& slider) override\n    {\n        auto bounds = Rectangle<float>(x, y, width, height);\n        auto centre = bounds.getCentre();\n        auto radius = jmin(bounds.getWidth(), bounds.getHeight()) / 2.0f * 0.9f;\n        \n        // Knob body\n        g.setColour(slider.findColour(Slider::rotarySliderFillColourId));\n        g.fillEllipse(centre, radius);\n        \n        // Knob outline\n        g.setColour(slider.findColour(Slider::rotarySliderOutlineColourId));\n        g.drawEllipse(centre, radius, 1.5f);\n        \n        // Draw pointer\n        auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);\n        g.setColour(Colours::white);\n        \n        Path p;\n        auto pointerLength = radius * 0.33f;\n        auto pointerWidth = radius * 0.1f;\n        p.addRectangle(-pointerWidth, -radius + 5.0f, pointerWidth * 2.0f, pointerLength);\n        p.applyTransform(AffineTransform::rotation(angle).translated(centre));\n        \n        g.fillPath(p);\n    }\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class KnobWithValueDisplay : public CustomKnob\n{\npublic:\n    void paint(Graphics& g) override\n    {\n        CustomKnob::paint(g);\n        \n        // Draw value text below knob\n        g.setColour(findColour(textColourId));\n        g.setFont(12.0f);\n        \n        auto bounds = getLocalBounds();\n        auto textBounds = bounds.removeFromBottom(20);\n        \n        // Format value appropriately\n        auto displayValue = formatValue(getValue());\n        g.drawFittedText(displayValue, textBounds, Justification::centred, 1);\n    }\n    \nprivate:\n    String formatValue(double value)\n    {\n        // Format based on parameter type\n        if (parameter != nullptr)\n        {\n            return parameter->getText(value, 4);\n        }\n        return String(value, 2);\n    }\n    \n    AudioProcessorParameter* parameter = nullptr;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// In your editor class\nstd::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attachment;\nstd::unique_ptr<CustomKnob> knob;\n\nvoid setupKnob(AudioProcessorValueTreeState& apvts, const String& paramID)\n{\n    knob = std::make_unique<CustomKnob>();\n    addAndMakeVisible(knob.get());\n    \n    attachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(\n        apvts, paramID, *knob);\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Fix: Set snap to mouse position\nsetSnapsToMousePosition(false);\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Ensure parameter range matches slider\nsetRange(0.0, 1.0, 0.01);\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Use async update for smooth display\nvoid parameterValueChanged(int, float) override\n{\n    triggerAsyncUpdate();\n}\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Custom Knob Component\n\n## Overview\n\nCustom knobs provide visual feedback and intuitive control for audio parameters. They should:\n\n1. Respond to mouse drag with natural feel\n2. Support keyboard input for precision\n3. Provide visual feedback for value changes\n4. Handle automation recording\n\n## Basic Knob Implementation\n\n```cpp\nclass CustomKnob : public Slider\n{\npublic:\n    CustomKnob()\n    {\n        setSliderStyle(RotaryVerticalDrag);\n        setTextBoxStyle(NoTextBox, false, 0, 0);\n        setLookAndFeel(&customLookAndFeel);\n    }\n    \n    void paint(Graphics& g) override\n    {\n        auto bounds = getLocalBounds().toFloat();\n        auto centre = bounds.getCentre();\n        auto radius = jmin(bounds.getWidth(), bounds.getHeight()) / 2.0f;\n        \n        // Draw track\n        g.setColour(Colours::grey);\n        Path track;\n        track.addArc(bounds.getX(), bounds.getY(), radius * 2, radius * 2,\n                     radiansToDegrees(startAngle), radiansToDegrees(endAngle), true);\n        g.strokePath(track, PathStrokeType(3.0f));\n        \n        // Draw value arc\n        g.setColour(findColour(accentColourId));\n        Path valueArc;\n        auto valueAngle = startAngle + (endAngle - startAngle) * valueToProportionOfLength(getValue());\n        valueArc.addArc(bounds.getX(), bounds.getY(), radius * 2, radius * 2,\n                        radiansToDegrees(startAngle), radiansToDegrees(valueAngle), true);\n        g.strokePath(valueArc, PathStrokeType(3.0f));\n        \n        // Draw knob pointer\n        g.setColour(Colours::white);\n        auto pointer = centre.getPointOnCircumference(radius * 0.8f, valueAngle);\n        g.drawLine(centre.getX(), centre.getY(), pointer.getX(), pointer.getY(), 2.0f);\n    }\n    \n    void mouseDown(const MouseEvent& e) override\n    {\n        if (e.mods.isPopupMenu())\n        {\n            // Show context menu for parameter assignment\n            showParameterMenu();\n        }\n        else\n        {\n            Slider::mouseDown(e);\n        }\n    }\n    \n    void mouseDrag(const MouseEvent& e) override\n    {\n        // Custom drag sensitivity\n        auto dragSensitivity = 0.01f;\n        auto deltaY = e.getDistanceFromDragStartY();\n        auto newValue = getValue() + deltaY * dragSensitivity;\n        setValue(newValue, sendNotification);\n    }\n};\n```\n\n## LookAndFeel Customization\n\n```cpp\nclass CustomKnobLookAndFeel : public LookAndFeel_V4\n{\npublic:\n    void drawRotarySlider(Graphics& g, int x, int y, int width, int height,\n                          float sliderPos, float rotaryStartAngle, float rotaryEndAngle,\n                          Slider& slider) override\n    {\n        auto bounds = Rectangle<float>(x, y, width, height);\n        auto centre = bounds.getCentre();\n        auto radius = jmin(bounds.getWidth(), bounds.getHeight()) / 2.0f * 0.9f;\n        \n        // Knob body\n        g.setColour(slider.findColour(Slider::rotarySliderFillColourId));\n        g.fillEllipse(centre, radius);\n        \n        // Knob outline\n        g.setColour(slider.findColour(Slider::rotarySliderOutlineColourId));\n        g.drawEllipse(centre, radius, 1.5f);\n        \n        // Draw pointer\n        auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);\n        g.setColour(Colours::white);\n        \n        Path p;\n        auto pointerLength = radius * 0.33f;\n        auto pointerWidth = radius * 0.1f;\n        p.addRectangle(-pointerWidth, -radius + 5.0f, pointerWidth * 2.0f, pointerLength);\n        p.applyTransform(AffineTransform::rotation(angle).translated(centre));\n        \n        g.fillPath(p);\n    }\n};\n```\n\n## Value Display\n\n```cpp\nclass KnobWithValueDisplay : public CustomKnob\n{\npublic:\n    void paint(Graphics& g) override\n    {\n        CustomKnob::paint(g);\n        \n        // Draw value text below knob\n        g.setColour(findColour(textColourId));\n        g.setFont(12.0f);\n        \n        auto bounds = getLocalBounds();\n        auto textBounds = bounds.removeFromBottom(20);\n        \n        // Format value appropriately\n        auto displayValue = formatValue(getValue());\n        g.drawFittedText(displayValue, textBounds, Justification::centred, 1);\n    }\n    \nprivate:\n    String formatValue(double value)\n    {\n        // Format based on parameter type\n        if (parameter != nullptr)\n        {\n            return parameter->getText(value, 4);\n        }\n        return String(value, 2);\n    }\n    \n    AudioProcessorParameter* parameter = nullptr;\n};\n```\n\n## Parameter Attachment\n\n```cpp\n// In your editor class\nstd::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attachment;\nstd::unique_ptr<CustomKnob> knob;\n\nvoid setupKnob(AudioProcessorValueTreeState& apvts, const String& paramID)\n{\n    knob = std::make_unique<CustomKnob>();\n    addAndMakeVisible(knob.get());\n    \n    attachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(\n        apvts, paramID, *knob);\n}\n```\n\n## Best Practices\n\n1. **Responsive feel**: Use velocity-sensitive drag for natural control\n2. **Visual feedback**: Animate knob position in real-time\n3. **Context menu**: Right-click for parameter options\n4. **Keyboard support**: Arrow keys for fine adjustment\n5. **Automation**: Support host automation recording\n\n## Common Issues\n\n### Knob jumps on click\n```cpp\n// Fix: Set snap to mouse position\nsetSnapsToMousePosition(false);\n```\n\n### Slider range wrong\n```cpp\n// Ensure parameter range matches slider\nsetRange(0.0, 1.0, 0.01);\n```\n\n### Value display lag\n```cpp\n// Use async update for smooth display\nvoid parameterValueChanged(int, float) override\n{\n    triggerAsyncUpdate();\n}\n```",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.855421+00:00"
+  },
+  "title": "Custom Knob Component",
+  "description": "Creating custom rotary knob components for audio plugin UIs",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "ui",
+  "audio_relevance": 7,
+  "difficulty": "intermediate",
+  "implementation_examples": 3,
+  "tags": [
+    "knob",
+    "slider",
+    "component",
+    "lookandfeel",
+    "parameter"
+  ],
+  "related_topics": [
+    "gui",
+    "parameters"
+  ]
+}

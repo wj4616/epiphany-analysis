@@ -1,0 +1,23 @@
+{
+  "title": "Flanger Algorithm",
+  "description": "Comb filter flanging with feedback",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:47:25.371866Z",
+  "kb_type": "dsp",
+  "audio_relevance": 8,
+  "difficulty": "intermediate",
+  "markdown": "# Flanger Algorithm\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "flanger algorithm",
+    "comb filter flanger",
+    "through-zero flanger",
+    "feedback flanger"
+  ],
+  "sources": [
+    "DSP Stack Exchange",
+    "musicdsp.org"
+  ]
+}

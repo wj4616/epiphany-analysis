@@ -1,0 +1,26 @@
+#include "Waveshaper.h"
+
+namespace CogDSP
+{
+
+void Waveshaper::prepare(double sr)
+{
+    sampleRate = sr;
+}
+
+void Waveshaper::process(float* samples, int numSamples)
+{
+    // TODO: Implement waveshaping
+    juce::ignoreUnused(samples, numSamples);
+}
+
+void Waveshaper::setDrive(float driveDb)
+{
+    drive = driveDb;
+}
+
+void Waveshaper::reset()
+{
+}
+
+} // namespace CogDSP

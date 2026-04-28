@@ -1,0 +1,43 @@
+{
+  "id": "dsp-kb_reverb_reverb-design",
+  "kb": "dsp-kb",
+  "topic": "reverb",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Content to be harvested]",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Example code placeholder\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Reverb Parameter Design\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.775353+00:00"
+  },
+  "title": "Reverb Parameter Design",
+  "description": "Designing reverb parameters and controls",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:47:17.257913Z",
+  "kb_type": "dsp",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "reverb parameter design",
+    "reverb EQ",
+    "damping",
+    "pre-delay",
+    "room size"
+  ],
+  "sources": [
+    "Sound on Sound",
+    "Journal of AES"
+  ]
+}

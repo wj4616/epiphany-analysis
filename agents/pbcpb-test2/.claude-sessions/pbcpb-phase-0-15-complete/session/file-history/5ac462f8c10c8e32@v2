@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_synthesis-types_fm",
+  "kb": "sound-design",
+  "topic": "synthesis-types",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "FM Synthesis Fundamentals",
+  "summary": "Placeholder: Frequency modulation using operators for complex timbres.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["synthesis", "fm", "operator", "modulator", "carrier"],
+  "related_topics": ["oscillators", "modulation"],
+  "difficulty": "intermediate",
+  "domain_relevance": 9
+}

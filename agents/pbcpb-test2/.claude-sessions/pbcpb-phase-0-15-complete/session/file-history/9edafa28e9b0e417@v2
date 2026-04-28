@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_effects_distortion",
+  "kb": "sound-design",
+  "topic": "effects",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Distortion and Saturation for Character",
+  "summary": "Placeholder: Waveshaping, soft clipping, and saturation for warmth and grit.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["effects", "distortion", "saturation", "waveshaping", "warmth"],
+  "related_topics": ["effects", "genre-techniques"],
+  "difficulty": "intermediate",
+  "domain_relevance": 8
+}

@@ -1,0 +1,23 @@
+{
+  "markdown": "The requested resource is not available.\n\nPlease contact info@juce.com if you were expecting to find something here.",
+  "metadata": {
+    "scrapeId": "019d38fb-5f9d-73ef-9439-3b6dcb61e4fd",
+    "sourceURL": "https://docs.juce.com/master/classdsp::DelayLine.html",
+    "url": "https://docs.juce.com/master/classjuce_1_1dsp::DelayLine.html",
+    "statusCode": 404,
+    "error": "Not Found",
+    "contentType": "text/html",
+    "proxyUsed": "basic",
+    "cacheState": "hit",
+    "cachedAt": "2026-03-29T09:43:26.816Z",
+    "creditsUsed": 1,
+    "concurrencyLimited": false
+  },
+  "html": "<html><body><p>The requested resource is not available.</p>\n    <p>Please contact info@juce.com if you were expecting to find something here.</p>\n\n</body></html>",
+  "links": [],
+  "source_url": "https://docs.juce.com/master/classdsp::DelayLine.html",
+  "source": "juce-official",
+  "juce_version": "7.0.12",
+  "harvested_at": "2026-03-29T02:44:51.543766",
+  "kb_type": "technical"
+}

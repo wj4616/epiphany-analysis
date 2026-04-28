@@ -1,0 +1,438 @@
+#include "PluginProcessor.h"
+#include "PluginEditor.h"
+#include <cmath>
+
+// Parameter IDs
+const juce::StringArray CogVSTAudioProcessor::paramIDs = {
+    "sensitivity", "pathBalance", "textureDrive", "droneDensity", "spectralDrift",
+    "thickness", "filterRouting", "filterACutoff", "filterAReso", "filterAType",
+    "filterBCutoff", "filterBReso", "filterBType", "drive", "tone",
+    "feedback", "width", "evolutionSpeed", "complexity", "reactivity",
+    "outputGain", "mix", "bypass", "freeze", "morph", "morphTime"
+};
+
+//==============================================================================
+CogVSTAudioProcessor::CogVSTAudioProcessor()
+    : AudioProcessor(BusesProperties()
+        .withInput("Input", juce::AudioChannelSet::stereo(), true)
+        .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
+      apvts(*this, nullptr, "Parameters", createParameterLayout())
+{
+    // Get atomic parameter pointers
+    paramSensitivity = apvts.getRawParameterValue("sensitivity");
+    paramPathBalance = apvts.getRawParameterValue("pathBalance");
+    paramTextureDrive = apvts.getRawParameterValue("textureDrive");
+    paramDroneDensity = apvts.getRawParameterValue("droneDensity");
+    paramSpectralDrift = apvts.getRawParameterValue("spectralDrift");
+    paramThickness = apvts.getRawParameterValue("thickness");
+    paramFilterRouting = apvts.getRawParameterValue("filterRouting");
+    paramFilterACutoff = apvts.getRawParameterValue("filterACutoff");
+    paramFilterAReso = apvts.getRawParameterValue("filterAReso");
+    paramFilterAType = apvts.getRawParameterValue("filterAType");
+    paramFilterBCutoff = apvts.getRawParameterValue("filterBCutoff");
+    paramFilterBReso = apvts.getRawParameterValue("filterBReso");
+    paramFilterBType = apvts.getRawParameterValue("filterBType");
+    paramDrive = apvts.getRawParameterValue("drive");
+    paramTone = apvts.getRawParameterValue("tone");
+    paramFeedback = apvts.getRawParameterValue("feedback");
+    paramWidth = apvts.getRawParameterValue("width");
+    paramEvolutionSpeed = apvts.getRawParameterValue("evolutionSpeed");
+    paramComplexity = apvts.getRawParameterValue("complexity");
+    paramReactivity = apvts.getRawParameterValue("reactivity");
+    paramOutputGain = apvts.getRawParameterValue("outputGain");
+    paramMix = apvts.getRawParameterValue("mix");
+    paramBypass = apvts.getRawParameterValue("bypass");
+    paramFreeze = apvts.getRawParameterValue("freeze");
+}
+
+CogVSTAudioProcessor::~CogVSTAudioProcessor()
+{
+}
+
+//==============================================================================
+juce::AudioProcessorValueTreeState::ParameterLayout CogVSTAudioProcessor::createParameterLayout()
+{
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
+
+    // Detector
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("sensitivity", "Sensitivity", 0.0f, 1.0f, 0.5f));
+
+    // Merge
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("pathBalance", "Path Balance", 0.0f, 1.0f, 0.5f));
+
+    // Path A - Waveshaper
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("textureDrive", "Texture Drive", 0.0f, 1.0f, 0.3f));
+
+    // Path B - Spectral
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("droneDensity", "Drone Density", 0.0f, 1.0f, 0.3f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("spectralDrift", "Spectral Drift", -1.0f, 1.0f, 0.0f));
+
+    // Path B - Chorus
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("thickness", "Thickness", 0.0f, 1.0f, 0.5f));
+
+    // Filters
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("filterRouting", "Filter Routing", juce::StringArray{"Parallel", "Series"}, 0));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("filterACutoff", "Filter A Cutoff", 20.0f, 20000.0f, 1000.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("filterAReso", "Filter A Reso", 0.0f, 1.0f, 0.3f));
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("filterAType", "Filter A Type", juce::StringArray{"LP", "HP", "BP", "Notch"}, 0));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("filterBCutoff", "Filter B Cutoff", 20.0f, 20000.0f, 2000.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("filterBReso", "Filter B Reso", 0.0f, 1.0f, 0.2f));
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("filterBType", "Filter B Type", juce::StringArray{"LP", "HP", "BP", "Notch"}, 0));
+
+    // Drive Circuit
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drive", "Drive", 0.0f, 1.0f, 0.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("tone", "Tone", 0.0f, 1.0f, 0.5f));
+
+    // Feedback
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("feedback", "Feedback", 0.0f, 0.95f, 0.3f));
+
+    // Stereo Widener
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("width", "Width", 0.0f, 1.0f, 0.5f));
+
+    // Modulation
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("evolutionSpeed", "Evolution", 0.0f, 1.0f, 0.3f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("complexity", "Complexity", 0.0f, 1.0f, 0.2f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("reactivity", "Reactivity", 0.0f, 1.0f, 0.3f));
+
+    // Output
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("outputGain", "Output Gain", -12.0f, 12.0f, 0.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0f, 1.0f, 0.5f));
+
+    // Bypass / Freeze
+    params.push_back(std::make_unique<juce::AudioParameterBool>("bypass", "Bypass", false));
+    params.push_back(std::make_unique<juce::AudioParameterBool>("freeze", "Freeze", false));
+
+    // Preset Morphing
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("morph", "Morph", 0.0f, 1.0f, 0.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("morphTime", "Morph Time", 0.1f, 30.0f, 2.0f));
+
+    return { params.begin(), params.end() };
+}
+
+//==============================================================================
+void CogVSTAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
+{
+    // Initialize DSP modules
+    detector.prepare(sampleRate, samplesPerBlock);
+
+    // Spectral engine latency (2048 samples at 48kHz ≈ 42ms)
+    spectralLatency = 2048 / 2;  // hop size
+    spectralEngine.prepare(sampleRate, samplesPerBlock);
+
+    waveshaper.prepare(sampleRate, samplesPerBlock, spectralEngine.getLatencySamples());
+    chorus.prepare(sampleRate, samplesPerBlock);
+    filterA.prepare(sampleRate);
+    filterB.prepare(sampleRate);
+    driveCircuit.prepare(sampleRate, samplesPerBlock);
+    widener.prepare(sampleRate);
+    modulation.prepare(sampleRate, samplesPerBlock);
+
+    // Prepare delays
+    const float maxDelayMs = 100.0f;  // Max feedback delay
+    dryDelay.prepare(sampleRate, maxDelayMs);
+    feedbackDelay.prepare(sampleRate, maxDelayMs);
+
+    // DC blockers for feedback
+    feedbackDCBlockerL.prepare(sampleRate);
+    feedbackDCBlockerR.prepare(sampleRate);
+
+    // Smoothed values
+    smoothedPathBalance.reset(sampleRate, 0.002);  // 2ms
+    smoothedPathBalance.setCurrentAndTargetValue(0.5f);
+
+    smoothedMix.reset(sampleRate, 0.02);  // 20ms
+    smoothedMix.setCurrentAndTargetValue(0.5f);
+
+    smoothedOutputGain.reset(sampleRate, 0.02);
+    smoothedOutputGain.setCurrentAndTargetValue(1.0f);
+
+    smoothedFeedback.reset(sampleRate, 0.02);
+    smoothedFeedback.setCurrentAndTargetValue(0.0f);
+
+    // Feedback buffer
+    feedbackBufferL.resize(samplesPerBlock * 2);
+    feedbackBufferR.resize(samplesPerBlock * 2);
+    std::fill(feedbackBufferL.begin(), feedbackBufferL.end(), 0.0f);
+    std::fill(feedbackBufferR.begin(), feedbackBufferR.end(), 0.0f);
+
+    // Report latency to DAW
+    setLatencySamples(spectralEngine.getLatencySamples());
+
+    // Reset bypass state
+    bypassCrossfade = 1.0f;
+    wasBypassed = false;
+}
+
+void CogVSTAudioProcessor::releaseResources()
+{
+}
+
+bool CogVSTAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
+{
+    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+        return false;
+
+    if (layouts.getMainInputChannelSet() != juce::AudioChannelSet::stereo() &&
+        layouts.getMainInputChannelSet() != juce::AudioChannelSet::mono())
+        return false;
+
+    return true;
+}
+
+//==============================================================================
+void CogVSTAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+{
+    juce::ignoreUnused(midiMessages);
+    juce::ScopedNoDenormals noDenormals;
+
+    const int numSamples = buffer.getNumSamples();
+    auto* left = buffer.getWritePointer(0);
+    auto* right = buffer.getNumChannels() > 1 ? buffer.getWritePointer(1) : left;
+
+    // Get parameter values
+    const float sensitivity = paramSensitivity->load();
+    const float pathBalance = paramPathBalance->load();
+    const float textureDrive = paramTextureDrive->load();
+    const float droneDensity = paramDroneDensity->load();
+    const float spectralDrift = paramSpectralDrift->load();
+    const float thickness = paramThickness->load();
+    const int filterRouting = static_cast<int>(paramFilterRouting->load());
+    const float filterACutoff = paramFilterACutoff->load();
+    const float filterAReso = paramFilterAReso->load();
+    const int filterAType = static_cast<int>(paramFilterAType->load());
+    const float filterBCutoff = paramFilterBCutoff->load();
+    const float filterBReso = paramFilterBReso->load();
+    const int filterBType = static_cast<int>(paramFilterBType->load());
+    const float drive = paramDrive->load();
+    const float tone = paramTone->load();
+    const float feedback = paramFeedback->load();
+    const float width = paramWidth->load();
+    const float evolutionSpeed = paramEvolutionSpeed->load();
+    const float complexity = paramComplexity->load();
+    const float reactivity = paramReactivity->load();
+    const float outputGain = paramOutputGain->load();
+    const float mix = paramMix->load();
+    const bool bypass = paramBypass->load() > 0.5f;
+    const bool freeze = paramFreeze->load() > 0.5f;
+
+    // Bypass crossfade
+    if (bypass && !wasBypassed)
+    {
+        // Entering bypass
+        bypassCrossfade = 1.0f;
+    }
+    else if (!bypass && wasBypassed)
+    {
+        // Exiting bypass
+        bypassCrossfade = 0.0f;
+    }
+    wasBypassed = bypass;
+
+    // Bypass crossfade rate (~5ms)
+    const float crossfadeRate = 1.0f / (0.005f * static_cast<float>(getSampleRate()));
+    if (bypass)
+    {
+        bypassCrossfade = std::max(0.0f, bypassCrossfade - crossfadeRate * numSamples);
+    }
+    else
+    {
+        bypassCrossfade = std::min(1.0f, bypassCrossfade + crossfadeRate * numSamples);
+    }
+
+    // If fully bypassed, pass through
+    if (bypass && bypassCrossfade < 0.001f)
+    {
+        return;  // Dry passthrough
+    }
+
+    // Store dry signal for mixing
+    std::vector<float> dryL(numSamples), dryR(numSamples);
+    for (int i = 0; i < numSamples; ++i)
+    {
+        dryL[i] = left[i];
+        dryR[i] = right[i];
+    }
+
+    // Update modulation engine
+    modulation.setEvolutionSpeed(evolutionSpeed);
+    modulation.setComplexity(complexity);
+    modulation.setReactivity(reactivity);
+    modulation.process(numSamples);
+
+    // Update DSP parameters
+    detector.setSensitivity(sensitivity);
+    waveshaper.setDrive(textureDrive);
+    spectralEngine.setDroneDensity(droneDensity);
+    spectralEngine.setSpectralDrift(spectralDrift);
+    spectralEngine.setFreeze(freeze);
+    chorus.setThickness(thickness);
+    filterA.setCutoff(filterACutoff);
+    filterA.setResonance(filterAReso);
+    filterA.setMode(static_cast<CogDSP::ResonantFilter::Mode>(filterAType));
+    filterB.setCutoff(filterBCutoff);
+    filterB.setResonance(filterBReso);
+    filterB.setMode(static_cast<CogDSP::ResonantFilter::Mode>(filterBType));
+    driveCircuit.setDrive(drive);
+    driveCircuit.setTone(tone);
+    widener.setWidth(width);
+
+    // Update smoothed values
+    smoothedPathBalance.setTargetValue(pathBalance);
+    smoothedMix.setTargetValue(mix);
+    smoothedOutputGain.setTargetValue(std::pow(10.0f, outputGain / 20.0f));
+    smoothedFeedback.setTargetValue(feedback);
+
+    // Skip samples for smoothed values
+    smoothedPathBalance.skip(numSamples);
+    smoothedMix.skip(numSamples);
+    smoothedOutputGain.skip(numSamples);
+    smoothedFeedback.skip(numSamples);
+
+    // Apply modulation to filters
+    const float lfoA = modulation.getLFOAOutput();
+    const float lfoB = modulation.getLFOBOutput();
+    const float audioReactive = modulation.getAudioReactiveMod();
+    const float spectralFluxMod = modulation.getSpectralFluxMod();
+
+    // Sum modulation in octave-space
+    float filterAModOctaves = lfoA + audioReactive + spectralFluxMod * 0.5f;
+    float filterBModOctaves = lfoB + audioReactive + spectralFluxMod * 0.5f;
+    filterAModOctaves = std::clamp(filterAModOctaves, -4.0f, 4.0f);
+    filterBModOctaves = std::clamp(filterBModOctaves, -4.0f, 4.0f);
+
+    filterA.setModulationOctaves(filterAModOctaves);
+    filterB.setModulationOctaves(filterBModOctaves);
+
+    // Process detector
+    detector.process(left, numSamples);
+    const float pathAGain = detector.getPathAGain();
+    const float pathBGain = detector.getPathBGain();
+
+    // Process signal chain
+    // Path A: Texture/Waveshaper path
+    std::vector<float> pathAOut(numSamples);
+    for (int i = 0; i < numSamples; ++i)
+    {
+        pathAOut[i] = left[i] * pathAGain;
+    }
+    float* pathAOutPtr = pathAOut.data();
+    waveshaper.process(pathAOutPtr, pathAOutPtr, numSamples);
+
+    // Path B: Spectral/Chorus path (mono processing)
+    std::vector<float> pathBOutL(numSamples), pathBOutR(numSamples);
+    spectralEngine.process(left, pathBOutL.data(), pathBOutR.data(), numSamples);
+    chorus.process(pathBOutL.data(), pathBOutR.data(), numSamples);
+
+    // Multiply path B by path gain
+    for (int i = 0; i < numSamples; ++i)
+    {
+        pathBOutL[i] *= pathBGain;
+        pathBOutR[i] *= pathBGain;
+    }
+
+    // Merge paths with equal-power crossfade
+    const float balance = smoothedPathBalance.getCurrentValue();
+    const auto crossfade = CogDSP::equalPowerCrossfade(balance);
+    std::vector<float> mergeL(numSamples), mergeR(numSamples);
+    for (int i = 0; i < numSamples; ++i)
+    {
+        // Path A to stereo (it's already stereo from waveshaper)
+        mergeL[i] = pathAOut[i] * crossfade.dry + pathBOutL[i] * crossfade.wet;
+        mergeR[i] = pathAOut[i] * crossfade.dry + pathBOutR[i] * crossfade.wet;
+    }
+
+    // Add feedback
+    const float fbAmount = smoothedFeedback.getCurrentValue();
+    for (int i = 0; i < numSamples; ++i)
+    {
+        mergeL[i] += feedbackBufferL[i] * fbAmount;
+        mergeR[i] += feedbackBufferR[i] * fbAmount;
+    }
+
+    // Process filters
+    if (filterRouting == 0)
+    {
+        // Parallel
+        filterA.process(mergeL.data(), mergeR.data(), numSamples);
+        filterB.process(mergeL.data(), mergeR.data(), numSamples);
+    }
+    else
+    {
+        // Series: A → B
+        filterA.process(mergeL.data(), mergeR.data(), numSamples);
+        filterB.process(mergeL.data(), mergeR.data(), numSamples);
+    }
+
+    // Process drive circuit
+    driveCircuit.process(mergeL.data(), mergeR.data(), numSamples);
+
+    // Feedback tap (after drive, before widener)
+    for (int i = 0; i < numSamples; ++i)
+    {
+        feedbackBufferL[i] = feedbackDCBlockerL.processSample(mergeL[i]);
+        feedbackBufferR[i] = feedbackDCBlockerR.processSample(mergeR[i]);
+        // Soft clip feedback
+        feedbackBufferL[i] = CogDSP::fastTanh(feedbackBufferL[i]);
+        feedbackBufferR[i] = CogDSP::fastTanh(feedbackBufferR[i]);
+    }
+
+    // Stereo widener
+    widener.process(mergeL.data(), mergeR.data(), numSamples);
+
+    // Final limiter (tanh)
+    for (int i = 0; i < numSamples; ++i)
+    {
+        mergeL[i] = CogDSP::fastTanh(mergeL[i]);
+        mergeR[i] = CogDSP::fastTanh(mergeR[i]);
+    }
+
+    // Output gain
+    const float outGain = smoothedOutputGain.getCurrentValue();
+    for (int i = 0; i < numSamples; ++i)
+    {
+        mergeL[i] *= outGain;
+        mergeR[i] *= outGain;
+    }
+
+    // Dry/wet mix with equal-power crossfade
+    const auto mixGains = CogDSP::equalPowerCrossfade(smoothedMix.getCurrentValue());
+    for (int i = 0; i < numSamples; ++i)
+    {
+        // Apply bypass crossfade
+        const float wetL = mergeL[i] * bypassCrossfade;
+        const float wetR = mergeR[i] * bypassCrossfade;
+        const float drySignalL = dryL[i] * (1.0f - bypassCrossfade);
+        const float drySignalR = dryR[i] * (1.0f - bypassCrossfade);
+
+        left[i] = drySignalL * mixGains.dry + wetL * mixGains.wet;
+        right[i] = drySignalR * mixGains.dry + wetR * mixGains.wet;
+    }
+}
+
+//==============================================================================
+juce::AudioProcessorEditor* CogVSTAudioProcessor::createEditor()
+{
+    return new CogVSTAudioProcessorEditor(*this);
+}
+
+void CogVSTAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
+{
+    auto state = apvts.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    copyXmlToBinary(*xml, destData);
+}
+
+void CogVSTAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
+{
+    std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
+    if (xml && xml->hasTagName(apvts.state.getType()))
+    {
+        apvts.replaceState(juce::ValueTree::fromXml(*xml));
+    }
+}
+
+//==============================================================================
+juce::AudioProcessor* createPluginFilter()
+{
+    return new CogVSTAudioProcessor();
+}

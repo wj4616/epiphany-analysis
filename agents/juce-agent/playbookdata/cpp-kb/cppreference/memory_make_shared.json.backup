@@ -1,0 +1,26 @@
+{
+  "markdown": "# 404 Not Found\n\nThe requested URL (/w/cpp/memory/make\\_shared.html)\nwas not found on this server.",
+  "metadata": {
+    "title": "404 Not Found",
+    "language": "en",
+    "scrapeId": "019d39b1-6898-7531-a541-d4926b942b94",
+    "sourceURL": "https://en.cppreference.com/w/cpp/memory/make_shared",
+    "url": "https://en.cppreference.com/w/cpp/memory/make_shared.html",
+    "statusCode": 404,
+    "error": "Not Found",
+    "contentType": "text/html; charset=iso-8859-1",
+    "timezone": "America/New_York",
+    "proxyUsed": "basic",
+    "cacheState": "miss",
+    "indexId": "83182ad1-177f-4428-9ffa-cf002c62dfe1",
+    "creditsUsed": 1,
+    "concurrencyLimited": false
+  },
+  "html": "<!DOCTYPE html><html lang=\"en\">\n<body>\n\n\n\n<div>\n\n<h1>404 Not Found</h1>\n\n<p>\nThe requested URL (/w/cpp/memory/make_shared.html)\nwas not found on this server.\n</p>\n\n</div>\n\n\n\n\n\n</body></html>",
+  "links": [],
+  "source_url": "https://en.cppreference.com/w/cpp/memory/make_shared",
+  "source": "cppreference",
+  "topic": "memory/make_shared",
+  "harvested_at": "2026-03-29T06:03:41.963932",
+  "kb_type": "cpp"
+}

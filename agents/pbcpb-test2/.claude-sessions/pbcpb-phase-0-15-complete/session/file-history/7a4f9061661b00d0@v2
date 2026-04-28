@@ -1,0 +1,775 @@
+{
+  "name": "juce-vst-business-playbook",
+  "version": "1.0.0",
+  "description": "JUCE VST Business Playbook — 17-phase workflow for VST plugin development and commercial distribution",
+  "created": "2026-04-02",
+  "complexity": {
+    "process": "standard",
+    "knowledge": "bridged",
+    "roles": "minimal"
+  },
+  "workflow_model": "human-in-the-loop",
+
+  "roles": {
+    "Human": {
+      "description": "Creative director, final decision-maker, perceptual tester",
+      "decision_authority": "exclusive on creative decisions, approval on all gates",
+      "appears_in_phases": [0, 1, 7, 9, 10, 11, 12, 13]
+    },
+    "Coordinator": {
+      "description": "Process manager, gate verification, status tracking",
+      "decision_authority": "gate PASS/FAIL, escalation routing",
+      "appears_in_phases": "all"
+    },
+    "Builder": {
+      "description": "Code implementation, testing, building",
+      "decision_authority": "implementation details within approved architecture",
+      "appears_in_phases": [3, 4, 5, 6, 7, 8, 10, 13]
+    },
+    "Architect": {
+      "description": "Design, planning, architecture",
+      "decision_authority": "architecture design within approved scope",
+      "appears_in_phases": [2, 4, 5, 6]
+    }
+  },
+
+  "phases": [
+    {
+      "id": 0,
+      "name": "Commission & Scoping",
+      "description": "Establish configuration, define purpose, scope, constraints, complexity profile",
+      "owner": "[Human]",
+      "compilation_block": {
+        "success_criteria": [
+          "Purpose statement is one unambiguous paragraph",
+          "Scope has explicit in/out/adjacent lists",
+          "Success criteria are measurable",
+          "Technical constraints documented",
+          "Human approved SPEC.md"
+        ],
+        "tools_available": ["file_creation", "user_questioning"],
+        "behavioral_profile": {
+          "risk_tolerance": "minimal",
+          "creativity_level": "conservative",
+          "verbosity": "concise",
+          "stance": "supportive"
+        }
+      },
+      "skill_activation": "brainstorming",
+      "tasks": [
+        "T0.1 Document commission brief from user",
+        "T0.2 Define purpose statement",
+        "T0.3 Define scope (in/out/adjacent)",
+        "T0.4 Define success criteria",
+        "T0.5 Define constraints",
+        "T0.6 Determine complexity profile"
+      ],
+      "gate": {
+        "conditions": [
+          "Purpose statement is one unambiguous paragraph",
+          "Scope has explicit in/out/adjacent lists",
+          "Success criteria are measurable",
+          "Technical constraints documented",
+          "Human approved SPEC.md"
+        ],
+        "evidence_required": ["scope.md", "constraints.md", "success-criteria.md"]
+      }
+    },
+    {
+      "id": 1,
+      "name": "Domain Research",
+      "description": "Research domain, best practices, SME knowledge, competitive landscape",
+      "owner": "[Human], [Architect]",
+      "compilation_block": {
+        "success_criteria": [
+          "Domain analysis complete",
+          "Best practices documented",
+          "Competitive templates analyzed",
+          "Cross-cutting concerns identified",
+          "Requirements documented"
+        ],
+        "tools_available": ["file_creation", "web_search", "file_reading"],
+        "behavioral_profile": {
+          "risk_tolerance": "minimal",
+          "creativity_level": "conservative",
+          "verbosity": "detailed",
+          "stance": "inquisitive"
+        }
+      },
+      "skill_activation": "brainstorming",
+      "tasks": [
+        "T1.1 Research domain analysis",
+        "T1.2 Document best practices",
+        "T1.3 Analyze competitive templates",
+        "T1.4 Identify cross-cutting concerns",
+        "T1.5 Document platform concerns",
+        "T1.6 Conduct SME interviews",
+        "T1.7 Document requirements"
+      ],
+      "gate": {
+        "conditions": [
+          "Domain analysis complete",
+          "Best practices documented",
+          "Competitive templates analyzed",
+          "Cross-cutting concerns identified",
+          "Requirements documented"
+        ],
+        "evidence_required": ["research/domain-analysis.md", "research/best-practices.md", "research/requirements.md"]
+      }
+    },
+    {
+      "id": 2,
+      "name": "KB Architecture",
+      "description": "Design knowledge base layers, schemas, bridge mappings, population strategy",
+      "owner": "[Architect]",
+      "compilation_block": {
+        "success_criteria": [
+          "KB layers defined",
+          "Schemas validated",
+          "Bridge mappings defined",
+          "Population strategy defined"
+        ],
+        "tools_available": ["file_creation", "file_reading"],
+        "behavioral_profile": {
+          "risk_tolerance": "low",
+          "creativity_level": "moderate",
+          "verbosity": "detailed",
+          "stance": "neutral"
+        }
+      },
+      "skill_activation": "writing-plans",
+      "tasks": [
+        "T2.1 Define KB layer architecture",
+        "T2.2 Create entry schema",
+        "T2.3 Create bridge schema",
+        "T2.4 Define population strategy",
+        "T2.5 Define directory structure"
+      ],
+      "gate": {
+        "conditions": [
+          "KB layers defined",
+          "Entry schema validated",
+          "Bridge schema validated",
+          "Population strategy defined"
+        ],
+        "evidence_required": ["architecture/kb-architecture.md", "architecture/entry-schema.json", "architecture/bridge-schema.json"]
+      }
+    },
+    {
+      "id": 3,
+      "name": "KB Bootstrapping",
+      "description": "Create directory tree, seed entries, harvest research content, validate schema",
+      "owner": "[Builder]",
+      "compilation_block": {
+        "success_criteria": [
+          "Directory tree created",
+          "Entries seeded",
+          "Content harvested",
+          "Schema validation passed"
+        ],
+        "tools_available": ["file_creation", "bash_commands"],
+        "behavioral_profile": {
+          "risk_tolerance": "minimal",
+          "creativity_level": "strict",
+          "verbosity": "detailed",
+          "stance": "neutral"
+        }
+      },
+      "skill_activation": "execute-plans",
+      "tasks": [
+        "T3.1 Create KB directory tree",
+        "T3.2 Create index files",
+        "T3.3 Seed placeholder entries",
+        "T3.4 Harvest research content",
+        "T3.5 Validate all entries against schemas"
+      ],
+      "gate": {
+        "conditions": [
+          "Directory tree matches structure",
+          "All indexes created",
+          "All entries seeded",
+          "Schema validation passed"
+        ],
+        "evidence_required": ["validation-report.md", "kb/master-index.json"]
+      }
+    },
+    {
+      "id": 4,
+      "name": "Process Architecture",
+      "description": "Design output playbook phase structure, task granularity, dependencies, gates",
+      "owner": "[Architect]",
+      "compilation_block": {
+        "success_criteria": [
+          "Phase structure defined",
+          "Task granularity defined",
+          "Dependencies mapped",
+          "Gates defined"
+        ],
+        "tools_available": ["file_creation", "file_reading"],
+        "behavioral_profile": {
+          "risk_tolerance": "low",
+          "creativity_level": "moderate",
+          "verbosity": "detailed",
+          "stance": "neutral"
+        }
+      },
+      "skill_activation": "writing-plans",
+      "tasks": [
+        "T4.1 Define phase structure",
+        "T4.2 Define task granularity",
+        "T4.3 Map dependencies",
+        "T4.4 Define phase gates",
+        "T4.5 Define document tree"
+      ],
+      "gate": {
+        "conditions": [
+          "Phase structure defined",
+          "Task granularity defined",
+          "Dependencies mapped",
+          "Gates defined"
+        ],
+        "evidence_required": ["architecture/phase-structure.md", "architecture/phase-gates.md"]
+      }
+    },
+    {
+      "id": 5,
+      "name": "Role Engineering",
+      "description": "Define functional roles: who does what, who approves, decision authority",
+      "owner": "[Architect]",
+      "compilation_block": {
+        "success_criteria": [
+          "Roles defined",
+          "Decision authority defined",
+          "Handoff points defined",
+          "Escalation paths defined"
+        ],
+        "tools_available": ["file_creation", "file_reading"],
+        "behavioral_profile": {
+          "risk_tolerance": "minimal",
+          "creativity_level": "conservative",
+          "verbosity": "detailed",
+          "stance": "neutral"
+        }
+      },
+      "skill_activation": "execute-plans",
+      "tasks": [
+        "T5.1 Define roles",
+        "T5.2 Define decision authority",
+        "T5.3 Define handoff points",
+        "T5.4 Define escalation paths"
+      ],
+      "gate": {
+        "conditions": [
+          "Roles defined with responsibilities",
+          "Decision authority defined",
+          "Handoff points defined",
+          "Escalation paths defined"
+        ],
+        "evidence_required": ["architecture/role-definitions.md", "architecture/handoff-points.md", "architecture/escalation-paths.md"]
+      }
+    },
+    {
+      "id": 6,
+      "name": "Task Engineering",
+      "description": "Write detailed task descriptions, execution guides, templates for each phase",
+      "owner": "[Architect], [Builder]",
+      "compilation_block": {
+        "success_criteria": [
+          "All tasks defined",
+          "Execution guides created",
+          "Templates created",
+          "Task audit passed"
+        ],
+        "tools_available": ["file_creation", "file_reading"],
+        "behavioral_profile": {
+          "risk_tolerance": "minimal",
+          "creativity_level": "conservative",
+          "verbosity": "detailed",
+          "stance": "neutral"
+        }
+      },
+      "skill_activation": "execute-plans",
+      "tasks": [
+        "T6.1 Write task list",
+        "T6.2 Map cross-cutting concerns",
+        "T6.3 Create execution guides",
+        "T6.4 Conduct task engineering audit"
+      ],
+      "gate": {
+        "conditions": [
+          "All tasks defined",
+          "Cross-cutting concerns mapped",
+          "Execution guides created",
+          "Task audit passed"
+        ],
+        "evidence_required": ["drafts/task-list-v0.1.md", "drafts/ccc-mapping.md", "phases/phase-04-dsp-implementation.md", "audits/task-engineering-review.md"]
+      }
+    },
+    {
+      "id": 7,
+      "name": "Output Configuration",
+      "description": "Define workflow model, roles, usage instructions, compilation tuning, KB mapping",
+      "owner": "[Coordinator]",
+      "compilation_block": {
+        "success_criteria": [
+          "Workflow model defined",
+          "Usage instructions defined",
+          "Compilation tuning defined",
+          "KB mapping defined",
+          "Skill activation defined",
+          "Router defined",
+          "Post-run review defined"
+        ],
+        "tools_available": ["file_creation", "file_reading"],
+        "behavioral_profile": {
+          "risk_tolerance": "minimal",
+          "creativity_level": "conservative",
+          "verbosity": "detailed",
+          "stance": "neutral"
+        }
+      },
+      "skill_activation": "execute-plans",
+      "tasks": [
+        "T7.1 Define workflow model",
+        "T7.2 Define usage instructions",
+        "T7.3 Define compilation block tuning",
+        "T7.4 Define phase-to-KB mapping",
+        "T7.5 Define skill activation",
+        "T7.6 Define router/dispatcher",
+        "T7.7 Define post-run review structure"
+      ],
+      "gate": {
+        "conditions": [
+          "Workflow model defined",
+          "Usage instructions defined",
+          "Compilation tuning defined",
+          "KB mapping defined",
+          "Skill activation defined",
+          "Router defined",
+          "Post-run review defined"
+        ],
+        "evidence_required": ["output-config.md"]
+      }
+    },
+    {
+      "id": 8,
+      "name": "Metrics & KPI Definition",
+      "description": "Define process, quality, and domain outcome metrics with targets",
+      "owner": "[Coordinator]",
+      "compilation_block": {
+        "success_criteria": [
+          "Process metrics defined",
+          "Quality metrics defined",
+          "Domain outcome metrics defined",
+          "KB metrics defined",
+          "KPI targets established"
+        ],
+        "tools_available": ["file_creation", "file_reading"],
+        "behavioral_profile": {
+          "risk_tolerance": "minimal",
+          "creativity_level": "conservative",
+          "verbosity": "detailed",
+          "stance": "neutral"
+        }
+      },
+      "skill_activation": "execute-plans",
+      "tasks": [
+        "T8.1 Define process metrics",
+        "T8.2 Define quality metrics",
+        "T8.3 Define domain outcome metrics",
+        "T8.4 Define KB metrics",
+        "T8.5 Define KPI targets",
+        "T8.6 Define escalation triggers"
+      ],
+      "gate": {
+        "conditions": [
+          "Process metrics defined with targets",
+          "Quality metrics defined with targets",
+          "Domain outcome metrics defined with targets",
+          "KB metrics defined with targets",
+          "KPI targets established"
+        ],
+        "evidence_required": ["metrics-and-kpi.md"]
+      }
+    },
+    {
+      "id": 9,
+      "name": "JSON Assembly",
+      "description": "Assemble complete output playbook JSON from all design documents",
+      "owner": "[Builder]",
+      "compilation_block": {
+        "success_criteria": [
+          "JSON structure complete",
+          "All phases represented",
+          "All roles defined",
+          "All tasks included",
+          "All gates included"
+        ],
+        "tools_available": ["file_creation", "file_reading"],
+        "behavioral_profile": {
+          "risk_tolerance": "minimal",
+          "creativity_level": "strict",
+          "verbosity": "detailed",
+          "stance": "neutral"
+        }
+      },
+      "skill_activation": "execute-plans",
+      "tasks": [
+        "T9.1 Assemble JSON structure",
+        "T9.2 Populate phases array",
+        "T9.3 Populate roles object",
+        "T9.4 Populate KB structure",
+        "T9.5 Populate metrics structure",
+        "T9.6 Validate JSON syntax"
+      ],
+      "gate": {
+        "conditions": [
+          "JSON structure complete",
+          "All phases represented",
+          "All roles defined",
+          "All tasks included",
+          "All gates included"
+        ],
+        "evidence_required": ["playbook.json"]
+      }
+    },
+    {
+      "id": 10,
+      "name": "JSON Validation & Consistency",
+      "description": "Validate assembled JSON using automated validators and manual review",
+      "owner": "[Coordinator]",
+      "compilation_block": {
+        "success_criteria": [
+          "JSON syntax valid",
+          "Schema validation passed",
+          "Cross-references resolved",
+          "Manual review passed"
+        ],
+        "tools_available": ["file_reading", "bash_commands"],
+        "behavioral_profile": {
+          "risk_tolerance": "minimal",
+          "creativity_level": "strict",
+          "verbosity": "detailed",
+          "stance": "critical"
+        }
+      },
+      "skill_activation": "execute-plans",
+      "tasks": [
+        "T10.1 Validate JSON syntax",
+        "T10.2 Validate against schema",
+        "T10.3 Check cross-references",
+        "T10.4 Manual consistency review",
+        "T10.5 Document validation results"
+      ],
+      "gate": {
+        "conditions": [
+          "JSON syntax valid",
+          "Schema validation passed",
+          "Cross-references resolved",
+          "Manual review passed"
+        ],
+        "evidence_required": ["validation/playbook-validation.md"]
+      }
+    },
+    {
+      "id": 11,
+      "name": "Quality Audit — Gap Analysis",
+      "description": "Systematic audit against requirements, cross-cutting concerns, completeness",
+      "owner": "[Coordinator]",
+      "compilation_block": {
+        "success_criteria": [
+          "All requirements addressed",
+          "All CCCs covered",
+          "No gaps in coverage",
+          "Audit report complete"
+        ],
+        "tools_available": ["file_reading", "file_creation"],
+        "behavioral_profile": {
+          "risk_tolerance": "minimal",
+          "creativity_level": "strict",
+          "verbosity": "detailed",
+          "stance": "critical"
+        }
+      },
+      "skill_activation": "execute-plans",
+      "tasks": [
+        "T11.1 Audit requirements coverage",
+        "T11.2 Audit CCC coverage",
+        "T11.3 Audit completeness",
+        "T11.4 Document gap analysis",
+        "T11.5 Create remediation plan"
+      ],
+      "gate": {
+        "conditions": [
+          "All requirements addressed",
+          "All CCCs covered",
+          "No gaps in coverage",
+          "Audit report complete"
+        ],
+        "evidence_required": ["audits/quality-audit.md"]
+      }
+    },
+    {
+      "id": 12,
+      "name": "Stress Testing & Structured Dry-Run",
+      "description": "Walk through playbook under structured scenarios to find issues",
+      "owner": "[Coordinator], [Human]",
+      "compilation_block": {
+        "success_criteria": [
+          "Stress test scenarios passed",
+          "Edge cases handled",
+          "Error recovery tested",
+          "Dry-run report complete"
+        ],
+        "tools_available": ["file_reading", "user_questioning"],
+        "behavioral_profile": {
+          "risk_tolerance": "minimal",
+          "creativity_level": "conservative",
+          "verbosity": "detailed",
+          "stance": "critical"
+        }
+      },
+      "skill_activation": "none",
+      "tasks": [
+        "T12.1 Define stress test scenarios",
+        "T12.2 Execute stress tests",
+        "T12.3 Test edge cases",
+        "T12.4 Test error recovery",
+        "T12.5 Document dry-run results"
+      ],
+      "gate": {
+        "conditions": [
+          "Stress test scenarios passed",
+          "Edge cases handled",
+          "Error recovery tested",
+          "Dry-run report complete"
+        ],
+        "evidence_required": ["validation/stress-test-results.md"]
+      }
+    },
+    {
+      "id": 13,
+      "name": "Stakeholder Review & Iteration",
+      "description": "Final human review before pilot testing",
+      "owner": "[Human]",
+      "compilation_block": {
+        "success_criteria": [
+          "Human review complete",
+          "Feedback incorporated",
+          "Final approval granted"
+        ],
+        "tools_available": ["file_reading", "user_questioning"],
+        "behavioral_profile": {
+          "risk_tolerance": "minimal",
+          "creativity_level": "conservative",
+          "verbosity": "concise",
+          "stance": "supportive"
+        }
+      },
+      "skill_activation": "none",
+      "tasks": [
+        "T13.1 Present playbook for review",
+        "T13.2 Collect feedback",
+        "T13.3 Incorporate feedback",
+        "T13.4 Obtain final approval"
+      ],
+      "gate": {
+        "conditions": [
+          "Human review complete",
+          "Feedback incorporated",
+          "Final approval granted"
+        ],
+        "evidence_required": ["approvals/stakeholder-approval.md"]
+      }
+    },
+    {
+      "id": 14,
+      "name": "Documentation & Version Control",
+      "description": "Package final playbook with supporting documentation",
+      "owner": "[Builder]",
+      "compilation_block": {
+        "success_criteria": [
+          "README complete",
+          "Version tagged",
+          "Archive created"
+        ],
+        "tools_available": ["file_creation", "bash_commands"],
+        "behavioral_profile": {
+          "risk_tolerance": "minimal",
+          "creativity_level": "conservative",
+          "verbosity": "detailed",
+          "stance": "neutral"
+        }
+      },
+      "skill_activation": "execute-plans",
+      "tasks": [
+        "T14.1 Create README",
+        "T14.2 Tag version",
+        "T14.3 Create archive",
+        "T14.4 Publish to repo"
+      ],
+      "gate": {
+        "conditions": [
+          "README complete",
+          "Version tagged",
+          "Archive created"
+        ],
+        "evidence_required": ["README.md", "playbook-v1.0.0.json"]
+      }
+    },
+    {
+      "id": 15,
+      "name": "Continuous Improvement",
+      "description": "After each run, review and optionally improve the playbook",
+      "owner": "[Coordinator]",
+      "compilation_block": {
+        "success_criteria": [
+          "Post-run review complete",
+          "Metrics analyzed",
+          "Improvements documented",
+          "KB updated if needed"
+        ],
+        "tools_available": ["file_reading", "file_creation"],
+        "behavioral_profile": {
+          "risk_tolerance": "low",
+          "creativity_level": "moderate",
+          "verbosity": "detailed",
+          "stance": "analytical"
+        }
+      },
+      "skill_activation": "brainstorming",
+      "tasks": [
+        "T15.1 Analyze metrics",
+        "T15.2 Identify improvement opportunities",
+        "T15.3 Update playbook if needed",
+        "T15.4 Update KB if needed"
+      ],
+      "gate": {
+        "conditions": [
+          "Post-run review complete",
+          "Metrics analyzed",
+          "Improvements documented"
+        ],
+        "evidence_required": ["post-run-review.md"]
+      }
+    }
+  ],
+
+  "knowledge_base": {
+    "layers": [
+      {
+        "name": "technical",
+        "authority": 0.95,
+        "description": "Factual, verifiable technical knowledge",
+        "topics": ["dsp", "architecture", "threading", "parameters", "state", "testing"]
+      },
+      {
+        "name": "sound-design",
+        "authority": 0.70,
+        "description": "Sound design knowledge with subjective elements",
+        "topics": ["filter-character", "oscillator-character", "envelope-shape", "modulation", "effects"]
+      },
+      {
+        "name": "ui-ux",
+        "authority": 0.75,
+        "description": "UI/UX knowledge combining standards and taste",
+        "topics": ["controls", "layout", "theming", "accessibility", "feedback"]
+      },
+      {
+        "name": "commercial",
+        "authority": 0.60,
+        "description": "Market-dependent commercial knowledge",
+        "topics": ["licensing", "marketplaces", "pricing", "marketing", "distribution"]
+      },
+      {
+        "name": "reference",
+        "authority": 0.90,
+        "description": "External authority references",
+        "topics": ["juce-api", "cpp-reference", "plugin-standards", "platform-docs", "tools"]
+      }
+    ],
+    "bridge": {
+      "description": "Creative-to-technical translation layer",
+      "authority": 0.50,
+      "categories": ["filter-character", "oscillator-character", "envelope-shape", "space-depth", "saturation-character"]
+    }
+  },
+
+  "metrics": {
+    "process": {
+      "phase_completion_first_attempt": { "target": ">=85%" },
+      "average_iterations_per_phase": { "target": "<=1.5" },
+      "task_completion_per_session": { "target": "5-15" },
+      "escalation_rate": { "target": "<=20%" }
+    },
+    "quality": {
+      "build_success_rate": { "target": "100%" },
+      "test_pass_rate": { "target": "100%" },
+      "audio_thread_safety": { "target": "100%" },
+      "human_approval_rate": { "target": "100%" }
+    },
+    "domain_outcome": {
+      "cpu_usage": { "target": "<=5%" },
+      "memory_footprint": { "target": "<=50MB" },
+      "latency": { "target": "<=1ms" }
+    },
+    "kb": {
+      "entry_schema_compliance": { "target": "100%" },
+      "bridge_mapping_accuracy": { "target": "100%" }
+    }
+  },
+
+  "skills": {
+    "brainstorming": {
+      "description": "Creative thinking and specification development",
+      "phases": [0, 1, 15],
+      "fallback": "human-guided questioning"
+    },
+    "writing-plans": {
+      "description": "Create implementation plan from specification",
+      "phases": [2],
+      "fallback": "manual architecture design"
+    },
+    "execute-plans": {
+      "description": "Execute plan with single agent (preferred)",
+      "phases": [3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 16],
+      "fallback": "direct execution"
+    },
+    "sub-agent-driven-development": {
+      "description": "Multi-agent execution for complex parallel work",
+      "phases": "optional alternative",
+      "fallback": "execute-plans"
+    }
+  },
+
+  "cross_cutting_concerns": [
+    { "name": "Real-Time Safety", "phases": [4, 5, 8] },
+    { "name": "Gain Staging", "phases": [4, 6, 8] },
+    { "name": "Parameter Safety", "phases": [4, 5, 7] },
+    { "name": "Preset Integrity", "phases": [5, 8, 9] },
+    { "name": "GUI Responsiveness", "phases": [7, 8] },
+    { "name": "Cross-Platform", "phases": [3, 6, 8] },
+    { "name": "DAW Compatibility", "phases": [6, 8, 9] },
+    { "name": "Performance Profiling", "phases": [8, 14] },
+    { "name": "Security", "phases": [10, 11] },
+    { "name": "Reproducibility", "phases": [3, 14] }
+  ],
+
+  "context_preservation": {
+    "persistent_files": ["decisions-ledger.md", "artifact-manifest.md", "SPEC.md"],
+    "never_exclude": ["decisions-ledger.md", "artifact-manifest.md"],
+    "update_at_gates": true
+  },
+
+  "escalation": {
+    "categories": ["technical", "creative", "architecture", "scope", "resource", "quality"],
+    "paths": {
+      "technical": { "first_attempt": "self-diagnose", "time_limit": "30 min", "escalate_to": "[Human]" },
+      "creative": { "first_attempt": "none", "time_limit": "immediate", "escalate_to": "[Human]" },
+      "architecture": { "first_attempt": "document options", "time_limit": "15 min", "escalate_to": "[Human]" },
+      "scope": { "first_attempt": "document impact", "time_limit": "immediate", "escalate_to": "[Human]" },
+      "resource": { "first_attempt": "document constraint", "time_limit": "immediate", "escalate_to": "[Human]" },
+      "quality": { "first_attempt": "attempt fix", "time_limit": "30 min", "escalate_to": "[Human]" }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "error_audit_schema.json",
+  "title": "Error Audit",
+  "description": "Schema for per-pass error logging",
+  "type": "object",
+  "required": ["errors"],
+  "properties": {
+    "pass": { "type": "integer", "minimum": 1, "maximum": 4 },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "category", "message", "severity", "recovery"],
+        "properties": {
+          "code": { "type": "string", "pattern": "^E[0-9]{3}$" },
+          "category": {
+            "type": "string",
+            "enum": ["parse_error", "playbook_invalid", "phase_not_found", "kb_not_found", "contradiction", "fingerprint_mismatch", "cache_error"]
+          },
+          "message": { "type": "string" },
+          "severity": { "type": "string", "enum": ["fatal", "warning", "blocking"] },
+          "recovery": { "type": "string" },
+          "audit": {
+            "type": "object",
+            "properties": {
+              "step": { "type": "string" },
+              "input_snippet": { "type": "string" },
+              "line_number": { "type": "integer", "minimum": 1 },
+              "recovery_attempted": { "type": "boolean" },
+              "recovery_result": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

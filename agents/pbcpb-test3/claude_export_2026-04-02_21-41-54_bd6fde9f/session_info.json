@@ -1,0 +1,13 @@
+{
+  "session_id": "bd6fde9f-b99c-49aa-b379-8c6b43ee111c",
+  "start_time": "2026-04-03T03:51:06.169Z",
+  "end_time": "2026-04-03T04:41:54.147Z",
+  "project_dir": "/home/myuser/agents/pbcpb-test3",
+  "total_messages": 791,
+  "user_messages": 236,
+  "assistant_messages": 446,
+  "tool_uses": 222,
+  "models_used": [
+    "glm-5"
+  ]
+}

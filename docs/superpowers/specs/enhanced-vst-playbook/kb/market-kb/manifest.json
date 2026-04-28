@@ -1,0 +1,30 @@
+{
+  "kb_name": "market-kb",
+  "version": "1.0.0",
+  "description": "Commercial market strategies for VST plugins",
+  "created": "2026-04-02",
+  "updated": "2026-04-02",
+  "entry_count": 2,
+  "categories": {
+    "positioning": {
+      "description": "Market positioning strategies",
+      "count": 0,
+      "entries": []
+    },
+    "pricing": {
+      "description": "Pricing strategies",
+      "count": 1,
+      "entries": ["placeholder-market-pricing"]
+    },
+    "distribution": {
+      "description": "Distribution channels",
+      "count": 1,
+      "entries": ["placeholder-market-distribution"]
+    },
+    "marketing": {
+      "description": "Marketing tactics",
+      "count": 0,
+      "entries": []
+    }
+  }
+}

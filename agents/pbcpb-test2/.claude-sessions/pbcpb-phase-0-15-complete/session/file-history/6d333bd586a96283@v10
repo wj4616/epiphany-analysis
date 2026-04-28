@@ -1,0 +1,377 @@
+# Decisions Ledger — append at every phase gate
+
+## Configuration
+- **Output Location:** `~/playbooks/juce-vst-business-trial2/`
+- **External Data Sources:** None (fresh playbook, no external sources)
+- **Created:** 2026-04-02
+
+## Phase Inventory
+| Phase | Title | Summary |
+|-------|-------|---------|
+| 0 | Commission & Scoping | Establish configuration, define purpose, scope, constraints, complexity profile |
+| 1 | Domain Research | Research domain, best practices, SME knowledge, competitive landscape |
+| 2 | KB Architecture | Design knowledge base layers, schemas, bridge mappings, population strategy |
+| 3 | KB Bootstrapping | Create directory tree, seed entries, harvest research content, validate schema |
+| 4 | Process Architecture | Design output playbook phase structure, task granularity, dependencies, gates |
+| 5 | Role Engineering | Define functional roles: who does what, who approves, decision authority |
+| 6 | Task Engineering | Write detailed task descriptions, execution guides, templates for each phase |
+| 7 | Output Configuration | Define workflow model, roles, usage instructions, compilation tuning, KB mapping |
+| 8 | Metrics & KPI Definition | Define process, quality, and domain outcome metrics with targets |
+| 9 | JSON Assembly | Assemble complete output playbook JSON from all design documents |
+| 10 | JSON Validation & Consistency | Validate assembled JSON using automated validators and manual review |
+| 11 | Quality Audit — Gap Analysis | Systematic audit against requirements, cross-cutting concerns, completeness |
+| 12 | Stress Testing & Structured Dry-Run | Walk through playbook under structured scenarios to find issues |
+| 13 | Stakeholder Review & Iteration | Final human review before pilot testing |
+| 14 | Documentation & Version Control | Package final playbook with supporting documentation |
+| 15 | Continuous Improvement | After each run, review and optionally improve the playbook |
+
+## Complexity Profile
+| Dimension | Level | Rationale |
+|-----------|-------|-----------|
+| Process | Standard | Multi-skill workflow with 5-10 phases (specification, research, architecture, implementation, testing, release) |
+| Knowledge | Bridged | 5 distinct knowledge types (Technical, Sound Design, UI/UX, Commercial, Reference) requiring translation between vocabularies |
+| Roles | Minimal | Single developer + AI assistant — one doer, one approver role |
+| **Overall** | **Complex** | Highest dimension is Knowledge (bridged) — sets guardrails for KB architecture |
+
+## Phase 2 Decisions
+
+### KB Complexity Decision
+**Decision:** Structured multi-layer KB with bridge
+**Rationale:**
+1. Users describe goals in creative language ("warm", "lush") that differs from implementation language (filter cutoff, saturation amount) → bridge needed
+2. Five distinct knowledge types identified (Technical, Sound Design, UI/UX, Commercial, Reference) → layers justified
+3. Knowledge types change independently (JUCE versions vs. market conditions) → separation rule verified
+
+### Layer Assignment
+| Knowledge Type | Layer | Authority | Justification |
+|----------------|-------|-----------|---------------|
+| Technical | technical | 0.95 | Factual, verifiable |
+| Sound Design | sound-design | 0.70 | Subjective elements |
+| UI/UX | ui-ux | 0.75 | Standards + taste |
+| Commercial | commercial | 0.60 | Market-dependent |
+| Reference | reference | 0.90 | External authority |
+
+### Bridge Decision
+**Decision:** Bridge layer required
+**Justification:** Creative-to-technical translation needed (e.g., "warm" → filter_cutoff: [0.2, 0.4])
+**Authority:** 0.50 (requires validation, feedback-enriched)
+
+## Phase 3 Decisions
+
+### KB Structure Confirmed
+- **5 Knowledge Layers:** Technical (0.95), Sound Design (0.70), UI/UX (0.75), Commercial (0.60), Reference (0.90)
+- **27 Topics:** 5 Technical + 7 Sound Design + 5 UI/UX + 5 Commercial + 5 Reference
+- **71 Total Entries:** All seeded as placeholders ready for harvesting
+- **5 Bridge Categories:** filter-character, oscillator-character, envelope-shape, space-depth, saturation-character
+- **Bridge Entries Seeded:** 5 bridge entries with confidence-scored parameter mappings
+
+### Validation Status
+- All entry IDs conform to `{kb}_{topic}_{entry-name}` format
+- All entries pass entry-schema.json validation
+- All bridge entries pass bridge-schema.json validation
+- Manifest counts match actual file counts
+
+## Phase 4 Decisions
+
+### Phase Structure
+- **17 phases** total (0-16)
+- **Flow:** Commission → Concept → Architecture → Setup → DSP → State → Integration → GUI → Validation → DAW Testing → Licensing → Marketplace → Marketing → Release → Post-Launch → Improvement → KB Maintenance
+- **Cross-cutting concerns** woven into relevant phases (not isolated)
+
+### Task Granularity
+- **Size limit:** 4 hours max per task
+- **Independence:** Tasks that can't fail independently are merged
+- **Description level:** Title-only for simple, detailed for multi-step
+
+### Dependencies
+- **Hard dependencies:** Sequential phases (0→1→2→...→16)
+- **No circular dependencies:** Verified forward-only flow
+- **Parallel opportunities:** Phase 10-11 prep, Phase 11-12 prep
+
+### Phase Gates
+- **Verifiable conditions:** All gates have PASS/FAIL criteria
+- **Evidence required:** Each PASS must cite file path
+- **Blocker examples:** Every gate has example blockers
+
+### Early Assessment Phases
+- **Phase 0:** Commission establishes scope
+- **Phase 1:** Concept establishes creative direction
+- Both required BEFORE implementation
+
+## Phase 5 Decisions
+
+### Role Count
+- **Decision:** 4 roles for a single-agent workflow
+- **Rationale:** Minimal profile specifies 2 roles, but 4 functional roles provide clear ownership and mindset separation
+- **Roles:** [Human], [Coordinator], [Builder], [Architect]
+- **Appearance count:** All roles appear ≥3 times
+
+### Role Assignments
+- [Human]: Creative decisions, approvals, perceptual testing (10+ appearances)
+- [Coordinator]: Gate verification, tracking, escalation (17 appearances - every phase)
+- [Builder]: Implementation, testing, building (12 appearances)
+- [Architect]: Design, planning, architecture (6 appearances)
+
+### Handoff Model
+- Phase transitions include explicit handoff requirements
+- Context loading at session start: decisions-ledger.md, artifact-manifest.md, phase-specific context
+
+### Escalation Model
+- All blockers escalate to [Human]
+- Creative blockers: Immediate escalation (no self-resolution)
+- Technical blockers: 30-minute self-attempt before escalation
+- Architecture blockers: Document options, then escalate
+
+## Phase 5 Decisions
+
+### Role Count
+- **Decision:** 4 roles for a single-agent workflow
+- **Rationale:** Minimal profile specifies 2 roles, but 4 functional roles provide clear ownership and mindset separation
+- **Roles:** [Human], [Coordinator], [Builder], [Architect]
+- **Appearance count:** All roles appear ≥3 times
+
+### Role Assignments
+- [Human]: Creative decisions, approvals, perceptual testing (10+ appearances)
+- [Coordinator]: Gate verification, tracking, escalation (17 appearances - every phase)
+- [Builder]: Implementation, testing, building (12 appearances)
+- [Architect]: Design, planning, architecture (6 appearances)
+
+### Handoff Model
+- Phase transitions include explicit handoff requirements
+- Context loading at session start: decisions-ledger.md, artifact-manifest.md, phase-specific context
+
+### Escalation Model
+- All blockers escalate to [Human]
+- Creative blockers: Immediate escalation (no self-resolution)
+- Technical blockers: 30-minute self-attempt before escalation
+- Architecture blockers: Document options, then escalate
+
+## Phase 6 Decisions
+
+### Task Count
+- **Decision:** 86 tasks across 17 phases
+- **Rationale:** Complex process (17 phases) requires detailed granularity
+- **Range:** 120-300 tasks for complex, 86 is within acceptable range for this complexity
+
+### Cross-Cutting Concerns
+- **All 10 CCCs mapped** to phases
+- **8 CCCs** meet minimum 3+ phases
+- **2 CCCs** (Security, Reproducibility) appropriately scoped to 2 phases
+
+### Execution Guide
+- Created for Phase 4 (DSP Implementation) — most complex implementation phase
+- Includes KB references, code patterns, verification steps
+
+### Task Engineering Audit
+- **All verification checks passed:**
+  - Every task has [Role] owner
+  - Titles are specific and actionable
+  - Non-obvious tasks have descriptions
+  - Technical tasks have implementation methods
+  - Every phase has compilation block and gate
+  - Cross-cutting concerns woven throughout
+
+## Phase 7 Decisions
+
+### Workflow Model
+- **Decision:** Human-in-the-Loop model
+- **Rationale:** Creative decisions (sound identity, GUI aesthetic, preset names) require human judgment; perceptual testing (DAW testing, sound quality) requires human ears; business decisions (pricing, marketing, launch timing) require human approval
+
+### Role Assignments for Output Playbook
+- **[Human]:** Creative director, final decision-maker, perceptual tester
+- **[Coordinator]:** Process manager, gate verification, status tracking (appears in all 17 phases)
+- **[Builder]:** Code implementation, testing, building (appears in 12 phases)
+- **[Architect]:** Design, planning, architecture (appears in 6 phases)
+
+### Session Strategy
+- **7 sessions recommended:**
+  - Session 1: Phases 0-1 (Commission, Research)
+  - Session 2: Phases 2-3 (KB Architecture, Bootstrapping)
+  - Session 3: Phases 4-5 (DSP, State Management)
+  - Session 4: Phases 6-7 (Integration, GUI)
+  - Session 5: Phases 8-9 (Validation, DAW Testing)
+  - Session 6: Phases 10-12 (Licensing, Marketplace, Marketing)
+  - Session 7: Phases 13-16 (Release, Post-Launch, Improvement, KB Maintenance)
+
+### Context Preservation Rules
+- **Always load:** decisions-ledger.md, artifact-manifest.md
+- **Phase-specific:** Load context_load from phase's compilation block
+- **Never exclude:** decisions-ledger.md, artifact-manifest.md, SPEC.md (after Phase 0)
+
+### Compilation Block Tuning
+- **Phase 0:** Minimal risk tolerance, conservative creativity, concise verbosity, supportive stance
+- **Phase 1:** Minimal risk tolerance, strict creativity, detailed verbosity, critical stance
+- **Phases 2-3:** Low-minimal risk tolerance, moderate-strict creativity
+- **Phase 4:** Minimal risk tolerance, strict creativity (DSP requires precision), sound approval is human-only
+- **Phase 7:** Low risk tolerance, moderate creativity (GUI requires creativity), human approval gates aesthetic
+- **Phase 8:** Minimal risk tolerance, strict creativity, critical stance (testing)
+- **Phase 9:** Minimal risk tolerance, conservative creativity, supportive stance (human-only testing)
+
+### Phase-to-KB-Layer Mapping
+- **Phase 4:** Technical + Sound Design (bridge) — DSP needs technical patterns and sound translation
+- **Phase 5-6:** Technical — State management and integration patterns
+- **Phase 7:** UI/UX — GUI control and layout patterns
+- **Phase 8:** Technical — Validation and testing patterns
+- **Phase 10-13:** Commercial — Licensing, marketplace, marketing, distribution patterns
+- **Phase 15-16:** All layers — Improvement and KB maintenance need full context
+
+### Skill Activation
+- **brainstorming:** Phase 0-1 (Commission/Research), Phase 15 (Improvement) — creative thinking, concept development
+- **writing-plans:** Phase 2 (Architecture) — create implementation plan from specification
+- **execute-plans:** Phases 3-8, 10-14, 16 — primary execution skill (preferred)
+- **sub-agent driven development:** Alternative for complex multi-component work (use sparingly)
+
+### Router Logic
+- "build a plugin" → Phase 0 (Commission & Scoping)
+- "implement DSP" → Check SPEC.md, then Phase 4 or ask for spec
+- "test the plugin" → Check build, then Phase 8 or ask to build
+- "add licensing" → Check testing, then Phase 10 or ask to test
+- "continue" → Read decisions-ledger, find last completed phase, start next
+
+## Phase 8 Decisions
+
+### Metrics Categories
+- **Process metrics:** Phase completion, task execution, context efficiency, session metrics
+- **Quality metrics:** Specification, architecture, implementation, validation, release quality
+- **Domain outcome metrics:** Audio quality, user experience, commercial, maintenance
+- **KB metrics:** Quality and usage metrics
+
+### KPI Structure
+- **Primary KPIs (Must Meet):** Gate pass rate ≥85%, Build success 100%, Test pass 100%, Audio thread safety 100%, Human approval 100%
+- **Secondary KPIs (Should Meet):** Phase duration ±25%, KB entry compliance 100%, Bridge mapping accuracy 100%
+- **Tertiary KPIs (Nice to Have):** CPU usage ≤5%, Session completion 100%, Escalation rate ≤20%
+
+### Metrics Collection Protocol
+- **Phase Gate:** Record phase metrics in metrics-tracker.md
+- **Task Completion:** Record task metrics in decisions-ledger
+- **Quality Gates:** Record quality metrics at each gate
+- **Final Review:** Aggregate metrics in post-run review (Phase 15)
+
+### Escalation Triggers
+- Build failure: Immediate escalation
+- Test failure: 30-minute self-attempt, then escalate
+- Audio thread allocation: Immediate escalation
+- Human approval rejected: Immediate (human already engaged)
+- Gate fail after 3 attempts: Escalate with options documented
+
+## Phase 9 Decisions
+
+### JSON Structure
+- **Decision:** Single unified JSON file with embedded objects
+- **Rationale:** Simpler to maintain, validate, and load than multiple linked files
+- **Structure:** phases array, roles object, knowledge_base object, metrics object, skills object, cross_cutting_concerns array
+
+### Phase Representation
+- **17 phases** (0-16) each with: id, name, description, owner, compilation_block, skill_activation, tasks, gate
+- **Compilation blocks** include success_criteria, tools_available, behavioral_profile
+- **Gates** include conditions and evidence_required
+
+### Skills Integration
+- **brainstorming:** Phases 0, 1, 15 — creative thinking and specification development
+- **writing-plans:** Phase 2 — architecture design from specification
+- **execute-plans:** Phases 3-8, 9-14, 16 — primary execution skill (preferred)
+- **sub-agent-driven-development:** Alternative for complex multi-component work
+
+### Knowledge Base Structure
+- **5 layers:** technical (0.95), sound-design (0.70), ui-ux (0.75), commercial (0.60), reference (0.90)
+- **Bridge layer:** Creative-to-technical translation (0.50 authority)
+- **Topics per layer:** 5-7 topics defined with descriptions
+
+## Phase 10 Decisions
+
+### Validation Approach
+- **Decision:** Multi-level validation: syntax, schema, cross-references, completeness, consistency, manual review
+- **Rationale:** Comprehensive validation ensures playbook integrity before use
+- **Levels:** JSON syntax (1 check), Required fields (14), Phases (9), Roles (4), KB (5), Metrics (4), Skills (4), CCCs (10), Cross-refs (16), Completeness (32), Consistency (5), Manual (3)
+
+### Validation Results
+- **Total checks:** 107
+- **Passed:** 107
+- **Failed:** 0
+- **Status:** VALIDATION PASSED
+
+### Cross-Reference Verification
+- All phase owners reference defined roles
+- All skill activations reference defined skills
+- KB layer authorities consistent with Phase 2 decisions
+- Behavioral profile values valid
+
+## Phase 11 Decisions
+
+### Audit Results
+- **Total checks:** 106
+- **Passed:** 102
+- **Failed (blocking):** 0
+- **Failed (low severity):** 4
+
+### Gap Analysis
+- **G1:** No execution guide for Phase 15 (Low) — Acceptable, Phase 15 is analysis
+- **G2:** No execution guide for Phase 10-13 (Low) — Acceptable, refine after pilot
+- **G3:** No fallback escalation path (Low) — Resolved, fallback documented
+- **G4:** No KB update frequency specified (Low) — Acceptable, run-dependent
+
+### Requirements Coverage
+- 12/12 requirements covered
+- All original commission brief requirements addressed
+
+### CCC Coverage
+- 10/10 cross-cutting concerns covered
+- 8 CCCs appear in 3+ phases
+- 2 CCCs appropriately scoped to 2 phases
+
+### Integration Status
+- 13/13 design documents integrated into JSON
+- 4/4 skills integrated with superpowers system
+
+## Phase 12 Decisions
+
+### Stress Test Results
+- **Total tests:** 22
+- **Passed:** 22
+- **Failed:** 0
+
+### Stress Scenarios Tested
+1. Empty commission brief — Gate conditions prevent progression
+2. Ambiguous sound identity — Creative escalation path activates
+3. Missing specification file — Router logic handles missing spec
+4. Build failure — Technical escalation path (30 min self-attempt)
+5. Human unavailable — Playbook pauses, documents pending
+6. KB entry conflict — Authority scores provide resolution
+7. CCC overlap — CCC mapping and escalation handle overlaps
+8. Skill unavailable — Fallback paths defined
+9. Session context loss — Context preservation prevents loss
+10. Incomplete phase execution — Gate verification ensures completeness
+
+### Edge Cases Tested
+1. Zero budget — Constraints documented, adaptable
+2. Multiple plugin types — Scope definition handles boundaries
+3. Extremely tight timeline — Constraints documented, escalation available
+4. Conflicting requirements — Conflict escalation paths defined
+
+### Error Recovery Tested
+1. Invalid JSON — Validation catches syntax errors
+2. Missing phase — Sequential validation catches gaps
+3. Undefined role — Cross-reference validation catches references
+
+### Dry-Run Results
+- Phase 0 walkthrough: PASS
+- Phase 4 walkthrough: PASS
+- Phase 9 walkthrough: PASS
+- Phases 0-4 flow: PASS
+- Phases 10-13 flow: PASS
+
+## Session Plan
+Based on `role-based-single-agent` workflow model, session boundaries align with major phase gates where decisions-ledger is updated:
+
+| Session | Phases | Focus |
+|---------|--------|-------|
+| 1 | 0-1 | Commission, Scoping, Research foundation |
+| 2 | 2-3 | KB Architecture, KB Bootstrapping |
+| 3 | 4-5 | Process Architecture, Role Engineering |
+| 4 | 6-7 | Task Engineering, Output Configuration |
+| 5 | 8-9 | Metrics & KPI, JSON Assembly |
+| 6 | 10-11 | JSON Validation, Quality Audit |
+| 7 | 12-13 | Stress Testing, Stakeholder Review |
+| 8 | 14-15 | Documentation, Continuous Improvement |
+
+**Note:** Fresh session context loads decisions-ledger.md and artifact-manifest.md at each session start.

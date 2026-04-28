@@ -1,0 +1,18 @@
+{
+  "kb_type": "dsp-kb",
+  "topic": "reverb",
+  "filename": "convolution-reverb.json",
+  "title": "Convolution Reverb",
+  "seed_terms": [
+    "convolution reverb",
+    "FFT convolution",
+    "partitioned convolution",
+    "zero latency convolution"
+  ],
+  "discovered_terms": [],
+  "total_results": 0,
+  "total_urls_crawled": 0,
+  "credits_used": 0,
+  "checkpoint": "/home/myuser/agents/juce-agent/playbookdata/harvested/checkpoints/dsp-kb_reverb_convolution-reverb.json.json",
+  "results": []
+}

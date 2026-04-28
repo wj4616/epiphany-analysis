@@ -1,0 +1,19 @@
+{
+  "id": "commercial-kb_pricing_indie-strategy",
+  "kb": "commercial-kb",
+  "topic": "pricing",
+  "status": "harvested",
+  "version": "1.0.0",
+  "title": "Indie Developer Pricing Strategy",
+  "summary": "Pricing strategies for solo developer VST plugins targeting consumer budgets.",
+  "description": "## Key Pricing Principles\n\n### Lifetime vs Subscription\n\n| Model | Conversion Rate | When to Use |\n|-------|-----------------|-------------|\n| **Lifetime** | 3x higher | Products running locally (most plugins) |\n| **Subscription** | Lower | Only with ongoing server/API costs |\n\n### Psychological Pricing\n\n| Price Point | Notes |\n|-------------|-------|\n| $29 | Particularly effective entry point |\n| $49 | Converts better than $51 |\n| $99 | Key threshold, signals quality |\n| Round numbers | Signal confidence, avoid .99 |\n\n### Price Anchoring\n\n- Create product lineup with deliberate price points\n- Keep products at least 40% apart in price\n- Entry-level price acts as \"why not\" purchase\n\n### Value-Based Pricing\n\n- Price based on outcome/time saved, not development effort\n- Consider what the problem costs the buyer to solve manually\n\n## Marketplace Commissions\n\n| Channel | Commission | Notes |\n|---------|------------|-------|\n| Own website | 3-5% | Payment processing only |\n| KVR DIRECT | 0% | No seller fees |\n| Plugin Boutique | 15-30% | Built-in audience |\n| Multi-channel | Varies | Most successful approach |\n\n## Recommended Strategy\n\n1. Build own website for brand control and highest margins\n2. List on marketplaces for visibility\n3. Use free tools/products as funnels to paid offerings\n4. Consider geographic pricing parity\n\n## Capital Constraint\n\nTarget: Under $500 total capital investment (excluding Claude subscription)\n\n| Expense | Cost Range |\n|---------|------------|\n| Claude subscription | $100-200/month |\n| Licensing system | $5,000/year (PACE) or free alternatives |\n| Website hosting | $10-50/month |\n| Marketing | $0-200/month |\n\nFor sub-$75K revenue: PACE Indie Program offers up to $3,000 savings.",
+  "source": "Web research 2026-04-02",
+  "concepts": [
+    {"name": "Price Anchoring", "description": "Using price points to make other prices feel right"},
+    {"name": "Value-Based Pricing", "description": "Pricing based on customer outcome, not cost"}
+  ],
+  "tags": ["pricing", "strategy", "indie", "business"],
+  "related_topics": ["marketing", "business-planning"],
+  "difficulty": "beginner",
+  "domain_relevance": 8
+}

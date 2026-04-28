@@ -1,0 +1,104 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+#include <juce_dsp/juce_dsp.h>
+#include "FastMath.h"
+#include "DCBlocker.h"
+
+namespace CogDSP
+{
+
+// SpectralDroneEngine - Path B spectral processing
+// Internal processing at 48kHz mono regardless of host sample rate
+// FFT-based spectral freeze, smear, and drift
+class SpectralDroneEngine
+{
+public:
+    SpectralDroneEngine() = default;
+    ~SpectralDroneEngine() = default;
+
+    void prepare(double sampleRate, int samplesPerBlock);
+    void process(const float* input, float* leftOut, float* rightOut, int numSamples);
+    void reset();
+
+    // Drone density: 0-1
+    // 0 = FFT passthrough (perfect reconstruction)
+    // 1 = infinite spectral hold
+    void setDroneDensity(float density) { droneDensity = std::clamp(density, 0.0f, 1.0f); }
+
+    // Spectral drift: -1 to +1
+    // Negative = drift down, Positive = drift up
+    void setSpectralDrift(float drift) { spectralDrift = std::clamp(drift, -1.0f, 1.0f); }
+
+    // Freeze: when true, hold spectral content indefinitely
+    void setFreeze(bool freeze) { frozen = freeze; }
+
+    // Get latency in samples (for Path A compensation)
+    int getLatencySamples() const { return fftSize / 2; }
+
+private:
+    // Downsample stereo to mono 48kHz
+    void downsampleToMono48k(const float* input, int numSamples);
+
+    // Process spectral engine at 48kHz
+    void processSpectral(int numSamples);
+
+    // Upsample mono 48kHz to stereo native rate
+    void upsampleToStereoNative(float* leftOut, float* rightOut, int numSamples);
+
+    // Anti-alias and anti-image filters
+    void applyAntiAliasFilter(float* samples, int numSamples);
+    void applyAntiImageFilter(float* samples, int numSamples);
+
+    // Compute FFT frame with overlap-add
+    void computeFFTFrame();
+    void processSpectralFrame(std::complex<float>* frame);
+    void applyIFFTFrame(float* output);
+
+    double sampleRate = 44100.0;
+    double internalRate = 48000.0;  // Always process at 48kHz
+    bool needsResampling = false;
+    int resampleRatio = 1;
+
+    // Parameters
+    float droneDensity = 0.3f;
+    float spectralDrift = 0.0f;
+    bool frozen = false;
+    bool wasFrozen = false;
+
+    // FFT setup
+    static constexpr int fftSize = 2048;
+    static constexpr int hopSize = 1024;  // 50% overlap
+    std::unique_ptr<juce::dsp::FFT> fft;
+
+    // Buffers for 48kHz processing
+    std::vector<float> inputBuffer48k;      // Mono input at 48kHz
+    std::vector<float> outputBuffer48k;      // Mono output at 48kHz
+    std::vector<float> overlapAddBuffer;     // For overlap-add output
+    std::vector<float> hannWindow;           // Pre-computed Hann window
+
+    // Spectral domain
+    std::vector<std::complex<float>> fftWorkspace;
+    std::vector<std::complex<float>> prevFrame;
+    std::vector<std::complex<float>> frozenFrame;
+
+    // Buffer positions
+    int inputWritePos = 0;
+    int outputReadPos = 0;
+    int hopCounter = 0;
+
+    // Resampling filter state
+    std::vector<float> antiAliasState;
+    std::vector<float> antiImageState;
+
+    // Crossfade for freeze toggle
+    float freezeCrossfade = 0.0f;
+    static constexpr float freezeCrossfadeRate = 0.02f;  // ~50ms at 48kHz
+
+    // Smoothed parameters
+    juce::SmoothedValue<float> smoothedDensity;
+    juce::SmoothedValue<float> smoothedDrift;
+};
+
+} // namespace CogDSP

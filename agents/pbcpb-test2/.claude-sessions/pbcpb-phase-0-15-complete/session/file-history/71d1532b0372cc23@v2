@@ -1,0 +1,16 @@
+{
+  "id": "reference_documentation_juce-docs",
+  "kb": "reference",
+  "topic": "documentation",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "JUCE Framework Documentation",
+  "summary": "Placeholder: Official JUCE API reference and tutorials.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "official-docs", "reference": "https://docs.juce.com"},
+  "concepts": [],
+  "tags": ["documentation", "juce", "api", "reference"],
+  "related_topics": ["juce-patterns", "build-systems"],
+  "difficulty": "beginner",
+  "domain_relevance": 10
+}

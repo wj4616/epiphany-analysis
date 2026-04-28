@@ -1,0 +1,44 @@
+#include <catch2/catch_test_macros.hpp>
+#include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+
+// Plugin entry point
+extern juce::AudioProcessor* createPluginFilter();
+
+// ============================================================================
+// Plugin Instantiation Tests
+// ============================================================================
+
+TEST_CASE("Plugin instantiates correctly", "[plugin]") {
+    auto* processor = createPluginFilter();
+    REQUIRE(processor != nullptr);
+    delete processor;
+}
+
+TEST_CASE("Plugin prepares without error at different sample rates", "[plugin][samplerate]") {
+    std::vector<double> sampleRates = {44100.0, 48000.0, 96000.0, 192000.0};
+
+    for (double sr : sampleRates) {
+        auto* processor = createPluginFilter();
+        REQUIRE(processor != nullptr);
+
+        REQUIRE_NOTHROW(processor->prepareToPlay(sr, 512));
+        REQUIRE_NOTHROW(processor->releaseResources());
+
+        delete processor;
+    }
+}
+
+TEST_CASE("Plugin prepares without error at different buffer sizes", "[plugin][buffersize]") {
+    std::vector<int> bufferSizes = {64, 128, 256, 512, 1024, 2048};
+
+    for (int bs : bufferSizes) {
+        auto* processor = createPluginFilter();
+        REQUIRE(processor != nullptr);
+
+        REQUIRE_NOTHROW(processor->prepareToPlay(48000.0, bs));
+        REQUIRE_NOTHROW(processor->releaseResources());
+
+        delete processor;
+    }
+}

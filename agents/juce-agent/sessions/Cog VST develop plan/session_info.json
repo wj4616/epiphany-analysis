@@ -1,0 +1,14 @@
+{
+  "session_id": "94431dcf-77f8-4eac-8eeb-4f1ce8a6d0d2",
+  "start_time": "2026-03-28T18:16:16.326Z",
+  "end_time": "2026-03-28T23:49:52.905Z",
+  "project_dir": "/home/myuser/EpiphanyMachine",
+  "total_messages": 461,
+  "user_messages": 130,
+  "assistant_messages": 170,
+  "tool_uses": 74,
+  "models_used": [
+    "<synthetic>",
+    "claude-opus-4-6"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "hook_name": "kb-validate-pre-implementation",
+  "description": "Gate implementation with validation check before code modification",
+  "trigger": {
+    "type": "pre_tool",
+    "tools": ["Write", "Edit"]
+  },
+  "condition": {
+    "file_patterns": [
+      "*.cpp",
+      "*.h",
+      "*.hpp",
+      "*.c",
+      "*.js",
+      "*.ts",
+      "*.py",
+      "*.rs"
+    ],
+    "exclude_patterns": [
+      "*.md",
+      "*.json",
+      "*.yaml",
+      "*.yml",
+      "*.txt",
+      "*.cfg",
+      "*.config"
+    ]
+  },
+  "action": {
+    "command": "kb-validate --gate --check-session",
+    "timeout_ms": 60000,
+    "on_failure": "block_with_message",
+    "on_success": "proceed"
+  },
+  "block_message": {
+    "template": "user-warning",
+    "include_failed_claims": true,
+    "include_investigation_results": true
+  },
+  "output": {
+    "format": "gate_check",
+    "show_summary": true,
+    "show_blocking_issues": true
+  },
+  "notes": [
+    "Triggers before Write/Edit on code files",
+    "Checks session cache for unresolved FAIL claims",
+    "Blocks implementation if unresolved FAIL claims exist",
+    "Shows user warning with options on block"
+  ]
+}

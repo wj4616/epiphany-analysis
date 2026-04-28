@@ -1,0 +1,109 @@
+{
+  "title": "Additive Synthesis",
+  "description": "Building complex sounds by combining individual sine waves (harmonics/partials) at different frequencies, amplitudes, and phases",
+  "source": "web-research",
+  "harvested_at": "2026-03-29T08:20:00.000000",
+  "kb_type": "sound-design",
+  "audio_relevance": 8,
+  "difficulty": "advanced",
+  "content": {
+    "overview": "Additive synthesis constructs timbre from the ground up by combining individual sine waves, unlike subtractive synthesis which filters harmonics away",
+    "leading_plugins": {
+      "commercial": [
+        {
+          "name": "Parsec Spectral Synthesizer (Reason Studios)",
+          "engine": "Up to 1,024 oscillators/partials per voice, two independent sound engines",
+          "features": ["12 generator algorithms", "22 modifier algorithms", "Interactive visual displays", "Draw filter curves and envelopes"],
+          "sound_design": "Evolving pads, digital leads, complex textures",
+          "price": "£119"
+        },
+        {
+          "name": "Loom II (Air Music Technology)",
+          "engine": "Up to 512 harmonic partials per patch, 34 editable modules",
+          "features": ["Modular design", "Morph Pad for timbre morphing", "Spectral noise section", "850+ presets"],
+          "sound_design": "Ambient pads, organic textures, evolving soundscapes",
+          "price": "$99"
+        },
+        {
+          "name": "Radical1 (Sound Radix)",
+          "engine": "Patent-pending additive engine with 'tens of thousands of oscillators'",
+          "features": ["WYSIWYG visual workflow", "Unlimited layers/modulation", "Spectral sample resynthesis"],
+          "price": "$199"
+        }
+      ],
+      "free": [
+        {
+          "name": "LeSynth-Fourier",
+          "engine": "64 harmonics with per-partial amplitude and phase control",
+          "features": ["Real-time visualization", "VST3 format"],
+          "platforms": "Windows & Linux"
+        },
+        {
+          "name": "Harmonaut",
+          "engine": "32 drawable harmonics with separate ADSR per harmonic",
+          "features": ["Four waveform types", "Chorus", "Multimode LFO", "64 factory presets"],
+          "platforms": "Windows VST only"
+        }
+      ]
+    },
+    "core_concepts": {
+      "harmonic_control": {
+        "description": "Shape individual partials to create specific timbres",
+        "techniques": [
+          "Amplitude control per harmonic",
+          "Phase manipulation for tonal changes",
+          "Frequency ratios for inharmonic textures"
+        ]
+      },
+      "evolving_textures": {
+        "description": "Modulate harmonics over time for organic movement",
+        "techniques": [
+          "Independent harmonic envelopes",
+          "LFO modulation of partial amplitudes",
+          "Morphing between harmonic structures"
+        ]
+      },
+      "resynthesis": {
+        "description": "Analyze and recreate existing sounds",
+        "process": "FFT analysis → harmonic extraction → additive reconstruction"
+      },
+      "formant_shaping": {
+        "description": "Manipulate harmonic relationships for vocal-like qualities",
+        "technique": "Emphasize specific harmonic groups"
+      }
+    },
+    "sound_design_applications": [
+      "Create realistic instruments by matching harmonic structures",
+      "Design impossible sounds with inharmonic partials",
+      "Morph between different timbres smoothly",
+      "Generate complex evolving pads and textures",
+      "Recreate vintage synth sounds with precise harmonic control"
+    ],
+    "visual_feedback": {
+      "importance": "Modern plugins provide real-time spectral displays",
+      "benefits": [
+        "Easier learning curve for additive principles",
+        "Precision editing of harmonic content",
+        "Visual correlation between harmonics and timbre"
+      ]
+    },
+    "advantages": [
+      "Complete control over harmonic content",
+      "Smooth morphing between timbres",
+      "Resynthesis capabilities",
+      "Create sounds impossible with other methods"
+    ],
+    "challenges": [
+      "CPU intensive with many partials",
+      "Complex interface with many parameters",
+      "Steep learning curve understanding harmonic relationships"
+    ]
+  },
+  "sources": [
+    "http://tonebytes.com/harmonaut/",
+    "https://www.reasonstudios.com/shop/rack-extension/parsec-spectral-synthesizer/",
+    "https://www.lootaudio.com/category/plugins/air-music-technology/loom-ii",
+    "https://www.soundradix.com/products/radical1/",
+    "https://www.audiopluginsforfree.com/lesynth/"
+  ]
+}

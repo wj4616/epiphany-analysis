@@ -1,0 +1,237 @@
+# Phase 4 Execution Guide: DSP Implementation
+
+## Overview
+
+This guide provides step-by-step instructions for implementing DSP (Digital Signal Processing) in the JUCE VST plugin.
+
+**Phase Objective:** Implement core audio processing with real-time safety.
+
+**Prerequisite Phases:** Phase 2 (Architecture), Phase 3 (Project Setup)
+
+---
+
+## Pre-Check
+
+Before starting:
+- [ ] Build system configured (CMakeLists.txt exists)
+- [ ] Tests passing
+- [ ] Architecture document approved
+- [ ] DSP algorithms specified with math
+- [ ] Human approved sound identity
+
+---
+
+## Step 1: Read KB Context
+
+Load the following KB entries before implementation:
+
+### From Technical KB:
+- `kb/technical/realtime-safety/atomic-audio` — Atomic parameter communication
+- `kb/technical/realtime-safety/lock-free-patterns` — Lock-free data structures
+- `kb/technical/realtime-safety/allocation-avoidance` — Pre-allocation patterns
+- `kb/technical/juce-patterns/apvts-setup` — Parameter management
+- `kb/technical/juce-patterns/parameter-smoothing` — SmoothedValue usage
+- `kb/technical/dsp-algorithms/filter-basics` — Filter implementation
+- `kb/technical/dsp-algorithms/oscillator-basics` — Oscillator implementation
+
+### From Sound Design KB (via Bridge):
+- Use bridge mappings for parameter translation
+- Example: "warm" → filter_cutoff: [0.2, 0.4]
+
+---
+
+## Step 2: Create DSP Module Classes
+
+For each DSP module in architecture:
+
+### File Structure
+```
+src/
+├── dsp/
+│   ├── Oscillator.h
+│   ├── Oscillator.cpp
+│   ├── Filter.h
+│   ├── Filter.cpp
+│   ├── Gain.h
+│   └── Gain.cpp
+```
+
+### Module Template
+```cpp
+// ModuleName.h
+#pragma once
+
+class ModuleName {
+public:
+    void prepare(double sampleRate, int samplesPerBlock);
+    void reset();
+    float processSample(float input);
+    
+private:
+    double sampleRate = 44100.0;
+    // Member variables only - no static!
+};
+```
+
+### Key Rules
+- All state is per-instance member variables
+- No `new`/`delete` in process methods
+- `prepare()` is called before audio starts
+- `processSample()` is called per sample
+
+---
+
+## Step 3: Implement Parameter Smoothing
+
+For every modulatable parameter:
+
+```cpp
+// In PluginProcessor.h
+juce::SmoothedValue<float> smoothedCutoff;
+
+// In prepareToPlay()
+smoothedCutoff.reset(sampleRate, 0.02f); // 20ms smoothing
+
+// In processBlock()
+float cutoff = smoothedCutoff.getNextValue();
+```
+
+### Why Smoothing?
+- Prevents clicks when parameters change
+- Required for automation
+- Use 10-50ms for most parameters
+
+---
+
+## Step 4: Implement Atomic Parameter Access
+
+```cpp
+// In PluginProcessor.h
+std::atomic<float>* cutoffParam = nullptr;
+
+// In constructor
+cutoffParam = apvts.getRawParameterValue("cutoff");
+
+// In processBlock()
+float cutoff = cutoffParam->load(std::memory_order_acquire);
+```
+
+### Key Points
+- Cache atomic pointers in constructor
+- Use `acquire/release` memory ordering
+- Never call `getParameter()` in processBlock
+
+---
+
+## Step 5: Implement Process Block
+
+```cpp
+void PluginProcessor::processBlock(juce::AudioBuffer<float>& buffer, 
+                                    juce::MidiBuffer& midiBuffer) {
+    // 1. Get smoothed parameters (atomic reads)
+    float cutoff = smoothedCutoff.getNextValue();
+    float resonance = smoothedResonance.getNextValue();
+    
+    // 2. Update DSP modules
+    filter.setCutoff(cutoff);
+    filter.setResonance(resonance);
+    
+    // 3. Process samples
+    for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
+        auto* channelData = buffer.getWritePointer(channel);
+        
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+            channelData[sample] = filter.processSample(channelData[sample]);
+        }
+    }
+}
+```
+
+### Rules for processBlock
+- No allocations (no `new`, `delete`, `malloc`)
+- No locks (no `std::mutex::lock()`)
+- No file I/O
+- No system calls
+- Pre-allocate everything in `prepareToPlay()`
+
+---
+
+## Step 6: Real-Time Safety Verification
+
+After implementation, verify:
+
+```cpp
+// Scan for these patterns (FORBIDDEN in processBlock):
+new / delete          // ❌ Allocation
+malloc / free         // ❌ Allocation  
+std::mutex::lock()    // ❌ May block
+std::string           // ❌ May allocate
+std::vector::push_back() // ❌ May allocate
+
+// Use these instead:
+std::atomic<float>   // ✅ Lock-free
+SmoothedValue         // ✅ Pre-allocated
+Pre-allocated buffers // ✅ In prepareToPlay()
+```
+
+---
+
+## Step 7: Build and Test
+
+```bash
+# Build
+cmake --build build
+
+# Run tests
+cd build && ctest --output-on-failure
+
+# Run pluginval (if installed)
+pluginval --validate-in-process build/YourPlugin.vst3
+```
+
+---
+
+## Step 8: Human Sound Approval
+
+Load plugin in REAPER:
+1. Create track, insert plugin
+2. Play audio through plugin
+3. Test all parameter ranges
+4. Verify effect is audible
+5. Check for clicks/pops on parameter changes
+
+Human must approve before proceeding to Phase 5.
+
+---
+
+## Common Pitfalls
+
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| Click on param change | No smoothing | Add SmoothedValue |
+| Effect not audible | Gain staging issue | Audit gain at each stage |
+| CPU spike | Allocation in processBlock | Pre-allocate in prepareToPlay() |
+| Random crash | Static state | Convert to per-instance members |
+
+---
+
+## Gate Checklist
+
+Before proceeding to Phase 5:
+- [ ] All DSP modules implemented
+- [ ] Parameter smoothing on all modulatable parameters
+- [ ] No allocations in processBlock
+- [ ] No locks in processBlock
+- [ ] Build succeeds
+- [ ] Tests pass
+- [ ] Real-time safety audit clean
+- [ ] Human approved sound quality
+
+---
+
+## KB References
+
+- `kb/technical/realtime-safety/` — Thread safety patterns
+- `kb/technical/juce-patterns/` — APVTS and parameter handling
+- `kb/technical/dsp-algorithms/` — Algorithm implementations
+- `kb/sound-design/` — Sound design theory via bridge mappings

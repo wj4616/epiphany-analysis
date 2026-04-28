@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_modulation_lfo-basics",
+  "kb": "sound-design",
+  "topic": "modulation",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "LFO Fundamentals for Movement",
+  "summary": "Placeholder: Low-frequency oscillators for vibrato, tremolo, and filter sweeps.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["modulation", "lfo", "vibrato", "tremolo", "movement"],
+  "related_topics": ["modulation", "filters"],
+  "difficulty": "beginner",
+  "domain_relevance": 10
+}

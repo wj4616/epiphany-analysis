@@ -1,0 +1,125 @@
+{
+  "kb_name": "ui-kb",
+  "topic": "ui-animation",
+  "version": "1.0.0",
+  "last_updated": "2026-03-29T08:40:00Z",
+  "content": {
+    "title": "UI Animation and Smooth Transitions for Audio Plugins",
+    "overview": "Comprehensive guide to implementing smooth, professional animations in JUCE-based audio plugins",
+    "juce_8_animation_module": {
+      "description": "Modern animation system replacing deprecated ComponentAnimator",
+      "core_components": {
+        "vblank_animator_updater": {
+          "purpose": "Syncs animations to hardware refresh rates for smooth visuals",
+          "implementation": "juce::VBlankAnimatorUpdater updater { this };"
+        },
+        "value_animator_builder": {
+          "description": "Fluent API for creating animations",
+          "example": "juce::Animator bounce = juce::ValueAnimatorBuilder {}\n    .withEasing (juce::Easings::createEaseOutBounce (4))\n    .withDurationMs (2000)\n    .withValueChangedCallback ([this] (auto value) {\n        yPosition = 50 + (float) value * 200;\n        repaint();\n    })\n    .build();"
+        }
+      },
+      "easing_functions": {
+        "basic": ["createEase()", "createEaseIn()", "createEaseOut()", "createEaseInOut()"],
+        "advanced": ["createEaseOutBack()", "createSpring()", "createBounce()"],
+        "custom": "createCubicBezier() for precise control"
+      }
+    },
+    "smooth_parameter_changes": {
+      "audio_parameter_smoothing": {
+        "description": "Prevent clicks and pops when parameters change",
+        "code_example": "void processBlock (juce::AudioSampleBuffer& buffer, juce::MidiBuffer&) override\n{\n    auto currentGain = gain->get();\n    if (juce::approximatelyEqual (currentGain, previousGain))\n    {\n        buffer.applyGain (currentGain);\n    }\n    else\n    {\n        buffer.applyGainRamp (0, buffer.getNumSamples(), previousGain, currentGain);\n        previousGain = currentGain;\n    }\n}",
+        "best_practices": [
+          "Use applyGainRamp for smooth transitions",
+          "Store previous parameter values",
+          "Check if change is significant before ramping"
+        ]
+      },
+      "ui_parameter_animation": {
+        "best_practices": [
+          "Use floating-point transforms instead of integer bounds",
+          "Make animation limits explicit with makeAnimationLimits()",
+          "Coordinate multiple animators with AnimatorSetBuilder",
+          "Repaint efficiently - only when necessary"
+        ],
+        "example": "// Efficient repaint animator\nconst auto repaintAnimator = ValueAnimatorBuilder{}\n    .withValueChangedCallback ([this] (auto) { repaint(); })\n    .runningInfinitely()\n    .build();"
+      }
+    },
+    "key_implementation_patterns": {
+      "knob_animation": {
+        "description": "Smooth rotary knob movement",
+        "techniques": [
+          "Use AffineTransform for sub-pixel precision",
+          "Spring physics for realistic bounce",
+          "Smooth value interpolation over 50-200ms"
+        ]
+      },
+      "slider_movement": {
+        "description": "Linear and rotary slider animations",
+        "techniques": [
+          "Ease-out for parameter changes",
+          "Immediate response with visual feedback",
+          "Value display updates with animation"
+        ]
+      },
+      "button_state_changes": {
+        "description": "Hover, press, and toggle animations",
+        "techniques": [
+          "Scale transform on press (0.95x)",
+          "Color interpolation for state changes",
+          "Glow effects for active states"
+        ]
+      },
+      "panel_transitions": {
+        "description": "Showing/hiding UI sections",
+        "techniques": [
+          "Slide animations (300ms ease-out)",
+          "Fade transitions for opacity changes",
+          "Height/width animations for expandable sections"
+        ]
+      }
+    },
+    "performance_optimization": {
+      "hardware_sync": "VBlankAnimatorUpdater eliminates tearing and stuttering",
+      "efficient_repainting": [
+        "Only repaint changed regions",
+        "Use Component::setBufferedToImage(true) for static content",
+        "Cache complex paths and gradients"
+      ],
+      "cpu_management": [
+        "Limit concurrent animations",
+        "Stop animations when UI is hidden",
+        "Use lower frame rates for non-critical animations"
+      ]
+    },
+    "ux_improvements": {
+      "benefits": [
+        "Hardware-synced rendering eliminates visual artifacts",
+        "Natural motion physics (spring, bounce) for responsive controls",
+        "Smooth parameter interpolation prevents audio artifacts",
+        "60fps+ animations for professional feel",
+        "Proper easing makes transitions feel intentional"
+      ]
+    },
+    "migration_from_legacy": {
+      "old_component_animator": "Deprecated in JUCE 8",
+      "migration_benefits": [
+        "Better performance with hardware synchronization",
+        "More easing options (CSS-aligned)",
+        "Cleaner, more modern API",
+        "Better support for complex animation sequences"
+      ]
+    },
+    "common_animation_durations": {
+      "quick_feedback": "50-100ms (button presses, hover)",
+      "parameter_changes": "100-200ms (knob/slider movement)",
+      "panel_transitions": "200-300ms (showing/hiding sections)",
+      "page_transitions": "300-500ms (major UI state changes)"
+    }
+  },
+  "sources": [
+    "https://juce.com/blog/juce-8-feature-overview-animation-module/",
+    "https://docs.juce.com/master/structEasings.html",
+    "https://docs.juce.com/master/tutorial_audio_parameter.html",
+    "https://docs.juce.com/master/classjuce_1_1ValueAnimatorBuilder.html"
+  ]
+}

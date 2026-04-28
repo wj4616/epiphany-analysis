@@ -1,0 +1,42 @@
+{
+  "id": "dsp-kb_delay_delay-lines",
+  "kb": "dsp-kb",
+  "topic": "delay",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Content to be harvested]",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Example code placeholder\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Digital Delay Lines\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.781097+00:00"
+  },
+  "title": "Digital Delay Lines",
+  "description": "Fractional delay and interpolation techniques",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:47:29.620510Z",
+  "kb_type": "dsp",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "digital delay line",
+    "fractional delay",
+    "interpolation delay",
+    "circular buffer delay"
+  ],
+  "sources": [
+    "CCRMA DSP papers",
+    "DSP textbooks"
+  ]
+}

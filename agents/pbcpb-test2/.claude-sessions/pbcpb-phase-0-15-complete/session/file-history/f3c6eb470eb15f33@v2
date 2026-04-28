@@ -1,0 +1,13 @@
+{
+  "kb": "bridge",
+  "status_summary": {
+    "placeholder": 0,
+    "seeded": 5,
+    "validated": 0,
+    "refined": 0
+  },
+  "sync_history": [
+    {"date": "2026-04-02", "action": "directory_created", "entries_added": 0},
+    {"date": "2026-04-02", "action": "bridge_entries_seeded", "entries_added": 5}
+  ]
+}

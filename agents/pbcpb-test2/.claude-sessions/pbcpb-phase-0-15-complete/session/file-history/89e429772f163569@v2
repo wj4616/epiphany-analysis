@@ -1,0 +1,16 @@
+{
+  "id": "ui-ux_control-types_sliders",
+  "kb": "ui-ux",
+  "topic": "control-types",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Slider Design for Audio Plugins",
+  "summary": "Placeholder: Linear controls for level comparison and precise adjustment.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["ui", "slider", "control", "linear", "fader"],
+  "related_topics": ["control-types", "layout-patterns"],
+  "difficulty": "beginner",
+  "domain_relevance": 8
+}

@@ -1,0 +1,16 @@
+{
+  "id": "ui-ux_control-types_meters",
+  "kb": "ui-ux",
+  "topic": "control-types",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Meter Design for Audio Plugins",
+  "summary": "Placeholder: VU meters, peak indicators, and level visualization.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["ui", "meter", "vu", "peak", "level", "visualization"],
+  "related_topics": ["control-types", "feedback"],
+  "difficulty": "intermediate",
+  "domain_relevance": 9
+}

@@ -1,0 +1,151 @@
+#include <catch2/catch_test_macros.hpp>
+#include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+#include "PluginProcessor.h"
+
+// Forward declaration
+namespace juce {
+    class AudioProcessor;
+}
+
+extern juce::AudioProcessor* createPluginFilter();
+
+// ============================================================================
+// Parameter Tests (using generic AudioProcessor interface)
+// ============================================================================
+
+TEST_CASE("Parameter ranges are valid", "[parameters]") {
+    auto* processor = createPluginFilter();
+    auto& params = processor->getParameters();
+
+    for (int i = 0; i < params.size(); ++i) {
+        auto* param = params[i];
+        if (param != nullptr) {
+            float value = param->getValue();
+            REQUIRE(value >= 0.0f);
+            REQUIRE(value <= 1.0f);
+        }
+    }
+
+    delete processor;
+}
+
+TEST_CASE("All parameters can be set to extremes without crash", "[parameters][stress]") {
+    auto* processor = createPluginFilter();
+    processor->prepareToPlay(48000.0, 256);
+
+    auto& params = processor->getParameters();
+
+    // Set all to minimum
+    for (auto* param : params) {
+        if (param != nullptr) {
+            param->setValue(0.0f);
+        }
+    }
+
+    juce::AudioBuffer<float> buffer(2, 256);
+    buffer.clear();
+    juce::MidiBuffer midiBuffer;
+
+    REQUIRE_NOTHROW(processor->processBlock(buffer, midiBuffer));
+
+    // Set all to maximum
+    for (auto* param : params) {
+        if (param != nullptr) {
+            param->setValue(1.0f);
+        }
+    }
+
+    REQUIRE_NOTHROW(processor->processBlock(buffer, midiBuffer));
+
+    // Check output is still finite
+    for (int ch = 0; ch < 2; ++ch) {
+        auto* channelData = buffer.getReadPointer(ch);
+        for (int i = 0; i < 256; ++i) {
+            REQUIRE(std::isfinite(channelData[i]));
+        }
+    }
+
+    delete processor;
+}
+
+TEST_CASE("State save/restore round-trip", "[parameters][state]") {
+    auto* processor1 = createPluginFilter();
+    auto* processor2 = createPluginFilter();
+
+    // Cast to access APVTS
+    auto* proc1 = dynamic_cast<CogVSTAudioProcessor*>(processor1);
+    auto* proc2 = dynamic_cast<CogVSTAudioProcessor*>(processor2);
+    REQUIRE(proc1 != nullptr);
+    REQUIRE(proc2 != nullptr);
+
+    processor1->prepareToPlay(48000.0, 256);
+    processor2->prepareToPlay(48000.0, 256);
+
+    auto& apvts1 = proc1->getAPVTS();
+    auto& apvts2 = proc2->getAPVTS();
+
+    // Get raw parameter pointers
+    auto* sens1 = apvts1.getRawParameterValue("sensitivity");
+    auto* bal1 = apvts1.getRawParameterValue("pathBalance");
+    auto* drive1 = apvts1.getRawParameterValue("textureDrive");
+
+    auto* sens2 = apvts2.getRawParameterValue("sensitivity");
+    auto* bal2 = apvts2.getRawParameterValue("pathBalance");
+    auto* drive2 = apvts2.getRawParameterValue("textureDrive");
+
+    // Set parameter values via APVTS
+    apvts1.getParameter("sensitivity")->setValueNotifyingHost(0.3f);
+    apvts1.getParameter("pathBalance")->setValueNotifyingHost(0.7f);
+    apvts1.getParameter("textureDrive")->setValueNotifyingHost(0.5f);
+
+    // Save state
+    juce::MemoryBlock state;
+    processor1->getStateInformation(state);
+
+    // Restore to processor2
+    processor2->setStateInformation(state.getData(), static_cast<int>(state.getSize()));
+
+    // Verify parameters match using raw parameter values
+    REQUIRE(std::abs(sens1->load() - sens2->load()) < 0.001f);
+    REQUIRE(std::abs(bal1->load() - bal2->load()) < 0.001f);
+    REQUIRE(std::abs(drive1->load() - drive2->load()) < 0.001f);
+
+    delete processor1;
+    delete processor2;
+}
+
+TEST_CASE("Multi-instance test - no shared state corruption", "[parameters][stress]") {
+    // Create multiple instances
+    std::vector<juce::AudioProcessor*> instances;
+
+    for (int i = 0; i < 4; ++i) {
+        auto* processor = createPluginFilter();
+        processor->prepareToPlay(48000.0, 256);
+        instances.push_back(processor);
+    }
+
+    // Process different audio through each
+    juce::AudioBuffer<float> buffer(2, 256);
+    juce::MidiBuffer midiBuffer;
+
+    for (auto* processor : instances) {
+        buffer.clear();
+        for (int ch = 0; ch < 2; ++ch) {
+            auto* channelData = buffer.getWritePointer(ch);
+            for (int i = 0; i < 256; ++i) {
+                channelData[i] = (juce::Random::getSystemRandom().nextFloat() * 2.0f) - 1.0f;
+            }
+        }
+
+        REQUIRE_NOTHROW(processor->processBlock(buffer, midiBuffer));
+    }
+
+    // All instances should process independently
+    REQUIRE(instances.size() == 4);
+
+    // Clean up
+    for (auto* processor : instances) {
+        delete processor;
+    }
+}

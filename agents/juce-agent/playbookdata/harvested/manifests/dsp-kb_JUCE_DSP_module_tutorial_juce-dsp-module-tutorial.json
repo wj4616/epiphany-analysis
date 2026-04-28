@@ -1,0 +1,22 @@
+{
+  "kb_name": "dsp-kb",
+  "topic": "JUCE DSP module tutorial",
+  "filename": "juce-dsp-module-tutorial.json",
+  "status": "harvested",
+  "harvested_at": "2026-03-30T23:17:03.910551+00:00",
+  "sources": 2,
+  "rejected": 26,
+  "credits_used": 74,
+  "search_queries": [
+    "JUCE DSP module tutorial AudioProcessor realtime plugin",
+    "JUCE DSP module tutorial tutorial",
+    "JUCE DSP module tutorial implementation",
+    "JUCE DSP module tutorial guide"
+  ],
+  "quality_thresholds": {
+    "min_content_length": 500,
+    "min_relevance_score": 0.2,
+    "max_noise_ratio": 0.5
+  },
+  "notes": "Auto-harvested via harvest-data skill"
+}

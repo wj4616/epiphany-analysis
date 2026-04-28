@@ -1,0 +1,33 @@
+{
+  "id": "bridge_bright_default",
+  "category": "bright",
+  "descriptor": "bright",
+  "parameters": [
+    {
+      "parameter": "filter_cutoff",
+      "value_range": [0.6, 1.0],
+      "typical_default": 0.8,
+      "why": "Higher cutoff preserves or emphasizes high frequency content"
+    },
+    {
+      "parameter": "filter_resonance",
+      "value_range": [0.0, 0.15],
+      "typical_default": 0.05,
+      "why": "Minimal resonance keeps the sound clear and present"
+    }
+  ],
+  "source": "Sound Design KB",
+  "confidence": 0.90,
+  "why": "Bright sounds emphasize high frequencies with minimal filtering or resonance, creating presence and clarity.",
+  "anti_patterns": [
+    {
+      "avoid": "Adding resonance above 0.2 with high cutoff",
+      "reason": "Creates harsh, piercing quality rather than brightness"
+    }
+  ],
+  "related_descriptors": ["crisp", "present"],
+  "example_plugins": [
+    {"name": "Native Instruments Massive", "how_used": "Wavetable with bright filter setting"}
+  ],
+  "user_feedback": []
+}

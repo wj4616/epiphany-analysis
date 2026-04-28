@@ -1,0 +1,92 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+#include "FastMath.h"
+
+namespace CogDSP
+{
+
+// StereoWidener - Frequency-dependent M/S processing
+// Linkwitz-Riley 2nd-order crossover at 250Hz
+// Below 250Hz: mono sum to both channels (solid centered low end)
+// Above 250Hz: M/S widening (side boost up to 3x)
+class StereoWidener
+{
+public:
+    StereoWidener() = default;
+    ~StereoWidener() = default;
+
+    void prepare(double sampleRate);
+    void process(float* left, float* right, int numSamples);
+    void reset();
+
+    // Width: 0-1
+    // 0 = transparent (no change)
+    // 1 = side tripled (extreme width, up to +9.5dB on stereo material)
+    void setWidth(float w) { width = std::clamp(w, 0.0f, 1.0f); }
+
+private:
+    // LR2 crossover stage (2x biquad for 4th order LR)
+    struct CrossoverStage
+    {
+        // First-order HPF and LPF (cascade two for LR2)
+        float x1L = 0.0f, x2L = 0.0f;
+        float y1L = 0.0f, y2L = 0.0f;
+        float x1R = 0.0f, x2R = 0.0f;
+        float y1R = 0.0f, y2R = 0.0f;
+
+        // Coefficients
+        float b0 = 0.0f, b1 = 0.0f, b2 = 0.0f;
+        float a1 = 0.0f, a2 = 0.0f;
+
+        void processLP(float& left, float& right)
+        {
+            // Low-pass: Butterworth 2nd order
+            const float inL = left;
+            const float inR = right;
+
+            left = b0 * inL + b1 * x1L + b2 * x2L - a1 * y1L - a2 * y2L;
+            right = b0 * inR + b1 * x1R + b2 * x2R - a1 * y1R - a2 * y2R;
+
+            x2L = x1L; x1L = inL;
+            y2L = y1L; y1L = left;
+            x2R = x1R; x1R = inR;
+            y2R = y1R; y1R = right;
+        }
+
+        void processHP(float& left, float& right)
+        {
+            // High-pass: Butterworth 2nd order
+            const float inL = left;
+            const float inR = right;
+
+            left = b0 * inL + b1 * x1L + b2 * x2L - a1 * y1L - a2 * y2L;
+            right = b0 * inR + b1 * x1R + b2 * x2R - a1 * y1R - a2 * y2R;
+
+            x2L = x1L; x1L = inL;
+            y2L = y1L; y1L = left;
+            x2R = x1R; x1R = inR;
+            y2R = y1R; y1R = right;
+        }
+
+        void reset()
+        {
+            x1L = x2L = y1L = y2L = 0.0f;
+            x1R = x2R = y1R = y2R = 0.0f;
+        }
+    };
+
+    float width = 0.5f;
+    double sampleRate = 44100.0;
+
+    // Two LP stages for LR2 (cascade)
+    CrossoverStage lp1, lp2;
+    // Two HP stages for LR2 (cascade)
+    CrossoverStage hp1, hp2;
+
+    // Smoothed width
+    juce::SmoothedValue<float> smoothedWidth;
+};
+
+} // namespace CogDSP

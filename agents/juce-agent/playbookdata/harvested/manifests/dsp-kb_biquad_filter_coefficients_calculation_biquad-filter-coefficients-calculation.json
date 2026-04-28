@@ -1,0 +1,22 @@
+{
+  "kb_name": "dsp-kb",
+  "topic": "biquad filter coefficients calculation",
+  "filename": "biquad-filter-coefficients-calculation.json",
+  "status": "harvested",
+  "harvested_at": "2026-03-30T23:55:48.951151+00:00",
+  "sources": 5,
+  "rejected": 31,
+  "credits_used": 80,
+  "search_queries": [
+    "biquad filter coefficients calculation audio DSP IIR implementation",
+    "biquad filter coefficients calculation tutorial",
+    "biquad filter coefficients calculation implementation",
+    "biquad filter coefficients calculation guide"
+  ],
+  "quality_thresholds": {
+    "min_content_length": 500,
+    "min_relevance_score": 0.15,
+    "max_noise_ratio": 0.6
+  },
+  "notes": "Auto-harvested via harvest-data skill"
+}

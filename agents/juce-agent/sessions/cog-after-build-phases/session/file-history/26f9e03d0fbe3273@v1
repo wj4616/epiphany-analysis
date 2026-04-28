@@ -1,0 +1,33 @@
+#include "ModulationEngine.h"
+
+namespace CogDSP
+{
+
+void ModulationEngine::prepare(double sr)
+{
+    sampleRate = sr;
+}
+
+void ModulationEngine::process(int numSamples)
+{
+    // TODO: Implement modulation
+    juce::ignoreUnused(numSamples);
+}
+
+float ModulationEngine::getModulationValue(int outputIndex) const
+{
+    juce::ignoreUnused(outputIndex);
+    return 0.0f;
+}
+
+void ModulationEngine::setRate(float rateHz)
+{
+    rate = rateHz;
+}
+
+void ModulationEngine::reset()
+{
+    phase = 0.0f;
+}
+
+} // namespace CogDSP

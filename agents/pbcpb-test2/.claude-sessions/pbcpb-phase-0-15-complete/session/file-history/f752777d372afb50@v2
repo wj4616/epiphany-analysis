@@ -1,0 +1,16 @@
+{
+  "id": "ui-ux_feedback_tooltips",
+  "kb": "ui-ux",
+  "topic": "feedback",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Tooltips and Help Text",
+  "summary": "Placeholder: Contextual help, parameter descriptions, and value formatting.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["ui", "feedback", "tooltip", "help", "context"],
+  "related_topics": ["feedback", "control-types"],
+  "difficulty": "beginner",
+  "domain_relevance": 7
+}

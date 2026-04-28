@@ -1,0 +1,23 @@
+{
+  "title": "Multiband Compression",
+  "description": "Crossover-based multiband compression",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:47:22.771641Z",
+  "kb_type": "dsp",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "markdown": "# Multiband Compression\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "multiband compressor",
+    "crossover filter",
+    "band splitting",
+    "compression bands"
+  ],
+  "sources": [
+    "Sound on Sound",
+    "Plugin Doctor"
+  ]
+}

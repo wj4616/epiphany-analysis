@@ -1,0 +1,16 @@
+{
+  "id": "technical_build-systems_cmake-fetchcontent",
+  "kb": "technical",
+  "topic": "build-systems",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "CMake FetchContent for JUCE Projects",
+  "summary": "Placeholder: Self-contained builds using FetchContent to download JUCE automatically.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["cmake", "fetchcontent", "juce", "build", "dependency"],
+  "related_topics": ["build-systems", "testing"],
+  "difficulty": "beginner",
+  "domain_relevance": 9
+}

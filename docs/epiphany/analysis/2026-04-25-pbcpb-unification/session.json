@@ -1,0 +1,45 @@
+{
+  "session_id": "2026-04-25-pbcpb-unification",
+  "created_utc": "2026-04-25T01:00:00Z",
+  "node_a": {
+    "source_kind": "file",
+    "source_path": "/home/myuser/docs/epiphany/graph-genius/2026-04-25T00-24-35-7c6b/input.md",
+    "content_hash": "3fd36cd5984b320aa2f1f6095baf092cadbe961110743a9c5de3e38ec3584133"
+  },
+  "node_b": {
+    "source_kind": "file",
+    "source_path": "/home/myuser/docs/epiphany/graph-genius/2026-04-25T00-24-35-7c6b/report.md",
+    "content_hash": "ed651e02381bc9eac8a02c24e2456e4defbf183149f864cfa79b1acca95d7a62",
+    "genius_detection": "genius-current",
+    "matched_sections": [
+      "Headline Insight",
+      "Theory Collisions",
+      "Discovery vs. Proof",
+      "Independence-Verified Bridges",
+      "Alternative Hypotheses",
+      "Density-Checked Falsification",
+      "Scope Limits",
+      "Coherence Signals",
+      "Generalization Checks",
+      "Open Questions & Next Probes"
+    ],
+    "drift_notes": "All 10 canonical sections present plus extra 'Representational Signals' section. Theory Collisions present-but-skipped (zero yield, no retry per spec)."
+  },
+  "modules": {
+    "m-intake":    { "status": "complete", "start_utc": "2026-04-25T00:59:30Z", "end_utc": "2026-04-25T01:00:00Z", "notes": "HG-1 PASS: enhanced.md target != Node A source. Both stage files hash-verified." },
+    "m-analyze":   { "status": "complete", "a1_complete": true, "b1_complete": true, "start_utc": "2026-04-25T01:00:00Z", "end_utc": "2026-04-25T01:08:00Z", "notes": "9 of 10 B1 sections produced findings; Theory Collisions zero-yield (skipped at STANDARD scale in Node B)." },
+    "m-ideate":    { "status": "complete", "passes_run": 3, "ideas_total": 29, "stop_reason": "pass-cap" },
+    "m-filter":    { "status": "complete", "ideas_in": 29, "accepted_out": 25 },
+    "m-engineer":  { "status": "complete", "d_entries_processed": 25, "e_entries_produced": 31, "double_fail_count": 0, "notes": "24 unique solutions + 4 E20 sister edits + 4 E24 sister edits - 1 no-op (E25 subsumed by E01) = 31 effective integration edits." },
+    "m-integrate": { "status": "complete", "refinement_cycles": 0, "audit_verdict": "PASS", "notes": "All R1-R6 audit checks PASS first iteration. Two compose resolutions applied (E03+E17, E09+E14+E18). No edits dropped." }
+  },
+  "caps_applied": {
+    "ideation_passes": 3,
+    "ideation_total": 50,
+    "drafts_per_d": 2,
+    "refinement_cycles": 1,
+    "global_wall_clock_sec": 900
+  },
+  "stop_reasons": ["m-ideate:pass-cap"],
+  "argv_flags": { "start_at": null, "stop_at": null }
+}

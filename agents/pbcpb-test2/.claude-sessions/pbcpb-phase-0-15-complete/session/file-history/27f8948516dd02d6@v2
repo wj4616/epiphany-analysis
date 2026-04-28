@@ -1,0 +1,16 @@
+{
+  "id": "reference_textbooks_smith-audio",
+  "kb": "reference",
+  "topic": "textbooks",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Physical Audio Signal Processing by Julius O. Smith III",
+  "summary": "Placeholder: Physical modeling and signal processing theory.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "textbook", "author": "Julius O. Smith III"},
+  "concepts": [],
+  "tags": ["textbook", "dsp", "smith", "physical-modeling"],
+  "related_topics": ["synthesis-types", "oscillators"],
+  "difficulty": "advanced",
+  "domain_relevance": 8
+}

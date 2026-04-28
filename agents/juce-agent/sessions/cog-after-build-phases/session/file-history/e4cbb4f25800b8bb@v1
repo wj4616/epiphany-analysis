@@ -1,0 +1,30 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+
+// ModulationEngine - LFO and modulation routing
+// TODO: Implement in future task
+
+namespace CogDSP
+{
+
+class ModulationEngine
+{
+public:
+    ModulationEngine() = default;
+    ~ModulationEngine() = default;
+
+    void prepare(double sampleRate);
+    void process(int numSamples);
+    float getModulationValue(int outputIndex) const;
+    void setRate(float rateHz);
+    void reset();
+
+private:
+    float rate = 1.0f;
+    double sampleRate = 44100.0;
+    float phase = 0.0f;
+};
+
+} // namespace CogDSP

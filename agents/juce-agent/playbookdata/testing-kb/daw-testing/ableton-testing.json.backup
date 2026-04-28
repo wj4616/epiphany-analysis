@@ -1,0 +1,22 @@
+{
+  "title": "Ableton Live Plugin Testing",
+  "description": "Testing plugins in Ableton Live DAW",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:45:32.658096Z",
+  "kb_type": "testing",
+  "audio_relevance": 7,
+  "difficulty": "intermediate",
+  "markdown": "# Ableton Live Plugin Testing\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "Ableton plugin testing",
+    "Live plugin validation",
+    "Ableton development"
+  ],
+  "sources": [
+    "Ableton docs",
+    "JUCE forum"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "kb": "ui-ux",
+  "version": "1.0.0",
+  "topics": {
+    "control-types": {
+      "entries": ["knobs", "sliders", "buttons", "meters"],
+      "last_updated": "2026-04-02"
+    },
+    "layout-patterns": {
+      "entries": ["grouping", "hierarchy", "spacing"],
+      "last_updated": "2026-04-02"
+    },
+    "accessibility": {
+      "entries": ["keyboard-support", "screen-readers"],
+      "last_updated": "2026-04-02"
+    },
+    "feedback": {
+      "entries": ["visual-feedback", "tooltips"],
+      "last_updated": "2026-04-02"
+    },
+    "platform-standards": {
+      "entries": ["daw-conventions"],
+      "last_updated": "2026-04-02"
+    }
+  }
+}

@@ -1,0 +1,219 @@
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+#include <cmath>
+#include "DSP/FastMath.h"
+#include "DSP/DCBlocker.h"
+#include "DSP/DelayLine.h"
+#include "DSP/ResonantFilter.h"
+
+using Catch::Approx;
+
+// ============================================================================
+// FastMath Tests
+// ============================================================================
+
+TEST_CASE("FastMath::fastTanh is bounded", "[dsp][fastmath]") {
+    // Test extreme values
+    for (float x : {-100.0f, -10.0f, -5.0f, -1.0f, 0.0f, 1.0f, 5.0f, 10.0f, 100.0f}) {
+        float result = CogDSP::fastTanh(x);
+        REQUIRE(result >= -1.0f);
+        REQUIRE(result <= 1.0f);
+        REQUIRE(std::isfinite(result));
+    }
+}
+
+TEST_CASE("FastMath::fastTanh is accurate near zero", "[dsp][fastmath]") {
+    // Near zero, fastTanh should be close to std::tanh
+    for (float x = -2.0f; x <= 2.0f; x += 0.25f) {
+        float fast = CogDSP::fastTanh(x);
+        float ref = std::tanh(x);
+        REQUIRE(std::abs(fast - ref) < 0.01f);  // 1% error tolerance
+    }
+}
+
+TEST_CASE("FastMath::fastAtan is bounded", "[dsp][fastmath]") {
+    // Test extreme values
+    for (float x : {-100.0f, -10.0f, -5.0f, -1.0f, 0.0f, 1.0f, 5.0f, 10.0f, 100.0f}) {
+        float result = CogDSP::fastAtan(x);
+        REQUIRE(result >= -1.6f);  // ~PI/2
+        REQUIRE(result <= 1.6f);
+        REQUIRE(std::isfinite(result));
+    }
+}
+
+TEST_CASE("FastMath::fastAtan(0) = 0", "[dsp][fastmath]") {
+    REQUIRE(CogDSP::fastAtan(0.0f) == Approx(0.0f).margin(0.001f));
+}
+
+TEST_CASE("FastMath::equalPowerCrossfade sums to 1", "[dsp][fastmath]") {
+    for (float mix = 0.0f; mix <= 1.0f; mix += 0.1f) {
+        auto gains = CogDSP::equalPowerCrossfade(mix);
+        float sum = gains.dry * gains.dry + gains.wet * gains.wet;
+        REQUIRE(sum == Approx(1.0f).epsilon(0.01f));
+    }
+}
+
+TEST_CASE("FastMath::equalPowerCrossfade endpoints", "[dsp][fastmath]") {
+    auto at0 = CogDSP::equalPowerCrossfade(0.0f);
+    auto at1 = CogDSP::equalPowerCrossfade(1.0f);
+    auto at05 = CogDSP::equalPowerCrossfade(0.5f);
+
+    REQUIRE(at0.dry == Approx(1.0f).margin(0.001f));
+    REQUIRE(at0.wet == Approx(0.0f).margin(0.001f));
+    REQUIRE(at1.dry == Approx(0.0f).margin(0.001f));
+    REQUIRE(at1.wet == Approx(1.0f).margin(0.001f));
+    REQUIRE(at05.dry == Approx(0.707f).epsilon(0.01f));
+    REQUIRE(at05.wet == Approx(0.707f).epsilon(0.01f));
+}
+
+// ============================================================================
+// DCBlocker Tests
+// ============================================================================
+
+TEST_CASE("DCBlocker removes DC offset", "[dsp][dcblocker]") {
+    CogDSP::DCBlocker blocker;
+    blocker.prepare(48000.0);
+
+    // Feed constant DC
+    for (int i = 0; i < 1000; ++i) {
+        float input = 1.0f;  // DC
+        blocker.processSample(input);
+    }
+
+    // After settling, output should be near zero
+    float output = blocker.processSample(1.0f);
+    REQUIRE(std::abs(output) < 0.1f);
+}
+
+TEST_CASE("DCBlocker passes audio", "[dsp][dcblocker]") {
+    CogDSP::DCBlocker blocker;
+    blocker.prepare(48000.0);
+
+    // Feed alternating signal (no DC)
+    float buffer[100];
+    for (int i = 0; i < 100; ++i) {
+        buffer[i] = (i % 2 == 0) ? 0.5f : -0.5f;
+        blocker.processSample(buffer[i]);
+    }
+
+    // Process again - signal should pass through (minus transient)
+    float sumInput = 0.0f;
+    float sumOutput = 0.0f;
+    for (int i = 0; i < 100; ++i) {
+        float input = (i % 2 == 0) ? 0.5f : -0.5f;
+        sumInput += std::abs(input);
+        sumOutput += std::abs(blocker.processSample(input));
+    }
+
+    // Output should be similar magnitude to input
+    REQUIRE(sumOutput > sumInput * 0.5f);
+}
+
+// ============================================================================
+// DelayLine Tests
+// ============================================================================
+
+TEST_CASE("DelayLine delays signal correctly", "[dsp][delayline]") {
+    CogDSP::DelayLine<float> delay;
+    delay.prepare(48000.0f, 100.0f);  // Max 100ms
+    delay.setDelay(10.0f);  // 10ms delay at 48kHz = 480 samples
+
+    // Feed impulse
+    float output = delay.process(1.0f);  // First output should be delayed
+    REQUIRE(output == Approx(0.0f));  // No output yet - delay not filled
+
+    // Fill the delay line
+    for (int i = 0; i < 478; ++i) {
+        delay.process(0.0f);
+    }
+
+    // Now we should get the impulse
+    output = delay.process(0.0f);
+    REQUIRE(std::abs(output) > 0.0f);
+}
+
+TEST_CASE("DelayLine handles zero delay", "[dsp][delayline]") {
+    CogDSP::DelayLine<float> delay;
+    delay.prepare(48000.0f, 100.0f);
+    delay.setDelay(0.0f);
+
+    float output = delay.process(0.5f);
+    REQUIRE(output == Approx(0.5f).margin(0.001f));
+}
+
+// ============================================================================
+// ResonantFilter Tests
+// ============================================================================
+
+TEST_CASE("ResonantFilter Q mapping", "[dsp][filter]") {
+    CogDSP::ResonantFilter filter;
+    filter.prepare(48000.0);
+
+    // reso = 0 should map to Q ~ 0.5
+    filter.setResonance(0.0f);
+    REQUIRE(filter.getAutoGain() == Approx(1.0f / std::sqrt(0.5f)).epsilon(0.1f));
+
+    // reso = 1 should map to Q ~ 100
+    filter.setResonance(1.0f);
+    REQUIRE(filter.getAutoGain() < 0.2f);  // 1/sqrt(100) = 0.1
+}
+
+TEST_CASE("ResonantFilter passes audio at low resonance", "[dsp][filter]") {
+    CogDSP::ResonantFilter filter;
+    filter.prepare(48000.0);
+    filter.setCutoff(1000.0f);
+    filter.setResonance(0.1f);  // Low resonance
+    filter.setMode(CogDSP::ResonantFilter::Mode::LP);
+
+    // Process some samples
+    float sum = 0.0f;
+    for (int i = 0; i < 100; ++i) {
+        float input = 0.5f;
+        filter.process(&input, 1);
+        sum += std::abs(input);
+    }
+
+    // Signal should not be killed by low resonance filter
+    REQUIRE(sum > 1.0f);
+}
+
+TEST_CASE("ResonantFilter does not produce NaN at high resonance", "[dsp][filter]") {
+    CogDSP::ResonantFilter filter;
+    filter.prepare(48000.0);
+    filter.setCutoff(1000.0f);
+    filter.setResonance(1.0f);  // Maximum resonance
+    filter.setMode(CogDSP::ResonantFilter::Mode::LP);
+
+    // Process samples
+    for (int i = 0; i < 1000; ++i) {
+        float input = 0.1f;
+        filter.process(&input, 1);
+        REQUIRE(std::isfinite(input));
+    }
+}
+
+// ============================================================================
+// Sample Rate Tests
+// ============================================================================
+
+TEST_CASE("Components handle different sample rates", "[dsp][samplerate]") {
+    std::vector<double> sampleRates = {44100.0, 48000.0, 96000.0, 192000.0};
+
+    for (double sr : sampleRates) {
+        CogDSP::DCBlocker blocker;
+        blocker.prepare(sr);
+
+        CogDSP::ResonantFilter filter;
+        filter.prepare(sr);
+        filter.setCutoff(1000.0f);
+        filter.setResonance(0.5f);
+
+        // Should not crash at any sample rate
+        for (int i = 0; i < 100; ++i) {
+            float sample = 0.5f;
+            blocker.processSample(sample);
+            filter.process(&sample, 1);
+            REQUIRE(std::isfinite(sample));
+        }
+    }
+}

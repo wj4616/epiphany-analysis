@@ -1,0 +1,1 @@
+We need deep research on subtractive synthesizer dsp digital signal processor algorithms for subtractive synthesis based synthesizers which can be implemented in juce vst plugin in C++ freely available to make a subtractive synthesizer plugin which sounds most professional with analog warmth rather than digital sounding

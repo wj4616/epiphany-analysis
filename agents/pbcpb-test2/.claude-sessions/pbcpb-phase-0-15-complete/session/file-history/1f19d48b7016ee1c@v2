@@ -1,0 +1,16 @@
+{
+  "id": "ui-ux_control-types_knobs",
+  "kb": "ui-ux",
+  "topic": "control-types",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Knob Design for Audio Plugins",
+  "summary": "Placeholder: Space-efficient rotary controls, interaction patterns, and best practices.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["ui", "knob", "control", "rotary", "audio-plugin"],
+  "related_topics": ["control-types", "layout-patterns"],
+  "difficulty": "intermediate",
+  "domain_relevance": 9
+}

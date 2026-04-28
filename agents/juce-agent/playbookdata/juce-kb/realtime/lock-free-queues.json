@@ -1,0 +1,43 @@
+{
+  "id": "juce-kb_realtime_lock-free-queues",
+  "kb": "juce-kb",
+  "topic": "realtime",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Content to be harvested]",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Example code placeholder\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Lock-Free Queues for Audio\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:39.970931+00:00"
+  },
+  "title": "Lock-Free Queues for Audio",
+  "description": "SPSC queues and real-time safe message passing",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:49:02.025053Z",
+  "kb_type": "juce",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "lock free queue C++",
+    "SPSC queue audio",
+    "moodycamel queue",
+    "real time safe queue"
+  ],
+  "sources": [
+    "JUCE forum",
+    "CppCon talks",
+    "CCRMA"
+  ]
+}

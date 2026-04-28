@@ -1,0 +1,32 @@
+# Decisions Ledger — append at every phase gate
+
+## Configuration
+- **Output Location:** `~/playbooks/juce-vst-business-trial2/`
+- **External Data Sources:** None (fresh playbook, no external sources)
+- **Created:** 2026-04-02
+
+## Phase Inventory
+| Phase | Title | Summary |
+|-------|-------|---------|
+| 0 | Commission & Scoping | Establish configuration, define purpose, scope, constraints, complexity profile |
+| 1 | Domain Research | Research domain, best practices, SME knowledge, competitive landscape |
+| 2 | KB Architecture | Design knowledge base layers, schemas, bridge mappings, population strategy |
+| 3 | KB Bootstrapping | Create directory tree, seed entries, harvest research content, validate schema |
+| 4 | Process Architecture | Design output playbook phase structure, task granularity, dependencies, gates |
+| 5 | Role Engineering | Define functional roles: who does what, who approves, decision authority |
+| 6 | Task Engineering | Write detailed task descriptions, execution guides, templates for each phase |
+| 7 | Output Configuration | Define workflow model, roles, usage instructions, compilation tuning, KB mapping |
+| 8 | Metrics & KPI Definition | Define process, quality, and domain outcome metrics with targets |
+| 9 | JSON Assembly | Assemble complete output playbook JSON from all design documents |
+| 10 | JSON Validation & Consistency | Validate assembled JSON using automated validators and manual review |
+| 11 | Quality Audit — Gap Analysis | Systematic audit against requirements, cross-cutting concerns, completeness |
+| 12 | Stress Testing & Structured Dry-Run | Walk through playbook under structured scenarios to find issues |
+| 13 | Stakeholder Review & Iteration | Final human review before pilot testing |
+| 14 | Documentation & Version Control | Package final playbook with supporting documentation |
+| 15 | Continuous Improvement | After each run, review and optionally improve the playbook |
+
+## Complexity Profile
+_To be documented_
+
+## Session Plan
+_To be documented_

@@ -1,0 +1,430 @@
+{
+  "name": "Enhanced VST Plugin Development Playbook",
+  "version": "1.0.0",
+  "description": "Comprehensive playbook for VST3 audio plugin development using JUCE framework with enhanced sound design and commercial strategies",
+  "created": "2026-04-02",
+  "updated": "2026-04-02",
+
+  "metadata": {
+    "complexity": {
+      "process": "standard",
+      "knowledge": "bridged",
+      "roles": "complex",
+      "overall": "complex"
+    },
+    "phases": 13,
+    "target_user": "C++ beginner (knows Python/JavaScript)",
+    "tech_stack": {
+      "juce": "8.0.x",
+      "cpp": "17",
+      "cmake": "3.22+",
+      "vst3_sdk": "3.8.x",
+      "compiler": "GCC 7+ or Clang 6+"
+    },
+    "budget": {
+      "max_monthly": 200,
+      "currency": "USD"
+    }
+  },
+
+  "phases": [
+    {
+      "id": 0,
+      "name": "Plugin Concept & Specification",
+      "purpose": "Define exactly what plugin to build, for whom, and under what constraints",
+      "role_mindset": "Stakeholder",
+      "pre_check": [
+        "User has provided plugin concept or description",
+        "Target user profile understood",
+        "Budget constraints known"
+      ],
+      "kb_lookups": [
+        "sound-design-kb/bridges",
+        "market-kb"
+      ],
+      "gate_conditions": [
+        "Purpose is one unambiguous paragraph",
+        "Sound identity documented with sonic descriptors",
+        "Technical constraints documented",
+        "Target user profile defined",
+        "Platform targets defined",
+        "Decisions-ledger initialized"
+      ],
+      "skills": ["juce-plugin-spec"]
+    },
+    {
+      "id": 1,
+      "name": "Performance Audit",
+      "purpose": "Audit existing code if upgrading an existing plugin",
+      "role_mindset": "Auditor",
+      "conditional": "Only if upgrading existing plugin",
+      "pre_check": [
+        "Existing code exists",
+        "This is an upgrade, not new plugin"
+      ],
+      "kb_lookups": [
+        "failure-modes-kb/audio-thread",
+        "failure-modes-kb/parameters",
+        "cpp-kb/realtime-safety"
+      ],
+      "gate_conditions": [
+        "All FM-01 through FM-07 violations identified",
+        "Static variable audit complete",
+        "Memory allocation audit complete",
+        "Parameter smoothing audit complete"
+      ],
+      "skills": ["juce-audio-thread-audit"]
+    },
+    {
+      "id": 2,
+      "name": "Architecture & Planning",
+      "purpose": "Turn specification into buildable plan",
+      "role_mindset": "Architect",
+      "pre_check": [
+        "Phase 0 gate passed",
+        "Sound identity defined"
+      ],
+      "kb_lookups": [
+        "dsp-kb",
+        "sound-design-kb/bridges"
+      ],
+      "gate_conditions": [
+        "Class architecture documented",
+        "DSP algorithms specified with math",
+        "All parameters documented with ranges",
+        "Signal flow diagram complete",
+        "Task list ordered with dependencies"
+      ],
+      "skills": ["writing-plans"]
+    },
+    {
+      "id": 3,
+      "name": "Project Setup & Test Framework",
+      "purpose": "Establish build infrastructure",
+      "role_mindset": "Builder",
+      "pre_check": [
+        "Phase 2 gate passed",
+        "Architecture documented"
+      ],
+      "kb_lookups": [
+        "platform-kb",
+        "juce-kb"
+      ],
+      "gate_conditions": [
+        "CMake builds successfully",
+        "Test framework runs",
+        "CI pipeline configured",
+        "Project structure follows conventions"
+      ],
+      "skills": []
+    },
+    {
+      "id": 4,
+      "name": "DSP Implementation",
+      "purpose": "Build audio engine",
+      "role_mindset": "Implementer",
+      "pre_check": [
+        "Phase 3 gate passed",
+        "Project builds"
+      ],
+      "kb_lookups": [
+        "dsp-kb",
+        "cpp-kb/realtime-safety",
+        "sound-design-kb"
+      ],
+      "gate_conditions": [
+        "All DSP modules implemented",
+        "All modules pass two-stage review",
+        "Audio thread safety verified",
+        "SmoothedValue audit passed"
+      ],
+      "skills": ["juce-dsp-implementation", "juce-audio-thread-audit"]
+    },
+    {
+      "id": 5,
+      "name": "State & Presets",
+      "purpose": "Implement state management and presets",
+      "role_mindset": "Implementer",
+      "pre_check": [
+        "Phase 4 gate passed",
+        "DSP complete"
+      ],
+      "kb_lookups": [
+        "sound-design-kb/preset-templates",
+        "sound-design-kb/bridges"
+      ],
+      "gate_conditions": [
+        "State save/restore works",
+        "Presets save/load correctly",
+        "State round-trip test passes",
+        "Presets auditioned and approved"
+      ],
+      "skills": []
+    },
+    {
+      "id": 6,
+      "name": "Integration",
+      "purpose": "Wire DSP modules together",
+      "role_mindset": "Integrator",
+      "pre_check": [
+        "Phase 5 gate passed",
+        "State management works"
+      ],
+      "kb_lookups": [
+        "failure-modes-kb/audio-thread",
+        "failure-modes-kb/parameters",
+        "cpp-kb/patterns/smoothed-value"
+      ],
+      "gate_conditions": [
+        "processBlock implements signal flow correctly",
+        "All parameters smooth correctly",
+        "Mono input handled",
+        "No allocations in processBlock",
+        "Output never exceeds 0dBFS"
+      ],
+      "skills": ["juce-smoothedvalue-audit"]
+    },
+    {
+      "id": 7,
+      "name": "GUI Implementation",
+      "purpose": "Build visual interface",
+      "role_mindset": "Designer",
+      "pre_check": [
+        "Phase 6 gate passed",
+        "Processor works"
+      ],
+      "kb_lookups": [
+        "ui-kb/layouts",
+        "ui-kb/components",
+        "ui-kb/aesthetics",
+        "market-kb"
+      ],
+      "gate_conditions": [
+        "All parameters have UI controls",
+        "LookAndFeel implemented",
+        "Components resize correctly",
+        "No blocking calls from parameter callbacks",
+        "UI thread safety verified"
+      ],
+      "skills": ["juce-ui-bridge"]
+    },
+    {
+      "id": 8,
+      "name": "Build Verification",
+      "purpose": "Validate builds across platforms",
+      "role_mindset": "Validator",
+      "pre_check": [
+        "Phase 7 gate passed",
+        "GUI complete"
+      ],
+      "kb_lookups": [
+        "platform-kb",
+        "testing-kb/automated"
+      ],
+      "gate_conditions": [
+        "All target platforms build",
+        "Sample rate tests pass (44.1k, 48k, 96k, 192k)",
+        "Buffer size tests pass (64, 128, 256, 512, 1024, 2048)",
+        "Multi-instance test passes",
+        "State round-trip passes"
+      ],
+      "skills": []
+    },
+    {
+      "id": 9,
+      "name": "DAW Testing",
+      "purpose": "Human perceptual testing",
+      "role_mindset": "Tester",
+      "pre_check": [
+        "Phase 8 gate passed",
+        "Builds available"
+      ],
+      "kb_lookups": [
+        "testing-kb/manual",
+        "sound-design-kb"
+      ],
+      "gate_conditions": [
+        "Plugin loads in target DAW(s)",
+        "All controls respond correctly",
+        "Mix knob effective across full range",
+        "All presets sound correct",
+        "Automation works",
+        "Bypass produces clean dry signal",
+        "60s silence: CPU stays low",
+        "Full-scale noise: no NaN/Inf"
+      ],
+      "skills": ["juce-daw-testing"],
+      "critical_note": "This phase is HUMAN-ONLY. Two-stage code review CANNOT catch perceptual issues."
+    },
+    {
+      "id": 10,
+      "name": "Market Preparation",
+      "purpose": "Prepare for commercial release",
+      "role_mindset": "Marketer",
+      "pre_check": [
+        "Phase 9 gate passed",
+        "DAW testing complete"
+      ],
+      "kb_lookups": [
+        "market-kb/positioning",
+        "market-kb/pricing",
+        "market-kb/distribution",
+        "market-kb/marketing"
+      ],
+      "gate_conditions": [
+        "Market position defined",
+        "Pricing strategy documented",
+        "Demo limitations defined",
+        "Distribution channels identified",
+        "Marketing materials prepared"
+      ],
+      "skills": []
+    },
+    {
+      "id": 11,
+      "name": "Optimization",
+      "purpose": "Performance tuning",
+      "role_mindset": "Optimizer",
+      "pre_check": [
+        "Phase 10 gate passed",
+        "Market ready"
+      ],
+      "kb_lookups": [
+        "cpp-kb/realtime-safety",
+        "testing-kb/stress"
+      ],
+      "gate_conditions": [
+        "CPU usage within budget",
+        "Memory usage acceptable",
+        "Denormal test passes (60s silence)",
+        "pluginval strictness 5+ passes"
+      ],
+      "skills": []
+    },
+    {
+      "id": 12,
+      "name": "Release & Retrospective",
+      "purpose": "Deploy and learn",
+      "role_mindset": "Manager",
+      "pre_check": [
+        "Phase 11 gate passed",
+        "Optimization complete"
+      ],
+      "kb_lookups": [],
+      "gate_conditions": [
+        "Release builds packaged",
+        "Release notes written",
+        "Distribution complete",
+        "Retrospective conducted",
+        "Lessons learned documented"
+      ],
+      "skills": []
+    }
+  ],
+
+  "failure_modes": [
+    {
+      "id": "FM-01",
+      "name": "Heap Allocation on Audio Thread",
+      "phase": [4, 6, 11],
+      "severity": "critical",
+      "kb_entry": "failure-modes-kb/audio-thread/allocation"
+    },
+    {
+      "id": "FM-04",
+      "name": "Denormal CPU Explosion",
+      "phase": [4, 6, 11],
+      "severity": "critical",
+      "kb_entry": "failure-modes-kb/audio-thread/denormals"
+    },
+    {
+      "id": "FM-05",
+      "name": "Feedback Loop Instability",
+      "phase": [4, 6, 9],
+      "severity": "critical",
+      "kb_entry": "failure-modes-kb/audio-thread/feedback"
+    },
+    {
+      "id": "FM-07",
+      "name": "Thread Safety Violation",
+      "phase": [6, 7, 9],
+      "severity": "critical",
+      "kb_entry": "failure-modes-kb/audio-thread/locking"
+    },
+    {
+      "id": "FM-09",
+      "name": "SmoothedValue Not Advanced",
+      "phase": [4, 6, 9],
+      "severity": "serious",
+      "kb_entry": "failure-modes-kb/parameters/smoothing"
+    }
+  ],
+
+  "cross_cutting_concerns": [
+    {
+      "id": "CCC-01",
+      "name": "Audio Thread Safety",
+      "phases": [4, 6, 7, 9, 11],
+      "rules": [
+        "No allocations in processBlock",
+        "No locks in processBlock",
+        "Use atomic<bool> for cross-thread flags",
+        "ScopedNoDenormals at processBlock start"
+      ]
+    },
+    {
+      "id": "CCC-02",
+      "name": "Parameter Smoothing",
+      "phases": [4, 6, 9],
+      "rules": [
+        "All continuous parameters use SmoothedValue",
+        "Call getNextValue() every sample",
+        "Reset in prepareToPlay"
+      ]
+    },
+    {
+      "id": "CCC-03",
+      "name": "State Persistence",
+      "phases": [5, 6, 8, 9],
+      "rules": [
+        "Implement APVTS state serialization",
+        "State round-trips correctly",
+        "Automation preserves state"
+      ]
+    },
+    {
+      "id": "CCC-04",
+      "name": "Equal-Power Mixing",
+      "phases": [4, 6],
+      "rules": [
+        "Use cosine/sine for dry/wet",
+        "No linear crossfade"
+      ]
+    },
+    {
+      "id": "CCC-05",
+      "name": "Multi-Platform Testing",
+      "phases": [8, 10],
+      "rules": [
+        "Test on Linux, Windows, macOS",
+        "VST3 required on all platforms",
+        "AU required on macOS"
+      ]
+    }
+  ],
+
+  "kb_integration": {
+    "bridged_kbs": ["sound-design-kb"],
+    "flat_kbs": ["dsp-kb", "cpp-kb", "failure-modes-kb", "platform-kb", "market-kb", "testing-kb", "ui-kb", "juce-kb"],
+    "bridge_schema": "architecture/bridge-schema.json",
+    "entry_schema": "architecture/entry-schema.json"
+  },
+
+  "validation": {
+    "pluginval_strictness": 5,
+    "sample_rates": [44100, 48000, 96000, 192000],
+    "buffer_sizes": [64, 128, 256, 512, 1024, 2048],
+    "silence_duration_seconds": 60,
+    "instance_count": 4
+  }
+}

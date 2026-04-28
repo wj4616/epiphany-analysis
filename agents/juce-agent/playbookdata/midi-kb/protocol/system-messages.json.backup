@@ -1,0 +1,23 @@
+{
+  "title": "MIDI System Messages",
+  "description": "System exclusive, system common, and real-time messages",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:45:44.741731Z",
+  "kb_type": "midi",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "markdown": "# MIDI System Messages\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "MIDI system exclusive",
+    "MIDI sysEx",
+    "MIDI system common",
+    "MIDI real-time messages"
+  ],
+  "sources": [
+    "MIDI Association",
+    "JUCE forum"
+  ]
+}

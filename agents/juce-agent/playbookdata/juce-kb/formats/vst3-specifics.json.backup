@@ -1,0 +1,23 @@
+{
+  "title": "VST3 Plugin Development",
+  "description": "VST3-specific requirements and patterns",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:49:05.126690Z",
+  "kb_type": "juce",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "markdown": "# VST3 Plugin Development\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "VST3 plugin development",
+    "VST3 parameters",
+    "VST3 preset",
+    "Steinberg VST3 SDK"
+  ],
+  "sources": [
+    "Steinberg docs",
+    "JUCE forum"
+  ]
+}

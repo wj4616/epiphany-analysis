@@ -1,0 +1,44 @@
+{
+  "id": "cpp-kb_cppreference_string_string_view",
+  "kb": "cpp-kb",
+  "topic": "cppreference",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "std::string_view (C++17) is a non-owning view that refers to a constant contiguous sequence of characters. It provides a lightweight way to pass string data without copying, ideal for function parameters and string processing.",
+  "concepts": ["string-view", "non-owning", "zero-copy", "c++17"],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "#include <iostream>\n#include <string_view>\n\nint main()\n{\n    // Safe: points to static array (string literals persist)\n    std::string_view good{\"a string literal\"};\n\n    // BAD: dangling pointer! std::string temporary destroyed at end of statement\n    // std::string_view bad{\"a temporary string\"s}; // DON'T DO THIS\n\n    // Lightweight operations - no allocation\n    constexpr std::string_view sv{\"Hello, World!\"};\n    std::cout << sv.substr(0, 5) << '\\n';  // \"Hello\"\n    std::cout << sv.find(',') << '\\n';      // 5\n\n    return 0;\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Type aliases provided by <string_view>\n// std::string_view   -> std::basic_string_view<char>\n// std::wstring_view  -> std::basic_string_view<wchar_t>\n// std::u16string_view -> std::basic_string_view<char16_t>\n// std::u32string_view -> std::basic_string_view<char32_t>\n\n// Key member functions:\n// - size(), length()    : character count (O(1))\n// - data()               : pointer to underlying array\n// - operator[]           : element access (no bounds check)\n// - at()                 : element access (with bounds check)\n// - substr()             : create view of substring\n// - remove_prefix(n)     : advance start by n chars\n// - remove_suffix(n)     : reduce size by n chars\n// - starts_with() (C++20): check prefix\n// - ends_with() (C++20)  : check suffix\n// - contains() (C++23)   : check for substring\n",
+      "preserved": true
+    }
+  ],
+  "references": [
+    {
+      "title": "std::basic_string_view",
+      "url": "https://en.cppreference.com/w/cpp/string/basic_string_view",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::string_view",
+      "url": "https://en.cppreference.com/w/cpp/string/string_view",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::string",
+      "url": "https://en.cppreference.com/w/cpp/string/basic_string",
+      "domain": "en.cppreference.com"
+    }
+  ],
+  "source_url": "https://en.cppreference.com/w/cpp/string/basic_string_view",
+  "harvested_at": "2026-03-30T12:00:00.000000+00:00",
+  "synced_at": "2026-03-30T12:00:00.000000+00:00",
+  "cpp_version": "C++17",
+  "cpp17_notes": "std::string_view is new in C++17. It satisfies borrowed_range and view concepts. Since C++20, iterator and const_iterator are the same type. Since C++23, it is TriviallyCopyable. C++23 adds contains().",
+  "audio_thread_notes": "std::string_view is SAFE for real-time audio. It does not allocate - it only stores a pointer and size. Use it to pass string data without copying. WARNING: Ensure the underlying string outlives the view. Never create a string_view from a temporary std::string."
+}

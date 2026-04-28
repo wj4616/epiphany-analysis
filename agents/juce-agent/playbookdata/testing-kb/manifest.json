@@ -1,0 +1,142 @@
+{
+  "kb_name": "testing-kb",
+  "version": "1.0.0",
+  "created": "2026-03-30T12:24:56.309135+00:00",
+  "last_sync": "2026-03-30T12:24:56.309136+00:00",
+  "status": "ready",
+  "topics": [
+    {
+      "name": "unit-testing",
+      "files": {
+        "catch2-juce.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308904+00:00",
+          "synced_at": "2026-03-30T12:24:56.308905+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 223
+        },
+        "test-driven-audio.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308920+00:00",
+          "synced_at": "2026-03-30T12:24:56.308921+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 229
+        },
+        "mocking-audio.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308935+00:00",
+          "synced_at": "2026-03-30T12:24:56.308936+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 224
+        }
+      }
+    },
+    {
+      "name": "regression",
+      "files": {
+        "snapshot-testing.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308966+00:00",
+          "synced_at": "2026-03-30T12:24:56.308966+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 228
+        },
+        "audio-comparison.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308980+00:00",
+          "synced_at": "2026-03-30T12:24:56.308981+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 231
+        }
+      }
+    },
+    {
+      "name": "daw-testing",
+      "files": {
+        "logic-testing.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.309009+00:00",
+          "synced_at": "2026-03-30T12:24:56.309010+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 224
+        },
+        "reaper-testing.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.309024+00:00",
+          "synced_at": "2026-03-30T12:24:56.309025+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 221
+        },
+        "ableton-testing.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.309038+00:00",
+          "synced_at": "2026-03-30T12:24:56.309039+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 227
+        }
+      }
+    },
+    {
+      "name": "performance-testing",
+      "files": {
+        "latency-measurement.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.309069+00:00",
+          "synced_at": "2026-03-30T12:24:56.309070+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 226
+        },
+        "cpu-profiling.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.309084+00:00",
+          "synced_at": "2026-03-30T12:24:56.309085+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 231
+        }
+      }
+    },
+    {
+      "name": "validation",
+      "files": {
+        "automated-validation.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.309115+00:00",
+          "synced_at": "2026-03-30T12:24:56.309115+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 227
+        },
+        "pluginval.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.309129+00:00",
+          "synced_at": "2026-03-30T12:24:56.309130+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 220
+        }
+      }
+    }
+  ]
+}

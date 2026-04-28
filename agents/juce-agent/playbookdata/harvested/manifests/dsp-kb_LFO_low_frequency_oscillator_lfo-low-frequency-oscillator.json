@@ -1,0 +1,22 @@
+{
+  "kb_name": "dsp-kb",
+  "topic": "LFO low frequency oscillator",
+  "filename": "lfo-low-frequency-oscillator.json",
+  "status": "harvested",
+  "harvested_at": "2026-03-30T23:44:02.728958+00:00",
+  "sources": 3,
+  "rejected": 39,
+  "credits_used": 75,
+  "search_queries": [
+    "LFO low frequency oscillator modulation DSP audio synthesis",
+    "LFO low frequency oscillator tutorial",
+    "LFO low frequency oscillator implementation",
+    "LFO low frequency oscillator guide"
+  ],
+  "quality_thresholds": {
+    "min_content_length": 500,
+    "min_relevance_score": 0.2,
+    "max_noise_ratio": 0.5
+  },
+  "notes": "Auto-harvested via harvest-data skill"
+}

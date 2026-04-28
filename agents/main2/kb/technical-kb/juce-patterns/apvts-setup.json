@@ -1,0 +1,29 @@
+{
+  "id": "technical-kb_juce-patterns_apvts-setup",
+  "kb": "technical-kb",
+  "topic": "juce-patterns",
+  "status": "harvested",
+  "version": "1.0.0",
+  "title": "APVTS Parameter Setup Pattern",
+  "summary": "Standard pattern for setting up AudioProcessorValueTreeState parameters in JUCE plugins.",
+  "description": "## Overview\n\nAudioProcessorValueTreeState (APVTS) is JUCE's recommended way to manage plugin parameters. It handles thread-safe parameter access, state save/restore, and automation.\n\n## Standard Pattern\n\n```cpp\n// In PluginProcessor.h\nprivate:\n    juce::AudioProcessorValueTreeState apvts;\n    \n// In PluginProcessor.cpp\njuce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {\n    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;\n    \n    // Frequency: use skew for musical range (20Hz - 20kHz)\n    params.push_back(std::make_unique<juce::AudioParameterFloat>(\n        juce::ParameterID{\"frequency\", 1},\n        \"Frequency\",\n        juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 0.3f),\n        440.0f\n    ));\n    \n    // Mix: linear 0-1\n    params.push_back(std::make_unique<juce::AudioParameterFloat>(\n        juce::ParameterID{\"mix\", 1},\n        \"Mix\",\n        0.0f,\n        1.0f,\n        0.5f\n    ));\n    \n    return {params.begin(), params.end()};\n}\n\n// Constructor\nMyPluginProcessor()\n    : AudioProcessor(BusesProperties().withInput(\"Input\", juce::AudioChannelSet::stereo())\n                               .withOutput(\"Output\", juce::AudioChannelSet::stereo())),\n      apvts(*this, nullptr, \"state\", createParameterLayout())\n{}\n```\n\n## Parameter Skew Guidelines\n\n| Parameter Type | Skew Factor | Rationale |\n|---------------|-------------|-----------|\n| Frequency | 0.3 | Musical logarithmic scale |\n| Decay/Feedback | 0.5 | Linear perception |\n| Mix | None (linear) | Equal-power mixing |\n| Drive | 0.5 | Moderate range |\n\n## State Save/Restore\n\n```cpp\nvoid getStateInformation(juce::MemoryBlock& dest) override {\n    auto state = apvts.copyState();\n    auto xml = state.createXml();\n    copyXmlToBinary(*xml, dest);\n}\n\nvoid setStateInformation(const void* data, int size) override {\n    auto xml = getXmlFromBinary(data, size);\n    if (xml && xml->hasTagName(apvts.state.getType())) {\n        apvts.replaceState(juce::ValueTree::fromXml(*xml));\n    }\n}\n```",
+  "source": "JUCE documentation + VST Playbook v7",
+  "concepts": [
+    {"name": "AudioProcessorValueTreeState", "description": "JUCE class for parameter management with thread-safe access"},
+    {"name": "AudioParameterFloat", "description": "Float parameter with optional skew for musical ranges"},
+    {"name": "NormalisableRange", "description": "Range class with skew factor for logarithmic scales"}
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Accessing parameters in processBlock\nauto freq = apvts.getRawParameterValue(\"frequency\")->load();\n\n// Or with smoothing\nauto* freqParam = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(\"frequency\"));\nfreqParam->setValue(freqParam->convertTo0to1(newFreq));",
+      "preserved": true
+    }
+  ],
+  "tags": ["juce", "parameters", "apvts", "state"],
+  "related_topics": ["parameter-management", "state-persistence"],
+  "difficulty": "intermediate",
+  "domain_relevance": 10,
+  "audio_thread_safe": true,
+  "failure_modes": ["FM-03", "FM-16"]
+}

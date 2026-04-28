@@ -1,0 +1,19 @@
+{
+  "id": "reference-kb_textbooks_zolzer",
+  "kb": "reference-kb",
+  "topic": "textbooks",
+  "status": "harvested",
+  "version": "1.0.0",
+  "title": "DAFX: Digital Audio Effects (Udo Zölzer)",
+  "summary": "Academic reference for digital audio effects with theoretical foundations.",
+  "description": "## Overview\n\nDAFX is the definitive academic reference for digital audio effects, covering the mathematical and theoretical foundations of DSP.\n\n## Key Topics\n\n| Part | Topic |\n|------|-------|\n| I | Filters and equalization |\n| II | Pitch and time modification |\n| III | Dynamics processing |\n| IV | Spatial effects |\n| V | Reverb and spatialization |\n\n## Relevant For\n\n- Theoretical foundation for all DSP effects\n- Filter design theory\n- Spatial audio processing\n- Modulation effects theory\n\n## Citation\n\nZölzer, Udo (Ed.). *DAFX: Digital Audio Effects*. Wiley, 2011.\n\n## Why Important\n\nAcademic rigor and comprehensive coverage of DSP theory beyond implementation.",
+  "source": "Best practices research",
+  "concepts": [
+    {"name": "Transfer Function", "description": "Mathematical representation of filter behavior"},
+    {"name": "Allpass Filter", "description": "Phase-shift filter used in reverb and spatial effects"}
+  ],
+  "tags": ["textbook", "dsp", "theory", "academic"],
+  "related_topics": ["dsp-algorithms", "filter-design"],
+  "difficulty": "advanced",
+  "domain_relevance": 9
+}

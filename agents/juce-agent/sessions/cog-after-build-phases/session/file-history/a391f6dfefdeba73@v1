@@ -1,0 +1,11 @@
+#pragma once
+
+// FastMath - Optimized math functions for audio DSP
+// TODO: Implement in future task
+
+namespace CogDSP
+{
+
+// Placeholder for fast math utilities
+
+} // namespace CogDSP

@@ -1,0 +1,16 @@
+{
+  "id": "commercial_licensing_custom-solutions",
+  "kb": "commercial",
+  "topic": "licensing",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Custom Licensing Solutions",
+  "summary": "Placeholder: Building your own license validation, online/offline activation.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["licensing", "custom", "activation", "online"],
+  "related_topics": ["licensing", "distribution"],
+  "difficulty": "advanced",
+  "domain_relevance": 7
+}

@@ -1,0 +1,47 @@
+{
+  "id": "bridge-ambient",
+  "title": "Ambient Sound Translation",
+  "category": "bridges",
+  "sonic_description": "Atmospheric, spacious, slowly evolving ambient texture",
+  "sonic_keywords": ["ambient", "atmospheric", "spacious", "ethereal", "drone"],
+  "translation": {
+    "filter": {
+      "cutoff_range": [0.3, 0.6],
+      "resonance_range": [0.05, 0.15]
+    },
+    "amplitude": {
+      "attack_range": [0.5, 3.0],
+      "decay_range": [0.5, 2.0],
+      "sustain_range": [0.7, 0.9],
+      "release_range": [2.0, 8.0]
+    },
+    "oscillator": [{
+      "waveforms": ["sine", "triangle", "noise"],
+      "detune_range": [0.02, 0.08]
+    }],
+    "effects": [{
+      "type": "reverb",
+      "mix_range": [0.5, 0.9],
+      "decay_range": [3.0, 10.0],
+      "parameters": {
+        "damping": [0.3, 0.5]
+      }
+    }, {
+      "type": "delay",
+      "mix_range": [0.2, 0.4],
+      "parameters": {
+        "time": [0.3, 0.7],
+        "feedback": [0.4, 0.6]
+      }
+    }]
+  },
+  "why": "Very long attack creates gradual fade-in. Long reverb tail creates wash and atmosphere. Low filter resonance keeps sound smooth. Noise oscillator adds texture without harshness.",
+  "how_to_apply": "Use for background textures, drones, and atmospheric pads. Long attack (1s+) is key. Combine delay and reverb for layered space. Keep resonance low to avoid piercing frequencies.",
+  "confidence": 0.85,
+  "source": {
+    "type": "expert_interview",
+    "reference": "Ambient sound design research"
+  },
+  "presets": ["ambient-drone", "ethereal-pad"],
+  "phase_usage": [0, 4, 5, 9]
+}

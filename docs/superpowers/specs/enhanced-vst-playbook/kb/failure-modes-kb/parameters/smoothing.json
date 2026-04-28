@@ -1,0 +1,21 @@
+{
+  "id": "fm-09-smoothedvalue",
+  "title": "SmoothedValue Not Advanced Per Sample",
+  "category": "parameters",
+  "tags": ["serious", "smoothedvalue", "parameters", "zipper-noise"],
+  "created": "2026-04-02",
+  "updated": "2026-04-02",
+  "confidence": 1.0,
+  "source": {
+    "type": "expert_interview",
+    "reference": "Epiphany Machine v3 session (EM-13)"
+  },
+  "symptom": "Parameters don't smooth (zipper noise on automation)",
+  "cause": "Calling `getCurrentValue()` instead of `getNextValue()` per sample, or not calling it every sample",
+  "fix": "Call `getNextValue()` exactly once per sample in the processing loop",
+  "prevention": "Code review. Never use `getCurrentValue()` in processBlock.",
+  "detection": "Search for getCurrentValue() in processBlock",
+  "severity": "serious",
+  "phase": ["4", "6", "9"],
+  "see_also": ["fm-11-bypass", "fm-14-equal-power"]
+}

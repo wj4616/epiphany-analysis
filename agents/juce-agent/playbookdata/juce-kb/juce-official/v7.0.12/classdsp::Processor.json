@@ -1,0 +1,23 @@
+{
+  "markdown": "The requested resource is not available.\n\nPlease contact info@juce.com if you were expecting to find something here.",
+  "metadata": {
+    "scrapeId": "019d38fb-3ce7-771d-9d13-a5a39a1c4757",
+    "sourceURL": "https://docs.juce.com/master/classdsp::Processor.html",
+    "url": "https://docs.juce.com/master/classjuce_1_1dsp::Processor.html",
+    "statusCode": 404,
+    "error": "Not Found",
+    "contentType": "text/html",
+    "proxyUsed": "basic",
+    "cacheState": "hit",
+    "cachedAt": "2026-03-29T09:43:15.371Z",
+    "creditsUsed": 1,
+    "concurrencyLimited": false
+  },
+  "html": "<html><body><p>The requested resource is not available.</p>\n    <p>Please contact info@juce.com if you were expecting to find something here.</p>\n\n</body></html>",
+  "links": [],
+  "source_url": "https://docs.juce.com/master/classdsp::Processor.html",
+  "source": "juce-official",
+  "juce_version": "7.0.12",
+  "harvested_at": "2026-03-29T02:44:42.695694",
+  "kb_type": "technical"
+}

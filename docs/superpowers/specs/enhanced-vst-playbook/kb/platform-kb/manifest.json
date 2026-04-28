@@ -1,0 +1,30 @@
+{
+  "kb_name": "platform-kb",
+  "version": "1.0.0",
+  "description": "Platform-specific concerns for VST plugins",
+  "created": "2026-04-02",
+  "updated": "2026-04-02",
+  "entry_count": 0,
+  "categories": {
+    "linux": {
+      "description": "Linux-specific concerns",
+      "count": 0,
+      "entries": []
+    },
+    "macos": {
+      "description": "macOS-specific concerns",
+      "count": 0,
+      "entries": []
+    },
+    "windows": {
+      "description": "Windows-specific concerns",
+      "count": 0,
+      "entries": []
+    },
+    "formats": {
+      "description": "Plugin format specifics",
+      "count": 0,
+      "entries": []
+    }
+  }
+}

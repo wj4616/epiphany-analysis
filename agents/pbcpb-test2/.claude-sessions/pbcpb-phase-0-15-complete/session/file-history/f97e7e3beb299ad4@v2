@@ -1,0 +1,26 @@
+{
+  "kb": "technical",
+  "version": "1.0.0",
+  "topics": {
+    "realtime-safety": {
+      "entries": ["atomic-audio", "lock-free-patterns", "allocation-avoidance"],
+      "last_updated": "2026-04-02"
+    },
+    "juce-patterns": {
+      "entries": ["apvts-setup", "state-management", "parameter-smoothing"],
+      "last_updated": "2026-04-02"
+    },
+    "dsp-algorithms": {
+      "entries": ["filter-basics", "oscillator-basics", "gain-staging"],
+      "last_updated": "2026-04-02"
+    },
+    "build-systems": {
+      "entries": ["cmake-fetchcontent", "ci-github-actions"],
+      "last_updated": "2026-04-02"
+    },
+    "testing": {
+      "entries": ["catch2-setup", "pluginval-validation"],
+      "last_updated": "2026-04-02"
+    }
+  }
+}

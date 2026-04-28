@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_genre-techniques_bass",
+  "kb": "sound-design",
+  "topic": "genre-techniques",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Bass Sound Design Techniques",
+  "summary": "Placeholder: Creating powerful, focused low-end sounds.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["genre", "bass", "low-end", "sub", "powerful"],
+  "related_topics": ["genre-techniques", "filters", "oscillators"],
+  "difficulty": "intermediate",
+  "domain_relevance": 9
+}

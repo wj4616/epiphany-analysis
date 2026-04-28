@@ -1,0 +1,38 @@
+{
+  "id": "bridge-punchy",
+  "title": "Punchy Sound Translation",
+  "category": "bridges",
+  "sonic_description": "Punchy, impactful sound with fast transient and strong attack",
+  "sonic_keywords": ["punchy", "impactful", "snappy", "tight", "percussive"],
+  "translation": {
+    "filter": {
+      "cutoff_range": [0.5, 0.9],
+      "resonance_range": [0.1, 0.3],
+      "modulation": [{
+        "source": "envelope",
+        "depth": [0.2, 0.5],
+        "attack": [0.0, 0.01],
+        "decay": [0.1, 0.3]
+      }]
+    },
+    "amplitude": {
+      "attack_range": [0.0, 0.005],
+      "decay_range": [0.1, 0.3],
+      "sustain_range": [0.1, 0.4],
+      "release_range": [0.1, 0.3]
+    },
+    "oscillator": [{
+      "waveforms": ["square", "sawtooth"],
+      "detune_range": [0.0, 0.02]
+    }]
+  },
+  "why": "Instant attack emphasizes transient. Short decay creates punch rather than sustain. Filter envelope adds movement to the attack phase. Low sustain ensures sound decays rather than sustains.",
+  "how_to_apply": "Use for bass, leads, and percussive sounds. The key is instant attack and short decay. Filter envelope with fast attack adds harmonic movement to the transient.",
+  "confidence": 0.85,
+  "source": {
+    "type": "expert_interview",
+    "reference": "Synthesizer sound design consensus"
+  },
+  "presets": ["punchy-bass", "snappy-lead"],
+  "phase_usage": [0, 4, 5, 9]
+}

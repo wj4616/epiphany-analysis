@@ -1,0 +1,21 @@
+{
+  "id": "fm-04-denormals",
+  "title": "Denormal CPU Explosion",
+  "category": "audio-thread",
+  "tags": ["critical", "denormals", "cpu", "silence"],
+  "created": "2026-04-02",
+  "updated": "2026-04-02",
+  "confidence": 1.0,
+  "source": {
+    "type": "community_best_practice",
+    "reference": "JUCE best practices, melatonin.dev"
+  },
+  "symptom": "CPU spikes to 100% when processing silence or very quiet signals",
+  "cause": "Subnormal floating-point values in feedback loops or filters",
+  "fix": "`juce::ScopedNoDenormals` at top of processBlock. DC offset in FDN feedback path.",
+  "prevention": "Always include `ScopedNoDenormals`. Test by processing 60 seconds of silence and monitoring CPU.",
+  "detection": "Process 60s of silence, monitor CPU",
+  "severity": "critical",
+  "phase": ["4", "6", "11"],
+  "see_also": ["fm-05-feedback"]
+}

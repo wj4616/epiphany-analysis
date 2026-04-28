@@ -1,0 +1,39 @@
+{
+  "kb_name": "commercial-kb",
+  "schema_version": "1.0.0",
+  "last_updated": "2026-04-02",
+  "authority_score": 0.75,
+  "topics": {
+    "marketplaces": {
+      "entry_count": 1,
+      "entries": [
+        {"id": "commercial-kb_marketplaces_kvr-audio", "status": "harvested", "version": "1.0.0"}
+      ]
+    },
+    "licensing": {
+      "entry_count": 1,
+      "entries": [
+        {"id": "commercial-kb_licensing_pace-ilok", "status": "harvested", "version": "1.0.0"}
+      ]
+    },
+    "pricing": {
+      "entry_count": 1,
+      "entries": [
+        {"id": "commercial-kb_pricing_indie-strategy", "status": "harvested", "version": "1.0.0"}
+      ]
+    },
+    "marketing": {"entry_count": 0, "entries": []},
+    "anti-piracy": {"entry_count": 0, "entries": []},
+    "distribution": {"entry_count": 0, "entries": []},
+    "business-planning": {"entry_count": 0, "entries": []}
+  },
+  "status_counts": {
+    "placeholder": 0,
+    "harvested": 3,
+    "curated": 0,
+    "synced": 0
+  },
+  "sync_history": [
+    {"date": "2026-04-02", "action": "initial_population", "entries_added": 3}
+  ]
+}

@@ -1,0 +1,77 @@
+#pragma once
+
+#include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_gui_basics/juce_gui_basics.h>
+#include "PluginProcessor.h"
+
+class CogVSTAudioProcessorEditor : public juce::AudioProcessorEditor
+{
+public:
+    explicit CogVSTAudioProcessorEditor(CogVSTAudioProcessor& p);
+    ~CogVSTAudioProcessorEditor() override;
+
+    void paint(juce::Graphics& g) override;
+    void resized() override;
+
+private:
+    CogVSTAudioProcessor& audioProcessor;
+
+    // Main control sliders
+    juce::Slider sensitivitySlider;
+    juce::Slider pathBalanceSlider;
+    juce::Slider textureDriveSlider;
+    juce::Slider droneDensitySlider;
+    juce::Slider spectralDriftSlider;
+    juce::Slider thicknessSlider;
+    juce::Slider driveSlider;
+    juce::Slider toneSlider;
+    juce::Slider feedbackSlider;
+    juce::Slider widthSlider;
+    juce::Slider evolutionSlider;
+    juce::Slider outputGainSlider;
+    juce::Slider mixSlider;
+
+    // Bypass and freeze buttons
+    juce::ToggleButton bypassButton;
+    juce::ToggleButton freezeButton;
+
+    // Slider attachments
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> sensitivityAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> pathBalanceAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> textureDriveAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> droneDensityAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> spectralDriftAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> thicknessAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> driveAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> toneAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> feedbackAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> widthAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> evolutionAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> outputGainAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mixAttachment;
+
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> bypassAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> freezeAttachment;
+
+    // Labels
+    juce::Label sensitivityLabel;
+    juce::Label pathBalanceLabel;
+    juce::Label textureDriveLabel;
+    juce::Label droneDensityLabel;
+    juce::Label spectralDriftLabel;
+    juce::Label thicknessLabel;
+    juce::Label driveLabel;
+    juce::Label toneLabel;
+    juce::Label feedbackLabel;
+    juce::Label widthLabel;
+    juce::Label evolutionLabel;
+    juce::Label outputGainLabel;
+    juce::Label mixLabel;
+
+    // Helper function to set up a slider with label
+    void setupSliderWithLabel(juce::Slider& slider, juce::Label& label,
+                               const juce::String& paramName,
+                               const juce::String& labelText);
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CogVSTAudioProcessorEditor)
+};

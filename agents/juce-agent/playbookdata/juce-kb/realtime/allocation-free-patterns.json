@@ -1,0 +1,42 @@
+{
+  "id": "juce-kb_realtime_allocation-free-patterns",
+  "kb": "juce-kb",
+  "topic": "realtime",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Content to be harvested]",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Example code placeholder\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Allocation-Free Patterns\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:39.971253+00:00"
+  },
+  "title": "Allocation-Free Patterns",
+  "description": "Preallocated memory patterns for audio thread",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:49:02.842159Z",
+  "kb_type": "juce",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "allocation free audio",
+    "preallocated memory",
+    "audio thread allocation",
+    "real time safe"
+  ],
+  "sources": [
+    "JUCE forum",
+    "melatonin.dev blog"
+  ]
+}

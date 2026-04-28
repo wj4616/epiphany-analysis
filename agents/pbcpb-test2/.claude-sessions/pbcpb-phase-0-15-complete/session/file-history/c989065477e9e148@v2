@@ -1,0 +1,16 @@
+{
+  "id": "technical_dsp-algorithms_filter-basics",
+  "kb": "technical",
+  "topic": "dsp-algorithms",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Digital Filter Fundamentals",
+  "summary": "Placeholder: Biquad filters, coefficient calculation, and frequency response.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["dsp", "filter", "biquad", "iir", "fir"],
+  "related_topics": ["dsp-algorithms", "oscillators"],
+  "difficulty": "intermediate",
+  "domain_relevance": 9
+}

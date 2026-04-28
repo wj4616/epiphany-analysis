@@ -1,0 +1,21 @@
+{
+  "last_run": "2026-03-30T21:10:06.734417+00:00",
+  "files_processed": 0,
+  "files_succeeded": 0,
+  "files_failed": 0,
+  "errors": [
+    {
+      "file": "dsp-kb/reverb/algorithmic-reverb.json",
+      "error": "No harvested content found in /home/myuser/agents/juce-agent/playbookdata/harvested/raw",
+      "timestamp": "2026-03-30T13:39:35.844073+00:00"
+    },
+    {
+      "file": "dsp-kb/reverb/algorithmic-reverb.json",
+      "error": "Input validation failed: Empty harvested content",
+      "timestamp": "2026-03-30T13:40:10.874132+00:00"
+    }
+  ],
+  "total_syncs": 5,
+  "total_credits_saved": 0,
+  "created_at": "2026-03-30T12:11:55.424629+00:00"
+}

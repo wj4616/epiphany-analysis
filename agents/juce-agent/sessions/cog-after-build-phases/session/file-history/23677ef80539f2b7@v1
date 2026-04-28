@@ -1,0 +1,28 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+
+// DriveCircuit - Analog-style drive circuit emulation
+// TODO: Implement in future task
+
+namespace CogDSP
+{
+
+class DriveCircuit
+{
+public:
+    DriveCircuit() = default;
+    ~DriveCircuit() = default;
+
+    void prepare(double sampleRate);
+    void process(float* samples, int numSamples);
+    void setDrive(float driveAmount);
+    void reset();
+
+private:
+    float drive = 0.5f;
+    double sampleRate = 44100.0;
+};
+
+} // namespace CogDSP

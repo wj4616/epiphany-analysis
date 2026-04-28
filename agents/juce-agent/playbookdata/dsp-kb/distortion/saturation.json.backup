@@ -1,0 +1,23 @@
+{
+  "title": "Analog Saturation",
+  "description": "Tape and transformer saturation modeling",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:47:34.095767Z",
+  "kb_type": "dsp",
+  "audio_relevance": 8,
+  "difficulty": "intermediate",
+  "markdown": "# Analog Saturation\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "analog saturation",
+    "tape saturation",
+    "transformer saturation",
+    "soft saturation"
+  ],
+  "sources": [
+    "Sound on Sound",
+    "musicdsp.org"
+  ]
+}

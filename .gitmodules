@@ -1,0 +1,24 @@
+[submodule ".claude/skills/epiphany-graph-genius"]
+	path = .claude/skills/epiphany-graph-genius
+	url = https://github.com/wj4616/epiphany-graph-genius.git
+[submodule ".claude/skills/epiphany-cognitive"]
+	path = .claude/skills/epiphany-cognitive
+	url = https://github.com/wj4616/epiphany-cognitive.git
+[submodule ".claude/skills/epiphany-context"]
+	path = .claude/skills/epiphany-context
+	url = https://github.com/wj4616/epiphany-context.git
+[submodule ".claude/skills/prompt-graph"]
+	path = .claude/skills/prompt-graph
+	url = https://github.com/wj4616/prompt-graph.git
+[submodule ".claude/skills/socratic-ai-prompt-skill"]
+	path = .claude/skills/socratic-ai-prompt-skill
+	url = https://github.com/roy-reshef/socratic-ai-prompt-skill.git
+[submodule "agents/1/cctrace"]
+	path = agents/1/cctrace
+	url = https://github.com/jimmc414/cctrace.git
+[submodule "agents/skills/socratic-ai-prompt-skill"]
+	path = agents/skills/socratic-ai-prompt-skill
+	url = https://github.com/roy-reshef/socratic-ai-prompt-skill.git
+[submodule "agents/skills/superpowers"]
+	path = agents/skills/superpowers
+	url = https://github.com/obra/superpowers.git

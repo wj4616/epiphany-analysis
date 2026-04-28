@@ -1,0 +1,42 @@
+{
+  "id": "midi-kb_realtime_midi-latency",
+  "kb": "midi-kb",
+  "topic": "realtime",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Content to be harvested]",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Example code placeholder\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# MIDI Latency\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.964077+00:00"
+  },
+  "title": "MIDI Latency",
+  "description": "MIDI input and output latency handling",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:45:48.793554Z",
+  "kb_type": "midi",
+  "audio_relevance": 8,
+  "difficulty": "intermediate",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "MIDI latency",
+    "MIDI round trip",
+    "MIDI input latency",
+    "MIDI output latency"
+  ],
+  "sources": [
+    "JUCE forum",
+    "DAW docs"
+  ]
+}

@@ -1,0 +1,64 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+#include "FastMath.h"
+#include "DCBlocker.h"
+#include "DelayLine.h"
+
+namespace CogDSP
+{
+
+// Waveshaper - Custom waveshaping for Path A (Texture/Transients)
+// Two bounded curves: soft (tanh) and hard (atan)
+// Crossfade between curves controlled by drive parameter
+// Bypass at drive=0 for perfect transparency
+// DC blocker after waveshaping
+// Latency compensation delay to align with Path B
+class Waveshaper
+{
+public:
+    Waveshaper() = default;
+    ~Waveshaper() = default;
+
+    void prepare(double sampleRate, int samplesPerBlock, int latencySamples);
+    void process(float* left, float* right, int numSamples);
+    void reset();
+
+    // Drive: 0-1
+    // 0 = bypass (transparent)
+    // 0-0.5 = soft curve (warm, even harmonics)
+    // 0.5-1 = hard curve (asymmetric, aggressive)
+    void setDrive(float drive) { this->drive = std::clamp(drive, 0.0f, 1.0f); }
+
+    // Get latency compensation samples for Path B alignment
+    int getLatencySamples() const { return latencySamples; }
+
+private:
+    // Process single sample through waveshaper
+    float processSample(float input, float drive);
+
+    // Soft curve: tanh(x * (1 + gain * 3))
+    // Warm, even harmonics, tube-style
+    float softCurve(float x, float gain);
+
+    // Hard curve: (2/PI) * atan(x * (1 + gain * 8))
+    // Asymmetric, odd+even harmonics, aggressive bite
+    // Bounded to ±0.64 at all inputs
+    float hardCurve(float x, float gain);
+
+    float drive = 0.3f;
+    int latencySamples = 0;
+    double sampleRate = 44100.0;
+
+    // DC blocker after waveshaping
+    DCBlocker dcBlockerL, dcBlockerR;
+
+    // Latency compensation delay (to align with spectral engine latency)
+    DelayLine<float> latencyDelayL, latencyDelayR;
+
+    // Smoothed drive value
+    juce::SmoothedValue<float> smoothedDrive;
+};
+
+} // namespace CogDSP

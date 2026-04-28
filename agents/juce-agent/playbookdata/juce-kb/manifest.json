@@ -1,0 +1,225 @@
+{
+  "kb_name": "juce-kb",
+  "version": "1.0.0",
+  "created": "2026-03-30T12:24:56.299886+00:00",
+  "last_sync": "2026-03-30T12:24:56.299887+00:00",
+  "status": "ready",
+  "topics": [
+    {
+      "name": "state-advanced",
+      "files": {
+        "automation-optimization.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299286+00:00",
+          "synced_at": "2026-03-30T12:24:56.299288+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 223
+        },
+        "apvts-patterns.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299307+00:00",
+          "synced_at": "2026-03-30T12:24:56.299308+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 214
+        },
+        "preset-performance.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299323+00:00",
+          "synced_at": "2026-03-30T12:24:56.299324+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 226
+        }
+      }
+    },
+    {
+      "name": "realtime",
+      "files": {
+        "realtime-profiling.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299391+00:00",
+          "synced_at": "2026-03-30T12:24:56.299392+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 219
+        },
+        "lock-free-queues.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299408+00:00",
+          "synced_at": "2026-03-30T12:24:56.299409+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 226
+        },
+        "audio-thread-safety.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299423+00:00",
+          "synced_at": "2026-03-30T12:24:56.299424+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 219
+        },
+        "allocation-free-patterns.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299439+00:00",
+          "synced_at": "2026-03-30T12:24:56.299439+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 224
+        }
+      }
+    },
+    {
+      "name": "agent",
+      "files": {
+        "juce-vst-plugin-development-agent.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299496+00:00",
+          "synced_at": "2026-03-30T12:24:56.299497+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 10499
+        }
+      }
+    },
+    {
+      "name": "tooling",
+      "files": {
+        "juce-plugin-tooling.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299549+00:00",
+          "synced_at": "2026-03-30T12:24:56.299550+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "harvested",
+          "markdown_length": 11502
+        }
+      }
+    },
+    {
+      "name": "performance",
+      "files": {
+        "simd-optimization.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299605+00:00",
+          "synced_at": "2026-03-30T12:24:56.299606+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 227
+        },
+        "opengl-rendering.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299620+00:00",
+          "synced_at": "2026-03-30T12:24:56.299620+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 224
+        },
+        "memory-pooling.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299634+00:00",
+          "synced_at": "2026-03-30T12:24:56.299635+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 224
+        }
+      }
+    },
+    {
+      "name": "failure-modes",
+      "files": {
+        "juce-plugin-failure-modes.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299679+00:00",
+          "synced_at": "2026-03-30T12:24:56.299680+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "harvested",
+          "markdown_length": 12788
+        }
+      }
+    },
+    {
+      "name": "api",
+      "files": {
+        "juce-7-api-reference.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299753+00:00",
+          "synced_at": "2026-03-30T12:24:56.299754+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "harvested",
+          "markdown_length": 12656
+        }
+      }
+    },
+    {
+      "name": "formats",
+      "files": {
+        "vst3-specifics.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299785+00:00",
+          "synced_at": "2026-03-30T12:24:56.299786+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 223
+        },
+        "plugin-sandboxing.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299799+00:00",
+          "synced_at": "2026-03-30T12:24:56.299800+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 217
+        },
+        "aax-considerations.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299814+00:00",
+          "synced_at": "2026-03-30T12:24:56.299815+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 225
+        },
+        "au-specifics.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299829+00:00",
+          "synced_at": "2026-03-30T12:24:56.299829+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 222
+        }
+      }
+    },
+    {
+      "name": "patterns",
+      "files": {
+        "juce-patterns-best-practices.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.299877+00:00",
+          "synced_at": "2026-03-30T12:24:56.299878+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "harvested",
+          "markdown_length": 12744
+        }
+      }
+    }
+  ]
+}

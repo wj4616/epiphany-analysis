@@ -1,0 +1,16 @@
+{
+  "id": "technical_dsp-algorithms_oscillator-basics",
+  "kb": "technical",
+  "topic": "dsp-algorithms",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Oscillator Fundamentals",
+  "summary": "Placeholder: Waveform generation, phase accumulation, anti-aliasing.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["dsp", "oscillator", "waveform", "sawtooth", "square", "sine"],
+  "related_topics": ["dsp-algorithms", "filter-basics"],
+  "difficulty": "beginner",
+  "domain_relevance": 9
+}

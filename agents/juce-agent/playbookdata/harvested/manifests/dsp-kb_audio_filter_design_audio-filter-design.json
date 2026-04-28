@@ -1,0 +1,22 @@
+{
+  "kb_name": "dsp-kb",
+  "topic": "audio filter design",
+  "filename": "audio-filter-design.json",
+  "status": "harvested",
+  "harvested_at": "2026-03-30T23:51:15.683318+00:00",
+  "sources": 5,
+  "rejected": 38,
+  "credits_used": 80,
+  "search_queries": [
+    "audio filter design biquad IIR FIR DSP coefficients",
+    "audio filter design tutorial",
+    "audio filter design implementation",
+    "audio filter design guide"
+  ],
+  "quality_thresholds": {
+    "min_content_length": 500,
+    "min_relevance_score": 0.15,
+    "max_noise_ratio": 0.6
+  },
+  "notes": "Auto-harvested via harvest-data skill"
+}

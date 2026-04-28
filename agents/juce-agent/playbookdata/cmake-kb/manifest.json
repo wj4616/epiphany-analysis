@@ -1,0 +1,91 @@
+{
+  "kb_name": "cmake-kb",
+  "version": "1.0.0",
+  "created": "2026-03-30T12:24:56.308221+00:00",
+  "last_sync": "2026-03-30T12:24:56.308222+00:00",
+  "status": "ready",
+  "topics": [
+    {
+      "name": "cmake-docs",
+      "files": {
+        "command_target_compile_definitions.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308050+00:00",
+          "synced_at": "2026-03-30T12:24:56.308051+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cmake.org",
+          "markdown_length": 1200
+        },
+        "command_target_link_libraries.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308072+00:00",
+          "synced_at": "2026-03-30T12:24:56.308073+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cmake.org",
+          "markdown_length": 1200
+        },
+        "command_add_library.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308091+00:00",
+          "synced_at": "2026-03-30T12:24:56.308092+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cmake.org",
+          "markdown_length": 1447
+        },
+        "command_target_include_directories.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308109+00:00",
+          "synced_at": "2026-03-30T12:24:56.308109+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cmake.org",
+          "markdown_length": 1414
+        },
+        "command_add_executable.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308127+00:00",
+          "synced_at": "2026-03-30T12:24:56.308127+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "cmake.org",
+          "markdown_length": 1211
+        }
+      }
+    },
+    {
+      "name": "curated",
+      "files": {
+        "cmake-audio-patterns.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308175+00:00",
+          "synced_at": "2026-03-30T12:24:56.308176+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 2000
+        },
+        "juce-cmake-best-practices.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308196+00:00",
+          "synced_at": "2026-03-30T12:24:56.308197+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 1837
+        },
+        "juce-audio-plugin-cmake.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.308216+00:00",
+          "synced_at": "2026-03-30T12:24:56.308216+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 1646
+        }
+      }
+    }
+  ]
+}

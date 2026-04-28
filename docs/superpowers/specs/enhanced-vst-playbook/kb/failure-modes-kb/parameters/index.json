@@ -1,0 +1,12 @@
+{
+  "category": "parameters",
+  "description": "Parameter handling failures",
+  "entries": [
+    {
+      "id": "fm-09-smoothedvalue",
+      "title": "SmoothedValue Not Advanced Per Sample",
+      "severity": "serious",
+      "confidence": 1.0
+    }
+  ]
+}

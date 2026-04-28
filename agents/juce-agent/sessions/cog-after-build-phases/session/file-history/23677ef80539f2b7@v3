@@ -1,0 +1,73 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+#include "FastMath.h"
+#include "DCBlocker.h"
+
+namespace CogDSP
+{
+
+// DriveCircuit - Analog-style drive with adaptive pre-gain
+// Stage 1: Adaptive pre-gain with RMS compression (10:1 above 0dBFS)
+// Stage 2: Saturation core (warm/grit blend by drive amount)
+// Stage 3: Tone tilt shelf at 1kHz (dark to bright)
+// Bypass at drive=0 for transparency
+class DriveCircuit
+{
+public:
+    DriveCircuit() = default;
+    ~DriveCircuit() = default;
+
+    void prepare(double sampleRate, int samplesPerBlock);
+    void process(float* left, float* right, int numSamples);
+    void reset();
+
+    // Drive: 0-1
+    // 0 = bypass (transparent)
+    // 0-0.5 = warm saturation
+    // 0.5-1 = grit character
+    void setDrive(float d) { drive = std::clamp(d, 0.0f, 1.0f); }
+
+    // Tone: 0-1
+    // 0 = -6dB highs (dark)
+    // 0.5 = flat
+    // 1 = +6dB highs (bright)
+    void setTone(float t) { tone = std::clamp(t, 0.0f, 1.0f); }
+
+private:
+    // Stage 1: Adaptive pre-gain
+    float computeAdaptivePreGain(float rms);
+
+    // Stage 2: Saturation core
+    float processSaturation(float input, float drive);
+
+    // Stage 3: Tone tilt shelf
+    void processToneTilt(float& sample, float& tiltState);
+
+    // RMS computation
+    float computeRMS(float* left, float* right, int numSamples);
+
+    float drive = 0.0f;
+    float tone = 0.5f;
+    double sampleRate = 44100.0;
+
+    // RMS smoothing
+    float rmsValue = 0.0f;
+    float rmsCoeff = 0.0f;
+
+    // Tone tilt filter state (first-order shelf at 1kHz)
+    float tiltStateL = 0.0f;
+    float tiltStateR = 0.0f;
+    float tiltCoeffA = 0.0f;  // High shelf coefficient
+    float tiltCoeffB = 0.0f;  // Low shelf coefficient
+
+    // Smoothed values
+    juce::SmoothedValue<float> smoothedDrive;
+    juce::SmoothedValue<float> smoothedTone;
+
+    // Denormal prevention
+    static constexpr float denormalThreshold = 1e-15f;
+};
+
+} // namespace CogDSP

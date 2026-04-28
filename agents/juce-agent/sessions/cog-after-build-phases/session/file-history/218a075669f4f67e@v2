@@ -1,0 +1,215 @@
+# Cog VST — Implementation Plan
+
+**Date:** 2026-03-28
+**Status:** Retroactive Plan (Phase 2)
+**Spec:** `docs/superpowers/specs/2026-03-28-cog-vst-design.md`
+
+---
+
+## Overview
+
+This plan documents the implementation of Cog VST according to the design specification. The plugin is a psychedelic sound design module with spectral processing, resonant filters, and feedback-based sound mangling.
+
+---
+
+## 1. Architecture Summary
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                         SIGNAL FLOW                                  │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  INPUT ──► TextureBodyDetector ──┬──► Path A: Waveshaper            │
+│                                   │        + LatencyCompDelay        │
+│                                   │                                   │
+│                                   └──► Path B: SpectralDroneEngine   │
+│                                               + ChorusEnsemble       │
+│                                                                      │
+│  MERGE (crossfade) ──► FilterA + FilterB ──► DriveCircuit            │
+│                         (parallel/series)                             │
+│                                                                      │
+│  FEEDBACK LOOP: Drive ──► DCBlocker ──► SoftClip ──► ×feedback ──► MERGE │
+│                                                                      │
+│  OUTPUT: StereoWidener ──► Limiter ──► OutputGain ──► DryWetMix      │
+│                                                                      │
+│  MODULATION: ModulationEngine ──► FilterA/B cutoffs                  │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. Class Architecture
+
+### Core Classes
+
+| Class | File | Responsibility |
+|-------|------|----------------|
+| `CogVSTAudioProcessor` | PluginProcessor.h/cpp | JUCE processor, APVTS, processBlock |
+| `CogVSTAudioProcessorEditor` | PluginEditor.h/cpp | GUI (placeholder) |
+| `TextureBodyDetector` | DSP/TextureBodyDetector.h/cpp | Envelope followers, spectral flux |
+| `Waveshaper` | DSP/Waveshaper.h/cpp | Path A processing, soft/hard curves |
+| `SpectralDroneEngine` | DSP/SpectralDroneEngine.h/cpp | 48kHz FFT processing |
+| `ChorusEnsemble` | DSP/ChorusEnsemble.h/cpp | 4-voice chorus |
+| `ResonantFilter` | DSP/ResonantFilter.h/cpp | TPT SVF with auto-gain |
+| `DriveCircuit` | DSP/DriveCircuit.h/cpp | 3-stage drive with tone tilt |
+| `StereoWidener` | DSP/StereoWidener.h/cpp | LR2 crossover, M/S processing |
+| `ModulationEngine` | DSP/ModulationEngine.h/cpp | Ring-modulated LFOs |
+| `DelayLine` | DSP/DelayLine.h | Fractional delay template |
+| `DCBlocker` | DSP/DCBlocker.h | First-order HPF |
+| `FastMath` | DSP/FastMath.h | Padé approximants, utilities |
+
+---
+
+## 3. Parameter List (26 parameters)
+
+| # | ID | Name | Range | Default | Block |
+|---|-----|------|-------|---------|-------|
+| 1 | sensitivity | Sensitivity | 0–1 | 0.5 | Detector |
+| 2 | pathBalance | Path Balance | 0–1 | 0.5 | Merge |
+| 3 | textureDrive | Texture Drive | 0–1 | 0.3 | Path A |
+| 4 | droneDensity | Drone Density | 0–1 | 0.3 | Path B |
+| 5 | spectralDrift | Spectral Drift | −1–+1 | 0.0 | Path B |
+| 6 | thickness | Thickness | 0–1 | 0.5 | Path B |
+| 7 | filterRouting | Filter Routing | 0/1 | 0 | Filters |
+| 8 | filterACutoff | Filter A Cutoff | 20–20k | 1000 | Filter A |
+| 9 | filterAReso | Filter A Reso | 0–1 | 0.3 | Filter A |
+| 10 | filterAType | Filter A Type | 0–3 | 0 | Filter A |
+| 11 | filterBCutoff | Filter B Cutoff | 20–20k | 2000 | Filter B |
+| 12 | filterBReso | Filter B Reso | 0–1 | 0.2 | Filter B |
+| 13 | filterBType | Filter B Type | 0–3 | 0 | Filter B |
+| 14 | drive | Drive | 0–1 | 0.0 | Drive |
+| 15 | tone | Tone | 0–1 | 0.5 | Drive |
+| 16 | feedback | Feedback | 0–0.95 | 0.3 | Feedback |
+| 17 | width | Width | 0–1 | 0.5 | Widener |
+| 18 | evolutionSpeed | Evolution | 0–1 | 0.3 | Modulation |
+| 19 | complexity | Complexity | 0–1 | 0.2 | Modulation |
+| 20 | reactivity | Reactivity | 0–1 | 0.3 | Modulation |
+| 21 | outputGain | Output Gain | −12–+12 | 0 | Output |
+| 22 | mix | Mix | 0–1 | 0.5 | Output |
+| 23 | bypass | Bypass | 0/1 | 0 | Output |
+| 24 | freeze | Freeze | 0/1 | 0 | Spectral |
+| 25 | morph | Morph | 0–1 | 0.0 | Preset |
+| 26 | morphTime | Morph Time | 0.1–30 | 2.0 | Preset |
+
+---
+
+## 4. Implementation Tasks
+
+### Phase 3: Test Framework (TODO)
+- [ ] Add Catch2 or GoogleTest to CMakeLists.txt
+- [ ] Test: Plugin instantiation
+- [ ] Test: Parameter range validation
+- [ ] Test: processBlock smoke (silence + noise)
+- [ ] Test: Extreme parameters (all min, all max)
+- [ ] Test: Multi-instance (no shared state)
+
+### Phase 4: DSP Implementation (DONE - needs review)
+
+| Module | Status | Pre-flight Checks |
+|--------|--------|-------------------|
+| FastMath | ✅ | Formulas verified at boundaries |
+| DelayLine | ✅ | Max delay at 192kHz computed |
+| DCBlocker | ✅ | SR-scaled coefficient |
+| TextureBodyDetector | ✅ | 5ms smoothing, 5% bleed |
+| Waveshaper | ✅ | Bypass at drive=0, bounded curves |
+| SpectralDroneEngine | ✅ | 48kHz internal, freeze crossfade |
+| ChorusEnsemble | ✅ | Prime-ish delay spacing |
+| ResonantFilter | ✅ | TPT SVF, auto-gain 1/sqrt(Q) |
+| DriveCircuit | ✅ | Adaptive pre-gain, bypass at zero |
+| StereoWidener | ✅ | LR2 at 250Hz, M/S processing |
+| ModulationEngine | ✅ | Irrational LFO ratios |
+
+### Phase 5: State & Presets (TODO)
+- [ ] Implement `getStateInformation()` with proper XML serialization
+- [ ] Implement `setStateInformation()` with proper deserialization
+- [ ] Create PresetManager with factory presets
+- [ ] Define preset names (human-only: user must approve)
+- [ ] Implement morph interpolation (log-space for freq, cosine for mix)
+
+### Phase 6: Processor Integration (NEEDS AUDIT)
+
+| Check | Status | Notes |
+|-------|--------|-------|
+| All parameters match spec | ✅ | 26 parameters implemented |
+| SmoothedValue per-sample getNextValue() | ❓ | NEEDS AUDIT |
+| Feedback loop has safety limiter | ✅ | tanh after DCBlocker |
+| Equal-power dry/wet mixing | ✅ | cosine crossfade |
+| Latency reported to DAW | ✅ | `setLatencySamples()` |
+
+### Phase 7: GUI (TODO)
+- [ ] Define layout and visual identity (human-only)
+- [ ] Implement custom LookAndFeel
+- [ ] Build component hierarchy with APVTS attachments
+- [ ] Connect all 26 parameters
+- [ ] Preset bar with morph controls
+
+---
+
+## 5. Critical Prevention Rules to Verify
+
+| Rule | Check | Status |
+|------|-------|--------|
+| EM-03: Mixing matrix in FEEDBACK path | N/A - no FDN | N/A |
+| EM-04: Buffer size at 192kHz | Spectral buffer is fixed 2048 at 48kHz internal | ✅ |
+| EM-05/06: Circular buffer wrapping | DelayLine uses modulo | ✅ |
+| EM-08: Filter Q at reso=0, reso=1 | Q = 0.5 to 100, verified | ✅ |
+| EM-09: Formula constants from spec | Need to verify each | ❓ |
+| EM-10: Feedback loop safety limiter | tanh soft-clip present | ✅ |
+| EM-13: SmoothedValue getNextValue per-sample | NEEDS AUDIT | ❓ |
+| EM-14: Equal-power dry/wet | cosine crossfade used | ✅ |
+| EM-15: Default decay <= 2s | No decay param, but feedback capped 0.95 | ✅ |
+
+---
+
+## 6. Build Commands
+
+```bash
+cd /home/myuser/CogVST
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release -- -j$(nproc)
+```
+
+Output: `~/.vst3/Cog VST.vst3`
+
+---
+
+## 7. Next Steps (Phase Order)
+
+1. **Phase 3**: Set up test framework with basic tests
+2. **Phase 4**: Two-stage code review (spec compliance + code quality)
+3. **Phase 5**: Complete state save/restore, implement presets
+4. **Phase 6**: SmoothedValue audit, verify all per-sample calls
+5. **Phase 7**: GUI implementation with user direction
+6. **Phase 8**: Build verification (sample rate, buffer size stress tests)
+7. **Phase 9**: DAW testing in Reaper with user approval
+8. **Phase 10**: Release preparation
+9. **Phase 11**: Optimization (CPU profile, denormal test)
+10. **Phase 12**: Retrospective, extract reusable components
+
+---
+
+## 8. Files Modified/Created
+
+```
+CogVST/
+├── CMakeLists.txt
+├── src/
+│   ├── PluginProcessor.h/cpp
+│   ├── PluginEditor.h/cpp
+│   └── DSP/
+│       ├── FastMath.h
+│       ├── DCBlocker.h
+│       ├── DelayLine.h
+│       ├── TextureBodyDetector.h/cpp
+│       ├── Waveshaper.h/cpp
+│       ├── SpectralDroneEngine.h/cpp
+│       ├── ChorusEnsemble.h/cpp
+│       ├── ResonantFilter.h/cpp
+│       ├── DriveCircuit.h/cpp
+│       ├── StereoWidener.h/cpp
+│       └── ModulationEngine.h/cpp
+└── docs/superpowers/
+    ├── specs/2026-03-28-cog-vst-design.md
+    └── plans/2026-03-28-cog-vst-implementation.md
+```

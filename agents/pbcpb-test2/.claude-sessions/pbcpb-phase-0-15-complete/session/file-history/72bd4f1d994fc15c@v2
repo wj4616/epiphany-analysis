@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_genre-techniques_psychedelic",
+  "kb": "sound-design",
+  "topic": "genre-techniques",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Psychedelic Sound Design Techniques",
+  "summary": "Placeholder: Techniques for creating trippy, mind-bending sounds.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["genre", "psychedelic", "trippy", "experimental"],
+  "related_topics": ["genre-techniques", "effects", "modulation"],
+  "difficulty": "advanced",
+  "domain_relevance": 9
+}

@@ -1,0 +1,16 @@
+{
+  "id": "technical_build-systems_ci-github-actions",
+  "kb": "technical",
+  "topic": "build-systems",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "CI/CD with GitHub Actions for Audio Plugins",
+  "summary": "Placeholder: Automated builds and tests using GitHub Actions across platforms.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["ci", "github-actions", "build", "automation", "testing"],
+  "related_topics": ["build-systems", "testing"],
+  "difficulty": "intermediate",
+  "domain_relevance": 7
+}

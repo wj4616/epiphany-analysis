@@ -1,0 +1,226 @@
+# Phase Dependency Map
+
+## Phase-Level Dependencies
+
+### Phase Dependency Graph
+
+```
+Phase 0 (Commission & Scoping)
+     │
+     ├── Hard dependency: None (entry point)
+     └── Parallel: None
+
+     ↓ (hard)
+
+Phase 1 (Plugin Concept & Sound Identity)
+     │
+     ├── Hard dependency: Phase 0 (SPEC.md, constraints, success criteria)
+     └── Parallel: None (requires creative decisions from Phase 0)
+
+     ↓ (hard)
+
+Phase 2 (Architecture & Task Breakdown)
+     │
+     ├── Hard dependency: Phase 1 (sound identity, creative direction)
+     └── Parallel: None (requires creative decisions to design)
+
+     ↓ (hard)
+
+Phase 3 (Project Setup & Test Framework)
+     │
+     ├── Hard dependency: Phase 2 (architecture, task list)
+     └── Parallel: None (requires architecture to set up)
+
+     ↓ (hard)
+
+Phase 4 (DSP Implementation)
+     │
+     ├── Hard dependency: Phase 3 (build system, tests)
+     ├── Soft dependency: Sound Design KB (bridge queries)
+     └── Parallel: Phase 5 preparation (state design)
+
+     ↓ (hard)
+
+Phase 5 (State Management)
+     │
+     ├── Hard dependency: Phase 4 (DSP modules)
+     └── Parallel: None (requires parameter layout from DSP)
+
+     ↓ (hard)
+
+Phase 6 (Integration)
+     │
+     ├── Hard dependency: Phase 5 (state management)
+     └── Parallel: None (requires all components)
+
+     ↓ (hard)
+
+Phase 7 (GUI Design)
+     │
+     ├── Hard dependency: Phase 6 (integrated plugin)
+     ├── Soft dependency: UI/UX KB
+     └── Parallel: None (requires parameter layout)
+
+     ↓ (hard)
+
+Phase 8 (Validation & Testing)
+     │
+     ├── Hard dependency: Phase 7 (complete plugin)
+     └── Parallel: None (requires GUI for full testing)
+
+     ↓ (hard)
+
+Phase 9 (DAW Testing)
+     │
+     ├── Hard dependency: Phase 8 (validated plugin)
+     └── Parallel: None (human-only testing)
+
+     ↓ (hard)
+
+Phase 10 (Licensing Integration)
+     │
+     ├── Hard dependency: Phase 9 (tested plugin)
+     ├── Soft dependency: Commercial KB (licensing options)
+     └── Parallel: Phase 11 preparation (marketplace research)
+
+     ↓ (hard)
+
+Phase 11 (Marketplace Preparation)
+     │
+     ├── Hard dependency: Phase 10 (licensed plugin)
+     ├── Soft dependency: Commercial KB (marketplace requirements)
+     └── Parallel: Phase 12 preparation (marketing content)
+
+     ↓ (hard)
+
+Phase 12 (Marketing Launch Preparation)
+     │
+     ├── Hard dependency: Phase 11 (marketplace ready)
+     └── Parallel: None (requires release date)
+
+     ↓ (hard)
+
+Phase 13 (Release & Distribution)
+     │
+     ├── Hard dependency: Phase 12 (marketing ready)
+     └── Parallel: None (go/no-go decision)
+
+     ↓ (hard)
+
+Phase 14 (Post-Launch Operations)
+     │
+     ├── Hard dependency: Phase 13 (released product)
+     └── Parallel: None (requires customer feedback)
+
+     ↓ (hard)
+
+Phase 15 (Continuous Improvement)
+     │
+     ├── Hard dependency: Phase 14 (support running)
+     └── Parallel: None (requires sales data)
+
+     ↓ (hard)
+
+Phase 16 (KB Maintenance)
+     │
+     ├── Hard dependency: Phases 0-15 (lessons learned)
+     └── Parallel: None (final phase)
+```
+
+---
+
+## Task-Level Dependencies Within Phases
+
+### Phase 0 (Commission & Scoping)
+```
+[Coordinator] — Establish configuration
+     ↓
+[Coordinator] — Create project knowledge base folder
+     ↓
+[Stakeholder] — Define purpose, scope, constraints, success criteria (parallel)
+     ↓
+[Stakeholder] — Classify domain complexity
+     ↓
+[Coordinator] — Read and acknowledge all phases
+     ↓
+[Coordinator] — Plan session boundaries
+     ↓
+[Coordinator] — Phase gate
+```
+
+### Phase 4 (DSP Implementation)
+```
+[AI] — Read all existing source files
+     ↓
+[AI] — Design class architecture
+     ↓
+[AI] — Specify DSP algorithms with math
+     ↓
+[Human] — Approve DSP architecture
+     ↓
+[AI] — Implement DSP modules (parallel per module)
+     ↓
+[AI] — Integrate modules
+     ↓
+[AI] — Implement parameter smoothing
+     ↓
+[AI] — Self-review for audio thread safety
+     ↓
+[Coordinator] — Phase gate
+```
+
+### Phase 9 (DAW Testing) — Human-Only
+```
+[Human] — Load plugin in REAPER
+     ↓
+[Human] — Test basic functionality
+     ↓
+[Human] — Test parameter ranges
+     ↓
+[Human] — Test preset save/load
+     ↓
+[Human] — Listen for audio issues
+     ↓
+[Human] — Report findings
+     ↓
+[Coordinator] — Phase gate
+```
+
+---
+
+## Parallel Execution Opportunities
+
+| Phase Pair | Parallel? | Notes |
+|------------|-----------|-------|
+| Phase 0 & Phase 1 | No | Phase 1 needs Phase 0 decisions |
+| Phase 4 & Phase 5 preparation | Partial | DSP must complete before State implementation |
+| Phase 10 & Phase 11 prep | Yes | Licensing integration and marketplace research can overlap |
+| Phase 11 & Phase 12 prep | Yes | Marketplace prep and marketing content can overlap |
+
+---
+
+## Circular Dependency Check
+
+**Verification:** No phase depends on a later phase. All dependencies flow forward.
+
+| Phase | Depends On | Later Phase? |
+|-------|-----------|--------------|
+| 0 | None | N/A |
+| 1 | 0 | No ✓ |
+| 2 | 1 | No ✓ |
+| 3 | 2 | No ✓ |
+| 4 | 3 | No ✓ |
+| 5 | 4 | No ✓ |
+| 6 | 5 | No ✓ |
+| 7 | 6 | No ✓ |
+| 8 | 7 | No ✓ |
+| 9 | 8 | No ✓ |
+| 10 | 9 | No ✓ |
+| 11 | 10 | No ✓ |
+| 12 | 11 | No ✓ |
+| 13 | 12 | No ✓ |
+| 14 | 13 | No ✓ |
+| 15 | 14 | No ✓ |
+| 16 | 15 | No ✓ |
+
+**Result:** No circular dependencies. ✓

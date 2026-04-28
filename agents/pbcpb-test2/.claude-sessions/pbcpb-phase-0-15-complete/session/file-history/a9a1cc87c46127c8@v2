@@ -1,0 +1,26 @@
+{
+  "kb": "commercial",
+  "version": "1.0.0",
+  "topics": {
+    "marketplaces": {
+      "entries": ["kvr-audio", "plugin-boutique", "direct-sales"],
+      "last_updated": "2026-04-02"
+    },
+    "licensing": {
+      "entries": ["ilok", "custom-solutions", "anti-piracy"],
+      "last_updated": "2026-04-02"
+    },
+    "pricing": {
+      "entries": ["strategy", "positioning", "bundles"],
+      "last_updated": "2026-04-02"
+    },
+    "marketing": {
+      "entries": ["launch-timeline", "content-strategy", "community-building"],
+      "last_updated": "2026-04-02"
+    },
+    "distribution": {
+      "entries": ["installers", "updates", "support"],
+      "last_updated": "2026-04-02"
+    }
+  }
+}

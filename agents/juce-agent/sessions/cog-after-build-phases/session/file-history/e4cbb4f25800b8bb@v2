@@ -1,0 +1,109 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+#include "FastMath.h"
+#include <array>
+
+namespace CogDSP
+{
+
+// ModulationEngine - Ring-modulated LFOs for evolving modulation
+// Three LFOs (A, B, C) with irrational ratios for never-repeating patterns
+// LFO A → modulates B rate
+// LFO B → modulates C rate
+// LFO C → modulates A rate
+// Plus audio-reactive modulation from envelope follower and spectral flux
+class ModulationEngine
+{
+public:
+    ModulationEngine() = default;
+    ~ModulationEngine() = default;
+
+    void prepare(double sampleRate, int samplesPerBlock);
+    void process(int numSamples);
+    void reset();
+
+    // Evolution Speed: 0-1 maps to speed multiplier 0.1x - 10x
+    void setEvolutionSpeed(float speed);
+
+    // Complexity: 0-1 cross-modulation depth
+    // 0 = independent sine waves (predictable)
+    // 1 = full ring cross-modulation (chaotic, never-repeating)
+    void setComplexity(float comp) { complexity = std::clamp(comp, 0.0f, 1.0f); }
+
+    // Reactivity: 0-1 audio-reactive modulation depth
+    // 0 = no audio reaction, LFOs only
+    // 1 = full audio-reactive modulation
+    void setReactivity(float react) { reactivity = std::clamp(react, 0.0f, 1.0f); }
+
+    // Set audio input level (for reactivity)
+    void setAudioInputLevel(float level) { audioInputLevel = std::clamp(level, 0.0f, 1.0f); }
+
+    // Set spectral flux (for reactivity)
+    void setSpectralFlux(float flux) { spectralFluxValue = std::clamp(flux, 0.0f, 1.0f); }
+
+    // Get modulation outputs (in octaves for filter cutoff)
+    // Each limited to ±2 octaves, total clamped to ±4 octaves
+    float getLFOAOutput() const { return lfoOutputs[0]; }  // For Filter A cutoff
+    float getLFOBOutput() const { return lfoOutputs[1]; }  // For Filter B cutoff
+    float getLFOCOutput() const { return lfoOutputs[2]; }  // For Spectral Drift
+
+    // Get audio-reactive modulation (for both filters)
+    float getAudioReactiveMod() const { return audioReactiveMod; }
+
+    // Get spectral flux modulation
+    float getSpectralFluxMod() const { return spectralFluxMod; }
+
+    // Update LFOs - call once per block
+    void updateLFOs();
+
+private:
+    // Base LFO rates (irrational ratios, never phase-aligns)
+    // LFO A: 0.07Hz, LFO B: 0.13Hz, LFO C: 0.23Hz
+    static constexpr std::array<float, 3> baseRates = { 0.07f, 0.13f, 0.23f };
+
+    struct LFOState
+    {
+        float phase = 0.0f;
+        float baseRate = 0.07f;
+        float output = 0.0f;  // -1 to +1
+        float rate = 0.07f;   // Current rate (may be modulated)
+
+        void reset()
+        {
+            phase = 0.0f;
+            output = 0.0f;
+        }
+    };
+
+    std::array<LFOState, 3> lfos;
+
+    float evolutionSpeed = 0.3f;
+    float complexity = 0.2f;
+    float reactivity = 0.3f;
+    float audioInputLevel = 0.0f;
+    float spectralFluxValue = 0.0f;
+
+    // Outputs
+    std::array<float, 3> lfoOutputs = { 0.0f, 0.0f, 0.0f };
+    float audioReactiveMod = 0.0f;
+    float spectralFluxMod = 0.0f;
+
+    // Audio-reactive envelope follower (10ms attack, 100ms release)
+    float envelopeFollower = 0.0f;
+    float envelopeAttack = 0.0f;
+    float envelopeRelease = 0.0f;
+
+    double sampleRate = 44100.0;
+
+    // Rate limits (hard bounds per LFO)
+    static constexpr float minRate = 0.01f;   // 0.01Hz minimum
+    static constexpr float maxRate = 20.0f;   // 20Hz maximum
+
+    // Modulation depth limits (in octaves)
+    static constexpr float maxLFOModOctaves = 2.0f;
+    static constexpr float maxTotalModOctaves = 4.0f;
+};
+
+} // namespace CogDSP

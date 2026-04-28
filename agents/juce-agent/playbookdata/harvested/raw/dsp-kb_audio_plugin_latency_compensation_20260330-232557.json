@@ -1,0 +1,71 @@
+{
+  "harvest_metadata": {
+    "kb_type": "dsp-kb",
+    "topic": "audio plugin latency compensation",
+    "harvested_at": "2026-03-30T23:25:57.021887+00:00",
+    "quality_filter": {
+      "passed": 3,
+      "rejected": 32,
+      "rejection_reasons": {
+        "not_relevant": 32
+      }
+    },
+    "thresholds": {
+      "min_content_length": 500,
+      "min_relevance_score": 0.2,
+      "max_noise_ratio": 0.5
+    }
+  },
+  "result": {
+    "data": [
+      {
+        "url": "https://www.youtube.com/watch?v=hbQJrrcpqkM",
+        "title": "How To Enable Plugin Latency Compensation in Logic Pro - YouTube",
+        "markdown": "![Thumbnail (1920x1080)](https://i.ytimg.com/vi/hbQJrrcpqkM/maxresdefault.jpg)\n# [How To Enable Plugin Latency Compensation in Logic Pro](https://www.youtube.com/watch?v=hbQJrrcpqkM)\n\n**Visibility**: Public\n**Uploaded by**: [Inswain Audio](http://www.youtube.com/@inswainaudio)\n**Uploaded at**: 2024-12-12T13:30:11-08:00\n**Published at**: 2024-12-12T13:30:11-08:00\n**Length**: 01:46\n**Views**: 1253\n**Likes**: 25\n**Category**: People & Blogs\n\n## Description\n\n```\nHow To Enable Plugin Latency Compensation in Logic Pro\n\n\ud83d\udda5 Website: https://www.inswainmusic.com\n\ud83c\udfb5 Music Channel: https://www.youtube.com/inswain\n\ud83c\udf9a Mixing/Mastering: https://www.inswainmusic.com/product/mixing-mastering/\n\ud83c\udf99 Vocal Recording Templates: https://www.inswainmusic.com/product-category/vocal-templates/\n\ud83d\udc68\ud83c\udffb\u200d\ud83d\udcbb 1-on-1 Lessons: https://www.inswainmusic.com/product/mixing-mastering-lessons/\n\ud83d\udc55 Merchandise: https://www.inswainmusic.com/product-category/merchandise/\n\u2b1b\ufe0f TikTok: https://www.tiktok.com/@inswainaudio?_t=8kN2qzcWQKg&_r=1\n\ud83d\udcf8 Instagram: https://www.instagram.com/inswain994/\n\ud83d\udc26 Twitter: https://twitter.com/inswain994\n\ud83d\udfe6 Facebook: http://facebook.com/InswainOfficial/\n\ud83d\udce9 Email: inswainofficial@gmail.com\n\n#logicpro #logicprox #logicproxtutorial\n```\n\n## Transcript\n\nI'm going to show you how to enable plugin latency compensation in logic proax so plugins add latency to your project or a delay especially some third party plugins and the more you start adding them up the more latency you could have this is just inherent to the plugins this becomes a problem when you have different tracks with different amounts of plugins and they all start getting out of sync that's not what we want so logic has a function called latency compensation and what this will do is it'll compensate for that latency meaning it'll take whatever track has the most latency and sync all the other tracks to that so that they all have the same amount of latency so that you're hearing it as no latency if that makes sense it's like if everybody starts the race 5 seconds late everybody's starting on time and the same thing will go for your tracks although 5 seconds is pretty extreme you get the point so let me show you how to do it up in the top left menu you choose logic pro you go to settings audio then we choose General and then down here in the section for plug-in latency where we have the compens drop down menu you want to make sure you have all selected this will make it so that all tracks buses Au everything within your project is getting this latency compensation and then you probably want to select playback pre-roll as you can see when this is enabled all of your play commands will start earlier by the value of the plugin delay compensation when you don't have this on the transience of your start position might be lost and what this is going to do is it's going to take it a little bit longer when you press play but it's going to ensure that everything gets played and you don't miss those things at the beginning because of latency so I would definitely recommend having this on and then that's it you're good to go now all your tracks will be synced up regardless of how much latency you have so if this was helpful give me a like and a subscribe I'd appreciate it my name is insain with insain audio I'll see yall tomorrow man peace\n\n\n",
+        "quality_report": {
+          "url": "https://www.youtube.com/watch?v=hbQJrrcpqkM",
+          "title": "How To Enable Plugin Latency Compensation in Logic Pro - YouTube",
+          "content_length": 3316,
+          "has_code": true,
+          "code_blocks": 2,
+          "relevance_score": 0.3015681544028951,
+          "noise_ratio": 0.07894736842105263,
+          "passed": true,
+          "rejection_reason": null
+        }
+      },
+      {
+        "url": "https://support.izotope.com/hc/en-us/articles/6658098494609-Latency-and-Delay-Compensation",
+        "title": "Latency and Delay Compensation - iZotope Support",
+        "markdown": "[![Logo](https://support.izotope.com/hc/theming_assets/01HZKNJZNKMH8BHSYJDEM7FGYF)](https://support.izotope.com/hc/en-us \"Home\")\n\n# Latency and Delay Compensation\n\niZotope plug-ins use complex DSP, which can create audible latency. During playback, this can result in a delay or offset to a single track's output, which can put a track out of sync with the rest of a mix.\n\nMost modern audio applications include latency compensation and can automatically compensate for this offset, however, if you are noticing latency when working with iZotope plug-ins in your host, here are a few things to try:\n\n- Make sure the \"Enable delay compensation\"\\* feature is enabled in the Options/Preferences window. This option is available in the General section under \"Latency\" or \"Delay Compensation.\"\n\n\\*Note that this feature reports the exact offset in samples to the host application. The host itself will need to compensate for the offset.\n- Make your host's delay compensation feature is enabled. This will usually be available in the preferences window or an options/settings menu.\n\n- If your host application does not support Delay Compensation, you can still manually adjust your track to compensate for the offset. The current offset is available in the \"Latency\" or \"Delay Compensation\" section of the Options/Preferences panel.\n\n\n[Support Home](https://support.izotope.com/hc/ \"home\")\n\n## iZotope is now part of Native Instruments \u2014 [Learn more](https://blog.native-instruments.com/native-instruments-brand-news?utm_source=izotope.com&utm_medium=web&utm_campaign=2023.06-ni-brand-announcement) about what that means for you on the NI\u00a0blog\n\n\u00a9 iZotope Product Support Help and Knowledge Base, Inc. All rights reserved\n\n[License Agreement](https://www.izotope.com/en/software-license-agreement.html)\n\n[Privacy Policy](https://www.izotope.com/en/privacy-policy.html)\n\n[Terms of Use](https://www.izotope.com/en/terms-of-use.html)",
+        "quality_report": {
+          "url": "https://support.izotope.com/hc/en-us/articles/6658098494609-Latency-and-Delay-Compensation",
+          "title": "Latency and Delay Compensation - iZotope Support",
+          "content_length": 1923,
+          "has_code": false,
+          "code_blocks": 0,
+          "relevance_score": 0.4160166406656266,
+          "noise_ratio": 0.1111111111111111,
+          "passed": true,
+          "rejection_reason": null
+        }
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=NHGKE_qwmdc",
+        "title": "How To Fix Latency when Mixing w - Delay Compensation - YouTube",
+        "markdown": "![Thumbnail (1920x1080)](https://i.ytimg.com/vi_webp/NHGKE_qwmdc/maxresdefault.webp)\n# [Delay Compensation | How To Fix Latency when Mixing w/ Jacquire King](https://www.youtube.com/watch?v=NHGKE_qwmdc)\n\n**Visibility**: Public\n**Uploaded by**: [Puremix](http://www.youtube.com/@PuremixAudioTutorials)\n**Uploaded at**: 2021-08-12T08:18:45-07:00\n**Published at**: 2021-08-12T08:18:45-07:00\n**Length**: 02:41\n**Views**: 9730\n**Likes**: 160\n**Category**: Music\n\n## Description\n\n```\nWatch the full series here: https://www.puremix.com/library/start-to-finish/-/flux-keeps-the-light-on\n\n\nLatency is an issue that every musician who records digitally wrestles with. Most commonly, we think of latency in reference to delays experienced when monitoring during tracking. But it can also be problematic when mixing. Such issues can happen when you have so many plug-ins and virtual instruments open that it overwhelms your available CPU resources and impedes your DAW\u2019s ability to provide delay compensation.\n\nWe see a case in point in this excerpt from Start to Finish: Jacquire King - Episode 24 - Automation Part 1, where Jacquire runs into latency issues when automating volume. \n\n\n\ud83c\udfb6 Learn what's not on YouTube on https://www.puremix.com\n\nJoin the largest community of producers and engineers. Produce, Record, Mix & Master with Puremix\n\n\ud83d\udcac Get feedback on your mixes and music: https://puremix.com/mix-tank\n\ud83c\udfa7 Train your ears in our How To listen series: https://www.puremix.com/library/tutorials/how-to-listen\n\ud83d\udcfa Check our +400 videos and tutorials: https://puremix.com/library/tutorials\n\ud83d\udc65 Learn more about our mentors: https://puremix.com/mentors\n\nFollow Puremix for exclusive excerpts and latest news:\nFacebook: https://www.facebook.com/puremix.videos\nInstagram: https://www.instagram.com/puremixonline\nX: https://x.com/PuremixOnline\n```\n\n## Endscreen\n    \n- [Start To Finish Series | Keep The Light On with Jacquire King [Trailer]](https://www.youtube.com/watch?v=2-vcDN7TW8g)",
+        "quality_report": {
+          "url": "https://www.youtube.com/watch?v=NHGKE_qwmdc",
+          "title": "How To Fix Latency when Mixing w - Delay Compensation - YouTube",
+          "content_length": 1973,
+          "has_code": true,
+          "code_blocks": 2,
+          "relevance_score": 0.40547389761784086,
+          "noise_ratio": 0.04878048780487805,
+          "passed": true,
+          "rejection_reason": null
+        }
+      }
+    ]
+  }
+}

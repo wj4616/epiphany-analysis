@@ -1,0 +1,26 @@
+{
+  "id": "failure-modes-kb_audio-thread_allocations",
+  "kb": "failure-modes-kb",
+  "topic": "audio-thread",
+  "status": "harvested",
+  "version": "1.0.0",
+  "title": "FM-01: Heap Allocation on Audio Thread",
+  "summary": "Critical failure mode: heap allocations cause audio dropouts and crashes.",
+  "description": "## Symptom\n\nAudio dropouts, glitches, occasional crashes. CPU spikes visible in profiler.\n\n## Cause\n\nHeap allocation on audio thread via:\n- `new` / `delete`\n- `std::vector::push_back()`\n- `std::string` construction\n- `juce::String` construction\n- `DBG()` macro\n- Any container that may reallocate\n\n## Fix\n\nPre-allocate all buffers in `prepareToPlay()`:\n\n```cpp\nvoid prepareToPlay(double sampleRate, int samplesPerBlock) override {\n    buffer.setSize(2, samplesPerBlock);  // Pre-allocate\n    delayBuffer.setSize(2, static_cast<int>(sampleRate * 2.0));  // Max 2 seconds\n}\n```\n\n## Prevention\n\n- Code review checklist: search for allocations in processBlock\n- Use `juce::ScopedNoDenormals` as reminder anchor\n- Run pluginval strictness 5+\n- Profile with Perfetto to detect allocation stalls\n\n## Detection\n\n- pluginval strictness 5+: catches allocations\n- Perfetto profiling: shows allocation stalls\n- Manual code audit: grep for `new`, `delete`, `push_back`, `String`",
+  "source": "VST Playbook v7 FM-01",
+  "concepts": [
+    {"name": "prepareToPlay", "description": "JUCE callback where all allocations must happen"},
+    {"name": "processBlock", "description": "JUCE callback that must be allocation-free"}
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// WRONG - allocates on audio thread\nvoid processBlock(AudioBuffer<float>& buffer, MidiBuffer&) override {\n    std::vector<float> temp(buffer.getNumSamples());  // ALLOCATES!\n}\n\n// CORRECT - uses pre-allocated buffer\nvoid processBlock(AudioBuffer<float>& buffer, MidiBuffer&) override {\n    // Use member buffer allocated in prepareToPlay()\n    for (int i = 0; i < buffer.getNumSamples(); ++i) {\n        tempBuffer[i] = buffer.getReadPointer(0)[i];\n    }\n}",
+      "preserved": true
+    }
+  ],
+  "tags": ["audio-thread", "allocation", "critical", "real-time"],
+  "related_topics": ["cpp-audio"],
+  "difficulty": "beginner",
+  "domain_relevance": 10
+}

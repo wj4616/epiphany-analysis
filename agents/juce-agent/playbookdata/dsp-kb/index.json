@@ -1,0 +1,113 @@
+{
+  "kb_name": "dsp-kb",
+  "version": "1.0.0",
+  "last_updated": "2026-03-30T13:43:48.154852+00:00",
+  "topics": {
+    "reverb": {
+      "files": [
+        "impulse-response.json",
+        "convolution-reverb.json",
+        "reverb-design.json",
+        "algorithmic-reverb.json"
+      ],
+      "file_count": 4,
+      "last_updated": "2026-03-30T13:43:48.154847+00:00"
+    },
+    "synthesis": {
+      "files": [
+        "karplus-strong-string.json"
+      ],
+      "file_count": 1,
+      "last_updated": "2026-03-30T12:24:56.299076+00:00"
+    },
+    "algorithms": {
+      "files": [
+        "fft-audio-processing.json",
+        "wavetable-synthesis.json",
+        "juce-dsp-reference.json",
+        "dynamics-processing.json"
+      ],
+      "file_count": 4,
+      "last_updated": "2026-03-30T12:24:56.299078+00:00"
+    },
+    "dynamics": {
+      "files": [
+        "multiband-compression.json",
+        "limiter-design.json",
+        "noise-gate.json",
+        "expander.json",
+        "compressor.json"
+      ],
+      "file_count": 5,
+      "last_updated": "2026-03-30T12:24:56.299079+00:00"
+    },
+    "pitch": {
+      "files": [
+        "formant-shifting.json",
+        "harmonizer.json",
+        "pitch-shifting.json"
+      ],
+      "file_count": 3,
+      "last_updated": "2026-03-30T12:24:56.299080+00:00"
+    },
+    "spatial": {
+      "files": [
+        "binaural-audio.json",
+        "mid-side-processing.json",
+        "stereo-width.json"
+      ],
+      "file_count": 3,
+      "last_updated": "2026-03-30T12:24:56.299081+00:00"
+    },
+    "filters": {
+      "files": [
+        "biquad-filter-design.json"
+      ],
+      "file_count": 1,
+      "last_updated": "2026-03-30T12:24:56.299083+00:00"
+    },
+    "delay": {
+      "files": [
+        "delay-lines.json",
+        "echo.json",
+        "ping-pong-delay.json"
+      ],
+      "file_count": 3,
+      "last_updated": "2026-03-30T12:24:56.299084+00:00"
+    },
+    "theory": {
+      "files": [
+        "dsp-latency-optimization.json"
+      ],
+      "file_count": 1,
+      "last_updated": "2026-03-30T12:24:56.299085+00:00"
+    },
+    "optimization": {
+      "files": [
+        "simd-optimization.json"
+      ],
+      "file_count": 1,
+      "last_updated": "2026-03-30T12:24:56.299086+00:00"
+    },
+    "distortion": {
+      "files": [
+        "waveshaping.json",
+        "saturation.json",
+        "soft-clipping.json"
+      ],
+      "file_count": 3,
+      "last_updated": "2026-03-30T12:24:56.299087+00:00"
+    },
+    "modulation": {
+      "files": [
+        "tremolo.json",
+        "flanger.json",
+        "phaser.json",
+        "vibrato.json",
+        "chorus.json"
+      ],
+      "file_count": 5,
+      "last_updated": "2026-03-30T12:24:56.299088+00:00"
+    }
+  }
+}

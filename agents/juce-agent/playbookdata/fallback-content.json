@@ -1,0 +1,32 @@
+{
+  "audio_processing": {
+    "title": "Audio Processing Basics",
+    "content": "# Audio Processing Basics\n\nAudio processing in JUCE is handled by the `AudioProcessor` class. The main method is `processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)` which processes audio in real-time.\n\nKey concepts:\n- `AudioBuffer` - Container for audio samples\n- `MidiBuffer` - Container for MIDI events\n- `prepareToPlay()` - Called before processing starts\n- `releaseResources()` - Called after processing ends\n\nSee JUCE documentation for detailed implementation.",
+    "minimal": true
+  },
+  "dsp": {
+    "title": "DSP Fundamentals",
+    "content": "# Digital Signal Processing\n\nJUCE provides the `dsp` namespace for digital signal processing:\n\n- `dsp::IIR` - Infinite Impulse Response filters\n- `dsp::FIR` - Finite Impulse Response filters\n- `dsp::FFT` - Fast Fourier Transform\n- `dsp::Oversampling` - Sample rate conversion\n- `dsp::Gain` - Volume control\n- `dsp::DelayLine` - Delay effects\n\nUse `dsp::ProcessSpec` to configure processing parameters.",
+    "minimal": true
+  },
+  "parameters": {
+    "title": "Audio Parameters",
+    "content": "# Plugin Parameters\n\nJUCE parameters use `AudioProcessorParameter` and `AudioProcessorValueTreeState` (APVTS):\n\n1. Create parameter layout in `createParameterLayout()`\n2. Use `AudioProcessorValueTreeState` to manage state\n3. Attach to UI components with `AudioProcessorValueTreeState::SliderAttachment`\n\nParameters are automatically saved/restored with plugin state.",
+    "minimal": true
+  },
+  "gui": {
+    "title": "GUI Components",
+    "content": "# Plugin GUI\n\nJUCE GUI is built on the `Component` class:\n\n- `Component` - Base class for all UI elements\n- `Slider` - Rotary/linear controls\n- `ComboBox` - Dropdown menus\n- `TextButton` - Clickable buttons\n- `Label` - Text display\n\nOverride `paint()` for custom drawing and `resized()` for layout.\n\nUse `LookAndFeel` classes to customize appearance.",
+    "minimal": true
+  },
+  "thread_safety": {
+    "title": "Thread Safety",
+    "content": "# Thread Safety in JUCE\n\nKey concepts:\n\n- `CriticalSection` - Mutex for thread synchronization\n- `Thread` - Base class for background threads\n- `MessageManager` - UI thread message handling\n- `AsyncUpdater` - Deferred callbacks\n\nUse `MessageManagerLock` when accessing UI from background threads.\n\nAvoid blocking calls in `processBlock()` - it must be real-time safe.",
+    "minimal": true
+  },
+  "testing": {
+    "title": "Plugin Testing",
+    "content": "# Testing JUCE Plugins\n\nTesting approaches:\n\n1. **Unit tests** - Use Catch2 or GoogleTest for logic testing\n2. **Integration tests** - Test plugin host interaction\n3. **pluginval** - JUCE's validation tool\n\nRun `pluginval --strictness-level 5 YourPlugin.vst3` for comprehensive validation.",
+    "minimal": true
+  }
+}

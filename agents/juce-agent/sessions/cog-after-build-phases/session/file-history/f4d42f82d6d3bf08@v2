@@ -1,0 +1,70 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+#include "DelayLine.h"
+#include "FastMath.h"
+#include <array>
+
+namespace CogDSP
+{
+
+// ChorusEnsemble - 4-voice chorus/ensemble effect
+// Prime-ish delay spacing prevents comb alignment
+// Independent LFOs create lush, never-repeating modulation
+class ChorusEnsemble
+{
+public:
+    ChorusEnsemble() = default;
+    ~ChorusEnsemble() = default;
+
+    void prepare(double sampleRate, int samplesPerBlock);
+    void process(float* left, float* right, int numSamples);
+    void reset();
+
+    // Thickness: 0-1
+    // 0 = transparent passthrough
+    // 1 = full 4-voice blend
+    void setThickness(float t) { thickness = std::clamp(t, 0.0f, 1.0f); }
+
+private:
+    static constexpr int numVoices = 4;
+
+    // Voice structure
+    struct Voice
+    {
+        DelayLine<float> delay;
+        float lfoPhase = 0.0f;
+        float lfoRate = 1.0f;      // Hz
+        float baseDelayMs = 10.0f; // Base delay in ms
+        float modDepth = 0.5f;     // Modulation depth in ms
+
+        void prepare(double sampleRate, float maxDelayMs)
+        {
+            delay.prepare(sampleRate, maxDelayMs);
+        }
+
+        void reset()
+        {
+            delay.reset();
+            lfoPhase = 0.0f;
+        }
+    };
+
+    std::array<Voice, numVoices> voices;
+
+    float thickness = 0.5f;
+    double sampleRate = 44100.0;
+
+    // LFO rates (irrational ratios for never-repeating modulation)
+    // 0.8Hz, 1.1Hz, 1.5Hz, 2.1Hz
+    static constexpr std::array<float, numVoices> lfoRates = { 0.8f, 1.1f, 1.5f, 2.1f };
+
+    // Base delays (prime-ish spacing: 3ms, 7ms, 11ms, 16ms)
+    static constexpr std::array<float, numVoices> baseDelays = { 3.0f, 7.0f, 11.0f, 16.0f };
+
+    // Smoothed thickness
+    juce::SmoothedValue<float> smoothedThickness;
+};
+
+} // namespace CogDSP

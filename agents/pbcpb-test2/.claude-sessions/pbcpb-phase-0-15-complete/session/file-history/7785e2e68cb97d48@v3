@@ -1,0 +1,11 @@
+# Artifact Manifest — update at every phase gate
+
+| File | Phase | Status | Summary |
+|------|-------|--------|---------|
+| README.md | 0 | Complete | Purpose, overview, target user documented |
+| scope.md | 0 | Complete | Configuration, in/out/adjacent scope defined |
+| constraints.md | 0 | Complete | Budget, technical stack, process constraints |
+| success-criteria.md | 0 | Complete | Product, quality, commercial, KB criteria |
+| decisions-ledger.md | 0 | Complete | Configuration, complexity profile, session plan, phase inventory |
+| artifact-manifest.md | 0 | Complete | Tracking file initialized |
+| metrics-tracker.md | 0 | Complete | Tracking file initialized |

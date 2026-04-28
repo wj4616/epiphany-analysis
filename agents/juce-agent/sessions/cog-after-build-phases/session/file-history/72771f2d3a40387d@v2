@@ -1,0 +1,134 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+#include "FastMath.h"
+
+namespace CogDSP
+{
+
+// ResonantFilter - Cytomic TPT State Variable Filter
+// Unconditionally stable at all frequencies and resonance settings
+// Supports LP, HP, BP, and Notch modes
+// Auto-gain compensation: 1/sqrt(Q)
+// Modulation applied in octave-space for musical response
+class ResonantFilter
+{
+public:
+    enum class Mode
+    {
+        LP,     // Low-pass
+        HP,     // High-pass
+        BP,     // Band-pass
+        Notch   // Notch (band-reject)
+    };
+
+    ResonantFilter() = default;
+    ~ResonantFilter() = default;
+
+    void prepare(double sampleRate);
+    void process(float* samples, int numSamples);
+    void reset();
+
+    // Cutoff: 20Hz - 20kHz (log-scaled internally)
+    void setCutoff(float freqHz);
+
+    // Resonance: 0-1 maps to Q 0.5-100
+    void setResonance(float res);
+
+    // Filter mode
+    void setMode(Mode m) { mode = m; }
+
+    // Set modulation offset in octaves (-4 to +4)
+    // This is summed with base cutoff in process()
+    void setModulationOctaves(float octaves) { modOctaves = std::clamp(octaves, -4.0f, 4.0f); }
+
+    // Get auto-gain compensation factor
+    float getAutoGain() const { return autoGain; }
+
+private:
+    // TPT SVF core processing
+    void updateCoefficients();
+
+    // Process single sample through all filter modes
+    void processSample(float& sample);
+
+    float cutoff = 1000.0f;     // Base cutoff in Hz
+    float resonance = 0.3f;      // 0-1 maps to Q 0.5-100
+    float modOctaves = 0.0f;    // Modulation in octaves
+    Mode mode = Mode::LP;
+
+    double sampleRate = 44100.0;
+
+    // TPT coefficients
+    float g = 0.0f;     // tan(π*fc/fs)
+    float k = 0.0f;     // 2 - 2*g (for resonance)
+    float gk = 0.0f;    // g * k
+    float gk2 = 0.0f;   // g / (1 + g*k)
+    float oneOverDenom = 1.0f;
+
+    // Auto-gain compensation
+    float autoGain = 1.0f;
+
+    // State variables
+    float ic1eq = 0.0f;  // Integrator 1 state
+    float ic2eq = 0.0f;  // Integrator 2 state
+
+    // Smoothed cutoff for modulation
+    juce::SmoothedValue<float> smoothedCutoff;
+};
+
+// Stereo version for parallel processing
+class ResonantFilterStereo
+{
+public:
+    ResonantFilterStereo() = default;
+    ~ResonantFilterStereo() = default;
+
+    void prepare(double sampleRate)
+    {
+        filterL.prepare(sampleRate);
+        filterR.prepare(sampleRate);
+    }
+
+    void process(float* left, float* right, int numSamples)
+    {
+        filterL.process(left, numSamples);
+        filterR.process(right, numSamples);
+    }
+
+    void reset()
+    {
+        filterL.reset();
+        filterR.reset();
+    }
+
+    void setCutoff(float freqHz)
+    {
+        filterL.setCutoff(freqHz);
+        filterR.setCutoff(freqHz);
+    }
+
+    void setResonance(float res)
+    {
+        filterL.setResonance(res);
+        filterR.setResonance(res);
+    }
+
+    void setMode(ResonantFilter::Mode m)
+    {
+        filterL.setMode(m);
+        filterR.setMode(m);
+    }
+
+    void setModulationOctaves(float octaves)
+    {
+        filterL.setModulationOctaves(octaves);
+        filterR.setModulationOctaves(octaves);
+    }
+
+private:
+    ResonantFilter filterL, filterR;
+};
+
+} // namespace CogDSP

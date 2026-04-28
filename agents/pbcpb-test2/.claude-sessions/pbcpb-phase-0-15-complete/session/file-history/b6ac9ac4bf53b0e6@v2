@@ -1,0 +1,16 @@
+{
+  "id": "technical_dsp-algorithms_gain-staging",
+  "kb": "technical",
+  "topic": "dsp-algorithms",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Gain Staging in Audio Plugins",
+  "summary": "Placeholder: Managing signal levels through the processing chain to avoid clipping and maintain headroom.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["dsp", "gain", "headroom", "clipping", "staging"],
+  "related_topics": ["dsp-algorithms", "realtime-safety"],
+  "difficulty": "beginner",
+  "domain_relevance": 10
+}

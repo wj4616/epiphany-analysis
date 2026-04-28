@@ -1,0 +1,54 @@
+{
+  "id": "cpp-kb_cppreference_thread_atomic",
+  "kb": "cpp-kb",
+  "topic": "cppreference",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "std::atomic provides atomic class template and specializations for bool, integral, floating-point (C++20), and pointer types. Each atomic operation is indivisible with regards to any other atomic operation involving the same object. Atomic objects are free of data races.",
+  "concepts": ["atomic", "lock-free", "memory-ordering", "thread-safety", "concurrency"],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "#include <atomic>\n#include <iostream>\n#include <thread>\n#include <vector>\n\nstd::atomic_int acnt;\nint cnt;\n\nvoid f()\n{\n    for (int n = 10000; n; --n)\n    {\n        ++acnt;\n        ++cnt;\n    }\n}\n\nint main()\n{\n    std::vector<std::thread> pool;\n    for (int n = 0; n < 10; ++n)\n        pool.emplace_back(f);\n\n    for (auto& t : pool)\n        t.join();\n\n    std::cout << \"The atomic counter is \" << acnt << '\\n'\n              << \"The non-atomic counter is \" << cnt << '\\n';\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Memory ordering options\nenum memory_order {\n    memory_order_relaxed,  // No ordering guarantees\n    memory_order_consume,  // Dependency ordering (deprecated C++17)\n    memory_order_acquire,  // No reads below can be reordered before this\n    memory_order_release,  // No writes above can be reordered after this\n    memory_order_acq_rel,  // Combined acquire and release\n    memory_order_seq_cst   // Sequential consistency (default)\n};\n",
+      "preserved": true
+    }
+  ],
+  "references": [
+    {
+      "title": "std::atomic",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::atomic - C++ Concurrency Support",
+      "url": "https://en.cppreference.com/w/cpp/atomic",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::memory_order",
+      "url": "https://en.cppreference.com/w/cpp/atomic/memory_order",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::atomic_flag",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_flag",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::atomic_ref",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_ref",
+      "domain": "en.cppreference.com"
+    }
+  ],
+  "source_url": "https://en.cppreference.com/w/cpp/atomic",
+  "harvested_at": "2026-03-30T12:00:00.000000+00:00",
+  "synced_at": "2026-03-30T12:00:00.000000+00:00",
+  "cpp_version": "C++11",
+  "cpp17_notes": "std::atomic is fully available in C++17. Memory ordering semantics unchanged. C++20 adds floating-point atomic specializations and atomic_ref.",
+  "audio_thread_notes": "std::atomic<T> is safe for real-time audio when T fits in the hardware's atomic word size (typically pointer-sized). Use is_always_lock_free to verify. Prefer acquire/release memory ordering over seq_cst for better performance."
+}

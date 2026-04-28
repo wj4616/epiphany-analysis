@@ -1,0 +1,115 @@
+# SME Interview: VST Plugin Development & Commercial Distribution
+
+## Interview Method
+
+Self-interview conducted with the commissioning user, who serves as the domain expert. The user has:
+- Strong Python/JavaScript background
+- Basic C++ theory (knows concepts, not fluent)
+- VST usage experience as a musician
+- Previous VST development project experience (CogVST, Epiphany Machine)
+
+---
+
+## Interview Transcript
+
+### Q1: What are the undocumented steps in VST plugin development?
+
+**A:** The biggest undocumented area is the gap between "code compiles" and "professional release." Most tutorials cover DSP and GUI, but skip:
+
+1. **Preset system design** — How to structure factory presets, user preset saving, preset bank files
+2. **State serialization** — Making state survive DAW session reloads, version migrations
+3. **Plugin validation** — Running `pluginval` and interpreting results
+4. **DAW compatibility quirks** — Each DAW has subtle differences in parameter handling
+5. **Gain staging across the chain** — Multiple conservative stages mask effects
+
+### Q2: What commonly goes wrong that tutorials don't mention?
+
+**A:**
+
+1. **Parameter smoothing** — Everyone forgets this until they hear clicks during automation
+2. **Buffer size assumptions** — Assuming 512 samples breaks at 64 samples or 192kHz
+3. **Static state bugs** — Shared state across instances causes subtle multi-instance failures
+4. **Formula boundary conditions** — `sin(x * PI)` when `x` can exceed expected range
+5. **CMake configuration hell** — Wrong module list, missing dependencies, platform-specific flags
+
+### Q3: What requires judgment vs. always-the-same decisions?
+
+**Judgment Required:**
+- Sound identity and character words (creative)
+- GUI aesthetic direction (creative)
+- Preset naming and organization (creative)
+- Effect intensity ranges (creative/technical)
+- Pricing and positioning (business)
+
+**Always-the-Same:**
+- Audio thread safety patterns
+- APVTS parameter setup
+- CMake configuration structure
+- Testing framework integration
+- Build and install commands
+
+### Q4: What do you wish you knew before your first VST project?
+
+**A:**
+
+1. **Start smaller** — My first plugin was too ambitious. Should have done a simple effect first.
+2. **Test in multiple DAWs early** — REAPER is forgiving; other DAWs have different expectations
+3. **Parameter ranges matter more than you think** — Users complain if defaults don't sound good
+4. **Document as you go** — Six months later, you won't remember why you made decisions
+5. **The commercial side is harder than the code** — Marketing, licensing, support take real time
+
+### Q5: What's different about developing creative/psychedelic plugins?
+
+**A:**
+
+1. **Sound design KB is critical** — Translating "warm" or "lush" to DSP parameters requires domain knowledge
+2. **Extreme parameter ranges** — Psychedelic effects often push parameters beyond "normal" ranges
+3. **Modulation routing complexity** — Creative plugins often have intricate modulation chains
+4. **User expectation of uniqueness** — Copying existing designs doesn't satisfy creative users
+5. **Preset quality matters more** — Users buy creative plugins for the sounds, not just features
+
+### Q6: What do most indie plugin developers get wrong about commercial distribution?
+
+**A:**
+
+1. **No email list before launch** — Building audience should start 30+ days before release
+2. **Underestimating support burden** — Users will have issues; plan for it
+3. **Pricing too low** — Doesn't increase sales proportionally, devalues product
+4. **Ignoring marketplace requirements** — KVR and Plugin Boutique have specific submission requirements
+5. **No update strategy** — How will you handle bug fixes, feature requests, version compatibility?
+
+### Q7: What should the playbook handle that's currently missing from development-focused guides?
+
+**A:**
+
+1. **Licensing integration workflow** — When to add it, how to test it
+2. **Marketplace submission checklists** — What each marketplace requires
+3. **Launch timeline template** — Day-by-day marketing activities
+4. **Customer support scripts** — Common issues and responses
+5. **Update release process** — How to handle version changes
+
+### Q8: What about AI-assisted development specifically?
+
+**A:**
+
+1. **AI makes assumptions** — Always specify exactly what you want, never accept defaults for creative decisions
+2. **Session limits are real** — Plan breaks at natural phase boundaries
+3. **Context gets lost** — Start sessions with clear context restoration
+4. **AI struggles with creative decisions** — Sound identity, GUI aesthetics, preset naming — all need human direction
+5. **AI excels at boilerplate** — CMake, APVTS setup, state management — let AI handle these
+
+---
+
+## Key Insights Extracted
+
+| Category | Insight | Playbook Impact |
+|----------|---------|-----------------|
+| Development | Preset and state systems are underspecified | Add Phase 5 dedicated to state management |
+| Development | Gain staging audits prevent "effect not noticeable" | Add prevention rule and phase gate check |
+| Development | Buffer size assumptions cause failures | Specify testing at 64, 512, 1024 samples |
+| Creative | Sound design KB needed for translation | Bridge layer between descriptors and parameters |
+| Creative | Extreme ranges in psychedelic plugins | Document parameter range considerations |
+| Business | Commercial harder than code | Extend phases to cover distribution |
+| Business | Email list before launch | Add marketing phase |
+| AI Workflow | Session breaks at phase gates | Document session boundaries |
+| AI Workflow | AI handles boilerplate well | Assign boilerplate tasks to AI, creative to human |

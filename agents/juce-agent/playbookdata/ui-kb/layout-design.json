@@ -1,0 +1,253 @@
+{
+  "kb_name": "ui-kb",
+  "topic": "layout-design",
+  "version": "1.0.0",
+  "last_updated": "2026-03-29T07:00:00Z",
+  "content": {
+    "title": "Audio Plugin GUI Layout Design & VST3 Guidelines",
+    "overview": "Comprehensive layout design principles and VST3-specific implementation guidelines for professional audio plugin interfaces.",
+    "vst3_technical_guidelines": {
+      "framework": {
+        "name": "VSTGUI Framework",
+        "description": "Official UI toolkit for VST3 plugins",
+        "features": [
+          "WYSIWYG Editor - drag-and-drop interface design",
+          "Automatic Parameter Binding - seamless VST3 integration",
+          "XML-Based UI Description - UIDescription files (.uidesc)",
+          "Live Editing - VSTGUI_LIVE_EDITING=1 enables real-time editing"
+        ]
+      },
+      "core_implementation": {
+        "code": "IPlugView* PLUGIN_API MyEditController::createView (FIDString name)\n{\n    if (strcmp (name, ViewType::kEditor) == 0)\n    {\n        return new VSTGUI::VST3Editor (this, \"view\", \"myEditor.uidesc\");\n    }\n    return 0;\n}",
+        "key_principles": [
+          "Parameter Tags - map control IDs to VST3 parameters for automation",
+          "Template System - use nested templates for complex interfaces",
+          "Sub-Controllers - implement IVST3EditorDelegate for custom behavior",
+          "Responsive Sizing - support host resizing via IPlugViewContentScaleSupport"
+        ]
+      },
+      "required_interfaces": [
+        "IPlugView - main editor interface",
+        "IParameterFinder - host parameter search support",
+        "IContextMenu - host right-click menu integration",
+        "IPlugViewContentScaleSupport - live resizing",
+        "IPlugViewKeyboardHook - keyboard event handling"
+      ]
+    },
+    "universal_design_principles": [
+      {
+        "id": "user-centric-layout",
+        "title": "User-Centric Layout Design",
+        "description": "Design layouts based on user workflow and frequency of use",
+        "guidelines": [
+          "Streamline workflow - prioritize frequently used controls",
+          "Place primary controls in prime positions (top-left for Western audiences)",
+          "Create logical grouping for related parameters (e.g., filter section, envelope section)",
+          "Ensure predictable navigation patterns"
+        ]
+      },
+      {
+        "id": "visual-hierarchy-layout",
+        "title": "Visual Hierarchy & Grid System",
+        "description": "Apply grid-based layouts for organized, balanced interfaces",
+        "guidelines": [
+          "Use modular grids (rule of thirds, golden ratio)",
+          "Size indicates importance - larger controls for higher priority",
+          "Maintain consistent spacing and margins",
+          "Create visual rhythm through alignment"
+        ]
+      },
+      {
+        "id": "control-selection",
+        "title": "Control Selection & Metaphors",
+        "description": "Choose appropriate controls that match parameter conceptual models",
+        "guidelines": [
+          "Knobs for continuous parameters (frequency, gain, Q factor)",
+          "Faders for level controls (volume, mix)",
+          "Switches for on/off states (bypass, mute)",
+          "XY pads for multi-dimensional control",
+          "Use standard icons for recognition (sound waves for EQ)"
+        ]
+      },
+      {
+        "id": "visual-feedback",
+        "title": "Visual Feedback & State Awareness",
+        "description": "Provide immediate, clear feedback for all user interactions",
+        "guidelines": [
+          "Real-time response to parameter changes",
+          "Clear visual states (active, bypassed, modulated)",
+          "Show parameter values with units (dB, Hz, ms)",
+          "Animated transitions for state changes"
+        ]
+      },
+      {
+        "id": "accessibility-layout",
+        "title": "Accessibility & Legibility",
+        "description": "Ensure interface is usable by all users",
+        "guidelines": [
+          "High contrast ratios (4.5:1 for text, 3:1 for UI components)",
+          "Maximum 2-3 font sizes (headings, labels, body)",
+          "Scalable design for high-DPI displays",
+          "Keyboard navigation support"
+        ]
+      },
+      {
+        "id": "aesthetic-consistency",
+        "title": "Aesthetic Consistency",
+        "description": "Maintain cohesive visual language throughout",
+        "guidelines": [
+          "Cohesive color palette with defined primary, secondary, accent colors",
+          "Consistent lighting and material properties",
+          "Minimalist approach - every element serves a purpose",
+          "Consistent interaction patterns"
+        ]
+      }
+    ],
+    "spatial_organization": {
+      "description": "Recommended spatial layout patterns for audio plugins",
+      "patterns": [
+        {
+          "name": "Classic Three-Section Layout",
+          "structure": [
+            "Header: Plugin Name, Preset Browser, Global Controls",
+            "Middle: Main Parameter Sections (organized by function)",
+            "Footer: Visual Feedback (meters, spectrum, waveform)"
+          ],
+          "best_for": "Effects processors, compressors, EQs"
+        },
+        {
+          "name": "Synthesizer Layout",
+          "structure": [
+            "Top: Oscillator/Sound Source Controls",
+            "Middle: Filter and Modulation Sections",
+            "Bottom: Envelopes, LFOs, and Master Controls"
+          ],
+          "best_for": "Synthesizers, samplers"
+        },
+        {
+          "name": "Channel Strip Layout",
+          "structure": [
+            "Input: Gain, Phase, Input Selection",
+            "Processing: EQ, Compression, Saturation",
+            "Output: Mix, Output Level, Meters"
+          ],
+          "best_for": "Channel strips, mixing tools"
+        }
+      ],
+      "visual_diagram": "\n┌─────────────────────────────────────┐\n│ [Header: Plugin Name, Presets]      │\n├─────────────────────────────────────┤\n│ [Input Section] [FX Section] [Output] │\n│  Gain, Phase    Reverb, Delay   Mix   │\n├─────────────────────────────────────┤\n│ [Visual Feedback: Meters, Spectrum] │\n└─────────────────────────────────────┘"
+    },
+    "responsive_design": {
+      "minimum_size": {
+        "dimensions": "800x600px",
+        "requirement": "Ensure all controls remain usable"
+      },
+      "maximum_size": {
+        "considerations": "Support up to 4K displays without pixelation",
+        "implementation": "Use vector graphics or high-resolution bitmaps"
+      },
+      "aspect_ratio": {
+        "options": [
+          "Lock aspect ratio for consistent layout",
+          "Provide scalable vector graphics for flexibility"
+        ]
+      },
+      "scaling_approaches": [
+        "Vector-based UI (SVG, code-drawn)",
+        "Multiple resolution bitmaps (@1x, @2x, @3x)",
+        "Dynamic layout that adapts to size changes"
+      ]
+    },
+    "performance_optimization": {
+      "efficient_rendering": [
+        "Use bitmap caching for static elements",
+        "Implement dirty rectangle tracking",
+        "Minimize overdraw in paint routines"
+      ],
+      "lazy_loading": "Load heavy visualizations only when visible",
+      "frame_rate": "Maintain 60fps for smooth animations and interactions",
+      "threading": "Keep UI updates on message thread, audio processing on audio thread"
+    },
+    "common_pitfalls": [
+      "Overcrowding - too many controls in limited space",
+      "Inconsistent behavior - knobs that behave like sliders",
+      "Poor contrast - low visibility in different lighting",
+      "Ignoring host integration - not supporting host features",
+      "Unscalable graphics - raster images that blur at high DPI",
+      "Cluttered interface - too many visual elements competing",
+      "Inconsistent spacing - makes interface feel unpolished"
+    ],
+    "implementation_checklist": {
+      "vst3_specific": [
+        "Use VSTGUI::VST3Editor for proper VST3 integration",
+        "Implement IParameterFinder for host parameter search",
+        "Support IContextMenu for host right-click menus",
+        "Enable live resizing with IPlugViewContentScaleSupport",
+        "Test on multiple hosts (Cubase, Live, Logic, Pro Tools)"
+      ],
+      "general": [
+        "Verify accessibility with screen readers",
+        "Validate color contrast ratios",
+        "Test UI scaling at 100%, 150%, 200%",
+        "Optimize for both light and dark DAW themes",
+        "Ensure all controls provide visual feedback",
+        "Test keyboard navigation",
+        "Verify performance with all animations active"
+      ]
+    },
+    "layout_templates": {
+      "simple_effect": {
+        "size": "500x300",
+        "sections": {
+          "header": "Plugin name, preset browser, bypass button",
+          "main": "2-3 key parameters with visual feedback",
+          "footer": "Input/output meters"
+        }
+      },
+      "complex_synthesizer": {
+        "size": "1000x700",
+        "sections": {
+          "oscillators": "Top section - sound generation",
+          "filters": "Middle left - tone shaping",
+          "modulation": "Middle right - LFOs, envelopes",
+          "effects": "Bottom left - reverb, delay",
+          "master": "Bottom right - output, presets"
+        }
+      },
+      "channel_strip": {
+        "size": "600x800",
+        "sections": {
+          "input": "Top - gain, phase, input select",
+          "dynamics": "Upper middle - compressor, gate",
+          "eq": "Lower middle - parametric EQ",
+          "output": "Bottom - output trim, meters"
+        }
+      }
+    },
+    "testing_guidelines": {
+      "host_compatibility": [
+        "Test in major DAWs (Pro Tools, Logic, Cubase, Ableton Live, FL Studio)",
+        "Verify parameter automation works correctly",
+        "Check preset management integration",
+        "Test window resizing in different hosts"
+      ],
+      "accessibility_testing": [
+        "Use screen readers to verify label descriptions",
+        "Test keyboard-only navigation",
+        "Verify high contrast mode compatibility",
+        "Check font scaling at system level"
+      ],
+      "performance_testing": [
+        "Measure CPU usage with UI open vs closed",
+        "Test with maximum number of instances",
+        "Verify no audio dropouts during heavy UI interaction",
+        "Check memory usage over extended sessions"
+      ]
+    }
+  },
+  "sources": [
+    "https://steinbergmedia.github.io/vst3_dev_portal/pages/Tutorials/Use%2BVSTGUI%2Bto%2Bdesign%2Ba%2BUI.html",
+    "https://vogerdesign.com/blog/basic-ux-patterns-in-the-development-of-synthesizer-plugins-awesome/",
+    "https://vogerdesign.com/blog/crafting-exceptional-audio-plugin-experiences/",
+    "https://www.mathworks.com/help/audio/ug/plugin-gui-design.html"
+  ]
+}

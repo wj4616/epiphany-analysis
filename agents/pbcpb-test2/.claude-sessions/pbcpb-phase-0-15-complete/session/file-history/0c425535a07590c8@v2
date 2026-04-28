@@ -1,0 +1,18 @@
+{
+  "id": "technical_realtime-safety_atomic-audio",
+  "kb": "technical",
+  "topic": "realtime-safety",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Atomic Operations for Audio Thread Communication",
+  "summary": "Placeholder: Using std::atomic for lock-free parameter communication between GUI and audio threads.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {
+    "type": "placeholder"
+  },
+  "concepts": [],
+  "tags": ["juce", "audio-thread", "atomic", "realtime", "thread-safety"],
+  "related_topics": ["juce-patterns", "dsp-algorithms"],
+  "difficulty": "intermediate",
+  "domain_relevance": 10
+}

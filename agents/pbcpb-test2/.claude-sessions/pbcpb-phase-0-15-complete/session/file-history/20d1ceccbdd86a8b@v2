@@ -1,0 +1,210 @@
+# Handoff Points
+
+## Definition
+
+A **handoff point** is where one role's output becomes another role's input. Each handoff has:
+- **What is transferred:** The artifact or decision
+- **Format:** How it's documented
+- **Complete handoff criteria:** How to verify it's ready
+
+---
+
+## Handoff Matrix
+
+| From | To | What | Format | Complete When |
+|------|-----|------|--------|---------------|
+| [Human] | [Coordinator] | Commission brief | Verbal or document | Brief is unambiguous |
+| [Human] | [Architect] | Sound identity | SPEC.md, exact words | User's words recorded verbatim |
+| [Human] | [Builder] | Aesthetic approval | Verbal or annotation | Explicit approval documented |
+| [Human] | [Coordinator] | Gate approval | Decision in decisions-ledger | PASS recorded with evidence |
+| [Coordinator] | [Architect] | Phase requirements | scope.md, constraints.md | All constraints documented |
+| [Coordinator] | [Builder] | Ready to build | Build commands, task list | Architecture approved, tests exist |
+| [Architect] | [Human] | Architecture for approval | architecture.md | Self-review complete |
+| [Architect] | [Builder] | Implementation plan | task-list.md | Each task has code, commands |
+| [Builder] | [Coordinator] | Build verification | Build output | Build succeeds, tests pass |
+| [Builder] | [Human] | Sound for approval | Audio output in DAW | Plugin loads, produces sound |
+| [Builder] | [Coordinator] | Gate evidence | File paths, test results | All conditions have PASS |
+| [Coordinator] | [Human] | Escalated blocker | decisions-ledger | Blocker documented with context |
+
+---
+
+## Detailed Handoff Definitions
+
+### H1: [Human] → [Coordinator] — Commission Brief
+
+**What:** Initial description of what to build
+**Format:** Verbal conversation or written brief
+**Complete When:**
+- Purpose is one unambiguous paragraph
+- Scope has explicit in/out/adjacent lists
+- Success criteria are measurable
+- Constraints documented
+
+### H2: [Human] → [Architect] — Sound Identity
+
+**What:** Creative direction for the plugin's sound
+**Format:** SPEC.md with user's exact words (no paraphrasing)
+**Complete When:**
+- Sound identity in user's exact words
+- Reference plugins/hardware listed
+- Genre context documented
+- Uniqueness statement clear
+
+### H3: [Architect] → [Human] — Architecture Approval
+
+**What:** Technical architecture for review
+**Format:** architecture.md with class diagrams, DSP math
+**Complete When:**
+- Self-review completed
+- All algorithms have formulas
+- All formulas verified at boundaries
+- Human signs off
+
+### H4: [Architect] → [Builder] — Implementation Plan
+
+**What:** Task-by-task implementation plan
+**Format:** task-list.md with code, commands, commit messages
+**Complete When:**
+- Every task has ONE deliverable
+- Every task has code snippet
+- Tasks ordered by dependency
+- Human approves architecture
+
+### H5: [Builder] → [Coordinator] — Build Verification
+
+**What:** Evidence that build succeeds
+**Format:** Build output, test results
+**Complete When:**
+- `cmake --build build` succeeds
+- Tests pass
+- Plugin loads in DAW
+
+### H6: [Builder] → [Human] — Sound Approval
+
+**What:** Working plugin for perceptual testing
+**Format:** Plugin in DAW, audio output
+**Complete When:**
+- Plugin loads without crash
+- Basic sound produced
+- Human listens and approves
+
+### H7: [Coordinator] → [Human] — Gate Decision
+
+**What:** Gate verification for approval
+**Format:** GATE VERIFICATION block in decisions-ledger
+**Complete When:**
+- All conditions listed
+- Each has PASS/FAIL
+- Evidence cited for each PASS
+- Human reviews and approves
+
+---
+
+## Phase Transition Handoffs
+
+### Phase 0 → Phase 1
+- **From:** [Coordinator], [Human]
+- **To:** [Architect], [Human]
+- **What:** Approved scope, constraints, success criteria
+- **Format:** scope.md, constraints.md, success-criteria.md
+- **Complete When:** Phase 0 gate passed
+
+### Phase 1 → Phase 2
+- **From:** [Human], [Architect]
+- **To:** [Architect]
+- **What:** Sound identity, creative direction, technical constraints
+- **Format:** SPEC.md
+- **Complete When:** Phase 1 gate passed, human approved
+
+### Phase 2 → Phase 3
+- **From:** [Architect]
+- **To:** [Builder]
+- **What:** Architecture, task list, build commands
+- **Format:** architecture.md, task-list.md
+- **Complete When:** Phase 2 gate passed
+
+### Phase 3 → Phase 4
+- **From:** [Builder]
+- **To:** [Builder]
+- **What:** Build system, test framework
+- **Format:** CMakeLists.txt, test files
+- **Complete When:** Phase 3 gate passed, build succeeds
+
+### Phase 4 → Phase 5
+- **From:** [Builder]
+- **To:** [Builder]
+- **What:** DSP modules, parameter layout
+- **Format:** Source files, APVTS layout
+- **Complete When:** Phase 4 gate passed, sound approved
+
+### Phase 5 → Phase 6
+- **From:** [Builder]
+- **To:** [Builder]
+- **What:** State management, presets
+- **Format:** Source files, preset files
+- **Complete When:** Phase 5 gate passed
+
+### Phase 6 → Phase 7
+- **From:** [Builder]
+- **To:** [Builder], [Human]
+- **What:** Integrated plugin
+- **Format:** Plugin files
+- **Complete When:** Phase 6 gate passed
+
+### Phase 7 → Phase 8
+- **From:** [Builder], [Human]
+- **To:** [Builder]
+- **What:** GUI implementation
+- **Format:** Editor files
+- **Complete When:** Phase 7 gate passed, human approves aesthetic
+
+### Phase 8 → Phase 9
+- **From:** [Builder]
+- **To:** [Human]
+- **What:** Validated plugin
+- **Format:** Plugin files, test results
+- **Complete When:** Phase 8 gate passed, tests pass
+
+### Phase 9 → Phase 10
+- **From:** [Human]
+- **To:** [Builder]
+- **What:** Perceptual test results, approved plugin
+- **Format:** DAW test results in decisions-ledger
+- **Complete When:** Phase 9 gate passed, human approves sound
+
+### Phase 10 → Phase 11
+- **From:** [Builder]
+- **To:** [Builder], [Human]
+- **What:** Licensed plugin
+- **Format:** Plugin with license check
+- **Complete When:** Phase 10 gate passed
+
+### Phase 11 → Phase 12
+- **From:** [Builder], [Human]
+- **To:** [Builder], [Human]
+- **What:** Marketplace-ready listing
+- **Format:** Descriptions, screenshots, pricing
+- **Complete When:** Phase 11 gate passed
+
+### Phase 12 → Phase 13
+- **From:** [Builder], [Human]
+- **To:** [Builder], [Human]
+- **What:** Marketing-ready launch
+- **Format:** Email list, landing page, content
+- **Complete When:** Phase 12 gate passed
+
+### Phase 13 → Phase 14
+- **From:** [Builder], [Human]
+- **To:** [Human]
+- **What:** Released product
+- **Format:** Published on marketplaces, direct sales active
+- **Complete When:** Phase 13 gate passed
+
+---
+
+## Context Loading at Session Start
+
+Each session begins by loading:
+1. `decisions-ledger.md` — All decisions made so far
+2. `artifact-manifest.md` — All files created so far
+3. Phase-specific context from `handoff_requirements.next_phase_context`

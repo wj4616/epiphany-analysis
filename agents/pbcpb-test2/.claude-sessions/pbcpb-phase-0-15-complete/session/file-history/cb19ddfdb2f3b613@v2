@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_preset-methodology_naming-conventions",
+  "kb": "sound-design",
+  "topic": "preset-methodology",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Preset Naming Conventions",
+  "summary": "Placeholder: Best practices for naming presets clearly and consistently.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["preset", "naming", "convention", "organization"],
+  "related_topics": ["preset-methodology"],
+  "difficulty": "beginner",
+  "domain_relevance": 7
+}

@@ -1,0 +1,39 @@
+{
+  "harvest_metadata": {
+    "kb_type": "dsp-kb",
+    "topic": "DAFD compressed audio",
+    "harvested_at": "2026-03-31T00:13:32.781489+00:00",
+    "quality_filter": {
+      "passed": 1,
+      "rejected": 48,
+      "rejection_reasons": {
+        "not_relevant": 48
+      }
+    },
+    "thresholds": {
+      "min_content_length": 500,
+      "min_relevance_score": 0.15,
+      "max_noise_ratio": 0.6
+    }
+  },
+  "result": {
+    "data": [
+      {
+        "url": "https://www.youtube.com/watch?v=Iu9hfXpXPbs",
+        "title": "DAFD tutorial: A design automation tool for microfluidic ... - YouTube",
+        "markdown": "![Thumbnail (1920x1080)](https://i.ytimg.com/vi_webp/Iu9hfXpXPbs/maxresdefault.webp)\n# [DAFD tutorial: A design automation tool for microfluidic droplet generation developed by CIDAR lab.](https://www.youtube.com/watch?v=Iu9hfXpXPbs)\n\n**Visibility**: Public\n**Uploaded by**: [CIDAR LAB](http://www.youtube.com/@cidarlab)\n**Uploaded at**: 2021-01-04T10:45:51-08:00\n**Published at**: 2021-01-04T10:45:51-08:00\n**Length**: 02:27\n**Views**: 1815\n**Likes**: 11\n**Category**: Education\n\n## Description\n\n```\nDAFD is the first microfluidic design automation software to deliver a user-specified performance using machine learning. DAFD can be used for performance prediction, design automation, and tolerance prediction of flow-focusing droplet generators. You can use this tool online at: http://dafdcad.org/. DAFD is open-source and available at: https://github.com/CIDARLAB/DAFD\n\nThe paper accompanying this tool has been published in Nature Communications: https://www.nature.com/articles/s41467-020-20284-z\n```\n\n",
+        "quality_report": {
+          "url": "https://www.youtube.com/watch?v=Iu9hfXpXPbs",
+          "title": "DAFD tutorial: A design automation tool for microfluidic ... - YouTube",
+          "content_length": 1009,
+          "has_code": true,
+          "code_blocks": 2,
+          "relevance_score": 0.19821605550049556,
+          "noise_ratio": 0.14285714285714285,
+          "passed": true,
+          "rejection_reason": null
+        }
+      }
+    ]
+  }
+}

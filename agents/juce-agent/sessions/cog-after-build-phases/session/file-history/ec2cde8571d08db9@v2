@@ -1,0 +1,141 @@
+#include "ResonantFilter.h"
+#include <cmath>
+
+namespace CogDSP
+{
+
+void ResonantFilter::prepare(double sr)
+{
+    sampleRate = sr;
+    smoothedCutoff.reset(sampleRate, 0.01);  // 10ms for cutoff changes
+    smoothedCutoff.setCurrentAndTargetValue(cutoff);
+    updateCoefficients();
+    reset();
+}
+
+void ResonantFilter::setCutoff(float freqHz)
+{
+    // Clamp to valid range
+    cutoff = std::clamp(freqHz, 20.0f, 20000.0f);
+    smoothedCutoff.setTargetValue(cutoff);
+}
+
+void ResonantFilter::setResonance(float res)
+{
+    // Map 0-1 to Q 0.5-100
+    resonance = std::clamp(res, 0.0f, 1.0f);
+
+    // Q = 0.5 + 99.5 * res (exponential mapping would be more musical, but linear is fine)
+    // Using exponential: Q = 0.5 * 200^res
+    const float Q = 0.5f * std::pow(200.0f, resonance);
+
+    // Auto-gain compensation: 1/sqrt(Q)
+    autoGain = fastInvSqrt(Q);
+
+    updateCoefficients();
+}
+
+void ResonantFilter::updateCoefficients()
+{
+    // TPT SVF coefficients
+    // g = tan(π * fc / fs)
+    // k = 2 - 2*g (for resonance damping)
+    // Actually k = 2 - 2*g is for Chamberlin, Cytomic uses k = 1/Q
+
+    // Get Q from resonance
+    const float Q = 0.5f * std::pow(200.0f, resonance);
+
+    // Compute g coefficient
+    const float wc = Constants::PI * cutoff / static_cast<float>(sampleRate);
+    g = std::tan(std::min(wc, Constants::HALF_PI * 0.99f));  // Clamp to avoid instability
+
+    // Resonance damping coefficient (Cytomic style)
+    k = 1.0f / Q;
+
+    // Pre-compute frequently used values
+    oneOverDenom = 1.0f / (1.0f + g * k + g * g);
+}
+
+void ResonantFilter::process(float* samples, int numSamples)
+{
+    // Check for modulation
+    if (std::abs(modOctaves) > 0.001f)
+    {
+        // Modulated cutoff in octave space
+        const float modCutoff = cutoff * std::pow(2.0f, modOctaves);
+        const float clampedCutoff = std::clamp(modCutoff, 20.0f, 20000.0f);
+
+        // Update coefficients for modulated cutoff
+        const float wc = Constants::PI * clampedCutoff / static_cast<float>(sampleRate);
+        g = std::tan(std::min(wc, Constants::HALF_PI * 0.99f));
+
+        const float Q = 0.5f * std::pow(200.0f, resonance);
+        k = 1.0f / Q;
+        oneOverDenom = 1.0f / (1.0f + g * k + g * g);
+    }
+
+    // Process samples
+    for (int i = 0; i < numSamples; ++i)
+    {
+        processSample(samples[i]);
+    }
+}
+
+void ResonantFilter::processSample(float& sample)
+{
+    // TPT State Variable Filter (Cytomic topology)
+    // v0 = input
+    // v1 = (v0 - ic2eq - k*ic1eq) / (1 + k*g + g*g)
+    // v2 = ic2eq + g*v1
+    // v3 = ic1eq + g*v2
+    // ic1eq = 2*v3 - 2*ic1eq
+    // ic2eq = 2*v2 - 2*ic2eq
+
+    const float v0 = sample * autoGain;  // Apply auto-gain compensation
+
+    // Core calculation
+    const float v1 = (v0 - ic2eq - k * ic1eq) * oneOverDenom;
+    const float v2 = ic2eq + g * v1;
+    const float v3 = ic1eq + g * v2;
+
+    // Update state (before output calculation)
+    ic1eq = 2.0f * v3 - 2.0f * ic1eq;
+    ic2eq = 2.0f * v2 - 2.0f * ic2eq;
+
+    // Output based on mode
+    float output = 0.0f;
+
+    switch (mode)
+    {
+        case Mode::LP:
+            // Low-pass output
+            output = v2;
+            break;
+
+        case Mode::HP:
+            // High-pass output = v0 - k*v1 - v2
+            output = v0 - k * v1 - v2;
+            break;
+
+        case Mode::BP:
+            // Band-pass output
+            output = v1;
+            break;
+
+        case Mode::Notch:
+            // Notch output = v0 - k*v1 (HP + LP)
+            output = v0 - k * v1;
+            break;
+    }
+
+    sample = output;
+}
+
+void ResonantFilter::reset()
+{
+    ic1eq = 0.0f;
+    ic2eq = 0.0f;
+    smoothedCutoff.setCurrentAndTargetValue(cutoff);
+}
+
+} // namespace CogDSP

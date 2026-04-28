@@ -1,0 +1,121 @@
+{
+  "id": "sound-design-kb_techniques_subtractive-synthesis",
+  "kb": "sound-design-kb",
+  "topic": "techniques",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "Subtractive synthesis starts with harmonically rich waveforms and \"sculpts\" them using filters and envelopes. It's the most common synthesis method, used in classic analog synthesizers like the Minimoog, Prophet-5, and modern digital synths.",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "class Oscillator\n{\npublic:\n    enum Waveform { Sine, Saw, Square, Triangle, Noise };\n    \n    void setWaveform(Waveform w) { wave = w; }\n    void setFrequency(float f) { freq = f; }\n    \n    float process()\n    {\n        float sample = 0.0f;\n        \n        switch (wave)\n        {\n            case Sine:\n                sample = std::sin(phase);\n                break;\n            case Saw:\n                sample = 2.0f * (phase / (2.0f * M_PI)) - 1.0f;\n                break;\n            case Square:\n                sample = (phase < M_PI) ? 1.0f : -1.0f;\n                break;\n            case Triangle:\n                sample = 2.0f * std::abs(2.0f * (phase / (2.0f * M_PI)) - 1.0f) - 1.0f;\n                break;\n            case Noise:\n                sample = random.nextFloat() * 2.0f - 1.0f;\n                break;\n        }\n        \n        phase += 2.0f * M_PI * freq / sampleRate;\n        if (phase >= 2.0f * M_PI) phase -= 2.0f * M_PI;\n        \n        return sample;\n    }\n    \nprivate:\n    Waveform wave;\n    float freq = 440.0f;\n    float phase = 0.0f;\n    double sampleRate = 44100.0;\n    juce::Random random;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class Filter\n{\npublic:\n    enum Type { LowPass, HighPass, BandPass, Notch };\n    \n    void setCutoff(float freq) { cutoff = freq; }\n    void setResonance(float res) { resonance = res; }\n    void setType(Type t) { type = t; }\n    \n    float process(float input)\n    {\n        // IIR filter implementation\n        float output = input - resonance * previousOutput;\n        \n        // Apply filter type\n        switch (type)\n        {\n            case LowPass:\n                // Low-pass filtering\n                output = lowpassProcess(output);\n                break;\n            case HighPass:\n                output = highpassProcess(output);\n                break;\n            // ... other types\n        }\n        \n        previousOutput = output;\n        return output;\n    }\n    \nprivate:\n    Type type;\n    float cutoff = 1000.0f;\n    float resonance = 0.7f;\n    float previousOutput = 0.0f;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class ADSR\n{\npublic:\n    void setAttack(float ms) { attack = ms / 1000.0f; }\n    void setDecay(float ms) { decay = ms / 1000.0f; }\n    void setSustain(float level) { sustain = level; }\n    void setRelease(float ms) { release = ms / 1000.0f; }\n    \n    void noteOn()\n    {\n        state = Attack;\n        level = 0.0f;\n    }\n    \n    void noteOff()\n    {\n        state = Release;\n    }\n    \n    float process()\n    {\n        switch (state)\n        {\n            case Attack:\n                level += 1.0f / (attack * sampleRate);\n                if (level >= 1.0f)\n                {\n                    level = 1.0f;\n                    state = Decay;\n                }\n                break;\n            case Decay:\n                level -= (1.0f - sustain) / (decay * sampleRate);\n                if (level <= sustain)\n                {\n                    level = sustain;\n                    state = Sustain;\n                }\n                break;\n            case Sustain:\n                // Level stays at sustain\n                break;\n            case Release:\n                level -= sustain / (release * sampleRate);\n                if (level <= 0.0f)\n                {\n                    level = 0.0f;\n                    state = Idle;\n                }\n                break;\n            case Idle:\n                break;\n        }\n        return level;\n    }\n    \nprivate:\n    enum State { Idle, Attack, Decay, Sustain, Release };\n    State state = Idle;\n    float level = 0.0f;\n    float attack = 0.01f;\n    float decay = 0.1f;\n    float sustain = 0.7f;\n    float release = 0.3f;\n    double sampleRate = 44100.0;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Oscillator: Saw or Square\nosc1.setWaveform(Saw);\nosc2.setWaveform(Saw);\nosc2.setDetune(-7);  // Slight detune for thickness\n\n// Filter: Low-pass with envelope\nfilter.setType(LowPass);\nfilter.setCutoff(200.0f);  // Start low\nfilter.setResonance(0.3f);\n\n// Envelope: Tight attack\nampEnv.setAttack(5);    // 5ms\nampEnv.setDecay(100);   // 100ms\nampEnv.setSustain(0.5f);\nampEnv.setRelease(100);\n\n// Filter envelope for punch\nfilterEnv.setAttack(5);\nfilterEnv.setDecay(50);\nfilterEnv.setSustain(0.0f);  // No sustain\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Oscillators: Multiple detuned saws\nosc1.setWaveform(Saw);\nosc2.setWaveform(Saw);\nosc2.setDetune(5);\nosc3.setWaveform(Saw);\nosc3.setDetune(-5);\n\n// Filter: Bright, responsive\nfilter.setType(LowPass);\nfilter.setCutoff(2000.0f);\nfilter.setResonance(0.4f);\n\n// Envelope: Expressive\nampEnv.setAttack(10);\nampEnv.setDecay(200);\nampEnv.setSustain(0.7f);\nampEnv.setRelease(300);\n\n// LFO for vibrato\nlfo.setFrequency(5.0f);  // 5 Hz\nlfo.setDepth(0.02f);      // Subtle pitch modulation\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Oscillators: Layered for richness\nosc1.setWaveform(Saw);\nosc2.setWaveform(Triangle);  // Add body\nosc3.setWaveform(Saw);\nosc3.setDetune(12);\n\n// Filter: Slow opening\nfilter.setType(LowPass);\nfilter.setCutoff(500.0f);\nfilter.setResonance(0.2f);\n\n// Envelope: Very slow\nampEnv.setAttack(500);   // 500ms\nampEnv.setDecay(1000);    // 1 second\nampEnv.setSustain(0.8f);\nampEnv.setRelease(2000); // 2 seconds\n\n// Filter envelope for movement\nfilterEnv.setAttack(1000);  // Slow open\nfilterEnv.setDecay(2000);\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Oscillator: Bright, quick\nosc1.setWaveform(Saw);\n\n// Filter: Fast decay\nfilter.setType(LowPass);\nfilter.setCutoff(3000.0f);\nfilter.setResonance(0.5f);\n\n// Envelope: Short\nampEnv.setAttack(1);      // Instant\nampEnv.setDecay(100);    // Quick\nampEnv.setSustain(0.0f);  // No sustain\nampEnv.setRelease(50);\n\nfilterEnv.setAttack(1);\nfilterEnv.setDecay(50);\nfilterEnv.setSustain(0.0f);\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class LFO\n{\npublic:\n    void setFrequency(float freq) { this->freq = freq; }\n    void setDepth(float d) { depth = d; }\n    \n    float process()\n    {\n        float value = std::sin(phase) * depth;\n        phase += 2.0f * M_PI * freq / sampleRate;\n        if (phase >= 2.0f * M_PI) phase -= 2.0f * M_PI;\n        return value;\n    }\n    \nprivate:\n    float freq = 1.0f;\n    float depth = 0.5f;\n    float phase = 0.0f;\n    double sampleRate = 44100.0;\n};\n\n// Apply LFO to filter cutoff\nfloat lfoValue = lfo.process();\nfilter.setCutoff(baseCutoff + lfoValue * 500.0f);\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "struct ModulationRouting\n{\n    int source;  // LFO, envelope, velocity, etc.\n    int target;  // Cutoff, pitch, amplitude, etc.\n    float amount;\n};\n\n// Route velocity to filter cutoff\nModulationRouting velToFilter;\nvelToFilter.source = VELOCITY;\nvelToFilter.target = FILTER_CUTOFF;\nvelToFilter.amount = 2000.0f;  // Hz range\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// When master oscillator resets, slave resets too\nvoid processSync()\n{\n    if (master.justWrapped())\n    {\n        slave.resetPhase();\n    }\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Varying the pulse width creates evolving timbres\nvoid processPWM()\n{\n    float pwm = lfo.process() * 0.4f + 0.5f;  // 0.1 to 0.9\n    pulseWidth = pwm;\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Multiple oscillators with slight detuning\nosc1.setDetune(0);      // Center\nosc2.setDetune(5);      // +5 cents\nosc3.setDetune(-5);     // -5 cents\nosc4.setDetune(12);    // +12 cents\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "void processGlide()\n{\n    currentFreq += (targetFreq - currentFreq) * glideRate;\n    osc.setFrequency(currentFreq);\n}\n",
+      "preserved": true
+    }
+  ],
+  "references": [
+    {
+      "title": "EDMProd Subtractive Synthesis Guide",
+      "url": "https://www.edmprod.com/subtractive-synthesis/",
+      "domain": "www.edmprod.com"
+    },
+    {
+      "title": "Wikipedia - Subtractive Synthesis",
+      "url": "https://en.wikipedia.org/wiki/Subtractive_synthesis",
+      "domain": "en.wikipedia.org"
+    },
+    {
+      "title": "Miller Puckette's Techniques Book",
+      "url": "https://msp.ucsd.edu/techniques/",
+      "domain": "msp.ucsd.edu"
+    }
+  ],
+  "original_markdown": "# Subtractive Synthesis Sound Design\n\n## Overview\n\nSubtractive synthesis starts with harmonically rich waveforms and \"sculpts\" them using filters and envelopes. It's the most common synthesis method, used in classic analog synthesizers like the Minimoog, Prophet-5, and modern digital synths.\n\n## Core Components\n\n### Oscillators\n\n| Waveform | Harmonics | Character | Use |\n|----------|-----------|-----------|------|\n| **Sine** | Fundamental only | Pure, clean | Sub-bass, soft pads |\n| **Sawtooth** | All harmonics (1/n) | Bright, rich | Leads, bass, strings |\n| **Square** | Odd harmonics (1/n) | Hollow, woody | Bass, pads |\n| **Triangle** | Odd harmonics (1/n\u00b2) | Soft, muted | Flutes, soft pads |\n| **Noise** | All frequencies | Hissing, harsh | Percussion, effects |\n\n```cpp\nclass Oscillator\n{\npublic:\n    enum Waveform { Sine, Saw, Square, Triangle, Noise };\n    \n    void setWaveform(Waveform w) { wave = w; }\n    void setFrequency(float f) { freq = f; }\n    \n    float process()\n    {\n        float sample = 0.0f;\n        \n        switch (wave)\n        {\n            case Sine:\n                sample = std::sin(phase);\n                break;\n            case Saw:\n                sample = 2.0f * (phase / (2.0f * M_PI)) - 1.0f;\n                break;\n            case Square:\n                sample = (phase < M_PI) ? 1.0f : -1.0f;\n                break;\n            case Triangle:\n                sample = 2.0f * std::abs(2.0f * (phase / (2.0f * M_PI)) - 1.0f) - 1.0f;\n                break;\n            case Noise:\n                sample = random.nextFloat() * 2.0f - 1.0f;\n                break;\n        }\n        \n        phase += 2.0f * M_PI * freq / sampleRate;\n        if (phase >= 2.0f * M_PI) phase -= 2.0f * M_PI;\n        \n        return sample;\n    }\n    \nprivate:\n    Waveform wave;\n    float freq = 440.0f;\n    float phase = 0.0f;\n    double sampleRate = 44100.0;\n    juce::Random random;\n};\n```\n\n### Filters\n\n```cpp\nclass Filter\n{\npublic:\n    enum Type { LowPass, HighPass, BandPass, Notch };\n    \n    void setCutoff(float freq) { cutoff = freq; }\n    void setResonance(float res) { resonance = res; }\n    void setType(Type t) { type = t; }\n    \n    float process(float input)\n    {\n        // IIR filter implementation\n        float output = input - resonance * previousOutput;\n        \n        // Apply filter type\n        switch (type)\n        {\n            case LowPass:\n                // Low-pass filtering\n                output = lowpassProcess(output);\n                break;\n            case HighPass:\n                output = highpassProcess(output);\n                break;\n            // ... other types\n        }\n        \n        previousOutput = output;\n        return output;\n    }\n    \nprivate:\n    Type type;\n    float cutoff = 1000.0f;\n    float resonance = 0.7f;\n    float previousOutput = 0.0f;\n};\n```\n\n### Envelopes (ADSR)\n\n```cpp\nclass ADSR\n{\npublic:\n    void setAttack(float ms) { attack = ms / 1000.0f; }\n    void setDecay(float ms) { decay = ms / 1000.0f; }\n    void setSustain(float level) { sustain = level; }\n    void setRelease(float ms) { release = ms / 1000.0f; }\n    \n    void noteOn()\n    {\n        state = Attack;\n        level = 0.0f;\n    }\n    \n    void noteOff()\n    {\n        state = Release;\n    }\n    \n    float process()\n    {\n        switch (state)\n        {\n            case Attack:\n                level += 1.0f / (attack * sampleRate);\n                if (level >= 1.0f)\n                {\n                    level = 1.0f;\n                    state = Decay;\n                }\n                break;\n            case Decay:\n                level -= (1.0f - sustain) / (decay * sampleRate);\n                if (level <= sustain)\n                {\n                    level = sustain;\n                    state = Sustain;\n                }\n                break;\n            case Sustain:\n                // Level stays at sustain\n                break;\n            case Release:\n                level -= sustain / (release * sampleRate);\n                if (level <= 0.0f)\n                {\n                    level = 0.0f;\n                    state = Idle;\n                }\n                break;\n            case Idle:\n                break;\n        }\n        return level;\n    }\n    \nprivate:\n    enum State { Idle, Attack, Decay, Sustain, Release };\n    State state = Idle;\n    float level = 0.0f;\n    float attack = 0.01f;\n    float decay = 0.1f;\n    float sustain = 0.7f;\n    float release = 0.3f;\n    double sampleRate = 44100.0;\n};\n```\n\n## Sound Design Recipes\n\n### Bass\n```cpp\n// Oscillator: Saw or Square\nosc1.setWaveform(Saw);\nosc2.setWaveform(Saw);\nosc2.setDetune(-7);  // Slight detune for thickness\n\n// Filter: Low-pass with envelope\nfilter.setType(LowPass);\nfilter.setCutoff(200.0f);  // Start low\nfilter.setResonance(0.3f);\n\n// Envelope: Tight attack\nampEnv.setAttack(5);    // 5ms\nampEnv.setDecay(100);   // 100ms\nampEnv.setSustain(0.5f);\nampEnv.setRelease(100);\n\n// Filter envelope for punch\nfilterEnv.setAttack(5);\nfilterEnv.setDecay(50);\nfilterEnv.setSustain(0.0f);  // No sustain\n```\n\n### Lead\n```cpp\n// Oscillators: Multiple detuned saws\nosc1.setWaveform(Saw);\nosc2.setWaveform(Saw);\nosc2.setDetune(5);\nosc3.setWaveform(Saw);\nosc3.setDetune(-5);\n\n// Filter: Bright, responsive\nfilter.setType(LowPass);\nfilter.setCutoff(2000.0f);\nfilter.setResonance(0.4f);\n\n// Envelope: Expressive\nampEnv.setAttack(10);\nampEnv.setDecay(200);\nampEnv.setSustain(0.7f);\nampEnv.setRelease(300);\n\n// LFO for vibrato\nlfo.setFrequency(5.0f);  // 5 Hz\nlfo.setDepth(0.02f);      // Subtle pitch modulation\n```\n\n### Pad\n```cpp\n// Oscillators: Layered for richness\nosc1.setWaveform(Saw);\nosc2.setWaveform(Triangle);  // Add body\nosc3.setWaveform(Saw);\nosc3.setDetune(12);\n\n// Filter: Slow opening\nfilter.setType(LowPass);\nfilter.setCutoff(500.0f);\nfilter.setResonance(0.2f);\n\n// Envelope: Very slow\nampEnv.setAttack(500);   // 500ms\nampEnv.setDecay(1000);    // 1 second\nampEnv.setSustain(0.8f);\nampEnv.setRelease(2000); // 2 seconds\n\n// Filter envelope for movement\nfilterEnv.setAttack(1000);  // Slow open\nfilterEnv.setDecay(2000);\n```\n\n### Pluck\n```cpp\n// Oscillator: Bright, quick\nosc1.setWaveform(Saw);\n\n// Filter: Fast decay\nfilter.setType(LowPass);\nfilter.setCutoff(3000.0f);\nfilter.setResonance(0.5f);\n\n// Envelope: Short\nampEnv.setAttack(1);      // Instant\nampEnv.setDecay(100);    // Quick\nampEnv.setSustain(0.0f);  // No sustain\nampEnv.setRelease(50);\n\nfilterEnv.setAttack(1);\nfilterEnv.setDecay(50);\nfilterEnv.setSustain(0.0f);\n```\n\n## Modulation\n\n### LFO (Low-Frequency Oscillator)\n```cpp\nclass LFO\n{\npublic:\n    void setFrequency(float freq) { this->freq = freq; }\n    void setDepth(float d) { depth = d; }\n    \n    float process()\n    {\n        float value = std::sin(phase) * depth;\n        phase += 2.0f * M_PI * freq / sampleRate;\n        if (phase >= 2.0f * M_PI) phase -= 2.0f * M_PI;\n        return value;\n    }\n    \nprivate:\n    float freq = 1.0f;\n    float depth = 0.5f;\n    float phase = 0.0f;\n    double sampleRate = 44100.0;\n};\n\n// Apply LFO to filter cutoff\nfloat lfoValue = lfo.process();\nfilter.setCutoff(baseCutoff + lfoValue * 500.0f);\n```\n\n### Modulation Matrix\n```cpp\nstruct ModulationRouting\n{\n    int source;  // LFO, envelope, velocity, etc.\n    int target;  // Cutoff, pitch, amplitude, etc.\n    float amount;\n};\n\n// Route velocity to filter cutoff\nModulationRouting velToFilter;\nvelToFilter.source = VELOCITY;\nvelToFilter.target = FILTER_CUTOFF;\nvelToFilter.amount = 2000.0f;  // Hz range\n```\n\n## Advanced Techniques\n\n### Oscillator Sync\n```cpp\n// When master oscillator resets, slave resets too\nvoid processSync()\n{\n    if (master.justWrapped())\n    {\n        slave.resetPhase();\n    }\n}\n```\n\n### Pulse Width Modulation\n```cpp\n// Varying the pulse width creates evolving timbres\nvoid processPWM()\n{\n    float pwm = lfo.process() * 0.4f + 0.5f;  // 0.1 to 0.9\n    pulseWidth = pwm;\n}\n```\n\n### Detuning for Width\n```cpp\n// Multiple oscillators with slight detuning\nosc1.setDetune(0);      // Center\nosc2.setDetune(5);      // +5 cents\nosc3.setDetune(-5);     // -5 cents\nosc4.setDetune(12);    // +12 cents\n```\n\n### Glide (Portamento)\n```cpp\nvoid processGlide()\n{\n    currentFreq += (targetFreq - currentFreq) * glideRate;\n    osc.setFrequency(currentFreq);\n}\n```\n\n## References\n\n- [EDMProd Subtractive Synthesis Guide](https://www.edmprod.com/subtractive-synthesis/)\n- [Wikipedia - Subtractive Synthesis](https://en.wikipedia.org/wiki/Subtractive_synthesis)\n- [Miller Puckette's Techniques Book](https://msp.ucsd.edu/techniques/)",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.822887+00:00"
+  },
+  "title": "Subtractive Synthesis Sound Design",
+  "description": "Classic synthesis technique using oscillators, filters, and envelopes to sculpt sound",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "sound-design",
+  "audio_relevance": 10,
+  "difficulty": "beginner",
+  "implementation_examples": 5,
+  "tags": [
+    "subtractive",
+    "oscillator",
+    "filter",
+    "envelope",
+    "LFO",
+    "ADSR"
+  ],
+  "related_topics": [
+    "fm",
+    "wavetable",
+    "filter",
+    "envelope",
+    "dsp"
+  ]
+}

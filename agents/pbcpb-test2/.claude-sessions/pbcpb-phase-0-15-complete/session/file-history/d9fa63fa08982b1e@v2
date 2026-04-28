@@ -1,0 +1,162 @@
+# Task Granularity Standard
+
+## Definition
+
+A **task** represents ONE deliverable or ONE decision. It should be completable by the assigned role without ambiguity.
+
+---
+
+## Task Size Rules
+
+| Rule | Guidance |
+|------|----------|
+| **Time Limit** | If a task takes more than 4 hours, split it |
+| **Skill Limit** | If a task requires multiple skill sets, split it |
+| **Independence** | If a task can't fail independently of the next task, merge them |
+| **Clarity** | Every task must have an unambiguous completion criterion |
+
+---
+
+## Task Title vs Description Rules
+
+### Title Only (Simple, Obvious Actions)
+
+For tasks where the action is self-explanatory:
+
+```
+[Builder] — Create directory tree
+[Builder] — Run tests
+[Coordinator] — Update artifact manifest
+```
+
+**When to use:** The title alone tells the assignee everything needed to complete the task.
+
+### Short Description (Specific Requirements)
+
+For tasks with constraints or specific parameters:
+
+```
+[Builder] — Create placeholder entries
+One placeholder per topic per layer. Each placeholder must conform to entry-schema.json with status="placeholder".
+```
+
+**When to use:** The task needs specific parameters but doesn't require methodology.
+
+### Detailed Description (Multi-step Procedures)
+
+For tasks requiring methodology, decision criteria, or complex procedures:
+
+```
+[Architect] — Define phase structure for the output playbook
+
+Phase design principles:
+1. Each phase is a coherent block of work with a clear objective
+2. A phase's output is the next phase's input
+3. Every phase ends with a gate — explicit approval criteria before proceeding
+4. Early phases: understanding (audit, research). Middle: doing (build, create). Late: verifying and operating
+5. Cross-cutting concerns woven into relevant phases, not isolated
+```
+
+**When to use:** The task requires understanding of methodology, has decision points, or involves multi-step procedures.
+
+---
+
+## Task Ownership Rules
+
+### Human-Only Tasks
+
+Tasks requiring human creative judgment:
+
+| Task Type | Examples |
+|-----------|----------|
+| Creative decisions | Sound identity, aesthetic direction, preset names |
+| Business decisions | Pricing, marketplace selection, launch timing |
+| Perceptual testing | DAW testing, sound quality verification |
+| Stakeholder approval | Gate approvals, architecture review |
+
+### AI-Assisted Tasks
+
+Tasks where AI handles implementation with human direction:
+
+| Task Type | Examples |
+|-----------|----------|
+| DSP implementation | Code generation, algorithm implementation |
+| Documentation | Technical docs, KB content |
+| Research synthesis | Best practices compilation, competitive analysis |
+| Build tasks | CMake configuration, CI setup |
+
+---
+
+## Task Template
+
+```json
+{
+  "title": "[Role] — Task description",
+  "owner": "[Role]",
+  "description": "Detailed description if needed, including methodology and criteria.",
+  "output": "File path or deliverable name",
+  "validation": "How to verify completion (optional for simple tasks)",
+  "human_only": false,
+  "kb_context": ["technical", "sound-design"] // KB layers to load
+}
+```
+
+---
+
+## Task Dependency Rules
+
+1. **Hard Dependencies:** Task B cannot start until Task A completes (A → B)
+2. **Soft Dependencies:** Task B should wait for Task A, but can proceed if blocked
+3. **Parallel Opportunities:** Tasks A and B can run simultaneously
+
+### Dependency Notation
+
+```
+Task A
+  ↓ (hard)
+Task B (depends on A)
+  ↓ (hard)
+Task C (depends on B)
+
+Task D ─── Task E (parallel - no dependency between them)
+```
+
+---
+
+## Common Task Patterns
+
+### Research Task Pattern
+```
+[Researcher] — Research topic X
+Description: Search authoritative sources, synthesize findings, cite all claims.
+Output: research/topic-x.md
+Validation: All factual claims have citations
+```
+
+### Implementation Task Pattern
+```
+[Builder] — Implement Y
+Description: Follow the plan in architecture/y-design.md. Use patterns from KB:technical/juce-patterns.
+Output: src/Y.cpp, src/Y.h
+Validation: Build succeeds, tests pass
+```
+
+### Verification Task Pattern
+```
+[Auditor] — Verify Z
+Description: Check conditions: [list]. Produce GATE VERIFICATION block with PASS/FAIL for each.
+Output: Gate verification in decisions-ledger.md
+Validation: All conditions marked with evidence
+```
+
+---
+
+## Complexity-Based Task Sizing
+
+| Complexity Profile | Task Granularity |
+|--------------------|------------------|
+| **Simple Process** (1-4 phases) | Tasks can be larger, fewer phases mean fewer tasks |
+| **Standard Process** (5-10 phases) | Standard granularity, ~10-20 tasks per phase |
+| **Complex Process** (11+ phases) | Finer granularity, explicit dependencies, detailed descriptions |
+
+**This playbook:** Complex Process (17 phases) → Finer granularity, detailed descriptions for all non-trivial tasks.

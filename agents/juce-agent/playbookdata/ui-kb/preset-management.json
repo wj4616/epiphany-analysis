@@ -1,0 +1,141 @@
+{
+  "kb_name": "ui-kb",
+  "topic": "preset-management",
+  "version": "1.0.0",
+  "last_updated": "2026-03-29T09:00:00Z",
+  "content": {
+    "title": "Audio Plugin Preset Management and Browser Design",
+    "overview": "Best practices for designing intuitive preset management systems and patch browsers for audio plugins",
+    "core_organization": {
+      "hierarchical_structure": {
+        "levels": [
+          "Collections/Banks - top-level themed containers (e.g., 'Funky 74', 'EDM Essentials')",
+          "Categories - functional groups (Pads, Basses, Leads, Keys)",
+          "Presets - individual sounds (128 max per bank for manageability)"
+        ],
+        "nesting": "Support nested folders and subfolders for deeper organization"
+      },
+      "naming_conventions": [
+        "Include plugin name and version (e.g., 'Serum v1.2 - Bright Lead')",
+        "Use descriptive names with characteristics ('Warm Pad', 'Aggressive Bass')",
+        "Avoid special characters and spaces for cross-platform compatibility"
+      ]
+    },
+    "search_filtering_system": {
+      "multi_modal_search": {
+        "text_search": "Keyword and phrase search across names, folders, metadata",
+        "tag_based_filtering": {
+          "category": "Single tag describing function",
+          "type": "Functional descriptions (mono/poly, percussive/legato)",
+          "timbre": "Subjective qualities (bright/dark, fat/thin)"
+        },
+        "favorites": "Allow users to star/mark frequently used presets"
+      },
+      "tag_best_practices": [
+        "Limit to 3-6 tags per preset",
+        "Fewer accurate tags better than over-tagging",
+        "Consistent tag vocabulary across preset library"
+      ]
+    },
+    "metadata_context": {
+      "essential_fields": [
+        "Author name - for credit and filtering",
+        "Description - explain unique features and recommended uses",
+        "Macro labels - name custom macro controls",
+        "Version info - track versions and compatibility",
+        "Leveling data - peak levels (-6dB standard)"
+      ],
+      "visual_preview": [
+        "Show metadata in right panel when preset selected",
+        "Indicate third-party vs factory presets visually",
+        "Display author, categories, descriptions prominently"
+      ]
+    },
+    "browser_interface_design": {
+      "layout_patterns": {
+        "two_panel_view": "Folders/collections left, preset list right",
+        "three_column_layout": "Folders → Preset list → Metadata details (for complex plugins)",
+        "expandable_browser": "Pin to side of plugin GUI to save space"
+      },
+      "interaction_patterns": [
+        "Instant preview - load presets immediately on selection",
+        "Right-click context menus - rename, delete, export, show in filesystem",
+        "Drag-and-drop - reorganize presets between collections",
+        "Clear visual indicator - show current loaded preset"
+      ]
+    },
+    "saving_workflow": {
+      "smart_save_dialog": [
+        "Use OS native save dialogs for familiarity",
+        "Default to plugin preset directory with custom location option",
+        "Auto-assign ID numbers (1-128) if not specified",
+        "Offer metadata entry before saving"
+      ],
+      "version_management": [
+        "Track versions using semantic versioning (Major.Minor.Patch)",
+        "Confirm overwrite warnings for existing presets",
+        "Support 'Save As' for creating variations"
+      ]
+    },
+    "advanced_features": {
+      "import_export_system": [
+        "Export entire collections as single distributable files",
+        "Import collections as new entries in browser",
+        "Remove favorite status before exporting"
+      ],
+      "meta_preset_management": [
+        "Store plugin state + host application data together",
+        "Create universal sound libraries across different synths",
+        "Support VST3/AU plugin hosting within manager"
+      ],
+      "morphing_modulation": [
+        "XY pad for 2D vector morphing between snapshots",
+        "Physics-based elastic modes for organic transitions",
+        "MIDI trigger support for live performance"
+      ]
+    },
+    "performance_compatibility": {
+      "efficiency_considerations": [
+        "Fast mode - recall only parameter values (not full state) for simple synths",
+        "Sanity mode - protect 'danger' parameters (volume, pitch, bypass)",
+        "CPU management - avoid morphing thousands of parameters simultaneously"
+      ],
+      "daw_integration": [
+        "Expose automation parameters for morphing and macros",
+        "Support MIDI CC for bank/preset selection",
+        "Address DAW limitations (e.g., Ableton's 128 parameter threshold)"
+      ]
+    },
+    "user_experience_principles": {
+      "familiar_patterns": [
+        "Reference OS-native UX (macOS Finder, iOS search)",
+        "Maintain consistent browser location across plugins",
+        "Use iconography matching DAW conventions"
+      ],
+      "accessibility": [
+        "Support keyboard navigation",
+        "Provide clear visual feedback for all actions",
+        "Include confirmation dialogs for destructive operations",
+        "Offer theme switching (dark/light)"
+      ],
+      "progressive_disclosure": [
+        "Simple dropdown for few presets",
+        "Full browser with search/filter for complex instruments",
+        "Collapsible panels to maximize screen real estate"
+      ]
+    },
+    "common_pitfalls": [
+      "Overly complex hierarchy - keep structure shallow",
+      "Inconsistent tagging - maintain controlled vocabulary",
+      "Slow search performance - optimize with indexing",
+      "Missing metadata - makes presets hard to find",
+      "No backup system - users lose work when reinstalling"
+    ]
+  },
+  "sources": [
+    "https://www.gforcesoftware.com/blog/the-gforce-preset-browser-a-sound-designers-guide/",
+    "https://www.numberanalytics.com/blog/optimizing-plugin-preset-management",
+    "https://venomode.com/news/preset-browser",
+    "https://www.mattrosemadeit.com/preset-system"
+  ]
+}

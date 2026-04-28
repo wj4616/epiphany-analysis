@@ -1,0 +1,289 @@
+# Phase Gates
+
+## Gate Design Principles
+
+1. **Verifiable:** Every condition must be objectively checkable (PASS/FAIL)
+2. **Evidence-Based:** Each PASS must cite a file path or content reference
+3. **Meaningful:** Gates are checkpoints, not rubber stamps
+4. **Blocking:** A single FAIL blocks advancement to the next phase
+
+---
+
+## Gate Format
+
+```markdown
+## Phase X Gate: [Phase Name]
+
+| Condition | Status | Evidence |
+|-----------|--------|----------|
+| [Verifiable condition] | ✅ PASS / ❌ FAIL | [File path or reference] |
+
+**Blocker:** [If FAIL, what prevents advancement]
+```
+
+---
+
+## Phase 0 Gate: Commission & Scoping
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| Configuration established | scope.md contains output location and external data decisions |
+| Purpose statement unambiguous | README.md has one-paragraph purpose, no "TBD" sections |
+| Scope has in/out/adjacent lists | scope.md has three explicit sections |
+| Success criteria measurable | success-criteria.md has quantifiable criteria, not subjective |
+| Strategic constraints documented | constraints.md lists budget, technical, process constraints |
+| Project KB folder created | Directory exists with README.md, decisions-ledger.md, artifact-manifest.md |
+| Complexity profile documented | decisions-ledger.md has process/knowledge/roles/overall ratings |
+
+**Blocker Examples:**
+- scope.md missing configuration section → Ask user for output location before proceeding
+- Purpose says "improve the process" without specifying which → Too vague, rewrite
+- Success criteria say "playbook is good" → Not measurable, define quantitative measures
+
+---
+
+## Phase 1 Gate: Plugin Concept & Sound Identity
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| Plugin type defined | SPEC.md states synth/effect/module/tool |
+| Signal flow documented | SPEC.md has signal flow diagram or description |
+| Sound identity in user's words | SPEC.md quotes user's exact language, no paraphrasing |
+| Technical constraints locked | SPEC.md has JUCE version, formats, platforms |
+| Gain staging philosophy explicit | SPEC.md documents when hot signals are acceptable |
+| One-page spec written | SPEC.md exists with architecture, DSP, GUI, parameters sections |
+
+**Blocker Examples:**
+- AI proposed signal flow unprompted → Human must describe or draw signal flow
+- Sound identity paraphrased by AI → Use user's exact words
+- "TBD" in gain staging → Document explicit philosophy
+
+---
+
+## Phase 2 Gate: Architecture & Task Breakdown
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| Class architecture documented | architecture.md has class diagram |
+| DSP algorithms specified with math | architecture.md has formulas for each algorithm |
+| All spec requirements have tasks | Task list maps 1:1 with spec requirements |
+| Tasks ordered by dependency | Task list shows dependency order |
+| Plan self-review completed | architecture.md has self-review section |
+| Formula boundaries verified | All formulas checked at param=0 and param=1 |
+
+**Blocker Examples:**
+- Task list missing spec requirement → Add task for missing requirement
+- Plan self-review found issues → Fix issues before proceeding
+- Formula produces wrong output at boundary → Correct formula
+
+---
+
+## Phase 3 Gate: Project Setup & Test Framework
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| CMakeLists.txt configured | build/ directory exists, cmake succeeds |
+| All target formats configured | CMakeLists.txt lists VST3, Standalone |
+| Test framework integrated | Tests pass: `cd build && ctest --output-on-failure` |
+| Build succeeds on primary platform | Plugin loads in REAPER |
+
+**Blocker Examples:**
+- CMake fails → Fix configuration before proceeding
+- Tests fail → Debug and fix before proceeding
+- Plugin doesn't load → Fix build configuration
+
+---
+
+## Phase 4 Gate: DSP Implementation
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| All DSP modules implemented | Each module from architecture has .cpp/.h |
+| Parameter smoothing implemented | All modulatable parameters use SmoothedValue |
+| Real-time safety verified | No allocations in processBlock, no locks on audio thread |
+| Build succeeds | `cmake --build build` succeeds |
+| Tests pass | Unit tests for DSP modules pass |
+
+**Blocker Examples:**
+- Module missing from architecture → Implement or remove from architecture
+- Allocation in processBlock → Pre-allocate in prepareToPlay
+- Lock on audio thread → Use atomic or lock-free structure
+
+---
+
+## Phase 5 Gate: State Management
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| APVTS parameter layout defined | All parameters in AudioProcessorValueTreeState |
+| State save/load works | DAW session reloads with correct parameters |
+| Preset system functional | Factory presets load, user presets save/load |
+
+**Blocker Examples:**
+- Parameter not in APVTS → Add to parameter layout
+- State not restoring → Fix XML serialization
+
+---
+
+## Phase 6 Gate: Integration
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| All modules connected | Signal flows through all modules in chain |
+| Thread-safe parameter flow | GUI → APVTS → atomic → processBlock verified |
+| Build succeeds | Plugin builds and loads |
+| Sound unchanged from Phase 4 | A/B test confirms no audio regression |
+
+**Blocker Examples:**
+- Module not connected → Wire up in processBlock
+- Sound changed → Debug integration, fix regression
+
+---
+
+## Phase 7 Gate: GUI Design
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| Editor class implemented | PluginEditor.cpp exists with GUI components |
+| All parameters have controls | Each parameter has visible control |
+| Accessibility compliance | Tab order works, keyboard navigation works |
+| Visual aesthetic approved | Human signs off on appearance |
+
+**Blocker Examples:**
+- Parameter without control → Add control for parameter
+- Keyboard navigation broken → Fix tab order
+
+---
+
+## Phase 8 Gate: Validation & Testing
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| Unit tests passing | `ctest --output-on-failure` reports 0 failures |
+| pluginval validation passing | pluginval reports 0 errors |
+| Audio thread safety audit passing | No allocations, no locks in processBlock |
+| Gain staging verified | Effect audible at all parameter ranges |
+
+**Blocker Examples:**
+- Tests failing → Fix bugs before proceeding
+- pluginval errors → Fix validation issues
+- Effect not audible → Audit gain staging
+
+---
+
+## Phase 9 Gate: DAW Testing
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| Plugin loads in REAPER | Human confirms plugin appears and loads |
+| Basic functionality works | Human confirms audio processing correctly |
+| Parameter ranges work | Human confirms all parameters function without clicks |
+| Presets load/save | Human confirms preset system works |
+| No perceptual issues | Human confirms no clicks, pops, dropouts, distortion |
+
+**Blocker Examples:**
+- Plugin crashes → Debug and fix
+- Clicks/pops → Fix parameter smoothing or buffer handling
+- Distortion → Fix gain staging or algorithm
+
+---
+
+## Phase 10 Gate: Licensing Integration
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| License validation implemented | Plugin checks license on load |
+| Trial mode works | Plugin runs in trial mode without license |
+| Full mode works | Plugin runs with valid license |
+| Anti-tamper measures present | Basic protection against trivial bypass |
+
+**Blocker Examples:**
+- License not checked → Implement validation
+- Trial mode not working → Debug trial logic
+
+---
+
+## Phase 11 Gate: Marketplace Preparation
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| Product descriptions written | Description text for each marketplace |
+| Screenshots captured | Minimum 3 screenshots showing plugin |
+| Pricing documented | Pricing.md lists all pricing options |
+| Marketplace accounts created | Accounts exist on target marketplaces |
+
+**Blocker Examples:**
+- No screenshots → Capture screenshots before proceeding
+- Pricing undefined → Document pricing strategy
+
+---
+
+## Phase 12 Gate: Marketing Launch Preparation
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| Email list created | List exists with opt-in mechanism |
+| Landing page created | Page exists with product info and signup |
+| Launch content prepared | Blog posts, videos, social content ready |
+| Community outreach plan documented | Plan lists specific communities and timing |
+
+**Blocker Examples:**
+- No email list → Set up before launch
+- No landing page → Create before launch
+
+---
+
+## Phase 13 Gate: Release & Distribution
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| Installers built | Windows, macOS, Linux installers exist |
+| Published to marketplaces | Plugin visible on KVR, Plugin Boutique |
+| Direct sales setup | Website/store can process purchases |
+| Launch announcement sent | Email sent to list, social posts live |
+
+**Blocker Examples:**
+- Installers missing for platform → Build missing installer
+- Marketplace rejected → Fix rejection issues
+
+---
+
+## Phase 14 Gate: Post-Launch Operations
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| Support system active | Support channel exists and monitored |
+| Update process documented | Process for releasing updates defined |
+| Feedback collection active | Mechanism for collecting user feedback exists |
+
+**Blocker Examples:**
+- No support channel → Set up before announcing launch
+- No update process → Document process
+
+---
+
+## Phase 15 Gate: Continuous Improvement
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| Sales analysis completed | Sales data reviewed, insights documented |
+| Feature prioritization done | Roadmap shows next features ranked by impact |
+| Update roadmap published | Roadmap shared with users |
+
+**Blocker Examples:**
+- No sales analysis → Complete analysis before planning updates
+- No feature prioritization → Prioritize before development
+
+---
+
+## Phase 16 Gate: KB Maintenance
+
+| Condition | Verifiable Evidence |
+|-----------|---------------------|
+| KB entries updated | Entries reflect lessons learned |
+| New patterns documented | New patterns added to relevant KB |
+| Failure modes cataloged | New failure modes added to prevention rules |
+
+**Blocker Examples:**
+- Lessons not captured → Document before closing project
+- Failure mode not cataloged → Add to catalog

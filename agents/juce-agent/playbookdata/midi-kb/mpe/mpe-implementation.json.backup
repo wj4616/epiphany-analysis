@@ -1,0 +1,23 @@
+{
+  "title": "MPE Implementation",
+  "description": "Implementing MPE in JUCE plugins",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:45:51.056142Z",
+  "kb_type": "midi",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "markdown": "# MPE Implementation\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "MPE implementation",
+    "MPE JUCE",
+    "MPE zone setup",
+    "MPE channel assignment"
+  ],
+  "sources": [
+    "JUCE forum",
+    "MPE docs"
+  ]
+}

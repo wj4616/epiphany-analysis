@@ -1,0 +1,16 @@
+{
+  "id": "ui-ux_layout-patterns_spacing",
+  "kb": "ui-ux",
+  "topic": "layout-patterns",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Spacing and Grid Systems",
+  "summary": "Placeholder: Consistent spacing, alignment, and grid-based layout.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["ui", "layout", "spacing", "grid", "alignment"],
+  "related_topics": ["layout-patterns", "grouping"],
+  "difficulty": "beginner",
+  "domain_relevance": 8
+}

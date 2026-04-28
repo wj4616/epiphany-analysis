@@ -1,0 +1,280 @@
+# Metrics & KPI Definition
+
+## Overview
+
+This document defines measurable metrics and targets for evaluating playbook effectiveness, output quality, and domain outcomes.
+
+---
+
+## 1. Process Metrics
+
+Process metrics measure how efficiently the playbook guides the workflow.
+
+### 1.1 Phase Completion Metrics
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| Phases completed first attempt | ≥85% | Count phases that pass gate on first try |
+| Average iterations per phase | ≤1.5 | Count gate retries / total phases |
+| Phase duration accuracy | ±25% | (Actual - Estimated) / Estimated |
+| Gate verification time | ≤10 min | Time from gate start to PASS |
+
+### 1.2 Task Execution Metrics
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| Tasks completed per session | 5-15 | Count tasks marked complete per session |
+| Task rollback rate | ≤10% | Tasks that required undo / total tasks |
+| Blocker resolution time | <30 min avg | Time from blocker identified to resolved |
+| Escalation rate | ≤20% | Escalated tasks / total tasks |
+
+### 1.3 Context Efficiency Metrics
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| Context load time | <30 sec | Time to load phase context |
+| Token usage per phase | Within budget | Compare to context_budget setting |
+| Context carry accuracy | 100% | decisions-ledger completeness check |
+
+### 1.4 Session Metrics
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| Session completion rate | 100% | Phases complete in planned session |
+| Context loss incidents | 0 | Count sessions that lost context |
+| Handoff success rate | 100% | Successful phase transitions / total transitions |
+
+---
+
+## 2. Quality Metrics
+
+Quality metrics measure the correctness and completeness of outputs.
+
+### 2.1 Specification Quality (Phase 0-1)
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| Purpose statement clarity | 1 paragraph, unambiguous | Human review |
+| Scope completeness | All in/out/adjacent defined | Checklist audit |
+| Success criteria measurability | 100% measurable | Each criterion has metric |
+| Technical constraints coverage | All documented | Checklist audit |
+
+### 2.2 Architecture Quality (Phase 2)
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| Requirement coverage | 100% | Every spec requirement has task |
+| Formula boundary verification | 100% | All formulas tested at param=0, param=1 |
+| Buffer size coverage | 192kHz compatible | All buffer calculations verified |
+| Cross-cutting concern coverage | All addressed | CCC mapping complete |
+
+### 2.3 Implementation Quality (Phase 4-7)
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| Build success rate | 100% | cmake --build succeeds |
+| Test pass rate | 100% | ctest passes |
+| Parameter smoothing coverage | 100% | All modulatable parameters smoothed |
+| Audio thread safety | 100% | No allocations in processBlock |
+| GUI accessibility | Tab navigation works | Keyboard-only navigation test |
+
+### 2.4 Validation Quality (Phase 8-9)
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| Unit test coverage | ≥80% lines | Coverage tool output |
+| pluginval validation | Pass | pluginval --strict passes |
+| Gain staging verification | No clips, no silence | -60dB to 0dB range verified |
+| Human perceptual approval | 100% | Human signs off on sound |
+
+### 2.5 Release Quality (Phase 10-13)
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| License system reliability | 100% | All license checks work |
+| Marketplace listing completeness | All fields populated | Checklist audit |
+| Distribution package integrity | All platforms tested | Build and load tests |
+
+---
+
+## 3. Domain Outcome Metrics
+
+Domain metrics measure the effectiveness of the final plugin product.
+
+### 3.1 Audio Quality Metrics
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| CPU usage | ≤5% at 48kHz/512 buffer | DAW CPU meter |
+| Memory footprint | ≤50MB baseline | Process memory in DAW |
+| Latency | ≤1ms additional | Reported latency |
+| Sample rate support | 44.1kHz to 192kHz | All rates tested |
+
+### 3.2 User Experience Metrics
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| GUI responsiveness | <16ms response time | Interaction timing |
+| Preset load time | <500ms | File timing |
+| Parameter automation | Click-free | Audio analysis |
+| Plugin load time | <2 seconds | DAW scan time |
+
+### 3.3 Commercial Metrics (Phase 10-13)
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| Marketplace approval rate | 100% | All marketplaces approve |
+| Customer support tickets | ≤5 per 100 sales | Support tracking |
+| Documentation completeness | All sections filled | Checklist audit |
+| Pricing accuracy | Correct on all platforms | Cross-platform check |
+
+### 3.4 Maintenance Metrics (Phase 15-16)
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| Bug report resolution time | ≤7 days | Time from report to fix |
+| KB update frequency | Per run | KB entries updated after run |
+| Playbook version currency | Latest | Version matches repo |
+
+---
+
+## 4. Knowledge Base Metrics
+
+KB metrics measure knowledge base effectiveness.
+
+### 4.1 KB Quality Metrics
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| Entry schema compliance | 100% | All entries pass validation |
+| Bridge mapping accuracy | Verified per use | Parameter ranges tested |
+| Cross-reference validity | 100% | All references resolve |
+| Authority score accuracy | Documented | Confidence scores justified |
+
+### 4.2 KB Usage Metrics
+
+| Metric | Target | Measurement Method |
+|--------|--------|-------------------|
+| KB layer load accuracy | Per phase mapping | Only required layers loaded |
+| Bridge lookup success | 100% | All creative terms translate |
+| Reference hit rate | ≥80% | Referenced entries / accessed entries |
+| Placeholder resolution | Before use | All placeholders resolved |
+
+---
+
+## 5. Cross-Cutting Concern Metrics
+
+Each CCC has specific quality targets.
+
+| CCC | Metric | Target |
+|-----|--------|--------|
+| Real-Time Safety | Audio thread allocations | 0 |
+| Gain Staging | Headroom margin | ≥6dB at each stage |
+| Parameter Safety | Clicks on automation | 0 |
+| Preset Integrity | Preset load success | 100% |
+| GUI Responsiveness | Response time | <16ms |
+| Cross-Platform | Platform-specific bugs | 0 |
+| DAW Compatibility | Compatibility failures | 0 |
+| Performance Profiling | CPU spikes | <10% above baseline |
+| Security | Vulnerabilities | 0 critical |
+| Reproducibility | Build reproducibility | 100% |
+
+---
+
+## 6. Metrics Collection Protocol
+
+### When to Record
+
+| Phase | Metrics Recorded |
+|-------|------------------|
+| 0-1 | Specification quality metrics |
+| 2 | Architecture quality metrics |
+| 3 | Build setup metrics |
+| 4-7 | Implementation quality metrics |
+| 8-9 | Validation quality metrics |
+| 10-13 | Commercial, release quality metrics |
+| 14-15 | Maintenance metrics |
+| 16 | KB metrics |
+
+### How to Record
+
+1. **Phase Gate:** Record phase metrics in metrics-tracker.md
+2. **Task Completion:** Record task metrics in decisions-ledger
+3. **Quality Gates:** Record quality metrics at each gate
+4. **Final Review:** Aggregate metrics in post-run review
+
+### Metrics Storage
+
+- **metrics-tracker.md** — Running metrics log
+- **decisions-ledger.md** — Phase-by-phase decisions with metrics
+- **post-run-review.md** — Final aggregated metrics (created at Phase 15)
+
+---
+
+## 7. KPI Targets Summary
+
+### Primary KPIs (Must Meet)
+
+| KPI | Target | Consequence if Missed |
+|-----|--------|----------------------|
+| Gate pass rate (first attempt) | ≥85% | Review phase structure |
+| Build success rate | 100% | Block release |
+| Test pass rate | 100% | Block release |
+| Audio thread safety | 100% | Block release |
+| Human approval | 100% | Block phase progression |
+
+### Secondary KPIs (Should Meet)
+
+| KPI | Target | Consequence if Missed |
+|-----|--------|----------------------|
+| Phase duration accuracy | ±25% | Update estimates |
+| KB entry compliance | 100% | Fix before use |
+| Bridge mapping accuracy | 100% | Review translations |
+
+### Tertiary KPIs (Nice to Have)
+
+| KPI | Target | Consequence if Missed |
+|-----|--------|----------------------|
+| CPU usage | ≤5% | Optimize if exceeded |
+| Session completion rate | 100% | Review session breaks |
+| Escalation rate | ≤20% | Review blocker patterns |
+
+---
+
+## 8. Metrics Review Cadence
+
+| Timing | Review Type | Participants |
+|--------|-------------|--------------|
+| Each phase gate | Gate metrics | [Coordinator], [Human] if approval |
+| End of session | Session metrics | [Coordinator] |
+| End of run | Post-run review | [Coordinator], [Human] |
+| Continuous improvement | KB metrics | [Coordinator] |
+
+---
+
+## 9. Escalation Triggers
+
+Metrics that trigger immediate escalation:
+
+| Metric | Threshold | Escalation |
+|--------|-----------|------------|
+| Build failure | Any | Immediate escalation to [Human] |
+| Test failure | Any | 30-minute self-attempt, then escalate |
+| Audio thread allocation | Any | Immediate escalation to [Human] |
+| Human approval rejected | Any | Immediate — human already engaged |
+| Gate fail after 3 attempts | 3 | Escalate with options documented |
+
+---
+
+## 10. Success Criteria
+
+Phase 8 is complete when:
+
+- [x] Process metrics defined with targets
+- [x] Quality metrics defined with targets
+- [x] Domain outcome metrics defined with targets
+- [x] KB metrics defined with targets
+- [x] Cross-cutting concern metrics defined
+- [x] Metrics collection protocol defined
+- [x] KPI targets established (primary, secondary, tertiary)
+- [x] Escalation triggers defined

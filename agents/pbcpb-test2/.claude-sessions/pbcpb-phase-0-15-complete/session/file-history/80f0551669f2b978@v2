@@ -1,0 +1,16 @@
+{
+  "id": "reference_papers_dsp-research",
+  "kb": "reference",
+  "topic": "papers",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "DSP Research Papers",
+  "summary": "Placeholder: Academic papers on audio signal processing.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "papers"},
+  "concepts": [],
+  "tags": ["papers", "dsp", "research", "academic"],
+  "related_topics": ["dsp-algorithms", "filters"],
+  "difficulty": "advanced",
+  "domain_relevance": 7
+}

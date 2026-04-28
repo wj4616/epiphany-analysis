@@ -1,0 +1,57 @@
+{
+  "id": "bridge-psychedelic",
+  "title": "Psychedelic Sound Translation",
+  "category": "bridges",
+  "sonic_description": "Swirling, evolving, psychedelic texture with modulation and movement",
+  "sonic_keywords": ["psychedelic", "swirling", "trippy", "evolving", "abstract"],
+  "translation": {
+    "filter": {
+      "cutoff_range": [0.2, 0.5],
+      "resonance_range": [0.1, 0.3],
+      "modulation": [{
+        "source": "lfo",
+        "depth": [0.1, 0.3],
+        "rate_range": [0.05, 0.2],
+        "shape": "sine"
+      }]
+    },
+    "amplitude": {
+      "attack_range": [0.05, 0.3],
+      "decay_range": [0.2, 0.5],
+      "sustain_range": [0.5, 0.8],
+      "release_range": [1.0, 4.0]
+    },
+    "oscillator": [{
+      "waveforms": ["sawtooth", "square"],
+      "detune_range": [0.05, 0.15],
+      "modulation": [{
+        "source": "lfo",
+        "depth": [0.0, 0.1],
+        "rate_range": [0.02, 0.1]
+      }]
+    }],
+    "effects": [{
+      "type": "reverb",
+      "mix_range": [0.4, 0.8],
+      "decay_range": [2.0, 8.0],
+      "modulation": "chorus_after_reverb"
+    }, {
+      "type": "phaser",
+      "mix_range": [0.2, 0.5],
+      "parameters": {
+        "rate": [0.03, 0.1],
+        "depth": [0.5, 1.0],
+        "stages": [4, 8]
+      }
+    }]
+  },
+  "why": "Slow filter modulation creates evolving textures. Long reverb adds space and wash. Phaser or chorus adds swirling movement. Multiple modulation sources at different rates create complex, non-repeating evolution.",
+  "how_to_apply": "Start with filter LFO at 0.1 Hz with 0.2 depth. Add reverb at 50% mix with 4s decay. Layer phaser for additional movement. Adjust rates to find the sweet spot between static and chaotic.",
+  "confidence": 0.85,
+  "source": {
+    "type": "expert_interview",
+    "reference": "Psychedelic/ambient sound design research"
+  },
+  "presets": ["psychedelic-ambient", "swirling-texture"],
+  "phase_usage": [0, 4, 5, 9]
+}

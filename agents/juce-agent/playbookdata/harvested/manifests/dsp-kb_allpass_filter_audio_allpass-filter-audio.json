@@ -1,0 +1,22 @@
+{
+  "kb_name": "dsp-kb",
+  "topic": "allpass filter audio",
+  "filename": "allpass-filter-audio.json",
+  "status": "harvested",
+  "harvested_at": "2026-03-30T23:24:57.304092+00:00",
+  "sources": 1,
+  "rejected": 32,
+  "credits_used": 73,
+  "search_queries": [
+    "allpass filter audio DSP reverb phaser implementation",
+    "allpass filter audio tutorial",
+    "allpass filter audio implementation",
+    "allpass filter audio guide"
+  ],
+  "quality_thresholds": {
+    "min_content_length": 500,
+    "min_relevance_score": 0.2,
+    "max_noise_ratio": 0.5
+  },
+  "notes": "Auto-harvested via harvest-data skill"
+}

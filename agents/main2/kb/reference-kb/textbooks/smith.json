@@ -1,0 +1,19 @@
+{
+  "id": "reference-kb_textbooks_smith",
+  "kb": "reference-kb",
+  "topic": "textbooks",
+  "status": "harvested",
+  "version": "1.0.0",
+  "title": "Physical Audio Signal Processing (Julius O. Smith)",
+  "summary": "Authoritative reference for physical modeling and signal processing in audio.",
+  "description": "## Overview\n\nJulius O. Smith's work is the definitive reference for physical modeling synthesis, delay lines, and waveguide filters.\n\n## Key Topics\n\n| Topic | Description |\n|-------|-------------|\n| Delay Lines | Circular buffers, interpolation |\n| Waveguides | Physical modeling of instruments |\n| Digital Waveguide Theory | String, tube, and acoustic modeling |\n| Reverberation | Physical reverb modeling |\n\n## Relevant For\n\n- Delay line implementation\n- Physical modeling synthesis\n- Waveguide filters\n- Interpolation algorithms\n\n## Availability\n\nFree online at: https://ccrma.stanford.edu/~jos/pasp/\n\n## Citation\n\nSmith, Julius O. *Physical Audio Signal Processing*. Center for Computer Research in Music and Acoustics (CCRMA), Stanford University.\n\n## Why Important\n\nFoundational theory for delay-based effects and physical modeling with rigorous mathematical treatment.",
+  "source": "Best practices research",
+  "concepts": [
+    {"name": "Digital Waveguide", "description": "Physical modeling technique using bidirectional delay lines"},
+    {"name": "Fractional Delay", "description": "Interpolated delay for pitch shifting and smooth modulation"}
+  ],
+  "tags": ["textbook", "dsp", "physical-modeling", "delay"],
+  "related_topics": ["dsp-algorithms", "oscillator-design"],
+  "difficulty": "advanced",
+  "domain_relevance": 9
+}

@@ -1,0 +1,26 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+
+// TextureBodyDetector - Detect texture vs body content in audio
+// TODO: Implement in future task
+
+namespace CogDSP
+{
+
+class TextureBodyDetector
+{
+public:
+    TextureBodyDetector() = default;
+    ~TextureBodyDetector() = default;
+
+    void prepare(double sampleRate, int samplesPerBlock);
+    void process(const float* input, float* textureOut, float* bodyOut, int numSamples);
+    void reset();
+
+private:
+    double sampleRate = 44100.0;
+};
+
+} // namespace CogDSP

@@ -1,0 +1,18 @@
+{
+  "id": "technical_realtime-safety_allocation-avoidance",
+  "kb": "technical",
+  "topic": "realtime-safety",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Memory Allocation Avoidance on Audio Thread",
+  "summary": "Placeholder: Strategies to pre-allocate all memory before audio processing begins.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {
+    "type": "placeholder"
+  },
+  "concepts": [],
+  "tags": ["memory", "allocation", "pre-allocation", "audio-thread", "realtime"],
+  "related_topics": ["realtime-safety", "dsp-algorithms"],
+  "difficulty": "intermediate",
+  "domain_relevance": 10
+}

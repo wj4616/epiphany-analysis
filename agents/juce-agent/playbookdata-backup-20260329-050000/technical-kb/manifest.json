@@ -1,0 +1,63 @@
+{
+  "harvest_id": "tech-kb-001",
+  "started_at": "2026-03-29T02:40:13.761898",
+  "completed_at": "2026-03-29T02:46:09.681701",
+  "current_phase": 0,
+  "phases": [
+    {
+      "name": "juce-official",
+      "status": "completed",
+      "started_at": "2026-03-29T02:43:11.901412",
+      "pages_completed": 272,
+      "pages_total": 0,
+      "last_url_processed": "https://docs.juce.com/master/tutorial_plugin_examples.html",
+      "failed_urls": [],
+      "completed_at": "2026-03-29T02:46:09.681701"
+    },
+    {
+      "name": "melatonin-dev",
+      "status": "completed",
+      "started_at": "2026-03-29T02:53:51.648067",
+      "pages_completed": 21,
+      "pages_total": null,
+      "last_url_processed": null,
+      "failed_urls": [],
+      "completed_at": "2026-03-29T03:01:30.826943"
+    },
+    {
+      "name": "stanford-ccrma",
+      "status": "completed",
+      "started_at": null,
+      "pages_completed": 19,
+      "pages_total": null,
+      "last_url_processed": null,
+      "failed_urls": [],
+      "completed_at": "2026-03-29T03:01:30.826943"
+    },
+    {
+      "name": "github-awesome-juce",
+      "status": "completed",
+      "started_at": null,
+      "pages_completed": 8,
+      "pages_total": null,
+      "last_url_processed": null,
+      "failed_urls": [],
+      "completed_at": "2026-03-29T03:01:30.826943"
+    },
+    {
+      "name": "additional-sources",
+      "status": "pending",
+      "started_at": null,
+      "pages_completed": 0,
+      "pages_total": null,
+      "last_url_processed": null,
+      "failed_urls": [],
+      "completed_at": null
+    }
+  ],
+  "failed_urls": [],
+  "resume_state": {
+    "next_url": null,
+    "queue": []
+  }
+}

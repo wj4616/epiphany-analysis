@@ -1,0 +1,83 @@
+# Sensitive runtime / credential files
+.claude/.credentials.json
+.claude/.mcp.json
+.claude/.update.lock
+.claude/agent-paths.json
+.claude/agents/
+.claude/backups/
+.claude/cache/
+.claude/file-history/
+.claude/history.jsonl
+.claude/kb-harvest-config.json
+.claude/paste-cache/
+.claude/plans/
+.claude/projects/
+.claude/scheduled_tasks.lock
+.claude/sessions/
+.claude/settings.json
+.claude/shell-snapshots/
+.claude/plugins/
+
+# Claude.json (root-level claude config)
+.claude.json
+
+# Home directory noise
+.Private/
+.Xauthority
+.bash_history
+.bash_logout
+.bashrc
+.profile
+.adal/
+.augment/
+.cache/
+.cargo/
+.config/
+.dbus/
+.gnupg/
+.local/
+.nvm/
+.opencode/
+.pki/
+.python_history
+.ssh/
+.sudo_as_admin_successful
+.wget-hsts
+.zshrc
+
+# Build artifacts
+build/
+*.o
+*.a
+*.so
+*.dylib
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+CTestTestfile.cmake
+_deps/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+dist/
+venv/
+.venv/
+
+# Node
+node_modules/
+.npm/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log

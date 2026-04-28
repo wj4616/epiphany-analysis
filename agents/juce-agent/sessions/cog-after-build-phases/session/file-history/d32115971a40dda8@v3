@@ -1,0 +1,169 @@
+#include "PluginEditor.h"
+
+CogVSTAudioProcessorEditor::CogVSTAudioProcessorEditor(CogVSTAudioProcessor& p)
+    : AudioProcessorEditor(&p), audioProcessor(p)
+{
+    // Spec: 950x580 window
+    setSize(950, 580);
+
+    // Setup all sliders with labels
+    setupSliderWithLabel(sensitivitySlider, sensitivityLabel, "sensitivity", "Sensitivity");
+    setupSliderWithLabel(pathBalanceSlider, pathBalanceLabel, "pathBalance", "Path Balance");
+    setupSliderWithLabel(textureDriveSlider, textureDriveLabel, "textureDrive", "Texture Drive");
+    setupSliderWithLabel(droneDensitySlider, droneDensityLabel, "droneDensity", "Drone Density");
+    setupSliderWithLabel(spectralDriftSlider, spectralDriftLabel, "spectralDrift", "Spectral Drift");
+    setupSliderWithLabel(thicknessSlider, thicknessLabel, "thickness", "Thickness");
+    setupSliderWithLabel(driveSlider, driveLabel, "drive", "Drive");
+    setupSliderWithLabel(toneSlider, toneLabel, "tone", "Tone");
+    setupSliderWithLabel(feedbackSlider, feedbackLabel, "feedback", "Feedback");
+    setupSliderWithLabel(widthSlider, widthLabel, "width", "Width");
+    setupSliderWithLabel(evolutionSlider, evolutionLabel, "evolutionSpeed", "Evolution");
+    setupSliderWithLabel(outputGainSlider, outputGainLabel, "outputGain", "Output");
+    setupSliderWithLabel(mixSlider, mixLabel, "mix", "Mix");
+
+    // Setup bypass button
+    bypassButton.setButtonText("Bypass");
+    bypassButton.setToggleState(false, juce::dontSendNotification);
+    addAndMakeVisible(bypassButton);
+    bypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        audioProcessor.getAPVTS(), "bypass", bypassButton);
+
+    // Setup freeze button
+    freezeButton.setButtonText("Freeze");
+    freezeButton.setToggleState(false, juce::dontSendNotification);
+    addAndMakeVisible(freezeButton);
+    freezeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        audioProcessor.getAPVTS(), "freeze", freezeButton);
+
+    // Create attachments
+    sensitivityAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), "sensitivity", sensitivitySlider);
+    pathBalanceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), "pathBalance", pathBalanceSlider);
+    textureDriveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), "textureDrive", textureDriveSlider);
+    droneDensityAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), "droneDensity", droneDensitySlider);
+    spectralDriftAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), "spectralDrift", spectralDriftSlider);
+    thicknessAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), "thickness", thicknessSlider);
+    driveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), "drive", driveSlider);
+    toneAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), "tone", toneSlider);
+    feedbackAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), "feedback", feedbackSlider);
+    widthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), "width", widthSlider);
+    evolutionAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), "evolutionSpeed", evolutionSlider);
+    outputGainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), "outputGain", outputGainSlider);
+    mixAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), "mix", mixSlider);
+}
+
+CogVSTAudioProcessorEditor::~CogVSTAudioProcessorEditor()
+{
+}
+
+void CogVSTAudioProcessorEditor::setupSliderWithLabel(juce::Slider& slider, juce::Label& label,
+                                                        const juce::String& paramName,
+                                                        const juce::String& labelText)
+{
+    slider.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+    slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20);
+    addAndMakeVisible(slider);
+
+    label.setText(labelText, juce::dontSendNotification);
+    label.setJustificationType(juce::Justification::centred);
+    label.attachToComponent(&slider, false);
+    addAndMakeVisible(label);
+}
+
+void CogVSTAudioProcessorEditor::paint(juce::Graphics& g)
+{
+    // Cosmic interdimensional mystical background
+    auto bounds = getLocalBounds();
+
+    // Dark cosmic background gradient
+    juce::ColourGradient gradient(
+        juce::Colour(15, 10, 30),   // Deep space blue-black at top
+        bounds.getX(), bounds.getY(),
+        juce::Colour(30, 15, 50),   // Slightly lighter purple at bottom
+        bounds.getX(), bounds.getBottom(),
+        false
+    );
+    g.setGradientFill(gradient);
+    g.fillAll();
+
+    // Title with glow effect
+    g.setColour(juce::Colour(180, 150, 255));
+    g.setFont(juce::Font("Helvetica", 28.0f, juce::Font::bold));
+    g.drawFittedText("COG", bounds.removeFromTop(50), juce::Justification::centred, 1);
+
+    // Subtitle
+    g.setColour(juce::Colour(120, 100, 180));
+    g.setFont(juce::Font("Helvetica", 12.0f, juce::Font::plain));
+    g.drawFittedText("Interdimensional Sound Design Module", bounds.removeFromTop(20), juce::Justification::centred, 1);
+}
+
+void CogVSTAudioProcessorEditor::resized()
+{
+    auto bounds = getLocalBounds().reduced(20);
+    bounds.removeFromTop(70);  // Space for title
+
+    const int sliderWidth = 100;
+    const int sliderHeight = 100;
+    const int spacing = 20;
+
+    // Top row: Input/Path controls
+    auto topRow = bounds.removeFromTop(140);
+    auto col1 = topRow.removeFromLeft(sliderWidth + spacing);
+    sensitivitySlider.setBounds(col1.removeFromTop(sliderHeight));
+    col1.removeFromTop(spacing);
+    bypassButton.setBounds(col1.removeFromTop(30));
+    freezeButton.setBounds(col1.removeFromTop(30));
+
+    topRow.removeFromLeft(spacing);
+    pathBalanceSlider.setBounds(topRow.removeFromLeft(sliderWidth));
+
+    topRow.removeFromLeft(spacing);
+    textureDriveSlider.setBounds(topRow.removeFromLeft(sliderWidth));
+
+    topRow.removeFromLeft(spacing);
+    droneDensitySlider.setBounds(topRow.removeFromLeft(sliderWidth));
+
+    topRow.removeFromLeft(spacing);
+    spectralDriftSlider.setBounds(topRow.removeFromLeft(sliderWidth));
+
+    // Second row: Spectral/Chorus controls
+    bounds.removeFromTop(spacing);
+    auto secondRow = bounds.removeFromTop(sliderHeight + 30);
+
+    thicknessSlider.setBounds(secondRow.removeFromLeft(sliderWidth));
+    secondRow.removeFromLeft(spacing);
+
+    // Third row: Drive/Filter controls
+    bounds.removeFromTop(spacing);
+    auto thirdRow = bounds.removeFromTop(sliderHeight + 30);
+
+    driveSlider.setBounds(thirdRow.removeFromLeft(sliderWidth));
+    thirdRow.removeFromLeft(spacing);
+    toneSlider.setBounds(thirdRow.removeFromLeft(sliderWidth));
+    thirdRow.removeFromLeft(spacing);
+    feedbackSlider.setBounds(thirdRow.removeFromLeft(sliderWidth));
+    thirdRow.removeFromLeft(spacing);
+    widthSlider.setBounds(thirdRow.removeFromLeft(sliderWidth));
+
+    // Bottom row: Output controls
+    bounds.removeFromTop(spacing);
+    auto bottomRow = bounds.removeFromTop(sliderHeight + 30);
+
+    evolutionSlider.setBounds(bottomRow.removeFromLeft(sliderWidth));
+    bottomRow.removeFromLeft(spacing);
+    outputGainSlider.setBounds(bottomRow.removeFromLeft(sliderWidth));
+    bottomRow.removeFromLeft(spacing);
+    mixSlider.setBounds(bottomRow.removeFromLeft(sliderWidth));
+}

@@ -1,0 +1,564 @@
+# Output Configuration
+
+## Overview
+
+This document defines how the JUCE VST Business Playbook operates: workflow model, usage instructions, KB mapping, skill activation, and post-run review.
+
+---
+
+## 1. Workflow Model
+
+### Model: Human-in-the-Loop
+
+**Justification:** 
+- Creative decisions (sound identity, GUI aesthetic, preset names) require human judgment
+- Perceptual testing (DAW testing, sound quality) requires human ears
+- Business decisions (pricing, marketing, launch timing) require human approval
+- AI handles implementation, research, and synthesis — human directs
+
+### Role Definitions (Condensed for JSON)
+
+```json
+{
+  "roles": {
+    "Human": {
+      "description": "Creative director, final decision-maker, perceptual tester",
+      "decision_authority": "exclusive on creative decisions, approval on all gates",
+      "appears_in_phases": [0, 1, 7, 9, 10, 11, 12, 13]
+    },
+    "Coordinator": {
+      "description": "Process manager, gate verification, status tracking",
+      "decision_authority": "gate PASS/FAIL, escalation routing",
+      "appears_in_phases": "all"
+    },
+    "Builder": {
+      "description": "Code implementation, testing, building",
+      "decision_authority": "implementation details within approved architecture",
+      "appears_in_phases": [3, 4, 5, 6, 7, 8, 10, 13]
+    },
+    "Architect": {
+      "description": "Design, planning, architecture",
+      "decision_authority": "architecture design within approved scope",
+      "appears_in_phases": [2, 4, 5, 6]
+    }
+  }
+}
+```
+
+### Single-Agent Mapping
+
+When executed by one AI agent:
+- Agent fills: [Coordinator], [Builder], [Architect]
+- Human fills: [Human]
+- Agent switches mindset based on task owner
+
+---
+
+## 2. Usage Instructions
+
+### How to Start
+
+**Initial Context Required:**
+1. Commission brief: What plugin to build (type, sound identity, constraints)
+2. Technical constraints: JUCE version, formats, platforms
+3. Creative direction: Sound identity in user's exact words (no AI paraphrasing)
+
+**First Session Loads:**
+- Commission brief (user provides)
+- This playbook (phases, tasks, gates)
+- KB layers: None for Phase 0-1, Technical for Phase 2+
+
+**Example Start Prompt:**
+```
+I want to build a [synthesizer/effect/plugin type] called [name].
+The sound should be [user's exact words: warm, lush, aggressive, etc].
+Technical constraints: JUCE 8.0.x, VST3, Linux primary, $200/month budget.
+[More details from commission brief]
+```
+
+### Session Strategy
+
+**Session Breaks (Recommended):**
+
+| Session | Phases | Reason |
+|---------|--------|--------|
+| 1 | 0-1 | Commission, Research (creative decisions) |
+| 2 | 2-3 | KB Architecture, Bootstrapping (knowledge structure) |
+| 3 | 4-5 | DSP, State Management (heavy implementation) |
+| 4 | 6-7 | Integration, GUI (more implementation) |
+| 5 | 8-9 | Validation, DAW Testing (requires working plugin) |
+| 6 | 10-12 | Licensing, Marketplace, Marketing (commercial) |
+| 7 | 13-16 | Release, Post-Launch, Improvement, KB Maintenance |
+
+**Session Context Carry:**
+- Always load: `decisions-ledger.md`, `artifact-manifest.md`
+- Phase-specific: Load context_load from phase's compilation block
+- Drop: Previous phase's discussion (captured in decisions-ledger)
+
+### Context Preservation
+
+**Persistent Files:**
+1. `decisions-ledger.md` — All decisions, never excluded
+2. `artifact-manifest.md` — All files created, never excluded
+
+**Update Rules:**
+- Update decisions-ledger at every phase gate
+- Update artifact-manifest at every phase gate
+- Update metrics-tracker at every phase gate
+
+**Never Exclude:**
+- decisions-ledger.md
+- artifact-manifest.md
+- SPEC.md (after Phase 0)
+
+### Cost Optimization
+
+**Minimize Token Usage:**
+1. Load only needed KB layers (see Phase-to-KB mapping)
+2. Drop previous phase's research after synthesis
+3. Use context_budget for large KB entries
+4. Summarize long documents in decisions-ledger
+
+**Maintain Quality:**
+- Always load phase's compilation block
+- Never skip gate verification
+- Keep human decision history in decisions-ledger
+
+### General Operating Rules
+
+1. **Every phase starts fresh** — Load context from compilation block
+2. **Every gate ends with verification** — Produce GATE VERIFICATION block
+3. **Human decisions are final** — Never override or paraphrase human input
+4. **Escalate blockers** — Document and escalate; don't guess
+5. **Document everything** — decisions-ledger, artifact-manifest
+
+---
+
+## 3. Compilation Block Tuning
+
+### Phase 0: Commission & Scoping
+
+```json
+{
+  "success_criteria": [
+    "Purpose statement is one unambiguous paragraph",
+    "Scope has explicit in/out/adjacent lists",
+    "Success criteria are measurable",
+    "Technical constraints documented",
+    "Human approved SPEC.md"
+  ],
+  "tools_available": ["file_creation", "user_questioning"],
+  "behavioral_profile": {
+    "risk_tolerance": "minimal",
+    "creativity_level": "conservative",
+    "verbosity": "concise",
+    "stance": "supportive"
+  }
+}
+```
+
+**Rationale:** Creative decisions require human input; AI asks, never proposes defaults.
+
+---
+
+### Phase 1: Performance Audit (if existing code)
+
+```json
+{
+  "success_criteria": [
+    "No non-atomic shared state",
+    "No static variables across instances",
+    "No allocations in processBlock",
+    "Effect audible at all parameter ranges"
+  ],
+  "tools_available": ["file_reading", "code_analysis"],
+  "behavioral_profile": {
+    "risk_tolerance": "minimal",
+    "creativity_level": "strict",
+    "verbosity": "detailed",
+    "stance": "critical"
+  }
+}
+```
+
+**Rationale:** Audit requires critical stance; strict adherence to real-time safety rules.
+
+---
+
+### Phase 2: Architecture & Task Breakdown
+
+```json
+{
+  "success_criteria": [
+    "Every spec requirement has task",
+    "Tasks ordered by dependency",
+    "All formulas verified at boundaries",
+    "Buffer sizes computed for 192kHz",
+    "Human approved architecture"
+  ],
+  "tools_available": ["file_creation", "file_reading"],
+  "behavioral_profile": {
+    "risk_tolerance": "low",
+    "creativity_level": "moderate",
+    "verbosity": "detailed",
+    "stance": "neutral"
+  }
+}
+```
+
+**Rationale:** Design requires moderate creativity; human approval gates decisions.
+
+---
+
+### Phase 3: Project Setup & Test Framework
+
+```json
+{
+  "success_criteria": [
+    "CMakeLists.txt configured",
+    "Build succeeds",
+    "Tests pass",
+    "Plugin loads in DAW"
+  ],
+  "tools_available": ["file_creation", "bash_commands"],
+  "behavioral_profile": {
+    "risk_tolerance": "minimal",
+    "creativity_level": "strict",
+    "verbosity": "detailed",
+    "stance": "neutral"
+  }
+}
+```
+
+**Rationale:** Setup requires precision; no creative decisions.
+
+---
+
+### Phase 4: DSP Implementation
+
+```json
+{
+  "success_criteria": [
+    "All DSP modules implemented",
+    "Parameter smoothing on all modulatable parameters",
+    "No allocations in processBlock",
+    "Build succeeds",
+    "Tests pass",
+    "Human approved sound"
+  ],
+  "tools_available": ["file_creation", "file_editing", "bash_commands"],
+  "behavioral_profile": {
+    "risk_tolerance": "minimal",
+    "creativity_level": "strict",
+    "verbosity": "detailed",
+    "stance": "neutral"
+  }
+}
+```
+
+**Rationale:** Implementation requires precision; sound approval is human-only.
+
+---
+
+### Phase 5-6: State Management, Integration
+
+**Defaults sufficient.**
+
+---
+
+### Phase 7: GUI Design
+
+```json
+{
+  "success_criteria": [
+    "All parameters have visible controls",
+    "Tab order enables keyboard navigation",
+    "Human approved appearance"
+  ],
+  "tools_available": ["file_creation", "file_editing"],
+  "behavioral_profile": {
+    "risk_tolerance": "low",
+    "creativity_level": "moderate",
+    "verbosity": "detailed",
+    "stance": "supportive"
+  }
+}
+```
+
+**Rationale:** GUI requires creativity; human approval gates aesthetic.
+
+---
+
+### Phase 8: Validation & Testing
+
+```json
+{
+  "success_criteria": [
+    "Unit tests passing",
+    "pluginval validation passing",
+    "Audio thread safety audit clean",
+    "Gain staging verified"
+  ],
+  "tools_available": ["bash_commands", "file_reading"],
+  "behavioral_profile": {
+    "risk_tolerance": "minimal",
+    "creativity_level": "strict",
+    "verbosity": "detailed",
+    "stance": "critical"
+  }
+}
+```
+
+**Rationale:** Testing requires critical stance; strict adherence to standards.
+
+---
+
+### Phase 9: DAW Testing
+
+```json
+{
+  "success_criteria": [
+    "Plugin loads in REAPER",
+    "Basic functionality works",
+    "Parameter changes work without clicks",
+    "Human approved sound quality"
+  ],
+  "tools_available": ["user_questioning"],
+  "behavioral_profile": {
+    "risk_tolerance": "minimal",
+    "creativity_level": "conservative",
+    "verbosity": "concise",
+    "stance": "supportive"
+  }
+}
+```
+
+**Rationale:** Human-only testing; AI assists debugging only.
+
+---
+
+### Phase 10-13: Commercial Phases
+
+**Defaults sufficient for Phases 10-12.**
+
+```json
+// Phase 13: Release
+{
+  "success_criteria": [
+    "Final build verified",
+    "Distribution packages created",
+    "Marketplace listings live",
+    "Human approved launch"
+  ],
+  "tools_available": ["file_creation", "bash_commands", "user_questioning"],
+  "behavioral_profile": {
+    "risk_tolerance": "minimal",
+    "creativity_level": "conservative",
+    "verbosity": "detailed",
+    "stance": "supportive"
+  }
+}
+```
+
+---
+
+### Phase 14-16: Operations Phases
+
+**Defaults sufficient.**
+
+---
+
+## 4. Phase-to-KB-Layer Mapping
+
+| Phase | KB Layers Loaded | Rationale |
+|-------|-----------------|-----------|
+| 0 | None | Commission only, no KB needed |
+| 1 | None | Research phase, KB not used |
+| 2 | None | Architecture, KB structure defined |
+| 3 | None | Setup, KB structure already created |
+| 4 | Technical, Sound Design (bridge) | DSP implementation needs technical patterns and sound translation |
+| 5 | Technical | State management patterns |
+| 6 | Technical | Integration patterns |
+| 7 | UI/UX | GUI control and layout patterns |
+| 8 | Technical | Validation and testing patterns |
+| 9 | None | Human perceptual testing |
+| 10 | Commercial | Licensing patterns |
+| 11 | Commercial | Marketplace patterns |
+| 12 | Commercial | Marketing patterns |
+| 13 | Commercial | Distribution patterns |
+| 14 | None | Support operations |
+| 15 | All | Improvement needs full context |
+| 16 | All | KB maintenance needs all layers |
+
+**Context Budget:** Technical and Sound Design KB loaded together for Phase 4; Commercial KB for Phases 10-13; All layers for Phases 15-16.
+
+---
+
+## 5. Skill Activation Mapping
+
+The playbook integrates with the superpowers skills system for structured execution:
+
+| Phase | Skill Activation | Rationale |
+|-------|------------------|-----------|
+| 0 | **brainstorming** | Commission requires creative thinking to develop product concept, purpose, and scope |
+| 1 | **brainstorming** | Research and concept development requires thinking through specification details |
+| 2 | **writing-plans** | Architecture design — create implementation plan from specification |
+| 3 | **execute-plans** | Setup execution from plan |
+| 4 | **execute-plans** | DSP implementation execution from plan |
+| 5 | **execute-plans** | State management execution from plan |
+| 6 | **execute-plans** | Integration execution from plan |
+| 7 | **execute-plans** | GUI implementation execution from plan |
+| 8 | **execute-plans** | Validation execution from plan |
+| 9 | none | Human-only perceptual testing — no skill activation |
+| 10 | **execute-plans** | Licensing execution from plan |
+| 11 | **execute-plans** | Marketplace listing execution from plan |
+| 12 | **execute-plans** | Marketing execution from plan |
+| 13 | **execute-plans** | Release execution from plan |
+| 14 | **execute-plans** | Post-launch support operations from plan |
+| 15 | **brainstorming** | Improvement analysis may require creative thinking to identify opportunities |
+| 16 | **execute-plans** | KB maintenance execution from plan |
+
+### Skill Definitions
+
+**brainstorming** — Used for creative thinking, concept development, and specification creation. Activates when:
+- Developing product concept from commission brief
+- Creating specification from research
+- Analyzing improvement opportunities
+- Any phase requiring "thinking through" before planning
+
+**writing-plans** — Used to create implementation plans from specifications. Activates when:
+- Translating approved specification into actionable tasks
+- Designing architecture from requirements
+- Breaking down complex phases into executable steps
+
+**execute-plans** — Primary execution skill. Used for implementing plans with a single agent. Activates when:
+- Executing tasks from an approved implementation plan
+- Following step-by-step instructions
+- Completing implementation phases sequentially
+- **Preferred method for most phases**
+
+**sub-agent driven development** — Alternative execution method using multiple specialized sub-agents. Use when:
+- Complex multi-component development requiring parallel work
+- Large-scale refactoring requiring coordinated changes
+- Multiple independent systems need simultaneous development
+- **Use sparingly — execute-plans is preferred for single-agent workflow**
+
+### Skill Invocation Pattern
+
+```
+Phase Flow:
+Phase 0-1: brainstorming → develops SPEC.md
+    ↓
+Phase 2: writing-plans → creates implementation plan (architecture.md, task-list.md)
+    ↓
+Phase 3-16: execute-plans → implements from plan
+    ↓
+Phase 15: brainstorming (if needed) → improvement opportunities
+```
+
+### Fallback Handling
+
+If a skill is unavailable:
+1. **brainstorming unavailable** → Proceed with human-guided questioning
+2. **writing-plans unavailable** → Proceed with manual architecture design
+3. **execute-plans unavailable** → Execute tasks directly with single agent
+4. **sub-agent unavailable** → Always fallback to execute-plans
+
+---
+
+## 6. Router/Dispatcher
+
+### Router Specification
+
+The router determines which phase to start based on the user's request:
+
+```
+IF request is "build a plugin" or "create a VST":
+  → Start at Phase 0 (Commission & Scoping)
+  → Load: commission brief from user
+  
+IF request is "implement DSP" or "write audio code":
+  → Check if SPEC.md exists
+  → IF exists: Start at Phase 4 (DSP Implementation)
+  → IF not exists: Ask for SPEC.md or start Phase 0
+  
+IF request is "test the plugin" or "validate":
+  → Check if plugin builds
+  → IF builds: Start at Phase 8 (Validation)
+  → IF not: Ask to build first
+  
+IF request is "add licensing" or "marketplace":
+  → Check if plugin tested
+  → IF tested: Start at Phase 10 (Licensing)
+  → IF not: Ask to test first
+  
+IF request is "continue" or "next phase":
+  → Read decisions-ledger.md
+  → Find last completed phase
+  → Start next phase
+```
+
+### Context Preservation
+
+**Persistent Files:**
+- `decisions-ledger.md` — Updated at every gate
+- `artifact-manifest.md` — Updated at every gate
+- `SPEC.md` — Created in Phase 0, referenced throughout
+
+**Format:**
+```markdown
+# Decisions Ledger
+
+## Configuration
+- Output Location: ...
+- External Data Sources: ...
+
+## Phase N Decisions
+[Phase-specific decisions]
+
+## Session Plan
+[Which phases in which sessions]
+```
+
+---
+
+## 7. Post-Run Review Structure
+
+After completing the playbook, assess:
+
+### What Went Well
+- Phases that completed on first attempt
+- Decisions that didn't require revision
+- Human-AI collaboration that worked smoothly
+
+### What Didn't Go Well
+- Phases that required multiple iterations
+- Decisions that were reversed
+- Blockers that required escalation
+
+### What Should Change
+- Tasks that were unclear
+- Gates that were too strict or too loose
+- KB entries that were missing or unhelpful
+
+### Metrics Target vs Actual
+
+| Metric | Target | Actual | Notes |
+|--------|--------|-------|-------|
+| Total phases | 17 | — | |
+| Tasks completed | — | — | |
+| Gates passed first try | — | — | |
+| Escalations | — | — | |
+| Human interventions | — | — | |
+
+### Quality Assessment
+
+- Did the plugin meet all success criteria?
+- Were all cross-cutting concerns addressed?
+- Is the KB more useful after this run?
+
+### Recommendations for Next Run
+
+- What to add to KB
+- What to change in playbook
+- What to document better

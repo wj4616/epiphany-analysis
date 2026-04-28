@@ -1,0 +1,49 @@
+{
+  "kb_name": "testing-kb",
+  "version": "1.0.0",
+  "last_updated": "2026-03-30T12:24:56.309189+00:00",
+  "topics": {
+    "unit-testing": {
+      "files": [
+        "catch2-juce.json",
+        "test-driven-audio.json",
+        "mocking-audio.json"
+      ],
+      "file_count": 3,
+      "last_updated": "2026-03-30T12:24:56.309190+00:00"
+    },
+    "regression": {
+      "files": [
+        "snapshot-testing.json",
+        "audio-comparison.json"
+      ],
+      "file_count": 2,
+      "last_updated": "2026-03-30T12:24:56.309192+00:00"
+    },
+    "daw-testing": {
+      "files": [
+        "logic-testing.json",
+        "reaper-testing.json",
+        "ableton-testing.json"
+      ],
+      "file_count": 3,
+      "last_updated": "2026-03-30T12:24:56.309193+00:00"
+    },
+    "performance-testing": {
+      "files": [
+        "latency-measurement.json",
+        "cpu-profiling.json"
+      ],
+      "file_count": 2,
+      "last_updated": "2026-03-30T12:24:56.309194+00:00"
+    },
+    "validation": {
+      "files": [
+        "automated-validation.json",
+        "pluginval.json"
+      ],
+      "file_count": 2,
+      "last_updated": "2026-03-30T12:24:56.309195+00:00"
+    }
+  }
+}

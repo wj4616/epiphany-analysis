@@ -1,0 +1,40 @@
+{
+  "harvest_metadata": {
+    "kb_type": "dsp-kb",
+    "topic": "sample rate conversion interpolation",
+    "harvested_at": "2026-03-30T23:34:48.505825+00:00",
+    "quality_filter": {
+      "passed": 1,
+      "rejected": 37,
+      "rejection_reasons": {
+        "not_relevant": 36,
+        "content_too_short": 1
+      }
+    },
+    "thresholds": {
+      "min_content_length": 500,
+      "min_relevance_score": 0.2,
+      "max_noise_ratio": 0.5
+    }
+  },
+  "result": {
+    "data": [
+      {
+        "url": "https://spinlab.wpi.edu/courses/ece503_2014/4-4multirate.pdf",
+        "title": "[PDF] Digital Signal Processing Efficient Sample Rate Conversion - spinlab",
+        "markdown": "D. Richard Brown III\n\n# Rational Sample Rate Conversion\n\n![](https://spinlab.wpi.edu/courses/ece503_2014/images/4d2bad7957ef6d81acc5436dd2c704c9caab31b624b12256756bc51fe240b90f.jpg)\n\n$\\\\frac { 5 0 } { 4 9 }$\n\n1Upsample by factor of $L = 5 0$ .\n\nLoss eicuey $\\\\frac { \\\\pi } { 5 0 }$ .\n\nDownsample by factor of $M = 4 9$ .\n\n# Exchanging the Order Downsampling and Fiteg\n\nEquivalent structures:\n\n$$\n\\\\begin{array} { r l r } & { } & { \\\\underset { x \\[ n \\] } { \\\\longrightarrow } \\\\left\\[ \\\\begin{array} { c } { \\\\big { \\\\begin{array} { c } { \\\\big } { M } \\\\end{array} \\\\biggr } \\_ { \\\\overline { { x \\_ { a } \\[ n \\] } } } \\\\underset { ( \\\\mathrm { a } ) } { \\\\longrightarrow } \\\\left\\[ \\\\begin{array} { c } { H ( z ) } \\\\end{array} \\\\right\\] \\\\underset { y \\[ n \\] } { \\\\longrightarrow } } \\ & { } & \\ & { } & { \\\\underset { x \\[ n \\] } { \\\\longrightarrow } \\\\left\\[ \\\\begin{array} { c } { H ( z ^ { M } ) } \\\\end{array} \\\\right\\] \\\\underset { x \\_ { b } \\[ n \\] } { \\\\longrightarrow } \\\\left\\[ \\\\begin{array} { c } { \\\\big { \\\\begin{array} { c } { \\\\big { \\\\begin{array} { c } { \\\\big } { M } \\\\end{array} \\\\biggr } } \\ { \\\\big { \\\\begin{array} { c } { \\\\big { \\\\begin{array} { c } { \\\\big { M } } \\\\end{array} \\\\biggr } } \\ { \\\\big { \\\\begin{array} { c } { \\\\big { M } } \\\\end{array} \\\\biggr } } } \\\\end{array} \\\\right\\]} } } \\ &\\\\right\\] { } & \\\\end{array} \\\\end{array} \\\\end{array} \\\\end{array}\n$$\n\nExample $\\\\begin{array} { r } { \\| = { \\\\underline { { 1 } } , 2 , 3 , 4 , 5 , 6 } , H ( z ) = 1 0 + 2 0 z ^ { - 1 } , } \\\\end{array}$ and $M = 2$\n\nApproach (a): $x \\_ { a } \\[ n \\] = { \\\\underline { { { 1 } } } , 3 , 5 }$ and $y \\[ n \\] = { \\\\underline { { 1 0 } } , 5 0 , 1 1 0 , 1 0 0 } .$\n\nApproach (b): $H ( z ^ { M } ) = 1 0 + 2 0 z ^ { - } \\ .$ xb\\[n\\] = {10, 20, 50, 80, 110, 140, 100, 120} and $y \\[ n \\] = { 1 0 , 5 0 , 1 1 0 , 1 0 0 } .$\n\nWhich approach is easier to implement?\n\n# Exchanging the Order of Upsampling and Filtering\n\nEquivalent structures:\n\n$$\n\\\\begin{array} { r } { \\\\xrightarrow \\[ x \\[ n \\] \\] { \\\\quad } \\\\left\\[ \\\\begin{array} { c } { H ( z ) } \\ { \\\\xrightarrow \\[ x \\_ { a } \\[ n \\] \\] { } } \\\\end{array} \\\\right\\] \\\\xrightarrow \\[ x \\_ { a } \\[ n \\] \\] { \\\\quad + \\\\left\\[ \\\\begin{array} { c } { \\\\dag } \\ { \\\\dag } \\\\end{array} \\\\right\\] { } } \\\\xrightarrow \\[ y \\[ n \\] \\] { } } \\ { \\\\xrightarrow \\[ x \\[ n \\] \\] { } \\\\left\\[ \\\\begin{array} { c } { \\\\dag } \\ { \\\\dag } \\\\end{array} \\\\right\\] { } \\\\xrightarrow \\[ x \\_ { b } \\[ n \\] \\] { } \\\\left\\[ \\\\begin{array} { c } { H ( z ^ { L } ) } \\ { \\\\dag } \\\\end{array} \\\\right\\] { } \\\\xrightarrow \\[ y \\[ n \\] \\] { } } \\ { ( b ) } \\\\end{array}\n$$\n\nExample $x \\[ n \\] = { \\\\underline { { { 1 } } } , 2 , 3 , 4 } , \\ : H ( z ) = 1 0 + 2 0 z ^ { - 1 } , \\ :$ and $L = 2$ .\n\nApproach (a): $x \\_ { a } \\[ n \\] = { \\\\underline { { 1 0 } } , 4 0 , 7 0 , 1 0 0 , 8 0 }$ and y\\[n\\] = {10, 0, 40, 0, 70, 0, 100, 0, 80, 0}.\n\nAp $\\\\begin{array} { l } { { ) \\\\mathsf { p r o a c h } \\ ( \\\\mathsf { b } ) \\\\colon x \\_ { b } \\[ n \\] = { \\\\underline { { { 1 } } } , 0 , 2 , 0 , 3 , 0 , 4 , 0 } } } \\ { { n \\] = { \\\\underline { { { 1 0 } } } , 0 , 4 0 , 0 , 7 0 , 0 , 1 0 0 , 0 , 8 0 , 0 } . \\\\qquad } } \\\\end{array}$ $H ( z ^ { L } ) = 1 0 + 2 0 z ^ { - 2 }$ , and y\\[\\\n\\\nWhich approach is easier to implement?\\\n\\\n# Multistage Interpolation and Decimation\\\n\\\nEquivalent structures:\\\n\\\n![](https://spinlab.wpi.edu/courses/ece503_2014/images/baa11263cb7dca29753cfda5dcd0cc438908593490ab136a5c299c3b6d1b42c7.jpg)\\\n\\\nThe main advantage of multistage interpolation and decimation is efficiency. Splitting interpolation and decimation into multiple steps avoids using computationally difficult narrowband filters. By up/downsampling in smaller steps, you can use simpler wideband lowpass filters in each stage.\\\n\\\n# Multistage Rational Sample Rate Conversion\\\n\\\nOur earler example to change the sample rate by $\\\\frac { 5 0 } { 4 9 }$ .\\\n\\\n![](https://spinlab.wpi.edu/courses/ece503_2014/images/10f22b883176c8a7d89d7bdf94f2d7e3f84f37646cab3b012086a37eaab81895.jpg)\\\n\\\nAn equivalent (but more efficient) structure:\\\n\\\n![](https://spinlab.wpi.edu/courses/ece503_2014/images/502051107b0614879c825b81345f9d44228a785d73e69b7271b0a293133b8693.jpg)\\\n\\\nTry the Matlab function upfirdn.",
+        "quality_report": {
+          "url": "https://spinlab.wpi.edu/courses/ece503_2014/4-4multirate.pdf",
+          "title": "[PDF] Digital Signal Processing Efficient Sample Rate Conversion - spinlab",
+          "content_length": 4239,
+          "has_code": false,
+          "code_blocks": 0,
+          "relevance_score": 0.2453408822835575,
+          "noise_ratio": 0.06153846153846154,
+          "passed": true,
+          "rejection_reason": null
+        }
+      }
+    ]
+  }
+}

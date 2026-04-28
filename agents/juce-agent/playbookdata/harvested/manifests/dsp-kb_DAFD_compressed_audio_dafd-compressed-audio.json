@@ -1,0 +1,22 @@
+{
+  "kb_name": "dsp-kb",
+  "topic": "DAFD compressed audio",
+  "filename": "dafd-compressed-audio.json",
+  "status": "harvested",
+  "harvested_at": "2026-03-31T00:13:32.781736+00:00",
+  "sources": 1,
+  "rejected": 48,
+  "credits_used": 77,
+  "search_queries": [
+    "DAFD compressed audio digital audio file format",
+    "DAFD compressed audio tutorial",
+    "DAFD compressed audio implementation",
+    "DAFD compressed audio guide"
+  ],
+  "quality_thresholds": {
+    "min_content_length": 500,
+    "min_relevance_score": 0.15,
+    "max_noise_ratio": 0.6
+  },
+  "notes": "Auto-harvested via harvest-data skill"
+}

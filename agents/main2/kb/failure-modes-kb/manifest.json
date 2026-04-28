@@ -1,0 +1,26 @@
+{
+  "kb_name": "failure-modes-kb",
+  "schema_version": "1.0.0",
+  "last_updated": "2026-04-02",
+  "authority_score": 0.90,
+  "topics": {
+    "audio-thread": {
+      "entry_count": 2,
+      "entries": [
+        {"id": "failure-modes-kb_audio-thread_allocations", "status": "harvested", "version": "1.0.0"},
+        {"id": "failure-modes-kb_audio-thread_denormals", "status": "harvested", "version": "1.0.0"}
+      ]
+    },
+    "parameters": {"entry_count": 0, "entries": []},
+    "signal": {"entry_count": 0, "entries": []}
+  },
+  "status_counts": {
+    "placeholder": 0,
+    "harvested": 2,
+    "curated": 0,
+    "synced": 0
+  },
+  "sync_history": [
+    {"date": "2026-04-02", "action": "initial_population", "entries_added": 2}
+  ]
+}

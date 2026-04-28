@@ -1,0 +1,16 @@
+{
+  "id": "reference_documentation_vst3-sdk",
+  "kb": "reference",
+  "topic": "documentation",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "VST3 SDK Documentation",
+  "summary": "Placeholder: Steinberg's official VST3 SDK documentation.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "official-docs", "reference": "https://steinbergmedia.github.io/vst3_doc/"},
+  "concepts": [],
+  "tags": ["documentation", "vst3", "sdk", "steinberg"],
+  "related_topics": ["build-systems", "juce-patterns"],
+  "difficulty": "intermediate",
+  "domain_relevance": 9
+}

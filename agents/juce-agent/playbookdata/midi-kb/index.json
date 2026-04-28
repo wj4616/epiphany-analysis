@@ -1,0 +1,55 @@
+{
+  "kb_name": "midi-kb",
+  "version": "1.0.0",
+  "last_updated": "2026-03-30T12:24:56.308782+00:00",
+  "topics": {
+    "advanced": {
+      "files": [
+        "midi-2.json",
+        "midi-clock.json",
+        "sysex.json"
+      ],
+      "file_count": 3,
+      "last_updated": "2026-03-30T12:24:56.308784+00:00"
+    },
+    "realtime": {
+      "files": [
+        "midi-buffering.json",
+        "midi-latency.json",
+        "midi-timing.json",
+        "jitter-compensation.json"
+      ],
+      "file_count": 4,
+      "last_updated": "2026-03-30T12:24:56.308785+00:00"
+    },
+    "protocol": {
+      "files": [
+        "midi-basics.json",
+        "system-messages.json",
+        "midi-messages.json",
+        "channel-messages.json"
+      ],
+      "file_count": 4,
+      "last_updated": "2026-03-30T12:24:56.308786+00:00"
+    },
+    "mpe": {
+      "files": [
+        "mpe-implementation.json",
+        "mpe-basics.json",
+        "mpe-mapping.json"
+      ],
+      "file_count": 3,
+      "last_updated": "2026-03-30T12:24:56.308787+00:00"
+    },
+    "controllers": {
+      "files": [
+        "midi-learn.json",
+        "parameter-automation.json",
+        "hardware-integration.json",
+        "controller-mapping.json"
+      ],
+      "file_count": 4,
+      "last_updated": "2026-03-30T12:24:56.308788+00:00"
+    }
+  }
+}

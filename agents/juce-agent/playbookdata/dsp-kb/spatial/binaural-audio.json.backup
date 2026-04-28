@@ -1,0 +1,23 @@
+{
+  "title": "Binaural Audio",
+  "description": "HRTF-based 3D audio for headphones",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:47:41.421722Z",
+  "kb_type": "dsp",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "markdown": "# Binaural Audio\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "binaural rendering",
+    "HRTF",
+    "head related transfer function",
+    "3D audio headphones"
+  ],
+  "sources": [
+    "CCRMA",
+    "AES Spatial Audio papers"
+  ]
+}

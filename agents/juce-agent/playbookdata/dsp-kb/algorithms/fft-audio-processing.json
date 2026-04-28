@@ -1,0 +1,94 @@
+{
+  "id": "dsp-kb_algorithms_fft-audio-processing",
+  "kb": "dsp-kb",
+  "topic": "algorithms",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "The Fast Fourier Transform (FFT) converts time-domain signals to frequency-domain, enabling:\n- Spectral analysis and visualization\n- Frequency-domain filtering\n- Convolution-based effects (reverb, convolution)\n- Pitch detection and analysis",
+  "concepts": [
+    {
+      "name": "Windowing",
+      "description": "Always window for spectral analysis",
+      "related": []
+    },
+    {
+      "name": "Overlap",
+      "description": "Use 50-75% overlap for reconstruction",
+      "related": []
+    },
+    {
+      "name": "Zero-padding",
+      "description": "Improves frequency resolution for analysis",
+      "related": []
+    },
+    {
+      "name": "DC bin",
+      "description": "Handle DC and Nyquist specially",
+      "related": []
+    },
+    {
+      "name": "Phase",
+      "description": "Complex FFT requires proper phase handling",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "#include <juce_dsp/juce_dsp.h>\n\nclass FFTProcessor\n{\npublic:\n    FFTProcessor()\n    {\n        fft = std::make_unique<juce::dsp::FFT>(fftOrder);\n        fifo.resize(fftSize * 2);\n        fftBuffer.resize(fftSize * 2);\n        outputBuffer.resize(fftSize * 2);\n    }\n    \n    void pushSample(float sample)\n    {\n        fifo[fifoIndex++] = sample;\n        \n        if (fifoIndex >= fftSize)\n        {\n            processFFT();\n            fifoIndex = 0;\n        }\n    }\n    \n    void processFFT()\n    {\n        // Copy to FFT buffer with window\n        for (int i = 0; i < fftSize; ++i)\n        {\n            float window = getWindow(i);\n            fftBuffer[i] = fifo[i] * window;\n        }\n        \n        // Perform FFT\n        fft->perform(fftBuffer.data(), outputBuffer.data(), false);\n    }\n    \n    void processInverse()\n    {\n        // Perform inverse FFT\n        fft->perform(outputBuffer.data(), fftBuffer.data(), true);\n    }\n    \n    float* getMagnitudeData()\n    {\n        for (int i = 0; i < fftSize / 2; ++i)\n        {\n            float real = outputBuffer[i * 2];\n            float imag = outputBuffer[i * 2 + 1];\n            magnitudeData[i] = std::sqrt(real * real + imag * imag);\n        }\n        return magnitudeData.data();\n    }\n    \nprivate:\n    std::unique_ptr<juce::dsp::FFT> fft;\n    static constexpr int fftOrder = 11;  // 2^11 = 2048\n    static constexpr int fftSize = 1 << fftOrder;\n    \n    std::vector<float> fifo;\n    std::vector<float> fftBuffer;\n    std::vector<float> outputBuffer;\n    std::vector<float> magnitudeData;\n    int fifoIndex = 0;\n    \n    float getWindow(int index)\n    {\n        // Hann window\n        return 0.5f * (1.0f - std::cos(2.0f * M_PI * index / fftSize));\n    }\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "namespace Window\n{\n    // Hann window - good for general use\n    float hann(int i, int size)\n    {\n        return 0.5f * (1.0f - std::cos(2.0f * M_PI * i / size));\n    }\n    \n    // Hamming window - better side-lobe suppression\n    float hamming(int i, int size)\n    {\n        return 0.54f - 0.46f * std::cos(2.0f * M_PI * i / size);\n    }\n    \n    // Blackman window - best side-lobe suppression\n    float blackman(int i, int size)\n    {\n        return 0.42f - 0.5f * std::cos(2.0f * M_PI * i / size)\n                     + 0.08f * std::cos(4.0f * M_PI * i / size);\n    }\n    \n    // Kaiser window - adjustable trade-off\n    float kaiser(int i, int size, float beta)\n    {\n        // Bessel function implementation needed\n        return bessel0(beta * std::sqrt(1.0f - std::pow(2.0f * i / size - 1.0f, 2.0f)))\n             / bessel0(beta);\n    }\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "void spectralGate(float* fftData, int fftSize, float threshold)\n{\n    for (int i = 0; i < fftSize / 2; ++i)\n    {\n        float real = fftData[i * 2];\n        float imag = fftData[i * 2 + 1];\n        float magnitude = std::sqrt(real * real + imag * imag);\n        \n        if (magnitude < threshold)\n        {\n            // Zero out bins below threshold\n            fftData[i * 2] = 0.0f;\n            fftData[i * 2 + 1] = 0.0f;\n        }\n    }\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "void frequencyShift(float* fftData, int fftSize, float shiftHz, float sampleRate)\n{\n    float binWidth = sampleRate / fftSize;\n    int shiftBins = static_cast<int>(shiftHz / binWidth);\n    \n    // Rotate spectrum\n    std::rotate(fftData, fftData + shiftBins * 2, fftData + fftSize);\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "void convolve(float* fftData1, float* fftData2, int fftSize)\n{\n    for (int i = 0; i < fftSize / 2; ++i)\n    {\n        float r1 = fftData1[i * 2];\n        float i1 = fftData1[i * 2 + 1];\n        float r2 = fftData2[i * 2];\n        float i2 = fftData2[i * 2 + 1];\n        \n        // Complex multiplication\n        fftData1[i * 2] = r1 * r2 - i1 * i2;\n        fftData1[i * 2 + 1] = r1 * i2 + i1 * r2;\n    }\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class OverlapAddFFT\n{\npublic:\n    OverlapAddFFT(int fftSize, int hopSize)\n        : fftSize(fftSize), hopSize(hopSize)\n    {\n        fft = std::make_unique<juce::dsp::FFT>(log2(fftSize));\n        inputBuffer.resize(fftSize * 2);\n        outputBuffer.resize(fftSize * 2);\n        overlapBuffer.resize(fftSize, 0.0f);\n        window.resize(fftSize);\n        \n        // Initialize Hann window\n        for (int i = 0; i < fftSize; ++i)\n        {\n            window[i] = 0.5f * (1.0f - std::cos(2.0f * M_PI * i / fftSize));\n        }\n    }\n    \n    void process(float* input, float* output, int numSamples)\n    {\n        for (int i = 0; i < numSamples; ++i)\n        {\n            inputBuffer[inputIndex++] = input[i] * window[inputIndex];\n            \n            if (inputIndex >= fftSize)\n            {\n                processFrame();\n                inputIndex = 0;\n            }\n            \n            output[i] = getOutputSample();\n        }\n    }\n    \nprivate:\n    void processFrame()\n    {\n        // Forward FFT\n        fft->perform(inputBuffer.data(), outputBuffer.data(), false);\n        \n        // Process in frequency domain\n        processFrequencyDomain(outputBuffer.data());\n        \n        // Inverse FFT\n        fft->perform(outputBuffer.data(), inputBuffer.data(), true);\n        \n        // Overlap-add\n        for (int i = 0; i < fftSize; ++i)\n        {\n            overlapBuffer[i] += inputBuffer[i] * window[i] / (fftSize / hopSize / 2);\n        }\n    }\n    \n    float getOutputSample()\n    {\n        float sample = overlapBuffer[outputIndex];\n        overlapBuffer[outputIndex] = 0.0f;\n        outputIndex = (outputIndex + 1) % fftSize;\n        return sample;\n    }\n    \n    std::unique_ptr<juce::dsp::FFT> fft;\n    int fftSize, hopSize;\n    int inputIndex = 0, outputIndex = 0;\n    std::vector<float> inputBuffer, outputBuffer, overlapBuffer, window;\n};\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# FFT for Audio Processing\n\n## Overview\n\nThe Fast Fourier Transform (FFT) converts time-domain signals to frequency-domain, enabling:\n- Spectral analysis and visualization\n- Frequency-domain filtering\n- Convolution-based effects (reverb, convolution)\n- Pitch detection and analysis\n\n## JUCE FFT Implementation\n\n```cpp\n#include <juce_dsp/juce_dsp.h>\n\nclass FFTProcessor\n{\npublic:\n    FFTProcessor()\n    {\n        fft = std::make_unique<juce::dsp::FFT>(fftOrder);\n        fifo.resize(fftSize * 2);\n        fftBuffer.resize(fftSize * 2);\n        outputBuffer.resize(fftSize * 2);\n    }\n    \n    void pushSample(float sample)\n    {\n        fifo[fifoIndex++] = sample;\n        \n        if (fifoIndex >= fftSize)\n        {\n            processFFT();\n            fifoIndex = 0;\n        }\n    }\n    \n    void processFFT()\n    {\n        // Copy to FFT buffer with window\n        for (int i = 0; i < fftSize; ++i)\n        {\n            float window = getWindow(i);\n            fftBuffer[i] = fifo[i] * window;\n        }\n        \n        // Perform FFT\n        fft->perform(fftBuffer.data(), outputBuffer.data(), false);\n    }\n    \n    void processInverse()\n    {\n        // Perform inverse FFT\n        fft->perform(outputBuffer.data(), fftBuffer.data(), true);\n    }\n    \n    float* getMagnitudeData()\n    {\n        for (int i = 0; i < fftSize / 2; ++i)\n        {\n            float real = outputBuffer[i * 2];\n            float imag = outputBuffer[i * 2 + 1];\n            magnitudeData[i] = std::sqrt(real * real + imag * imag);\n        }\n        return magnitudeData.data();\n    }\n    \nprivate:\n    std::unique_ptr<juce::dsp::FFT> fft;\n    static constexpr int fftOrder = 11;  // 2^11 = 2048\n    static constexpr int fftSize = 1 << fftOrder;\n    \n    std::vector<float> fifo;\n    std::vector<float> fftBuffer;\n    std::vector<float> outputBuffer;\n    std::vector<float> magnitudeData;\n    int fifoIndex = 0;\n    \n    float getWindow(int index)\n    {\n        // Hann window\n        return 0.5f * (1.0f - std::cos(2.0f * M_PI * index / fftSize));\n    }\n};\n```\n\n## Windowing Functions\n\n```cpp\nnamespace Window\n{\n    // Hann window - good for general use\n    float hann(int i, int size)\n    {\n        return 0.5f * (1.0f - std::cos(2.0f * M_PI * i / size));\n    }\n    \n    // Hamming window - better side-lobe suppression\n    float hamming(int i, int size)\n    {\n        return 0.54f - 0.46f * std::cos(2.0f * M_PI * i / size);\n    }\n    \n    // Blackman window - best side-lobe suppression\n    float blackman(int i, int size)\n    {\n        return 0.42f - 0.5f * std::cos(2.0f * M_PI * i / size)\n                     + 0.08f * std::cos(4.0f * M_PI * i / size);\n    }\n    \n    // Kaiser window - adjustable trade-off\n    float kaiser(int i, int size, float beta)\n    {\n        // Bessel function implementation needed\n        return bessel0(beta * std::sqrt(1.0f - std::pow(2.0f * i / size - 1.0f, 2.0f)))\n             / bessel0(beta);\n    }\n}\n```\n\n## Frequency-Domain Processing\n\n### Spectral Gate (Noise Reduction)\n```cpp\nvoid spectralGate(float* fftData, int fftSize, float threshold)\n{\n    for (int i = 0; i < fftSize / 2; ++i)\n    {\n        float real = fftData[i * 2];\n        float imag = fftData[i * 2 + 1];\n        float magnitude = std::sqrt(real * real + imag * imag);\n        \n        if (magnitude < threshold)\n        {\n            // Zero out bins below threshold\n            fftData[i * 2] = 0.0f;\n            fftData[i * 2 + 1] = 0.0f;\n        }\n    }\n}\n```\n\n### Frequency Shifter\n```cpp\nvoid frequencyShift(float* fftData, int fftSize, float shiftHz, float sampleRate)\n{\n    float binWidth = sampleRate / fftSize;\n    int shiftBins = static_cast<int>(shiftHz / binWidth);\n    \n    // Rotate spectrum\n    std::rotate(fftData, fftData + shiftBins * 2, fftData + fftSize);\n}\n```\n\n### Spectral Convolution\n```cpp\nvoid convolve(float* fftData1, float* fftData2, int fftSize)\n{\n    for (int i = 0; i < fftSize / 2; ++i)\n    {\n        float r1 = fftData1[i * 2];\n        float i1 = fftData1[i * 2 + 1];\n        float r2 = fftData2[i * 2];\n        float i2 = fftData2[i * 2 + 1];\n        \n        // Complex multiplication\n        fftData1[i * 2] = r1 * r2 - i1 * i2;\n        fftData1[i * 2 + 1] = r1 * i2 + i1 * r2;\n    }\n}\n```\n\n## Real-Time Considerations\n\n### Overlap-Add Method\n```cpp\nclass OverlapAddFFT\n{\npublic:\n    OverlapAddFFT(int fftSize, int hopSize)\n        : fftSize(fftSize), hopSize(hopSize)\n    {\n        fft = std::make_unique<juce::dsp::FFT>(log2(fftSize));\n        inputBuffer.resize(fftSize * 2);\n        outputBuffer.resize(fftSize * 2);\n        overlapBuffer.resize(fftSize, 0.0f);\n        window.resize(fftSize);\n        \n        // Initialize Hann window\n        for (int i = 0; i < fftSize; ++i)\n        {\n            window[i] = 0.5f * (1.0f - std::cos(2.0f * M_PI * i / fftSize));\n        }\n    }\n    \n    void process(float* input, float* output, int numSamples)\n    {\n        for (int i = 0; i < numSamples; ++i)\n        {\n            inputBuffer[inputIndex++] = input[i] * window[inputIndex];\n            \n            if (inputIndex >= fftSize)\n            {\n                processFrame();\n                inputIndex = 0;\n            }\n            \n            output[i] = getOutputSample();\n        }\n    }\n    \nprivate:\n    void processFrame()\n    {\n        // Forward FFT\n        fft->perform(inputBuffer.data(), outputBuffer.data(), false);\n        \n        // Process in frequency domain\n        processFrequencyDomain(outputBuffer.data());\n        \n        // Inverse FFT\n        fft->perform(outputBuffer.data(), inputBuffer.data(), true);\n        \n        // Overlap-add\n        for (int i = 0; i < fftSize; ++i)\n        {\n            overlapBuffer[i] += inputBuffer[i] * window[i] / (fftSize / hopSize / 2);\n        }\n    }\n    \n    float getOutputSample()\n    {\n        float sample = overlapBuffer[outputIndex];\n        overlapBuffer[outputIndex] = 0.0f;\n        outputIndex = (outputIndex + 1) % fftSize;\n        return sample;\n    }\n    \n    std::unique_ptr<juce::dsp::FFT> fft;\n    int fftSize, hopSize;\n    int inputIndex = 0, outputIndex = 0;\n    std::vector<float> inputBuffer, outputBuffer, overlapBuffer, window;\n};\n```\n\n## Performance Optimization\n\n| Optimization | Benefit |\n|--------------|--------|\n| Power-of-2 sizes | Efficient butterfly algorithm |\n| SIMD FFT | 4-8x speedup on modern CPUs |\n| Static allocation | No heap allocation in audio thread |\n| Block processing | Better cache utilization |\n\n## Common Pitfalls\n\n1. **Windowing**: Always window for spectral analysis\n2. **Overlap**: Use 50-75% overlap for reconstruction\n3. **Zero-padding**: Improves frequency resolution for analysis\n4. **DC bin**: Handle DC and Nyquist specially\n5. **Phase**: Complex FFT requires proper phase handling\n\n## FFT Size Selection\n\n| Size | Latency (ms @ 48kHz) | Frequency Resolution |\n|------|---------------------|---------------------|\n| 512 | 10.7 | 93.75 Hz |\n| 1024 | 21.3 | 46.88 Hz |\n| 2048 | 42.7 | 23.44 Hz |\n| 4096 | 85.3 | 11.72 Hz |\n\n## References\n\n- JUCE DSP Tutorial: \"The fast Fourier transform\"\n- KFR Framework: One of the fastest FFT implementations\n- Julius O. Smith: \"Mathematics of the Discrete Fourier Transform\"",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.776437+00:00"
+  },
+  "title": "FFT for Audio Processing",
+  "description": "Fast Fourier Transform for frequency-domain audio processing in plugins",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "dsp",
+  "audio_relevance": 10,
+  "difficulty": "advanced",
+  "implementation_examples": 4,
+  "tags": [
+    "fft",
+    "fourier",
+    "spectral",
+    "convolution",
+    "frequency"
+  ],
+  "related_topics": [
+    "filter",
+    "dsp",
+    "oscillator",
+    "reverb"
+  ]
+}

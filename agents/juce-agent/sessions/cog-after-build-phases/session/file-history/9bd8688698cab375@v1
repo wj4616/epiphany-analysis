@@ -1,0 +1,26 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+
+// DCBlocker - Remove DC offset from audio signal
+// TODO: Implement in future task
+
+namespace CogDSP
+{
+
+class DCBlocker
+{
+public:
+    DCBlocker() = default;
+    ~DCBlocker() = default;
+
+    void prepare(double sampleRate);
+    void process(float* samples, int numSamples);
+    void reset();
+
+private:
+    float x1 = 0.0f;
+};
+
+} // namespace CogDSP

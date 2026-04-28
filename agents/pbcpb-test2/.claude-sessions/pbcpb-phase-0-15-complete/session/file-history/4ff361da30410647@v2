@@ -1,0 +1,16 @@
+{
+  "id": "ui-ux_platform-standards_daw-conventions",
+  "kb": "ui-ux",
+  "topic": "platform-standards",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "DAW UI Conventions and Expectations",
+  "summary": "Placeholder: Common patterns across REAPER, Ableton, Logic, Pro Tools.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["ui", "platform", "daw", "conventions", "standards"],
+  "related_topics": ["platform-standards", "control-types"],
+  "difficulty": "intermediate",
+  "domain_relevance": 8
+}

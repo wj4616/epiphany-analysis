@@ -1,0 +1,123 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+#include "FastMath.h"
+
+namespace CogDSP
+{
+
+// Fractional delay line with linear interpolation
+// Used for: chorus, latency compensation, feedback loops
+template<typename FloatType>
+class DelayLine
+{
+public:
+    DelayLine() = default;
+    ~DelayLine() = default;
+
+    void prepare(double sampleRate, float maxDelayMs)
+    {
+        this->sampleRate = sampleRate;
+        maxDelaySamples = static_cast<int>(std::ceil(maxDelayMs * sampleRate / 1000.0)) + 2;
+
+        // Allocate buffer
+        buffer.setSize(1, maxDelaySamples);
+        buffer.clear();
+        writeIndex = 0;
+        currentDelaySamples = 0.0;
+    }
+
+    void setDelay(float delayMs)
+    {
+        const float delaySamples = delayMs * static_cast<float>(sampleRate) / 1000.0f;
+        currentDelaySamples = std::clamp(delaySamples, 0.0f, static_cast<float>(maxDelaySamples - 2));
+    }
+
+    void setDelaySamples(float delaySamples)
+    {
+        currentDelaySamples = std::clamp(delaySamples, 0.0f, static_cast<float>(maxDelaySamples - 2));
+    }
+
+    // Push a sample into the delay line and return the delayed output
+    FloatType process(FloatType input)
+    {
+        // Write input to buffer
+        auto* bufferData = buffer.getWritePointer(0);
+        bufferData[writeIndex] = input;
+
+        // Calculate read position with fractional delay
+        float readPos = static_cast<float>(writeIndex) - currentDelaySamples;
+        while (readPos < 0.0f)
+            readPos += static_cast<float>(maxDelaySamples);
+
+        const int readIndexInt = static_cast<int>(readPos);
+        const float frac = readPos - static_cast<float>(readIndexInt);
+
+        // Linear interpolation
+        const int readIndexNext = (readIndexInt + 1) % maxDelaySamples;
+        const FloatType sample1 = bufferData[readIndexInt];
+        const FloatType sample2 = bufferData[readIndexNext];
+
+        const FloatType output = CogDSP::lerp(sample1, sample2, frac);
+
+        // Advance write index
+        writeIndex = (writeIndex + 1) % maxDelaySamples;
+
+        return output;
+    }
+
+    // Process a block of samples
+    void process(FloatType* samples, int numSamples)
+    {
+        for (int i = 0; i < numSamples; ++i)
+        {
+            samples[i] = process(samples[i]);
+        }
+    }
+
+    // Get delayed output without pushing new input (for parallel reads)
+    FloatType read() const
+    {
+        auto* bufferData = buffer.getReadPointer(0);
+
+        float readPos = static_cast<float>(writeIndex) - currentDelaySamples - 1.0f;
+        while (readPos < 0.0f)
+            readPos += static_cast<float>(maxDelaySamples);
+
+        const int readIndexInt = static_cast<int>(readPos);
+        const float frac = readPos - static_cast<float>(readIndexInt);
+
+        const int readIndexNext = (readIndexInt + 1) % maxDelaySamples;
+        const FloatType sample1 = bufferData[readIndexInt];
+        const FloatType sample2 = bufferData[readIndexNext];
+
+        return CogDSP::lerp(sample1, sample2, frac);
+    }
+
+    // Push sample without reading (write-only)
+    void pushSample(FloatType sample)
+    {
+        auto* bufferData = buffer.getWritePointer(0);
+        bufferData[writeIndex] = sample;
+        writeIndex = (writeIndex + 1) % maxDelaySamples;
+    }
+
+    void reset()
+    {
+        buffer.clear();
+        writeIndex = 0;
+    }
+
+    int getMaxDelaySamples() const { return maxDelaySamples; }
+    float getCurrentDelayMs() const { return currentDelaySamples * 1000.0f / static_cast<float>(sampleRate); }
+
+private:
+    juce::AudioBuffer<FloatType> buffer;
+    int maxDelaySamples = 0;
+    int writeIndex = 0;
+    float currentDelaySamples = 0.0f;
+    double sampleRate = 44100.0;
+};
+
+} // namespace CogDSP

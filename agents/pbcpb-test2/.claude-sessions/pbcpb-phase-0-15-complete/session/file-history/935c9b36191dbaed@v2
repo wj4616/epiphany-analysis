@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-04-02",
+  "kb_registry": [
+    {"name": "technical", "authority": 0.95, "entry_count": 13, "topics": 5},
+    {"name": "sound-design", "authority": 0.70, "entry_count": 23, "topics": 7},
+    {"name": "ui-ux", "authority": 0.75, "entry_count": 12, "topics": 5},
+    {"name": "commercial", "authority": 0.60, "entry_count": 15, "topics": 5},
+    {"name": "reference", "authority": 0.90, "entry_count": 8, "topics": 5}
+  ],
+  "bridge_status": {
+    "seeded": 5,
+    "validated": 0,
+    "refined": 0,
+    "categories": 5
+  },
+  "cross_topic_mappings": {
+    "realtime-safety": ["juce-patterns", "dsp-algorithms"],
+    "synthesis-types": ["oscillators", "filters", "modulation"],
+    "control-types": ["layout-patterns", "accessibility"],
+    "marketplaces": ["licensing", "pricing"]
+  },
+  "total_entries": 71,
+  "total_topics": 27
+}

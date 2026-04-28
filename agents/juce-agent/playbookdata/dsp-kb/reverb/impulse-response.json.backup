@@ -1,0 +1,23 @@
+{
+  "title": "Impulse Response Measurement",
+  "description": "Creating and measuring impulse responses",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:47:16.539921Z",
+  "kb_type": "dsp",
+  "audio_relevance": 8,
+  "difficulty": "intermediate",
+  "markdown": "# Impulse Response Measurement\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "impulse response measurement",
+    "IRS creation",
+    "sine sweep",
+    "maximum length sequence"
+  ],
+  "sources": [
+    "CCRMA papers",
+    "OpenAir IR library docs"
+  ]
+}

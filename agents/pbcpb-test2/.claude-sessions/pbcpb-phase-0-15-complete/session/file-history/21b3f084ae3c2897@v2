@@ -1,0 +1,229 @@
+# Best Practices & Standards: VST Plugin Development
+
+## JUCE Framework Best Practices (2025-2026)
+
+### Build System: CMake Over Projucer
+
+| Aspect | CMake (Recommended) | Projucer |
+|--------|---------------------|----------|
+| Version control | Excellent (text-based) | Poor (GUI-generated) |
+| CI/CD integration | Native support | Difficult |
+| Cross-platform | Automatic | Manual regeneration |
+| IDE support | Better (IntelliSense) | Limited |
+
+**Best Practice:** Use CMake with FetchContent for self-contained builds.
+
+```cmake
+cmake_minimum_required(VERSION 3.22)
+project(MyPlugin)
+
+include(FetchContent)
+FetchContent_Declare(JUCE
+    GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
+    GIT_TAG juce-8.0.4)
+
+set(CMAKE_CXX_STANDARD 17)
+add_subdirectory(${JUCE_SOURCE_DIR})
+```
+
+### C++ Standard: C++17 or C++20
+
+Modern JUCE projects should use **C++17 minimum** (C++20 preferred):
+
+- `constexpr` and compile-time optimizations
+- Structured bindings
+- RAII patterns for resource management
+- `std::atomic` with proper memory ordering
+
+### Thread-Safe Parameter Management
+
+```cpp
+namespace Parameters {
+    inline const juce::ParameterID gainParam{"gain", 1};
+
+    inline juce::AudioProcessorValueTreeState::ParameterLayout createLayout() {
+        std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
+
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            gainParam, "Gain",
+            juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f),
+            0.5f));
+
+        return {params.begin(), params.end()};
+    }
+}
+```
+
+### Real-Time Audio Safety
+
+**Never on Audio Thread:**
+- `new`/`delete` — use pre-allocation
+- `std::mutex::lock()` — use lock-free structures
+- `malloc()`/`free()` — use memory pools
+- File I/O — use background threads
+- System calls — avoid entirely
+- Virtual function first calls — warm up in prepareToPlay()
+
+**Best Pattern:**
+```cpp
+void prepareToPlay(double sampleRate, int samplesPerBlock) override {
+    // ✅ Pre-allocate all buffers
+    workBuffer.setSize(2, samplesPerBlock);
+
+    // ✅ Initialize DSP state
+    filter.prepare({sampleRate, (juce::uint32)samplesPerBlock, 2});
+    filter.reset();
+
+    // ✅ Warm up virtual calls
+    filter.processSample(0.0f);
+}
+```
+
+### Memory Ordering
+
+Use `acquire/release` for efficient one-way data transfer:
+
+```cpp
+// UI Thread
+void updateGain(float newGain) {
+    gain.store(newGain, std::memory_order_release);
+}
+
+// Audio Thread
+float processAudio() {
+    return gain.load(std::memory_order_acquire);
+}
+```
+
+### Plugin Distribution Locations
+
+| Platform | User Location | System Location |
+|----------|---------------|-----------------|
+| Linux VST3 | `~/.vst3/` | `/usr/lib/vst3/` |
+| macOS VST3 | `~/Library/Audio/Plug-Ins/VST3/` | `/Library/Audio/Plug-Ins/VST3/` |
+| macOS AU | `~/Library/Audio/Plug-Ins/Components/` | `/Library/Audio/Plug-Ins/Components/` |
+| Windows VST3 | — | `C:\Program Files\Common Files\VST3\` |
+
+## DSP Implementation Standards
+
+### Testing Framework (Catch2)
+
+```cpp
+#include <catch2/catch_test_macros.hpp>
+#include "FilterCore.h"
+
+TEST_CASE("FilterCore processes audio correctly", "[dsp]") {
+    FilterCore filter;
+    filter.reset();
+    filter.setFrequency(1000.0f, 44100.0f);
+
+    // Impulse response test
+    float impulse[128] = {1.0f};
+    float output[128];
+
+    for (int i = 0; i < 128; ++i)
+        output[i] = filter.processSample(impulse[i]);
+
+    REQUIRE(output[0] != 0.0f);
+    REQUIRE(std::abs(output[127]) < 0.01f);
+}
+```
+
+### Validation Tools
+
+- **pluginval** — Official JUCE plugin validator
+- **AddressSanitizer** — Memory safety
+- **ThreadSanitizer** — Thread safety
+- **Strict warnings** — `-Wall -Wextra -Wpedantic`
+
+## Sound Design Standards
+
+### Synthesis Type Taxonomy
+
+| Type | Core Mechanism | Best For |
+|------|---------------|----------|
+| **Subtractive** | Rich oscillators + filters | Classic analog sounds |
+| **FM** | Operator modulation | Bells, metallic, electric pianos |
+| **Wavetable** | Morphing between waveforms | Evolving pads, modern basses |
+| **Granular** | Grain manipulation | Textures, atmospheres |
+| **Additive** | Harmonic summing | Organ-like, precise control |
+
+### Parameter Smoothing
+
+All modulation must be smoothed to prevent clicks:
+
+```cpp
+juce::SmoothedValue<float> smoothedCutoff;
+
+void prepareToPlay(double sr, int) {
+    smoothedCutoff.reset(sr, 0.02f); // 20ms smoothing
+}
+
+void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) {
+    for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+            float cutoff = smoothedCutoff.getNextValue();
+            // Use smoothed value
+        }
+    }
+}
+```
+
+## UI/UX Standards
+
+### Control Selection
+
+| Control Type | Best For | Considerations |
+|--------------|----------|---------------|
+| **Knobs** | Space-efficient, familiar | Awkward mouse interaction |
+| **Sliders** | Level comparison, intuitive | Limited by length resolution |
+| **Gauges** | Hybrid benefits | Requires user learning |
+
+### Accessibility Requirements
+
+- Minimum 44x44px touch targets
+- Full keyboard support (arrows, Page Up/Down, Home/End)
+- ARIA labels for screen readers
+- High-contrast mode support
+
+### Visual Standards
+
+- Dark theme dominant in audio software
+- Group related controls logically
+- Visual hierarchy through spacing
+- Clear feedback on interaction
+
+## Commercial Distribution Standards
+
+### Licensing Options
+
+| Solution | Type | Cost | Complexity |
+|----------|------|------|------------|
+| **iLok Cloud** | Industry standard | Revenue share | Medium |
+| **Machine Activation** | Offline-friendly | Revenue share | Medium |
+| **MuseHub DRM** | SDK-based | Revenue share | Low |
+| **Custom** | Full control | Development time | High |
+
+### Marketing Timeline
+
+| Phase | Days Before Launch | Activities |
+|-------|-------------------|------------|
+| Foundation | 30-23 | Landing page, email capture, social accounts |
+| Community | 22-16 | Content publishing, forum engagement |
+| Amplification | 15-9 | Guest posts, podcasts, private beta |
+| Launch Prep | 8-1 | Final messaging, content scheduling |
+
+### Pricing Strategy
+
+- Consider free "LE" version for list building
+- Indie plugins typically $19-$99 range
+- Bundle strategies for multiple products
+
+## Sources
+
+- [JUCE Official Course](https://juce.com/learn/course/)
+- [Audio Developer Conference](https://conference.audio.dev/)
+- [Using locks in real-time audio processing](https://timur.audio/using-locks-in-real-time-audio-processing-safely)
+- [Memory ordering for audio](https://www.bruce.audio/post/2025/02/24/memory_ordering/)
+- [Synthesizer sound design techniques](https://blog.landr.com/types-of-synthesis)
+- [Ambient and drone VST plugins](https://artistsindsp.com/the-11-best-vst-plugins-for-ambient-and-drone-music-in-2025/)

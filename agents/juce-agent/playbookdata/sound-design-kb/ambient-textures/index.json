@@ -1,0 +1,73 @@
+{
+  "category": "ambient-textures",
+  "description": "Ambient, atmospheric, and psychedelic sound design techniques",
+  "topics": [
+    "evolving pads",
+    "granular synthesis",
+    "psychoacoustic synthesis",
+    "drone synthesis",
+    "surreal textures",
+    "shimmer reverb",
+    "FM synthesis atmospheric",
+    "wavetable morphing",
+    "spatial audio",
+    "spectral processing",
+    "convolution reverb creative",
+    "modulation matrix",
+    "slow LFO",
+    "filter self-oscillation",
+    "unison detuning",
+    "layering",
+    "tape saturation"
+  ],
+  "files": [
+    {
+      "name": "psychedelic-ambient-sound-design.md",
+      "description": "Comprehensive guide to psychedelic and ambient sound design techniques",
+      "topics": ["pads", "drones", "textures", "synthesis"],
+      "harvested": "2026-03-30"
+    }
+  ],
+  "translations": {
+    "warm": {
+      "filter_cutoff": [0.2, 0.4],
+      "filter_resonance": [0.1, 0.2],
+      "saturation": [0.2, 0.4]
+    },
+    "ethereal": {
+      "reverb_decay": [4.0, 10.0],
+      "shimmer_amount": [0.3, 0.6],
+      "filter_cutoff": [0.5, 0.8]
+    },
+    "evolving": {
+      "lfo_rate": [0.05, 0.5],
+      "envelope_attack": [2.0, 10.0],
+      "modulation_depth": [0.3, 0.7]
+    },
+    "psychedelic": {
+      "granular_density": [0.4, 0.8],
+      "feedback_amount": [0.5, 0.8],
+      "stereo_width": [0.8, 1.2]
+    },
+    "drone": {
+      "envelope_sustain": [0.8, 1.0],
+      "envelope_release": [5.0, 15.0],
+      "filter_resonance": [0.3, 0.7]
+    },
+    "atmospheric": {
+      "reverb_mix": [0.4, 0.7],
+      "delay_feedback": [0.3, 0.6],
+      "filter_cutoff": [0.3, 0.6]
+    },
+    "surreal": {
+      "granular_random": [0.5, 0.9],
+      "spectral_freeze": [0.0, 1.0],
+      "feedback": [0.6, 0.9]
+    },
+    "lush": {
+      "unison_voices": [4, 8],
+      "detune_amount": [0.15, 0.3],
+      "chorus_mix": [0.3, 0.5]
+    }
+  }
+}

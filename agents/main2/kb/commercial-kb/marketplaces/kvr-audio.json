@@ -1,0 +1,24 @@
+{
+  "id": "commercial-kb_marketplaces_kvr-audio",
+  "kb": "commercial-kb",
+  "topic": "marketplaces",
+  "status": "harvested",
+  "version": "1.0.0",
+  "title": "KVR Audio Marketplace",
+  "summary": "Long-established VST marketplace platform for plugin distribution.",
+  "description": "## Overview\n\nKVR Audio is a long-established platform (founded early 2000s) containing tens of thousands of audio software products from 3700+ developers.\n\n## Key Features for Developers\n\n| Feature | Details |\n|---------|---------|\n| **KVR DIRECT** | Sell directly with complete license code inventory control |\n| **License Silo** | Simple, secure license code management system |\n| **No fees for sellers** | Dealer margin covers everything; developers pay no fees |\n| **Digital Distribution** | Integration with Xchange Market Platform, Plugivery, Ilio |\n| **Product Database** | Products must first be onboarded to KVR database |\n\n## Sales Model\n\n- Sell license codes or unprotected content\n- KVR hosts installers under 128MB\n- Larger files: use PRIVATE DOWNLOAD URL function\n- Support for promotions and discount scheduling\n\n## Marketplace URL\n\nhttps://www.kvraudio.com/marketplace/\n\n## Onboarding\n\n1. Add product to KVR Product Database\n2. Apply for KVR DIRECT seller account\n3. Set up license code inventory\n4. Configure pricing and promotions",
+  "source": "Web research 2026-04-02",
+  "concepts": [
+    {"name": "KVR DIRECT", "description": "Direct sales program with no seller fees"},
+    {"name": "License Silo", "description": "Secure license code management system"}
+  ],
+  "tags": ["marketplace", "distribution", "kvr", "vst"],
+  "related_topics": ["licensing", "distribution"],
+  "difficulty": "beginner",
+  "domain_relevance": 9,
+  "marketplace_requirements": {
+    "marketplace": "KVR Audio",
+    "fee_percentage": 0,
+    "review_time_days": 7
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "kb_name": "ui-kb",
+  "version": "1.0.0",
+  "created": "2026-03-30T12:24:56.301217+00:00",
+  "last_sync": "2026-03-30T12:24:56.301218+00:00",
+  "status": "ready",
+  "topics": [
+    {
+      "name": "components",
+      "files": {
+        "knob-component.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.301114+00:00",
+          "synced_at": "2026-03-30T12:24:56.301115+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 5619
+        },
+        "preset-browser.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.301148+00:00",
+          "synced_at": "2026-03-30T12:24:56.301149+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 9673
+        },
+        "meter-component.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.301183+00:00",
+          "synced_at": "2026-03-30T12:24:56.301183+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 7461
+        },
+        "slider-component.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.301208+00:00",
+          "synced_at": "2026-03-30T12:24:56.301209+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 7582
+        }
+      }
+    }
+  ]
+}

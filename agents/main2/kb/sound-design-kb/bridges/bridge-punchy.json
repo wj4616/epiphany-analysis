@@ -1,0 +1,43 @@
+{
+  "id": "bridge_punchy_default",
+  "category": "punchy",
+  "descriptor": "punchy",
+  "parameters": [
+    {
+      "parameter": "attack",
+      "value_range": [0.0, 0.1],
+      "typical_default": 0.02,
+      "why": "Fast attack preserves transients for punch"
+    },
+    {
+      "parameter": "filter_env_amount",
+      "value_range": [0.3, 0.7],
+      "typical_default": 0.5,
+      "why": "Filter envelope adds transient emphasis"
+    },
+    {
+      "parameter": "compressor_ratio",
+      "value_range": [2.0, 6.0],
+      "typical_default": 4.0,
+      "why": "Moderate compression shapes dynamics while preserving transient"
+    }
+  ],
+  "source": "Sound Design KB",
+  "confidence": 0.85,
+  "why": "Punchy sounds emphasize transients through fast attack, filter envelope, and careful compression.",
+  "anti_patterns": [
+    {
+      "avoid": "Slow attack (>0.2)",
+      "reason": "Removes transient punch"
+    },
+    {
+      "avoid": "Heavy compression (>10:1)",
+      "reason": "Squashes transient rather than shaping it"
+    }
+  ],
+  "related_descriptors": ["aggressive", "crisp"],
+  "example_plugins": [
+    {"name": "Xfer Serum", "how_used": "Quick attack, filter envelope to cutoff"}
+  ],
+  "user_feedback": []
+}

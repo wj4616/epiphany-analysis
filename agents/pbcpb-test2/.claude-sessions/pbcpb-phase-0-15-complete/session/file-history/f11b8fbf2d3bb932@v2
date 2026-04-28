@@ -1,0 +1,192 @@
+# Role Definitions
+
+## Overview
+
+This playbook uses a **role-based-single-agent** workflow model. One AI agent fills multiple functional roles, with a human providing creative direction and approval.
+
+---
+
+## Role Count Justification
+
+**Complexity Profile from Phase 0:**
+- Process: Standard (5-10 phases) → but we have 17 phases
+- Knowledge: Bridged (4+ types) → we have 5 layers + bridge
+- Roles: Minimal (2 roles)
+
+**Decision:** We define **4 functional roles** for clarity and separation of concerns, even though one agent (and the human) fills multiple roles. This provides:
+1. Clear ownership for each task type
+2. Distinct mindsets for different activities
+3. Explicit handoff points
+
+---
+
+## Role Definitions
+
+### [Human] — Creative Director & Approver
+
+**Responsibility:** Makes all creative decisions, approves all gates, provides domain expertise.
+
+**Skills/Knowledge Required:**
+- Music production experience (VST user perspective)
+- Creative vision for the plugin
+- Business context (market, pricing, positioning)
+
+**Tools/Access Needed:**
+- Claude Code (for AI assistance)
+- DAW for testing (REAPER)
+- Decision authority over all creative outputs
+
+**Decision Authority:**
+- **Exclusive:** Sound identity, aesthetic direction, preset names, pricing, marketing content
+- **Approval Required:** Architecture, GUI design, release timing
+- **Escalation Target:** All blockers eventually escalate to human
+
+**Appears In Phases:** 0, 1, 7, 9, 10, 11, 12, 13 (creative decisions and approvals)
+
+**Mindset:** "I define WHAT and WHY. The AI handles HOW."
+
+---
+
+### [Coordinator] — Process Manager
+
+**Responsibility:** Tracks progress, maintains artifacts, manages gates, escalates blockers.
+
+**Skills/Knowledge Required:**
+- Understanding of playbook phases and gates
+- File management
+- Status tracking and reporting
+
+**Tools/Access Needed:**
+- File read/write for tracking documents
+- Access to decisions-ledger.md, artifact-manifest.md
+
+**Decision Authority:**
+- **Exclusive:** Gate verification (PASS/FAIL based on evidence)
+- **Shared:** Session planning, context loading
+- **Cannot:** Make creative decisions, approve architecture
+
+**Appears In Phases:** All phases (gates, tracking)
+
+**Mindset:** "Track progress systematically. Verify conditions before advancing. Escalate blockers."
+
+---
+
+### [Builder] — Implementation Agent
+
+**Responsibility:** Writes code, creates files, executes build commands, runs tests.
+
+**Skills/Knowledge Required:**
+- C++ and JUCE framework
+- DSP algorithms
+- Build systems (CMake)
+- Testing frameworks (Catch2, pluginval)
+
+**Tools/Access Needed:**
+- File creation/editing
+- Build commands (cmake, compiler)
+- Test execution
+
+**Decision Authority:**
+- **Exclusive:** Implementation details (within approved architecture)
+- **Shared:** Code organization, test coverage
+- **Cannot:** Change architecture without approval, make creative decisions
+
+**Appears In Phases:** 3, 4, 5, 6, 7, 8, 10, 13 (implementation)
+
+**Mindset:** "Mechanical precision. Follow specifications exactly. Verify output matches requirements."
+
+---
+
+### [Architect] — Design Agent
+
+**Responsibility:** Designs architecture, plans implementation, defines structure, reviews quality.
+
+**Skills/Knowledge Required:**
+- Software architecture
+- DSP design patterns
+- JUCE best practices
+- Cross-cutting concern integration
+
+**Tools/Access Needed:**
+- File creation for architecture documents
+- Read access to KB for patterns
+- Read access to requirements and constraints
+
+**Decision Authority:**
+- **Exclusive:** Architecture design (within approved scope)
+- **Shared:** Task breakdown, technical trade-offs
+- **Cannot:** Make creative decisions, approve final architecture
+
+**Appears In Phases:** 2, 4, 5, 6 (design and planning)
+
+**Mindset:** "Design for clarity and separation. Every boundary must be justified. Every dependency must be explicit."
+
+---
+
+## Role Assignment Matrix
+
+| Phase | Primary Role | Supporting Role | Human Role |
+|-------|--------------|-----------------|------------|
+| 0: Commission | [Coordinator] | — | [Human] approves |
+| 1: Concept | [Architect] | — | [Human] decides |
+| 2: Architecture | [Architect] | — | [Human] approves |
+| 3: Setup | [Builder] | — | — |
+| 4: DSP | [Builder] | [Architect] | [Human] approves sound |
+| 5: State | [Builder] | — | — |
+| 6: Integration | [Builder] | [Architect] | — |
+| 7: GUI | [Builder] | — | [Human] approves aesthetic |
+| 8: Validation | [Builder] | — | — |
+| 9: DAW Testing | — | — | [Human] tests perceptually |
+| 10: Licensing | [Builder] | — | — |
+| 11: Marketplace | [Builder] | — | [Human] approves content |
+| 12: Marketing | [Builder] | — | [Human] approves content |
+| 13: Release | [Builder] | — | [Human] approves go/no-go |
+| 14: Post-Launch | [Builder] | — | [Human] handles support |
+| 15: Improvement | [Architect] | — | [Human] approves roadmap |
+| 16: KB Maintenance | [Builder] | — | — |
+
+**Note:** [Coordinator] appears in ALL phases for gates and tracking.
+
+---
+
+## Role Mindset Summary
+
+| Role | Mindset Keyword | Key Question |
+|------|-----------------|--------------|
+| [Human] | Creative | What do I want? |
+| [Coordinator] | Tracking | What's the status? |
+| [Builder] | Precision | How do I build this? |
+| [Architect] | Design | What's the structure? |
+
+---
+
+## Role Appearance Count
+
+| Role | Appearances | Minimum Required | Status |
+|------|-------------|------------------|--------|
+| [Human] | 10+ | 3 | ✓ OK |
+| [Coordinator] | 17 (every phase) | 3 | ✓ OK |
+| [Builder] | 12 | 3 | ✓ OK |
+| [Architect] | 6 | 3 | ✓ OK |
+
+**Result:** No orphaned roles. All roles appear ≥3 times.
+
+---
+
+## Single-Agent Mapping
+
+When executed by a single AI agent, roles map as follows:
+
+```
+AI Agent fills: [Coordinator], [Builder], [Architect]
+Human fills: [Human]
+```
+
+The agent switches mindset based on the task owner in the playbook:
+
+```
+If task owner = [Coordinator]: Track progress, verify gates
+If task owner = [Builder]: Write code, create files
+If task owner = [Architect]: Design architecture, plan implementation
+If task owner = [Human]: Ask human for input/approval
+```

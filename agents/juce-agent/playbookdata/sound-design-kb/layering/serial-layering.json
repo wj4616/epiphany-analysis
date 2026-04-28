@@ -1,0 +1,41 @@
+{
+  "id": "sound-design-kb_layering_serial-layering",
+  "kb": "sound-design-kb",
+  "topic": "layering",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Content to be harvested]",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Example code placeholder\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Serial Layering\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.820286+00:00"
+  },
+  "title": "Serial Layering",
+  "description": "Effect chaining and cascade processing",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:48:58.091665Z",
+  "kb_type": "sound-design",
+  "audio_relevance": 7,
+  "difficulty": "intermediate",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "serial processing",
+    "effect chaining",
+    "cascade effects",
+    "feedback layering"
+  ],
+  "sources": [
+    "Sound design tutorials"
+  ]
+}

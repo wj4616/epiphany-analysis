@@ -1,0 +1,30 @@
+{
+  "kb_name": "juce-kb",
+  "version": "1.0.0",
+  "description": "JUCE framework specific knowledge",
+  "created": "2026-04-02",
+  "updated": "2026-04-02",
+  "entry_count": 0,
+  "categories": {
+    "audio-processor": {
+      "description": "AudioProcessor implementation",
+      "count": 0,
+      "entries": []
+    },
+    "gui": {
+      "description": "GUI implementation",
+      "count": 0,
+      "entries": []
+    },
+    "dsp": {
+      "description": "JUCE DSP module",
+      "count": 0,
+      "entries": []
+    },
+    "utilities": {
+      "description": "JUCE utility classes",
+      "count": 0,
+      "entries": []
+    }
+  }
+}

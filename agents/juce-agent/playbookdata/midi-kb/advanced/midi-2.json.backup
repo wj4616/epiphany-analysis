@@ -1,0 +1,23 @@
+{
+  "title": "MIDI 2.0",
+  "description": "MIDI 2.0 specification and JUCE support",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:45:58.545729Z",
+  "kb_type": "midi",
+  "audio_relevance": 7,
+  "difficulty": "intermediate",
+  "markdown": "# MIDI 2.0\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "MIDI 2.0",
+    "MIDI 2 specification",
+    "MIDI CI",
+    "MIDI 2.0 JUCE"
+  ],
+  "sources": [
+    "MIDI Association",
+    "MIDI 2.0 spec"
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "version": "1.0.0",
+  "created": "2026-04-02",
+  "updated": "2026-04-02",
+  "description": "Master index for Enhanced VST Playbook Knowledge Base",
+  "total_entries": 18,
+  "total_bridges": 6,
+  "confidence_average": 0.85,
+  "kb_directories": {
+    "dsp-kb": {
+      "path": "kb/dsp-kb/",
+      "type": "flat",
+      "description": "Digital Signal Processing algorithms and theory",
+      "entry_count": 0,
+      "categories": ["filters", "oscillators", "effects", "dynamics", "modulation", "synthesis"],
+      "last_updated": "2026-04-02"
+    },
+    "sound-design-kb": {
+      "path": "kb/sound-design-kb/",
+      "type": "bridged",
+      "description": "Sound design knowledge with sonic-to-parameter bridges",
+      "entry_count": 0,
+      "bridge_count": 0,
+      "categories": ["bridges", "synthesis-techniques", "ambient-textures", "creative-effects", "preset-templates", "sound-identity"],
+      "last_updated": "2026-04-02"
+    },
+    "ui-kb": {
+      "path": "kb/ui-kb/",
+      "type": "flat",
+      "description": "User interface design for audio plugins",
+      "entry_count": 0,
+      "categories": ["layouts", "aesthetics", "components", "accessibility"],
+      "last_updated": "2026-04-02"
+    },
+    "failure-modes-kb": {
+      "path": "kb/failure-modes-kb/",
+      "type": "flat",
+      "description": "Documented failure modes for VST plugin development",
+      "entry_count": 0,
+      "categories": ["audio-thread", "parameters", "state", "memory", "platform"],
+      "last_updated": "2026-04-02"
+    },
+    "platform-kb": {
+      "path": "kb/platform-kb/",
+      "type": "flat",
+      "description": "Platform-specific concerns for VST plugins",
+      "entry_count": 0,
+      "categories": ["linux", "macos", "windows", "formats"],
+      "last_updated": "2026-04-02"
+    },
+    "market-kb": {
+      "path": "kb/market-kb/",
+      "type": "flat",
+      "description": "Commercial market strategies for VST plugins",
+      "entry_count": 0,
+      "categories": ["positioning", "pricing", "distribution", "marketing"],
+      "last_updated": "2026-04-02"
+    },
+    "testing-kb": {
+      "path": "kb/testing-kb/",
+      "type": "flat",
+      "description": "Validation and testing patterns for VST plugins",
+      "entry_count": 0,
+      "categories": ["automated", "manual", "stress"],
+      "last_updated": "2026-04-02"
+    },
+    "cpp-kb": {
+      "path": "kb/cpp-kb/",
+      "type": "flat",
+      "description": "C++ patterns for real-time audio programming",
+      "entry_count": 0,
+      "categories": ["realtime-safety", "patterns", "modern-cpp"],
+      "last_updated": "2026-04-02"
+    },
+    "juce-kb": {
+      "path": "kb/juce-kb/",
+      "type": "flat",
+      "description": "JUCE framework specific knowledge",
+      "entry_count": 0,
+      "categories": ["audio-processor", "gui", "dsp", "utilities"],
+      "last_updated": "2026-04-02"
+    }
+  },
+  "source_hierarchy": {
+    "1": "academic_paper",
+    "2": "professional_reference",
+    "3": "expert_interview",
+    "4": "community_best_practice",
+    "5": "tutorial_guide",
+    "6": "forum_discussion"
+  },
+  "confidence_thresholds": {
+    "usable": 0.75,
+    "needs_verification": 0.50,
+    "needs_research": 0.0
+  },
+  "phase_usage": {
+    "0": ["sound-design-kb", "market-kb"],
+    "1": ["failure-modes-kb", "platform-kb"],
+    "4": ["dsp-kb", "sound-design-kb", "cpp-kb"],
+    "5": ["sound-design-kb", "preset-templates"],
+    "6": ["dsp-kb", "failure-modes-kb"],
+    "7": ["ui-kb", "market-kb"],
+    "8": ["platform-kb", "testing-kb"],
+    "9": ["sound-design-kb"],
+    "10": ["market-kb"],
+    "11": ["dsp-kb", "cpp-kb"]
+  }
+}

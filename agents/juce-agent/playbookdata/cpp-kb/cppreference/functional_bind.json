@@ -1,0 +1,44 @@
+{
+  "id": "cpp-kb_cppreference_functional_bind",
+  "kb": "cpp-kb",
+  "topic": "cppreference",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "std::bind generates a forwarding call wrapper for a callable. Calling this wrapper invokes the original callable with some arguments bound and others supplied at call time via placeholders (_1, _2, etc.).",
+  "concepts": ["bind", "partial-application", "placeholders", "callable"],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "#include <functional>\n#include <iostream>\n\nvoid f(int n1, int n2, int n3, const int& n4, int n5) {\n    std::cout << n1 << ' ' << n2 << ' ' << n3 << ' ' << n4 << ' ' << n5 << '\\n';\n}\n\nint g(int n) { return n * 2; }\n\nstruct Foo {\n    void print_sum(int n1, int n2) { std::cout << n1 + n2 << '\\n'; }\n    int data = 10;\n};\n\nint main() {\n    using namespace std::placeholders;\n\n    // 1) Argument reordering and pass-by-reference\n    int n = 7;\n    auto f1 = std::bind(f, _2, 42, _1, std::cref(n), n);\n    n = 10;\n    f1(1, 2, 1001);  // Output: 2 42 1 10 7\n\n    // 2) Nested bind shares placeholders\n    auto f2 = std::bind(f, _3, std::bind(g, _3), _3, 4, 5);\n    f2(10, 11, 12);  // Output: 12 24 12 4 5\n\n    // 3) Bind to member function\n    Foo foo;\n    auto f3 = std::bind(&Foo::print_sum, &foo, 95, _1);\n    f3(5);  // Output: 100\n\n    // 4) Bind to data member\n    auto f4 = std::bind(&Foo::data, _1);\n    std::cout << f4(foo) << '\\n';  // Output: 10\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Placeholder usage:\n// _1, _2, _3... represent future arguments passed to the wrapper\n//\n// std::ref() and std::cref() pass arguments by reference\n// Otherwise arguments are copied/moved into the wrapper\n\n// Modern C++ alternative - lambdas are often preferred:\n// auto bound = std::bind(f, _2, 42, _1);\n// auto lambda = [&n](auto a, auto b) { f(b, 42, a, n, n); };\n",
+      "preserved": true
+    }
+  ],
+  "references": [
+    {
+      "title": "std::bind",
+      "url": "https://en.cppreference.com/w/cpp/utility/functional/bind",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::placeholders",
+      "url": "https://en.cppreference.com/w/cpp/utility/functional/placeholders",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::function",
+      "url": "https://en.cppreference.com/w/cpp/utility/functional/function",
+      "domain": "en.cppreference.com"
+    }
+  ],
+  "source_url": "https://en.cppreference.com/w/cpp/utility/functional/bind",
+  "harvested_at": "2026-03-30T12:00:00.000000+00:00",
+  "synced_at": "2026-03-30T12:00:00.000000+00:00",
+  "cpp_version": "C++11",
+  "cpp17_notes": "C++17 deprecates result_type and argument_type aliases. C++20 makes bind constexpr. Modern C++ often prefers lambdas for simplicity, but bind remains useful for partial application and member function binding.",
+  "audio_thread_notes": "std::bind MAY allocate memory internally. Avoid using bind on the audio thread. Prefer lambdas with capture-by-value for fixed parameters, or pre-bind during initialization and store the result for later invocation."
+}

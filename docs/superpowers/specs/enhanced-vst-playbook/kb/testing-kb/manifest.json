@@ -1,0 +1,25 @@
+{
+  "kb_name": "testing-kb",
+  "version": "1.0.0",
+  "description": "Validation and testing patterns for VST plugins",
+  "created": "2026-04-02",
+  "updated": "2026-04-02",
+  "entry_count": 0,
+  "categories": {
+    "automated": {
+      "description": "Automated testing patterns",
+      "count": 0,
+      "entries": []
+    },
+    "manual": {
+      "description": "Manual testing procedures",
+      "count": 0,
+      "entries": []
+    },
+    "stress": {
+      "description": "Stress testing patterns",
+      "count": 0,
+      "entries": []
+    }
+  }
+}

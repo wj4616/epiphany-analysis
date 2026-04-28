@@ -1,0 +1,803 @@
+{
+  "kb_name": "master-index",
+  "version": "3.1.0",
+  "knowledge_bases": {
+    "juce-kb": {
+      "path": "juce-kb",
+      "description": "JUCE framework documentation and patterns",
+      "source": "harvested+curated",
+      "status": "ready",
+      "file_count": 183,
+      "topics": [
+        "patterns",
+        "failure_modes",
+        "api_reference",
+        "tooling",
+        "agent",
+        "audio_processing",
+        "dsp",
+        "thread_safety",
+        "gui",
+        "state_management",
+        "midi",
+        "parameters",
+        "testing",
+        "ci_cd",
+        "deployment",
+        "realtime",
+        "formats",
+        "performance",
+        "state-advanced"
+      ]
+    },
+    "dsp-kb": {
+      "path": "dsp-kb",
+      "description": "Digital signal processing concepts",
+      "source": "harvested+curated",
+      "status": "ready",
+      "file_count": 53,
+      "topics": [
+        "algorithms",
+        "theory",
+        "filters",
+        "synthesis",
+        "optimization",
+        "fft",
+        "oscillator",
+        "limiter",
+        "simd",
+        "latency",
+        "wavetable",
+        "biquad",
+        "dynamics"
+      ]
+    },
+    "sound-design-kb": {
+      "path": "sound-design-kb",
+      "description": "Sound design techniques and presets",
+      "source": "curated",
+      "status": "ready",
+      "file_count": 25,
+      "topics": [
+        "techniques",
+        "bass",
+        "lead",
+        "pad",
+        "drum",
+        "fm",
+        "oscillator",
+        "filter",
+        "envelope",
+        "granular",
+        "ambient",
+        "subtractive",
+        "effects",
+        "modular",
+        "wavetable",
+        "physical-modeling",
+        "additive",
+        "vector",
+        "wave-sequencing",
+        "preset-design",
+        "modulation-routing",
+        "layering",
+        "effects-chain"
+      ]
+    },
+    "ui-kb": {
+      "path": "ui-kb",
+      "description": "JUCE UI components and patterns",
+      "source": "curated",
+      "status": "ready",
+      "file_count": 11,
+      "topics": [
+        "components",
+        "knob",
+        "slider",
+        "meter",
+        "preset",
+        "gui",
+        "lookandfeel",
+        "design-principles",
+        "layout",
+        "vst3",
+        "accessibility",
+        "animation",
+        "user-experience"
+      ]
+    },
+    "cpp-kb": {
+      "path": "cpp-kb",
+      "description": "C++ patterns for audio development",
+      "source": "harvested",
+      "status": "ready",
+      "file_count": 28,
+      "topics": [
+        "thread_safety",
+        "memory_management",
+        "containers",
+        "algorithms",
+        "utilities",
+        "thread",
+        "mutex",
+        "atomic",
+        "unique_ptr",
+        "shared_ptr",
+        "vector",
+        "string",
+        "optional",
+        "variant"
+      ]
+    },
+    "cmake-kb": {
+      "path": "cmake-kb",
+      "description": "CMake build system patterns for JUCE audio plugins",
+      "source": "harvested+curated",
+      "status": "ready",
+      "file_count": 8,
+      "topics": [
+        "targets",
+        "juce_plugin",
+        "testing",
+        "linking",
+        "include_paths",
+        "definitions",
+        "executables",
+        "libraries",
+        "best_practices",
+        "ci_cd"
+      ]
+    },
+    "testing-kb": {
+      "path": "testing-kb",
+      "description": "Audio plugin testing and validation",
+      "source": "curated",
+      "status": "ready",
+      "file_count": 12,
+      "topics": [
+        "unit-testing",
+        "daw-testing",
+        "validation",
+        "regression",
+        "performance-testing"
+      ]
+    },
+    "midi-kb": {
+      "path": "midi-kb",
+      "description": "MIDI protocol and implementation for audio plugins",
+      "source": "curated",
+      "status": "ready",
+      "file_count": 18,
+      "topics": [
+        "protocol",
+        "realtime",
+        "mpe",
+        "controllers",
+        "advanced"
+      ]
+    },
+    "playbook-kb": {
+      "path": "/home/myuser/Documents/playbookdev/projects/juce-vst-playbook/kb",
+      "description": "Structured 4-layer + bridge KB from JUCE VST3 playbook v0.1. Harvested from v7 playbook with 153 entries across sound-design (54), dsp (14), juce-patterns (48), ui-design (32), bridge (5).",
+      "source": "v7-playbook-harvest",
+      "status": "ready",
+      "file_count": 153,
+      "topics": [
+        "sonic-descriptors",
+        "modulation-concepts",
+        "spatial-concepts",
+        "dynamics-concepts",
+        "spectral-concepts",
+        "preset-philosophy",
+        "creative-combinations",
+        "filters",
+        "delays",
+        "dynamics",
+        "distortion-waveshaping",
+        "reverbs",
+        "modulation",
+        "oscillators",
+        "gain-staging",
+        "feedback-networks",
+        "spectral-processing",
+        "granular",
+        "audio-thread-safety",
+        "parameter-management",
+        "smoothed-values",
+        "state-save-restore",
+        "dsp-module-pattern",
+        "plugin-lifecycle",
+        "editor-lifecycle",
+        "testing-patterns",
+        "cmake-fetchcontent",
+        "layout-patterns",
+        "component-styles",
+        "color-systems",
+        "typography",
+        "animation-patterns",
+        "responsive-design",
+        "look-and-feel",
+        "knob-slider-design",
+        "meter-visualization",
+        "tonal-bridge",
+        "spatial-bridge",
+        "dynamic-bridge",
+        "temporal-bridge",
+        "textural-bridge"
+      ],
+      "layers": {
+        "sound-design": {
+          "authority": 0.9,
+          "entries": 54
+        },
+        "dsp": {
+          "authority": 0.85,
+          "entries": 14
+        },
+        "juce-patterns": {
+          "authority": 0.8,
+          "entries": 48
+        },
+        "ui-design": {
+          "authority": 0.75,
+          "entries": 32
+        },
+        "bridge": {
+          "authority": 0.85,
+          "entries": 5
+        }
+      }
+    }
+  },
+  "cross_references": {
+    "synthesis": {
+      "description": "Sound synthesis techniques and algorithms",
+      "kbs": [
+        "sound-design-kb",
+        "dsp-kb"
+      ]
+    },
+    "oscillator": {
+      "description": "Oscillator implementations and sound design",
+      "kbs": [
+        "sound-design-kb",
+        "dsp-kb",
+        "juce-kb"
+      ]
+    },
+    "filter": {
+      "description": "Audio filters (biquad, ladder, etc.)",
+      "kbs": [
+        "sound-design-kb",
+        "dsp-kb",
+        "juce-kb"
+      ]
+    },
+    "envelope": {
+      "description": "ADSR envelopes and modulation",
+      "kbs": [
+        "sound-design-kb",
+        "dsp-kb"
+      ]
+    },
+    "wavetable": {
+      "description": "Wavetable synthesis and design",
+      "kbs": [
+        "sound-design-kb",
+        "dsp-kb"
+      ]
+    },
+    "fm": {
+      "description": "Frequency modulation synthesis",
+      "kbs": [
+        "sound-design-kb"
+      ]
+    },
+    "granular": {
+      "description": "Granular synthesis techniques",
+      "kbs": [
+        "sound-design-kb"
+      ]
+    },
+    "subtractive": {
+      "description": "Subtractive synthesis",
+      "kbs": [
+        "sound-design-kb"
+      ]
+    },
+    "additive": {
+      "description": "Additive synthesis",
+      "kbs": [
+        "sound-design-kb"
+      ]
+    },
+    "physical-modeling": {
+      "description": "Physical modeling synthesis",
+      "kbs": [
+        "sound-design-kb"
+      ]
+    },
+    "bass": {
+      "description": "Bass sound design",
+      "kbs": [
+        "sound-design-kb"
+      ]
+    },
+    "lead": {
+      "description": "Lead synth sound design",
+      "kbs": [
+        "sound-design-kb"
+      ]
+    },
+    "pad": {
+      "description": "Pad and ambient sound design",
+      "kbs": [
+        "sound-design-kb"
+      ]
+    },
+    "drum": {
+      "description": "Drum and percussion synthesis",
+      "kbs": [
+        "sound-design-kb"
+      ]
+    },
+    "effects": {
+      "description": "Audio effects design",
+      "kbs": [
+        "sound-design-kb",
+        "dsp-kb"
+      ]
+    },
+    "dsp": {
+      "description": "Digital signal processing",
+      "kbs": [
+        "dsp-kb",
+        "juce-kb"
+      ]
+    },
+    "fft": {
+      "description": "Fast Fourier Transform",
+      "kbs": [
+        "dsp-kb"
+      ]
+    },
+    "simd": {
+      "description": "SIMD optimization for audio",
+      "kbs": [
+        "dsp-kb"
+      ]
+    },
+    "latency": {
+      "description": "Audio latency optimization",
+      "kbs": [
+        "dsp-kb"
+      ]
+    },
+    "dynamics": {
+      "description": "Dynamic range processing",
+      "kbs": [
+        "dsp-kb"
+      ]
+    },
+    "limiter": {
+      "description": "Limiter implementations",
+      "kbs": [
+        "dsp-kb"
+      ]
+    },
+    "knob": {
+      "description": "Knob UI components",
+      "kbs": [
+        "ui-kb",
+        "juce-kb"
+      ]
+    },
+    "slider": {
+      "description": "Slider UI components",
+      "kbs": [
+        "ui-kb",
+        "juce-kb"
+      ]
+    },
+    "meter": {
+      "description": "Meter UI components",
+      "kbs": [
+        "ui-kb"
+      ]
+    },
+    "preset": {
+      "description": "Preset management",
+      "kbs": [
+        "ui-kb",
+        "juce-kb"
+      ]
+    },
+    "preset-management": {
+      "description": "Preset save/load systems",
+      "kbs": [
+        "ui-kb"
+      ]
+    },
+    "gui": {
+      "description": "GUI design and implementation",
+      "kbs": [
+        "ui-kb",
+        "juce-kb"
+      ]
+    },
+    "lookandfeel": {
+      "description": "JUCE LookAndFeel customization",
+      "kbs": [
+        "ui-kb",
+        "juce-kb"
+      ]
+    },
+    "layout": {
+      "description": "UI layout design",
+      "kbs": [
+        "ui-kb"
+      ]
+    },
+    "accessibility": {
+      "description": "Accessibility features",
+      "kbs": [
+        "ui-kb"
+      ]
+    },
+    "animation": {
+      "description": "UI animation techniques",
+      "kbs": [
+        "ui-kb"
+      ]
+    },
+    "user-experience": {
+      "description": "UX design principles",
+      "kbs": [
+        "ui-kb"
+      ]
+    },
+    "vst3": {
+      "description": "VST3 plugin development",
+      "kbs": [
+        "ui-kb",
+        "juce-kb"
+      ]
+    },
+    "thread": {
+      "description": "Threading and concurrency",
+      "kbs": [
+        "cpp-kb",
+        "juce-kb"
+      ]
+    },
+    "thread_safety": {
+      "description": "Thread safety patterns",
+      "kbs": [
+        "cpp-kb",
+        "juce-kb"
+      ]
+    },
+    "mutex": {
+      "description": "Mutex and lock implementations",
+      "kbs": [
+        "cpp-kb"
+      ]
+    },
+    "atomic": {
+      "description": "Atomic operations",
+      "kbs": [
+        "cpp-kb"
+      ]
+    },
+    "memory": {
+      "description": "Memory management",
+      "kbs": [
+        "cpp-kb"
+      ]
+    },
+    "memory_management": {
+      "description": "Memory management patterns",
+      "kbs": [
+        "cpp-kb"
+      ]
+    },
+    "unique_ptr": {
+      "description": "Smart pointer patterns",
+      "kbs": [
+        "cpp-kb"
+      ]
+    },
+    "shared_ptr": {
+      "description": "Shared pointer patterns",
+      "kbs": [
+        "cpp-kb"
+      ]
+    },
+    "containers": {
+      "description": "STL containers for audio",
+      "kbs": [
+        "cpp-kb"
+      ]
+    },
+    "vector": {
+      "description": "std::vector usage",
+      "kbs": [
+        "cpp-kb"
+      ]
+    },
+    "string": {
+      "description": "String handling",
+      "kbs": [
+        "cpp-kb"
+      ]
+    },
+    "optional": {
+      "description": "std::optional patterns",
+      "kbs": [
+        "cpp-kb"
+      ]
+    },
+    "variant": {
+      "description": "std::variant patterns",
+      "kbs": [
+        "cpp-kb"
+      ]
+    },
+    "algorithms": {
+      "description": "STL algorithms",
+      "kbs": [
+        "cpp-kb"
+      ]
+    },
+    "cmake": {
+      "description": "CMake build system",
+      "kbs": [
+        "cmake-kb"
+      ]
+    },
+    "targets": {
+      "description": "CMake target commands",
+      "kbs": [
+        "cmake-kb"
+      ]
+    },
+    "target_link_libraries": {
+      "description": "Linking libraries in CMake",
+      "kbs": [
+        "cmake-kb"
+      ]
+    },
+    "juce_plugin": {
+      "description": "JUCE audio plugin CMake configuration",
+      "kbs": [
+        "cmake-kb"
+      ]
+    },
+    "best_practices": {
+      "description": "JUCE CMake best practices",
+      "kbs": [
+        "cmake-kb"
+      ]
+    },
+    "ci_cd": {
+      "description": "CI/CD for audio plugins",
+      "kbs": [
+        "cmake-kb"
+      ]
+    },
+    "testing": {
+      "description": "Testing audio plugins",
+      "kbs": [
+        "cmake-kb"
+      ]
+    },
+    "juce": {
+      "description": "JUCE framework",
+      "kbs": [
+        "juce-kb",
+        "cmake-kb"
+      ]
+    },
+    "patterns": {
+      "description": "JUCE best practices and patterns",
+      "kbs": [
+        "juce-kb"
+      ]
+    },
+    "failure_modes": {
+      "description": "Common JUCE plugin failures and fixes",
+      "kbs": [
+        "juce-kb"
+      ]
+    },
+    "api_reference": {
+      "description": "JUCE API reference",
+      "kbs": [
+        "juce-kb"
+      ]
+    },
+    "tooling": {
+      "description": "JUCE development tools",
+      "kbs": [
+        "juce-kb"
+      ]
+    },
+    "agent": {
+      "description": "Agent development knowledge",
+      "kbs": [
+        "juce-kb"
+      ]
+    },
+    "audio_processing": {
+      "description": "Audio processing in JUCE",
+      "kbs": [
+        "juce-kb"
+      ]
+    },
+    "deployment": {
+      "description": "Plugin deployment",
+      "kbs": [
+        "juce-kb",
+        "cmake-kb"
+      ]
+    },
+    "reverb": {
+      "description": "Reverb algorithms and design",
+      "kbs": [
+        "dsp-kb"
+      ]
+    },
+    "compression": {
+      "description": "Dynamic range compression",
+      "kbs": [
+        "dsp-kb"
+      ]
+    },
+    "chorus": {
+      "description": "Chorus and modulation effects",
+      "kbs": [
+        "dsp-kb"
+      ]
+    },
+    "pitch_shift": {
+      "description": "Pitch shifting algorithms",
+      "kbs": [
+        "dsp-kb"
+      ]
+    },
+    "preset_design": {
+      "description": "Preset design methodology",
+      "kbs": [
+        "sound-design-kb"
+      ]
+    },
+    "modulation_routing": {
+      "description": "Modulation routing and matrices",
+      "kbs": [
+        "sound-design-kb"
+      ]
+    },
+    "layering": {
+      "description": "Sound layering techniques",
+      "kbs": [
+        "sound-design-kb"
+      ]
+    },
+    "realtime": {
+      "description": "Real-time audio programming",
+      "kbs": [
+        "juce-kb",
+        "cpp-kb"
+      ]
+    },
+    "validation": {
+      "description": "Plugin validation",
+      "kbs": [
+        "testing-kb"
+      ]
+    },
+    "daw_testing": {
+      "description": "DAW-specific testing",
+      "kbs": [
+        "testing-kb"
+      ]
+    },
+    "midi": {
+      "description": "MIDI protocol and implementation",
+      "kbs": [
+        "midi-kb",
+        "juce-kb"
+      ]
+    },
+    "mpe": {
+      "description": "MIDI Polyphonic Expression",
+      "kbs": [
+        "midi-kb"
+      ]
+    },
+    "midi_learn": {
+      "description": "MIDI learn and mapping",
+      "kbs": [
+        "midi-kb",
+        "juce-kb"
+      ]
+    },
+    "midi_timing": {
+      "description": "MIDI timing and jitter",
+      "kbs": [
+        "midi-kb"
+      ]
+    },
+    "controllers": {
+      "description": "MIDI controller integration",
+      "kbs": [
+        "midi-kb"
+      ]
+    },
+    "realtime_safety": {
+      "description": "Real-time audio thread safety patterns",
+      "kbs": [
+        "cpp-kb"
+      ],
+      "topics": [
+        "overview",
+        "atomic-audio",
+        "lock-free-patterns",
+        "pitfalls"
+      ]
+    },
+    "audio_thread": {
+      "description": "Audio thread programming rules and constraints",
+      "kbs": [
+        "cpp-kb",
+        "juce-kb"
+      ],
+      "topics": [
+        "realtime-safety"
+      ]
+    },
+    "warm": {
+      "description": "Sound design descriptor: warm",
+      "kbs": [
+        "sound-design-kb",
+        "playbook-kb"
+      ]
+    },
+    "bright": {
+      "description": "Sound design descriptor: bright",
+      "kbs": [
+        "sound-design-kb",
+        "playbook-kb"
+      ]
+    },
+    "punchy": {
+      "description": "Sound design descriptor: punchy",
+      "kbs": [
+        "sound-design-kb",
+        "playbook-kb"
+      ]
+    },
+    "lush": {
+      "description": "Sound design descriptor: lush",
+      "kbs": [
+        "sound-design-kb",
+        "playbook-kb"
+      ]
+    },
+    "wide": {
+      "description": "Sound design descriptor: wide",
+      "kbs": [
+        "sound-design-kb",
+        "playbook-kb"
+      ]
+    },
+    "evolving": {
+      "description": "Sound design descriptor: evolving",
+      "kbs": [
+        "sound-design-kb",
+        "playbook-kb"
+      ]
+    }
+  },
+  "last_updated": "2026-03-31T00:00:00Z"
+}

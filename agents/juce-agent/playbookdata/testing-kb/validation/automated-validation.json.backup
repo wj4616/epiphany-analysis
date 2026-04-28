@@ -1,0 +1,22 @@
+{
+  "title": "Automated Plugin Validation",
+  "description": "CI/CD pipeline validation for audio plugins",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:45:35.105437Z",
+  "kb_type": "testing",
+  "audio_relevance": 8,
+  "difficulty": "intermediate",
+  "markdown": "# Automated Plugin Validation\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "CI plugin testing",
+    "GitHub Actions audio plugin",
+    "automated plugin validation"
+  ],
+  "sources": [
+    "JUCE forum",
+    "CI docs"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "commercial_marketplaces_direct-sales",
+  "kb": "commercial",
+  "topic": "marketplaces",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Direct Sales from Developer Website",
+  "summary": "Placeholder: Building your own store, payment processing, and customer management.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["marketplace", "direct", "sales", "website"],
+  "related_topics": ["marketplaces", "distribution"],
+  "difficulty": "intermediate",
+  "domain_relevance": 8
+}

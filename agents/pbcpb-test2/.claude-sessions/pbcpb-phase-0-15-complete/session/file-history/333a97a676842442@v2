@@ -1,0 +1,16 @@
+{
+  "id": "commercial_marketplaces_kvr-audio",
+  "kb": "commercial",
+  "topic": "marketplaces",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "KVR Audio Marketplace",
+  "summary": "Placeholder: Listing on KVR Audio, developer requirements, and best practices.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["marketplace", "kvr", "listing", "distribution"],
+  "related_topics": ["marketplaces", "licensing"],
+  "difficulty": "beginner",
+  "domain_relevance": 9
+}

@@ -1,0 +1,19 @@
+{
+  "id": "reference-kb_textbooks_pirkle",
+  "kb": "reference-kb",
+  "topic": "textbooks",
+  "status": "harvested",
+  "version": "1.0.0",
+  "title": "Designing Audio Effect Plugins in C++ (Will Pirkle)",
+  "summary": "Comprehensive DSP textbook for audio plugin development with JUCE examples.",
+  "description": "## Overview\n\nWill Pirkle's textbook is a primary reference for DSP algorithm implementation in audio plugins. It covers filter design, dynamics processing, delay effects, and modulation.\n\n## Key Topics\n\n| Chapter | Topic |\n|---------|-------|\n| 1-3 | Filter theory and implementation |\n| 4-6 | Dynamics processing (compressor, limiter, gate) |\n| 7-9 | Delay-based effects (echo, chorus, flanger) |\n| 10-12 | Modulation and spatial effects |\n\n## Relevant For\n\n- Filter design (SVF, biquad)\n- Dynamics processing\n- Delay line implementation\n- Reverb algorithms\n\n## Citation\n\nPirkle, Will. *Designing Audio Effect Plugins in C++*. Focal Press, 2018.\n\n## URL\n\nhttps://www.focalpress.com/books/designing-audio-effect-plugins-in-c/\n\n## Why Important\n\nAuthoritative source for DSP algorithm implementation with working code examples.",
+  "source": "Best practices research",
+  "concepts": [
+    {"name": "SVF Filter", "description": "State Variable Filter - stable, efficient for musical applications"},
+    {"name": "Biquad Filter", "description": "Second-order IIR filter - versatile for EQ applications"}
+  ],
+  "tags": ["textbook", "dsp", "filters", "dynamics"],
+  "related_topics": ["dsp-algorithms", "filter-design"],
+  "difficulty": "intermediate",
+  "domain_relevance": 10
+}

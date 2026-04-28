@@ -1,0 +1,30 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+
+// ChorusEnsemble - Multi-voice chorus/ensemble effect
+// TODO: Implement in future task
+
+namespace CogDSP
+{
+
+class ChorusEnsemble
+{
+public:
+    ChorusEnsemble() = default;
+    ~ChorusEnsemble() = default;
+
+    void prepare(double sampleRate, int samplesPerBlock);
+    void process(float* left, float* right, int numSamples);
+    void setRate(float rateHz);
+    void setDepth(float depth);
+    void reset();
+
+private:
+    float rate = 1.0f;
+    float depth = 0.5f;
+    double sampleRate = 44100.0;
+};
+
+} // namespace CogDSP

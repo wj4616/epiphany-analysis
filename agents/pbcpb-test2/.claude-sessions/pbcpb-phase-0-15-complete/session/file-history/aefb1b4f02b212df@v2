@@ -1,0 +1,16 @@
+{
+  "id": "commercial_marketing_community-building",
+  "kb": "commercial",
+  "topic": "marketing",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Community Building for Plugin Developers",
+  "summary": "Placeholder: Email lists, Discord servers, forum presence, and social media.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["marketing", "community", "email", "discord", "social"],
+  "related_topics": ["marketing", "launch-timeline"],
+  "difficulty": "beginner",
+  "domain_relevance": 9
+}

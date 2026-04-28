@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_synthesis-types_additive",
+  "kb": "sound-design",
+  "topic": "synthesis-types",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Additive Synthesis Fundamentals",
+  "summary": "Placeholder: Building complex sounds from multiple sine wave harmonics.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["synthesis", "additive", "harmonic", "sine", "partial"],
+  "related_topics": ["oscillators"],
+  "difficulty": "advanced",
+  "domain_relevance": 7
+}

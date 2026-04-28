@@ -1,0 +1,26 @@
+#include "DriveCircuit.h"
+
+namespace CogDSP
+{
+
+void DriveCircuit::prepare(double sr)
+{
+    sampleRate = sr;
+}
+
+void DriveCircuit::process(float* samples, int numSamples)
+{
+    // TODO: Implement drive circuit
+    juce::ignoreUnused(samples, numSamples);
+}
+
+void DriveCircuit::setDrive(float amount)
+{
+    drive = amount;
+}
+
+void DriveCircuit::reset()
+{
+}
+
+} // namespace CogDSP

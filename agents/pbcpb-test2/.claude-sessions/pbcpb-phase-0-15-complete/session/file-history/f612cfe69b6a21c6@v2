@@ -1,0 +1,16 @@
+{
+  "id": "commercial_pricing_strategy",
+  "kb": "commercial",
+  "topic": "pricing",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Pricing Strategy for Indie Plugins",
+  "summary": "Placeholder: Price points, psychological pricing, and market positioning.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["pricing", "strategy", "positioning", "market"],
+  "related_topics": ["pricing", "marketing"],
+  "difficulty": "beginner",
+  "domain_relevance": 9
+}

@@ -1,0 +1,55 @@
+# Artifact Manifest — update at every phase gate
+
+| File | Phase | Status | Summary |
+|------|-------|--------|---------|
+| README.md | 0 | Complete | Purpose, overview, target user documented |
+| scope.md | 0 | Complete | Configuration, in/out/adjacent scope defined |
+| constraints.md | 0 | Complete | Budget, technical stack, process constraints |
+| success-criteria.md | 0 | Complete | Product, quality, commercial, KB criteria |
+| decisions-ledger.md | 0 | Complete | Configuration, complexity profile, session plan, phase inventory |
+| artifact-manifest.md | 0 | Complete | Tracking file initialized |
+| metrics-tracker.md | 0 | Complete | Tracking file initialized |
+| research/domain-analysis.md | 1 | Complete | Industry overview, processes, terminology, KPIs |
+| research/best-practices.md | 1 | Complete | JUCE standards, DSP patterns, UI/UX, commercial |
+| research/competitive-templates.md | 1 | Complete | Audit of v7 playbook, gap analysis |
+| research/cross-cutting-concerns.md | 1 | Complete | 10 cross-cutting concerns documented |
+| research/platform-concerns.md | 1 | Complete | Linux Mint, JUCE, anti-patterns, deployment |
+| research/sme-interviews.md | 1 | Complete | 8 questions with key insights |
+| research/requirements.md | 1 | Complete | Domain, quality, strategic, platform requirements |
+| architecture/kb-architecture.md | 2 | Complete | 5-layer KB with bridge, separation rules |
+| architecture/entry-schema.json | 2 | Complete | Full entry schema with required fields |
+| architecture/bridge-schema.json | 2 | Complete | Bridge schema for sound-to-parameter translation |
+| architecture/population-strategy.md | 2 | Complete | Placeholder, harvesting, curation, sync rules |
+| architecture/directory-structure.md | 2 | Complete | Complete directory tree with naming conventions |
+| validation-report.md | 3 | Complete | Schema conformance and manifest verification |
+| kb/ (full directory tree) | 3 | Complete | 71 KB entries + 5 bridge entries + 89 JSON files |
+| kb/master-index.json | 3 | Complete | Master registry with 71 total entries |
+| kb/*/index.json (5 files) | 3 | Complete | Per-layer index files |
+| kb/*/manifest.json (6 files) | 3 | Complete | Per-layer manifest files |
+| kb/technical/topics/*/*.json (13 files) | 3 | Complete | Technical KB placeholder entries |
+| kb/sound-design/topics/*/*.json (23 files) | 3 | Complete | Sound Design KB placeholder entries |
+| kb/ui-ux/topics/*/*.json (12 files) | 3 | Complete | UI/UX KB placeholder entries |
+| kb/commercial/topics/*/*.json (15 files) | 3 | Complete | Commercial KB placeholder entries |
+| kb/reference/topics/*/*.json (8 files) | 3 | Complete | Reference KB placeholder entries |
+| kb/bridge/*.json (5 files) | 3 | Complete | Bridge entries with seeded content |
+| architecture/phase-structure.md | 4 | Complete | 17-phase structure with KB integration |
+| architecture/task-granularity.md | 4 | Complete | Task size rules and ownership patterns |
+| architecture/dependency-map.md | 4 | Complete | Phase and task dependencies, no circular |
+| architecture/phase-gates.md | 4 | Complete | All 17 phase gates with blocker examples |
+| architecture/document-tree.md | 4 | Complete | Document naming and structure conventions |
+| architecture/role-definitions.md | 5 | Complete | 4 roles defined with responsibilities |
+| architecture/handoff-points.md | 5 | Complete | Phase transition handoffs documented |
+| architecture/escalation-paths.md | 5 | Complete | 6 blocker categories with escalation paths |
+| drafts/task-list-v0.1.md | 6 | Complete | 86 tasks across 17 phases |
+| drafts/ccc-mapping.md | 6 | Complete | 10 CCCs mapped to phases |
+| phases/phase-04-dsp-implementation.md | 6 | Complete | Execution guide for critical phase |
+| audits/task-engineering-review.md | 6 | Complete | Task audit verification |
+| output-config.md | 7 | Complete | Workflow model, roles, usage, KB mapping, skill activation, router, post-run review |
+| metrics-and-kpi.md | 8 | Complete | Process, quality, domain outcome, KB metrics with KPI targets |
+| playbook.json | 9 | Complete | Complete output playbook JSON assembled from all design documents |
+| validation/playbook-validation.md | 10 | Complete | JSON syntax, schema, cross-reference, completeness validation |
+| audits/quality-audit.md | 11 | Complete | Requirements, CCC, completeness, integration, gap analysis audit |
+| validation/stress-test-results.md | 12 | Complete | Stress scenarios, edge cases, error recovery, dry-run, flow tests |
+| approvals/stakeholder-approval.md | 13 | Complete | Stakeholder review approved, KB expansion deferred |
+| README.md | 14 | Complete | Updated with playbook overview, usage, structure |
+| post-run-review.md | 15 | Complete | Post-run review with metrics, quality assessment, recommendations |

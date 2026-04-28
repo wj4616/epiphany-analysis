@@ -1,0 +1,100 @@
+{
+  "id": "dsp-kb_optimization_simd-optimization",
+  "kb": "dsp-kb",
+  "topic": "optimization",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "SIMD (Single Instruction Multiple Data) allows processing multiple audio samples simultaneously. This is critical for:\n- Reducing CPU usage in real-time processing\n- Enabling more complex DSP per voice\n- Supporting higher sample rates and channel counts",
+  "concepts": [
+    {
+      "name": "Alignment",
+      "description": "SIMD requires aligned memory for best performance",
+      "related": []
+    },
+    {
+      "name": "Remainder handling",
+      "description": "Process non-SIMD-aligned samples separately",
+      "related": []
+    },
+    {
+      "name": "Data layout",
+      "description": "Interleaved vs planar affects SIMD efficiency",
+      "related": []
+    },
+    {
+      "name": "Compiler optimization",
+      "description": "Use appropriate flags (-mavx, -msse4.2, etc.)",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "#include <juce_dsp/juce_dsp.h>\n\nusing namespace juce::dsp;\n\n// SIMD register can hold multiple floats (4 for SSE, 8 for AVX)\nusing SIMD = SIMDRegister<float>;\n\nvoid processBlock(float* channel1, float* channel2, int numSamples)\n{\n    constexpr int simdSize = SIMD::size();  // Number of floats in SIMD register\n    \n    for (int i = 0; i < numSamples; i += simdSize)\n    {\n        // Load interleaved samples\n        SIMD sample1 = SIMD::fromRawArray(channel1 + i);\n        SIMD sample2 = SIMD::fromRawArray(channel2 + i);\n        \n        // Process all samples simultaneously\n        SIMD result = sample1 * 0.5f + sample2 * 0.5f;\n        \n        // Store back\n        SIMD::copyToRawArray(channel1 + i, result);\n    }\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class SIMDFilter\n{\npublic:\n    using SIMD = SIMDRegister<float>;\n    \n    void prepare(double sampleRate, int numChannels)\n    {\n        this->numChannels = numChannels;\n        \n        // State for each channel\n        s1.resize(numChannels, 0.0f);\n        s2.resize(numChannels, 0.0f);\n    }\n    \n    void setCoefficients(float b0_, float b1_, float b2_, float a1_, float a2_)\n    {\n        b0 = b0_; b1 = b1_; b2 = b2_;\n        a1 = a1_; a2 = a2_;\n    }\n    \n    void processBlock(AudioBuffer<float>& buffer)\n    {\n        auto* channelData = buffer.getArrayOfWritePointers();\n        int numSamples = buffer.getNumSamples();\n        \n        if (numChannels >= SIMD::size())\n        {\n            // SIMD path for 4+ channels\n            processSIMD(channelData, numSamples);\n        }\n        else\n        {\n            // Scalar fallback\n            processScalar(channelData, numSamples);\n        }\n    }\n    \nprivate:\n    void processSIMD(float** channels, int numSamples)\n    {\n        constexpr int simdSize = SIMD::size();\n        int numSIMDChannels = (numChannels / simdSize) * simdSize;\n        \n        for (int i = 0; i < numSamples; ++i)\n        {\n            for (int c = 0; c < numSIMDChannels; c += simdSize)\n            {\n                // Load 4 channel samples at once\n                SIMD input = SIMD::fromRawArray(&s1[c]);\n                // This needs proper interleaving/deinterleaving\n                // Simplified example\n            }\n        }\n    }\n    \n    void processScalar(float** channels, int numSamples)\n    {\n        for (int c = 0; c < numChannels; ++c)\n        {\n            for (int i = 0; i < numSamples; ++i)\n            {\n                float output = b0 * channels[c][i] + s1[c];\n                s1[c] = b1 * channels[c][i] - a1 * output + s2[c];\n                s2[c] = b2 * channels[c][i] - a2 * output;\n                channels[c][i] = output;\n            }\n        }\n    }\n    \n    std::vector<float> s1, s2;\n    float b0, b1, b2, a1, a2;\n    int numChannels;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Convert from planar (channel-first) to interleaved (sample-first)\nvoid interleave(float** planar, float* interleaved, int numSamples, int numChannels)\n{\n    using SIMD = SIMDRegister<float>;\n    constexpr int simdSize = SIMD::size();\n    \n    for (int i = 0; i < numSamples; i += simdSize)\n    {\n        for (int c = 0; c < numChannels; ++c)\n        {\n            SIMD::copyToRawArray(interleaved + i * numChannels + c,\n                                  SIMD::fromRawArray(planar[c] + i));\n        }\n    }\n}\n\n// Convert back to planar\nvoid deinterleave(float* interleaved, float** planar, int numSamples, int numChannels)\n{\n    using SIMD = SIMDRegister<float>;\n    constexpr int simdSize = SIMD::size();\n    \n    for (int i = 0; i < numSamples; i += simdSize)\n    {\n        for (int c = 0; c < numChannels; ++c)\n        {\n            SIMD::copyToRawArray(planar[c] + i,\n                                  SIMD::fromRawArray(interleaved + i * numChannels + c));\n        }\n    }\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "namespace SIMDOps\n{\n    // Multiply-add: result = a * b + c\n    SIMD multiplyAdd(SIMD a, SIMD b, SIMD c)\n    {\n        return SIMD::mulAdd(c, a, b);  // c + a * b\n    }\n    \n    // Clip to range\n    SIMD clip(SIMD input, SIMD minVal, SIMD maxVal)\n    {\n        return SIMD::max(SIMD::min(input, maxVal), minVal);\n    }\n    \n    // Absolute value\n    SIMD abs(SIMD input)\n    {\n        // Clear sign bit\n        return SIMD::abs(input);\n    }\n    \n    // Sum all elements\n    float sumAll(SIMD input)\n    {\n        return SIMD::sum(input);\n    }\n    \n    // Dot product\n    SIMD dotProduct(SIMD* a, SIMD* b, int numElements)\n    {\n        SIMD result = SIMD(0.0f);\n        for (int i = 0; i < numElements; ++i)\n        {\n            result = SIMD::mulAdd(result, a[i], b[i]);\n        }\n        return result;\n    }\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Detect SIMD capabilities at runtime\nstruct SIMDCapabilities\n{\n    static bool hasSSE2() { return juce::SystemStats::hasSSE2(); }\n    static bool hasAVX() { return juce::SystemStats::hasAVX(); }\n    static bool hasAVX2() { return juce::SystemStats::hasAVX2(); }\n    static bool hasNeon() { return juce::SystemStats::hasNeon(); }\n    \n    static int getOptimalSIMDSize()\n    {\n        if (hasAVX()) return 8;  // 8 floats\n        if (hasSSE2() || hasNeon()) return 4;  // 4 floats\n        return 1;  // Scalar\n    }\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// KFR provides optimized DSP with SIMD support\n#include <kfr/dsp.hpp>\n\nvoid processWithKFR(float* buffer, int numSamples)\n{\n    // KFR automatically uses available SIMD instructions\n    kfr::univector<float> input(buffer, numSamples);\n    \n    // Vectorized FFT\n    auto spectrum = kfr::dft<kfr::cfloat>(input);\n    \n    // Vectorized filtering\n    auto filtered = kfr::filter(input, lowpass_coefficients);\n    \n    // Copy back\n    filtered.copy_to(buffer);\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "alignas(16) float buffer[1024];  // SSE aligned\nalignas(32) float buffer[1024];  // AVX aligned\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "int remainder = numSamples % simdSize;\nfor (int i = numSamples - remainder; i < numSamples; ++i)\n{\n    // Scalar processing for remainder\n}\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# SIMD Optimization for Audio DSP\n\n## Overview\n\nSIMD (Single Instruction Multiple Data) allows processing multiple audio samples simultaneously. This is critical for:\n- Reducing CPU usage in real-time processing\n- Enabling more complex DSP per voice\n- Supporting higher sample rates and channel counts\n\n## JUCE SIMDRegister\n\n```cpp\n#include <juce_dsp/juce_dsp.h>\n\nusing namespace juce::dsp;\n\n// SIMD register can hold multiple floats (4 for SSE, 8 for AVX)\nusing SIMD = SIMDRegister<float>;\n\nvoid processBlock(float* channel1, float* channel2, int numSamples)\n{\n    constexpr int simdSize = SIMD::size();  // Number of floats in SIMD register\n    \n    for (int i = 0; i < numSamples; i += simdSize)\n    {\n        // Load interleaved samples\n        SIMD sample1 = SIMD::fromRawArray(channel1 + i);\n        SIMD sample2 = SIMD::fromRawArray(channel2 + i);\n        \n        // Process all samples simultaneously\n        SIMD result = sample1 * 0.5f + sample2 * 0.5f;\n        \n        // Store back\n        SIMD::copyToRawArray(channel1 + i, result);\n    }\n}\n```\n\n## SIMD-Aware Filter Implementation\n\n```cpp\nclass SIMDFilter\n{\npublic:\n    using SIMD = SIMDRegister<float>;\n    \n    void prepare(double sampleRate, int numChannels)\n    {\n        this->numChannels = numChannels;\n        \n        // State for each channel\n        s1.resize(numChannels, 0.0f);\n        s2.resize(numChannels, 0.0f);\n    }\n    \n    void setCoefficients(float b0_, float b1_, float b2_, float a1_, float a2_)\n    {\n        b0 = b0_; b1 = b1_; b2 = b2_;\n        a1 = a1_; a2 = a2_;\n    }\n    \n    void processBlock(AudioBuffer<float>& buffer)\n    {\n        auto* channelData = buffer.getArrayOfWritePointers();\n        int numSamples = buffer.getNumSamples();\n        \n        if (numChannels >= SIMD::size())\n        {\n            // SIMD path for 4+ channels\n            processSIMD(channelData, numSamples);\n        }\n        else\n        {\n            // Scalar fallback\n            processScalar(channelData, numSamples);\n        }\n    }\n    \nprivate:\n    void processSIMD(float** channels, int numSamples)\n    {\n        constexpr int simdSize = SIMD::size();\n        int numSIMDChannels = (numChannels / simdSize) * simdSize;\n        \n        for (int i = 0; i < numSamples; ++i)\n        {\n            for (int c = 0; c < numSIMDChannels; c += simdSize)\n            {\n                // Load 4 channel samples at once\n                SIMD input = SIMD::fromRawArray(&s1[c]);\n                // This needs proper interleaving/deinterleaving\n                // Simplified example\n            }\n        }\n    }\n    \n    void processScalar(float** channels, int numSamples)\n    {\n        for (int c = 0; c < numChannels; ++c)\n        {\n            for (int i = 0; i < numSamples; ++i)\n            {\n                float output = b0 * channels[c][i] + s1[c];\n                s1[c] = b1 * channels[c][i] - a1 * output + s2[c];\n                s2[c] = b2 * channels[c][i] - a2 * output;\n                channels[c][i] = output;\n            }\n        }\n    }\n    \n    std::vector<float> s1, s2;\n    float b0, b1, b2, a1, a2;\n    int numChannels;\n};\n```\n\n## Interleaved Processing\n\n```cpp\n// Convert from planar (channel-first) to interleaved (sample-first)\nvoid interleave(float** planar, float* interleaved, int numSamples, int numChannels)\n{\n    using SIMD = SIMDRegister<float>;\n    constexpr int simdSize = SIMD::size();\n    \n    for (int i = 0; i < numSamples; i += simdSize)\n    {\n        for (int c = 0; c < numChannels; ++c)\n        {\n            SIMD::copyToRawArray(interleaved + i * numChannels + c,\n                                  SIMD::fromRawArray(planar[c] + i));\n        }\n    }\n}\n\n// Convert back to planar\nvoid deinterleave(float* interleaved, float** planar, int numSamples, int numChannels)\n{\n    using SIMD = SIMDRegister<float>;\n    constexpr int simdSize = SIMD::size();\n    \n    for (int i = 0; i < numSamples; i += simdSize)\n    {\n        for (int c = 0; c < numChannels; ++c)\n        {\n            SIMD::copyToRawArray(planar[c] + i,\n                                  SIMD::fromRawArray(interleaved + i * numChannels + c));\n        }\n    }\n}\n```\n\n## SIMD-Optimized Operations\n\n```cpp\nnamespace SIMDOps\n{\n    // Multiply-add: result = a * b + c\n    SIMD multiplyAdd(SIMD a, SIMD b, SIMD c)\n    {\n        return SIMD::mulAdd(c, a, b);  // c + a * b\n    }\n    \n    // Clip to range\n    SIMD clip(SIMD input, SIMD minVal, SIMD maxVal)\n    {\n        return SIMD::max(SIMD::min(input, maxVal), minVal);\n    }\n    \n    // Absolute value\n    SIMD abs(SIMD input)\n    {\n        // Clear sign bit\n        return SIMD::abs(input);\n    }\n    \n    // Sum all elements\n    float sumAll(SIMD input)\n    {\n        return SIMD::sum(input);\n    }\n    \n    // Dot product\n    SIMD dotProduct(SIMD* a, SIMD* b, int numElements)\n    {\n        SIMD result = SIMD(0.0f);\n        for (int i = 0; i < numElements; ++i)\n        {\n            result = SIMD::mulAdd(result, a[i], b[i]);\n        }\n        return result;\n    }\n}\n```\n\n## Platform-Specific SIMD\n\n```cpp\n// Detect SIMD capabilities at runtime\nstruct SIMDCapabilities\n{\n    static bool hasSSE2() { return juce::SystemStats::hasSSE2(); }\n    static bool hasAVX() { return juce::SystemStats::hasAVX(); }\n    static bool hasAVX2() { return juce::SystemStats::hasAVX2(); }\n    static bool hasNeon() { return juce::SystemStats::hasNeon(); }\n    \n    static int getOptimalSIMDSize()\n    {\n        if (hasAVX()) return 8;  // 8 floats\n        if (hasSSE2() || hasNeon()) return 4;  // 4 floats\n        return 1;  // Scalar\n    }\n};\n```\n\n## KFR Framework SIMD\n\n```cpp\n// KFR provides optimized DSP with SIMD support\n#include <kfr/dsp.hpp>\n\nvoid processWithKFR(float* buffer, int numSamples)\n{\n    // KFR automatically uses available SIMD instructions\n    kfr::univector<float> input(buffer, numSamples);\n    \n    // Vectorized FFT\n    auto spectrum = kfr::dft<kfr::cfloat>(input);\n    \n    // Vectorized filtering\n    auto filtered = kfr::filter(input, lowpass_coefficients);\n    \n    // Copy back\n    filtered.copy_to(buffer);\n}\n```\n\n## Performance Comparison\n\n| Operation | Scalar | SSE (4x) | AVX (8x) | NEON (4x) |\n|-----------|--------|----------|----------|-----------|\n| Multiply-add | 1x | 4x | 8x | 4x |\n| Biquad filter | 1x | 3.5x | 7x | 3.5x |\n| FFT (N=1024) | 1x | 3x | 6x | 3x |\n| Convolution | 1x | 3x | 5x | 3x |\n\n## Common Pitfalls\n\n1. **Alignment**: SIMD requires aligned memory for best performance\n```cpp\nalignas(16) float buffer[1024];  // SSE aligned\nalignas(32) float buffer[1024];  // AVX aligned\n```\n\n2. **Remainder handling**: Process non-SIMD-aligned samples separately\n```cpp\nint remainder = numSamples % simdSize;\nfor (int i = numSamples - remainder; i < numSamples; ++i)\n{\n    // Scalar processing for remainder\n}\n```\n\n3. **Data layout**: Interleaved vs planar affects SIMD efficiency\n\n4. **Compiler optimization**: Use appropriate flags (-mavx, -msse4.2, etc.)\n\n## Best Practices\n\n| Practice | Benefit |\n|----------|--------|\n| Align buffers | Avoid unaligned loads |\n| Batch processing | Amortize overhead |\n| SIMD-aware API | Clean code path |\n| Fallback path | Compatibility |\n| Runtime dispatch | Best performance per CPU |\n\n## References\n\n- JUCE SIMDRegister Tutorial\n- KFR Framework documentation\n- Intel Intrinsics Guide\n- ARM NEON Intrinsics Reference",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.782309+00:00"
+  },
+  "title": "SIMD Optimization for Audio DSP",
+  "description": "Single Instruction Multiple Data optimization for real-time audio processing",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "dsp",
+  "audio_relevance": 9,
+  "difficulty": "advanced",
+  "implementation_examples": 4,
+  "tags": [
+    "simd",
+    "optimization",
+    "sse",
+    "avx",
+    "neon",
+    "performance"
+  ],
+  "related_topics": [
+    "filter",
+    "fft",
+    "dsp",
+    "convolution"
+  ]
+}

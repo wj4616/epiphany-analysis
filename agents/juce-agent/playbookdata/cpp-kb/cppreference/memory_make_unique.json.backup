@@ -1,0 +1,26 @@
+{
+  "markdown": "# 404 Not Found\n\nThe requested URL (/w/cpp/memory/make\\_unique.html)\nwas not found on this server.",
+  "metadata": {
+    "language": "en",
+    "title": "404 Not Found",
+    "scrapeId": "019d39b1-6273-72a2-aba8-810a4cfc9332",
+    "sourceURL": "https://en.cppreference.com/w/cpp/memory/make_unique",
+    "url": "https://en.cppreference.com/w/cpp/memory/make_unique.html",
+    "statusCode": 404,
+    "error": "Not Found",
+    "contentType": "text/html; charset=iso-8859-1",
+    "timezone": "America/New_York",
+    "proxyUsed": "basic",
+    "cacheState": "miss",
+    "indexId": "c03758d4-fba6-4579-ab1b-d6020c85ca9e",
+    "creditsUsed": 1,
+    "concurrencyLimited": false
+  },
+  "html": "<!DOCTYPE html><html lang=\"en\">\n<body>\n\n\n\n<div>\n\n<h1>404 Not Found</h1>\n\n<p>\nThe requested URL (/w/cpp/memory/make_unique.html)\nwas not found on this server.\n</p>\n\n</div>\n\n\n\n\n\n</body></html>",
+  "links": [],
+  "source_url": "https://en.cppreference.com/w/cpp/memory/make_unique",
+  "source": "cppreference",
+  "topic": "memory/make_unique",
+  "harvested_at": "2026-03-29T06:03:40.397238",
+  "kb_type": "cpp"
+}

@@ -1,0 +1,36 @@
+{
+  "category": "bridges",
+  "description": "Sonic description to parameter translations",
+  "entries": [
+    {
+      "id": "bridge-warm",
+      "title": "Warm Sound Translation",
+      "confidence": 0.85
+    },
+    {
+      "id": "bridge-bright",
+      "title": "Bright Sound Translation",
+      "confidence": 0.85
+    },
+    {
+      "id": "bridge-lush",
+      "title": "Lush Sound Translation",
+      "confidence": 0.85
+    },
+    {
+      "id": "bridge-psychedelic",
+      "title": "Psychedelic Sound Translation",
+      "confidence": 0.85
+    },
+    {
+      "id": "bridge-ambient",
+      "title": "Ambient Sound Translation",
+      "confidence": 0.85
+    },
+    {
+      "id": "bridge-punchy",
+      "title": "Punchy Sound Translation",
+      "confidence": 0.85
+    }
+  ]
+}

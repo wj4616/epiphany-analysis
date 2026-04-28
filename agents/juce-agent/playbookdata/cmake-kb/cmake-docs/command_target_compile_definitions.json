@@ -1,0 +1,68 @@
+{
+  "id": "cmake-kb_cmake-docs_command_target_compile_definitions",
+  "kb": "cmake-kb",
+  "topic": "cmake-docs",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "Add compile definitions to a target for preprocessor macros.",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "cmake",
+      "code": "target_compile_definitions(<target>\n    [PRIVATE|PUBLIC|INTERFACE] <definition>...\n)\n",
+      "preserved": true
+    },
+    {
+      "language": "cmake",
+      "code": "target_compile_definitions(MyPlugin\n    PRIVATE\n        JUCE_WEB_BROWSER=0\n        JUCE_USE_CURL=0\n        JUCE_DSP_USE_INTEL_MKL=0\n        JUCE_DSP_USE_WINDOWS_MEDIA=0\n)\n",
+      "preserved": true
+    },
+    {
+      "language": "cmake",
+      "code": "target_compile_definitions(MyPlugin\n    PRIVATE\n        $<$<CONFIG:Debug>:DEBUG=1>\n        $<$<CONFIG:Release>:NDEBUG=1>\n)\n",
+      "preserved": true
+    },
+    {
+      "language": "cmake",
+      "code": "target_compile_definitions(MyPlugin\n    PRIVATE\n        PLUGIN_VERSION_MAJOR=1\n        PLUGIN_VERSION_MINOR=0\n        PLUGIN_VERSION_PATCH=0\n        PLUGIN_NAME=\"My Plugin\"\n)\n",
+      "preserved": true
+    },
+    {
+      "language": "cmake",
+      "code": "target_compile_definitions(MyPlugin\n    PRIVATE\n        $<$<PLATFORM_ID:Windows>:_WINDOWS>\n        $<$<PLATFORM_ID:Darwin>:_MACOS>\n        $<$<PLATFORM_ID:Linux>:_LINUX>\n)\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# target_compile_definitions\n\nAdd compile definitions to a target for preprocessor macros.\n\n## Syntax\n\n```cmake\ntarget_compile_definitions(<target>\n    [PRIVATE|PUBLIC|INTERFACE] <definition>...\n)\n```\n\n## JUCE Plugin Configuration\n\n```cmake\ntarget_compile_definitions(MyPlugin\n    PRIVATE\n        JUCE_WEB_BROWSER=0\n        JUCE_USE_CURL=0\n        JUCE_DSP_USE_INTEL_MKL=0\n        JUCE_DSP_USE_WINDOWS_MEDIA=0\n)\n```\n\n## Debug/Release Configuration\n\n```cmake\ntarget_compile_definitions(MyPlugin\n    PRIVATE\n        $<$<CONFIG:Debug>:DEBUG=1>\n        $<$<CONFIG:Release>:NDEBUG=1>\n)\n```\n\n## Plugin Version Definitions\n\n```cmake\ntarget_compile_definitions(MyPlugin\n    PRIVATE\n        PLUGIN_VERSION_MAJOR=1\n        PLUGIN_VERSION_MINOR=0\n        PLUGIN_VERSION_PATCH=0\n        PLUGIN_NAME=\"My Plugin\"\n)\n```\n\n## Platform-Specific Definitions\n\n```cmake\ntarget_compile_definitions(MyPlugin\n    PRIVATE\n        $<$<PLATFORM_ID:Windows>:_WINDOWS>\n        $<$<PLATFORM_ID:Darwin>:_MACOS>\n        $<$<PLATFORM_ID:Linux>:_LINUX>\n)\n```\n\n## Best Practices\n\n1. Use PRIVATE for implementation-only definitions\n2. Use PUBLIC for definitions in public headers\n3. Use generator expressions for conditional definitions",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.942044+00:00"
+  },
+  "title": "CMake target_compile_definitions Command",
+  "description": "Add compile definitions to targets - configure JUCE modules and plugin settings",
+  "source": "cmake.org",
+  "harvested_at": "2026-03-29T06:05:16.079801",
+  "kb_type": "build",
+  "audio_relevance": 8,
+  "difficulty": "beginner",
+  "implementation_examples": [
+    {
+      "title": "Complete JUCE Plugin Configuration",
+      "code": "target_compile_definitions(MyPlugin\n    PRIVATE\n        # Disable unused JUCE features\n        JUCE_WEB_BROWSER=0\n        JUCE_USE_CURL=0\n        \n        # Version info\n        PLUGIN_VERSION=\"1.0.0\"\n        \n        # Debug/Release\n        $<$<CONFIG:Debug>:JUCE_DEBUG=1>\n        $<$<CONFIG:Release>:JUCE_DEBUG=0>\n)"
+    }
+  ],
+  "tags": [
+    "cmake",
+    "compile",
+    "definitions",
+    "macros",
+    "preprocessor",
+    "juce"
+  ],
+  "related_topics": [
+    "target_link_libraries",
+    "target_include_directories",
+    "add_library"
+  ]
+}

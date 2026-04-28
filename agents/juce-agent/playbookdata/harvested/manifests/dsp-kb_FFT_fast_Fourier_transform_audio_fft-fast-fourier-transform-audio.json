@@ -1,0 +1,22 @@
+{
+  "kb_name": "dsp-kb",
+  "topic": "FFT fast Fourier transform audio",
+  "filename": "fft-fast-fourier-transform-audio.json",
+  "status": "harvested",
+  "harvested_at": "2026-03-30T21:33:42.644082+00:00",
+  "sources": 2,
+  "rejected": 36,
+  "credits_used": 76,
+  "search_queries": [
+    "FFT fast Fourier transform audio real-time implementation JUCE VST plugin",
+    "FFT fast Fourier transform audio tutorial",
+    "FFT fast Fourier transform audio implementation",
+    "FFT fast Fourier transform audio guide"
+  ],
+  "quality_thresholds": {
+    "min_content_length": 500,
+    "min_relevance_score": 0.25,
+    "max_noise_ratio": 0.5
+  },
+  "notes": "Auto-harvested via harvest-data skill"
+}

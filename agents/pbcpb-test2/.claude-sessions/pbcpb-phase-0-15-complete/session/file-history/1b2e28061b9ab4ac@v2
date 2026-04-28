@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_modulation_envelope-basics",
+  "kb": "sound-design",
+  "topic": "modulation",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "ADSR Envelope Fundamentals",
+  "summary": "Placeholder: Attack, Decay, Sustain, Release for shaping sound over time.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["modulation", "envelope", "adsr", "attack", "decay", "sustain", "release"],
+  "related_topics": ["modulation", "genre-techniques"],
+  "difficulty": "beginner",
+  "domain_relevance": 10
+}

@@ -1,0 +1,61 @@
+{
+  "id": "bridge_oscillator-character",
+  "category": "oscillator-character",
+  "parameters": ["osc_detune", "osc_count", "osc_spread"],
+  "intent_mappings": {
+    "lush": {
+      "parameter": "osc_detune",
+      "value_range": [0.05, 0.15],
+      "typical_default": 0.1,
+      "confidence": 0.80,
+      "source": "sound-design_genre-techniques_pad",
+      "why": "Moderate detune creates chorusing effect without losing pitch definition"
+    },
+    "thin": {
+      "parameter": "osc_count",
+      "value_range": [1, 1],
+      "typical_default": 1,
+      "confidence": 0.90,
+      "source": "sound-design_oscillators_waveform-types",
+      "why": "Single oscillator without detune produces clean, thin sound"
+    },
+    "rich": {
+      "parameter": "osc_count",
+      "value_range": [2, 4],
+      "typical_default": 3,
+      "confidence": 0.85,
+      "source": "sound-design_genre-techniques_pad",
+      "why": "Multiple detuned oscillators create thickness and richness"
+    },
+    "fat": {
+      "parameter": "osc_spread",
+      "value_range": [0.3, 0.6],
+      "typical_default": 0.45,
+      "confidence": 0.75,
+      "source": "sound-design_genre-techniques_bass",
+      "why": "Wide stereo spread creates perceived width and power"
+    }
+  },
+  "anti_patterns": [
+    "Single oscillator cannot achieve 'lush' — detune requires multiple sources",
+    "Excessive detune (>0.2) sounds out of tune rather than lush"
+  ],
+  "combinations": [
+    {
+      "with": "bridge_reverb-space",
+      "result": "lush + ambient",
+      "confidence_modifier": 0.85
+    },
+    {
+      "with": "bridge_filter-character",
+      "result": "warm + lush",
+      "parameter_adjustments": {
+        "filter_cutoff": [0.25, 0.4]
+      },
+      "confidence_modifier": 0.80
+    }
+  ],
+  "status": "seeded",
+  "version": "1.0.0",
+  "created_from": "research"
+}

@@ -1,0 +1,205 @@
+# Escalation Paths
+
+## Overview
+
+When a task is blocked, the escalation path determines who resolves it. For this single-agent workflow, most escalations go to the human.
+
+---
+
+## Blocker Categories
+
+### Category 1: Technical Blockers
+
+**Definition:** Implementation issues, build failures, test failures, algorithm problems.
+
+**Examples:**
+- Build fails with cryptic error
+- Tests fail after implementation
+- DSP algorithm produces wrong output
+- Audio thread safety violation detected
+
+**Escalation Path:**
+```
+[Builder] encounters issue
+    → Self-diagnose (attempt fix)
+    → If stuck >30 min: Escalate to [Human]
+    → [Human] provides direction or accepts workaround
+```
+
+**Resolution Authority:** [Human] makes final decision on technical trade-offs
+
+---
+
+### Category 2: Creative Blockers
+
+**Definition:** Decisions requiring creative judgment, aesthetic choices, sound identity.
+
+**Examples:**
+- Sound identity unclear from brief
+- GUI aesthetic direction ambiguous
+- Preset naming disagreement
+- Effect intensity range undefined
+
+**Escalation Path:**
+```
+[Architect] or [Builder] needs creative input
+    → Cannot proceed without human decision
+    → Escalate IMMEDIATELY to [Human]
+    → [Human] provides creative direction
+    → Document decision in decisions-ledger.md
+```
+
+**Resolution Authority:** [Human] — AI never makes creative decisions autonomously
+
+---
+
+### Category 3: Architecture Blockers
+
+**Definition:** Design decisions affecting structure, dependencies, or cross-cutting concerns.
+
+**Examples:**
+- Two implementation approaches seem equally valid
+- Cross-cutting concern not covered by existing phases
+- Architecture conflict between requirements
+
+**Escalation Path:**
+```
+[Architect] identifies architectural ambiguity
+    → Document both options in decisions-ledger.md
+    → Escalate to [Human] for decision
+    → [Human] chooses direction
+    → [Architect] documents decision and rationale
+```
+
+**Resolution Authority:** [Human] for strategic decisions; [Architect] can decide implementation details within approved architecture
+
+---
+
+### Category 4: Scope Blockers
+
+**Definition:** Requests that exceed defined scope or constraints.
+
+**Examples:**
+- New requirement discovered during implementation
+- Feature request outside original scope
+- Constraint violation (budget, timeline, technical)
+
+**Escalation Path:**
+```
+[Builder] or [Architect] identifies scope creep
+    → Document in decisions-ledger.md
+    → Escalate to [Human]
+    → [Human] decides: accept (update scope), reject, or defer
+    → Update scope.md if scope changes
+```
+
+**Resolution Authority:** [Human] — scope changes require human approval
+
+---
+
+### Category 5: Resource Blockers
+
+**Definition:** Time, budget, or tool constraints.
+
+**Examples:**
+- Claude session limit reached before task complete
+- External tool unavailable
+- Budget exceeded
+
+**Escalation Path:**
+```
+[Coordinator] or [Builder] identifies resource constraint
+    → Document constraint in decisions-ledger.md
+    → Escalate to [Human]
+    → [Human] decides: extend budget, wait for session, or reduce scope
+```
+
+**Resolution Authority:** [Human]
+
+---
+
+### Category 6: Quality Blockers
+
+**Definition:** Quality issues discovered during testing or review.
+
+**Examples:**
+- DAW testing reveals perceptual issues
+- pluginval validation fails
+- Audio quality problems (clicks, distortion)
+
+**Escalation Path:**
+```
+[Builder] or [Human] discovers quality issue
+    → Document issue in testing/ or audits/
+    → If [Builder]: Attempt fix
+    → If fix not obvious: Escalate to [Human]
+    → [Human] decides priority and approach
+```
+
+**Resolution Authority:** [Human] — quality acceptance is human decision
+
+---
+
+## Escalation Decision Matrix
+
+| Blocker Category | First Attempt | Time Limit | Escalate To |
+|------------------|----------------|------------|-------------|
+| Technical | Self-diagnose | 30 min | [Human] |
+| Creative | None — immediate | N/A | [Human] |
+| Architecture | Document options | 15 min | [Human] |
+| Scope | Document impact | Immediate | [Human] |
+| Resource | Document constraint | Immediate | [Human] |
+| Quality | Attempt fix | 30 min | [Human] |
+
+---
+
+## Escalation Documentation Format
+
+When escalating, document in `decisions-ledger.md`:
+
+```markdown
+## Escalation: [Date]
+
+**Blocker Type:** [Category 1-6]
+**Phase:** [Phase number]
+**Task:** [Task title]
+
+**Issue:** [Description of the blocker]
+
+**Attempted Resolution:** [What was tried, if anything]
+
+**Options:** [If applicable, list options with pros/cons]
+
+**Resolution Required:** [What decision is needed]
+
+**Status:** PENDING / RESOLVED
+
+**Resolution:** [Filled in after human decision]
+
+**Rationale:** [Why this resolution was chosen]
+```
+
+---
+
+## Session Boundary Handling
+
+When a blocker persists across sessions:
+
+1. **Document thoroughly** in `decisions-ledger.md`
+2. **Note session end state** in `artifact-manifest.md`
+3. **At session start:** Load `decisions-ledger.md` first
+4. **Resume** with blocker resolution as priority
+
+---
+
+## Human Availability Assumptions
+
+This playbook assumes:
+- Human is available for creative decisions within reasonable time
+- Human can provide direction on escalated blockers
+- Human has final approval authority on all gates
+
+If human is unavailable for extended periods:
+- Document all pending decisions
+- Proceed with non-blocked tasks
+- Queue blockers for human review

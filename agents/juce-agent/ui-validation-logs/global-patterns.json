@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "description": "Aggregated UI/UX patterns across all projects",
+  "last_updated": "2026-03-28",
+  "control_usability": {
+    "knob_sizes": {
+      "primary": {"recommended": [48, 64], "success_rate": 0, "total_tests": 0},
+      "secondary": {"recommended": [32, 40], "success_rate": 0, "total_tests": 0},
+      "tertiary": {"recommended": [24, 28], "success_rate": 0, "total_tests": 0}
+    },
+    "slider_behavior": {
+      "drag_sensitivity": {"success_rate": 0, "total_tests": 0},
+      "double_click_reset": {"success_rate": 0, "total_tests": 0},
+      "fine_control_modifier": {"success_rate": 0, "total_tests": 0}
+    }
+  },
+  "visual_hierarchy": {
+    "primary_controls_visible": {"success": 0, "failures": 0, "total": 0},
+    "grouping_clarity": {"success": 0, "failures": 0, "total": 0},
+    "spacing_consistency": {"success": 0, "failures": 0, "total": 0}
+  },
+  "readability": {
+    "contrast_compliance": {"wcag_aa_passes": 0, "wcag_aa_failures": 0, "total": 0},
+    "font_size_issues": [],
+    "label_clarity": {"success": 0, "failures": 0, "total": 0}
+  },
+  "accessibility": {
+    "tab_navigation": {"works": 0, "broken": 0, "total": 0},
+    "screen_reader": {"compatible": 0, "incompatible": 0, "total": 0},
+    "color_blind_friendly": {"pass": 0, "fail": 0, "total": 0}
+  },
+  "window_behavior": {
+    "resizable": {"success": 0, "fixed_only": 0, "total": 0},
+    "scaling_issues": [],
+    "minimum_size_usable": {"success": 0, "failures": 0, "total": 0}
+  },
+  "style_effectiveness": {
+    "modern_clean": {"positive_feedback": 0, "negative_feedback": 0, "total": 0},
+    "vintage_hardware": {"positive_feedback": 0, "negative_feedback": 0, "total": 0},
+    "minimal": {"positive_feedback": 0, "negative_feedback": 0, "total": 0},
+    "creative_experimental": {"positive_feedback": 0, "negative_feedback": 0, "total": 0}
+  },
+  "common_issues": [],
+  "user_feedback_log": [],
+  "notes": [
+    "This file is updated automatically by juce-daw-testing skill during UI evaluation",
+    "Do not edit manually - use project-specific logs for detailed feedback",
+    "Metrics are aggregated from individual project validation logs"
+  ]
+}

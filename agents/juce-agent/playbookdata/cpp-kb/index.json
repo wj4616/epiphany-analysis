@@ -1,0 +1,51 @@
+{
+  "kb_name": "cpp-kb",
+  "version": "1.0.0",
+  "last_updated": "2026-03-30T22:51:00.000000+00:00",
+  "topics": {
+    "cppreference": {
+      "files": [
+        "algorithm_sort.json",
+        "algorithm_transform.json",
+        "thread_shared_mutex.json",
+        "container_vector.json",
+        "utility_function.json",
+        "container_array.json",
+        "thread_condition_variable.json",
+        "thread_mutex.json",
+        "thread_unique_lock.json",
+        "memory_make_shared.json",
+        "memory_allocator.json",
+        "algorithm_find.json",
+        "thread_lock_guard.json",
+        "string_string_view.json",
+        "memory_make_unique.json",
+        "algorithm.json",
+        "functional_bind.json",
+        "memory_unique_ptr.json",
+        "string.json",
+        "algorithm_copy.json",
+        "utility_any.json",
+        "utility_optional.json",
+        "memory_weak_ptr.json",
+        "thread_atomic.json",
+        "memory_shared_ptr.json",
+        "utility_variant.json",
+        "thread.json",
+        "container_span.json"
+      ],
+      "file_count": 28,
+      "last_updated": "2026-03-30T22:51:00.000000+00:00"
+    },
+    "realtime-safety": {
+      "files": [
+        "overview.md",
+        "atomic-audio.md",
+        "lock-free-patterns.md",
+        "pitfalls.md"
+      ],
+      "file_count": 4,
+      "last_updated": "2026-03-30T22:51:00.000000+00:00"
+    }
+  }
+}

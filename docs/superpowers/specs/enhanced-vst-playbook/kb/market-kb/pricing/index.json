@@ -1,0 +1,15 @@
+{
+  "id": "placeholder-market-pricing",
+  "title": "PLACEHOLDER: VST Plugin Pricing Strategies",
+  "category": "pricing",
+  "status": "placeholder",
+  "needed_by": ["Phase 10"],
+  "description": "Pricing strategies for commercial VST plugins including tiered pricing, introductory offers, and bundle strategies",
+  "confidence": 0.0,
+  "source": {
+    "type": "pending_harvest",
+    "priority": "high"
+  },
+  "tags": ["pricing", "commercial", "strategy"],
+  "notes": "Research from KVR Marketplace, Plugin Alliance, industry analysis"
+}

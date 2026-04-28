@@ -1,0 +1,33 @@
+{
+  "id": "bridge-bright",
+  "title": "Bright Sound Translation",
+  "category": "bridges",
+  "sonic_description": "Bright, crisp sound with prominent high frequencies and quick transient response",
+  "sonic_keywords": ["bright", "crisp", "sharp", "brilliant", "clear"],
+  "translation": {
+    "filter": {
+      "type": "highpass",
+      "cutoff_range": [0.6, 1.0],
+      "resonance_range": [0.0, 0.1]
+    },
+    "amplitude": {
+      "attack_range": [0.0, 0.01],
+      "decay_range": [0.05, 0.15],
+      "sustain_range": [0.3, 0.5],
+      "release_range": [0.1, 0.3]
+    },
+    "oscillator": [{
+      "waveforms": ["sawtooth", "square"],
+      "detune_range": [0.0, 0.03]
+    }]
+  },
+  "why": "High filter cutoff preserves all harmonics. Fast attack emphasizes transients. Lower sustain and decay create punch rather than sustain.",
+  "how_to_apply": "Use for lead sounds, plucks, and sounds that need to cut through a mix. Be careful with filter resonance at high cutoff to avoid harshness.",
+  "confidence": 0.85,
+  "source": {
+    "type": "expert_interview",
+    "reference": "Synthesizer sound design consensus"
+  },
+  "presets": ["bright-lead", "crisp-pluck"],
+  "phase_usage": [0, 4, 5, 9]
+}

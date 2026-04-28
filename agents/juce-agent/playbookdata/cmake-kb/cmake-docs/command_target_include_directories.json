@@ -1,0 +1,84 @@
+{
+  "id": "cmake-kb_cmake-docs_command_target_include_directories",
+  "kb": "cmake-kb",
+  "topic": "cmake-docs",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "Add include directories to a target for header resolution.",
+  "concepts": [
+    {
+      "name": "PRIVATE",
+      "description": "- Include path only for this target",
+      "related": []
+    },
+    {
+      "name": "PUBLIC",
+      "description": "- Include path for this target and dependents",
+      "related": []
+    },
+    {
+      "name": "INTERFACE",
+      "description": "- Include path only for dependents",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "cmake",
+      "code": "target_include_directories(<target>\n    [SYSTEM] [PRIVATE|PUBLIC|INTERFACE] <dir>...\n)\n",
+      "preserved": true
+    },
+    {
+      "language": "cmake",
+      "code": "target_include_directories(MyPlugin\n    PRIVATE\n        ${CMAKE_CURRENT_SOURCE_DIR}/Source\n        ${CMAKE_CURRENT_SOURCE_DIR}/DSP\n    PUBLIC\n        ${CMAKE_CURRENT_SOURCE_DIR}/include  # Exposed in headers\n)\n",
+      "preserved": true
+    },
+    {
+      "language": "cmake",
+      "code": "Include(FetchContent)\nFetchContent_Declare(\n    JUCE\n    GIT_REPOSITORY https://github.com/juce-framework/JUCE.git\n    GIT_TAG origin/master\n)\nFetchContent_MakeAvailable(JUCE)\n\n# JUCE automatically sets up include paths\ntarget_link_libraries(MyPlugin PRIVATE juce::juce_audio_processors)\n",
+      "preserved": true
+    },
+    {
+      "language": "cmake",
+      "code": "# For external libraries without CMake support\nfind_path(STB_INCLUDE_DIR stb_vorbis.h)\n\ntarget_include_directories(MyPlugin\n    PRIVATE\n        ${STB_INCLUDE_DIR}\n)\n",
+      "preserved": true
+    },
+    {
+      "language": "cmake",
+      "code": "# Use generator expressions for configuration-specific paths\ntarget_include_directories(MyPlugin\n    PRIVATE\n        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>\n        $<INSTALL_INTERFACE:include>\n)\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# target_include_directories\n\nAdd include directories to a target for header resolution.\n\n## Syntax\n\n```cmake\ntarget_include_directories(<target>\n    [SYSTEM] [PRIVATE|PUBLIC|INTERFACE] <dir>...\n)\n```\n\n### Visibility Keywords\n\n- **PRIVATE** - Include path only for this target\n- **PUBLIC** - Include path for this target and dependents\n- **INTERFACE** - Include path only for dependents\n\n## JUCE Project Example\n\n```cmake\ntarget_include_directories(MyPlugin\n    PRIVATE\n        ${CMAKE_CURRENT_SOURCE_DIR}/Source\n        ${CMAKE_CURRENT_SOURCE_DIR}/DSP\n    PUBLIC\n        ${CMAKE_CURRENT_SOURCE_DIR}/include  # Exposed in headers\n)\n```\n\n## FetchContent Pattern\n\n```cmake\nInclude(FetchContent)\nFetchContent_Declare(\n    JUCE\n    GIT_REPOSITORY https://github.com/juce-framework/JUCE.git\n    GIT_TAG origin/master\n)\nFetchContent_MakeAvailable(JUCE)\n\n# JUCE automatically sets up include paths\ntarget_link_libraries(MyPlugin PRIVATE juce::juce_audio_processors)\n```\n\n## Third-Party Library Includes\n\n```cmake\n# For external libraries without CMake support\nfind_path(STB_INCLUDE_DIR stb_vorbis.h)\n\ntarget_include_directories(MyPlugin\n    PRIVATE\n        ${STB_INCLUDE_DIR}\n)\n```\n\n## Best Practices\n\n```cmake\n# Use generator expressions for configuration-specific paths\ntarget_include_directories(MyPlugin\n    PRIVATE\n        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>\n        $<INSTALL_INTERFACE:include>\n)\n```",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.942735+00:00"
+  },
+  "title": "CMake target_include_directories Command",
+  "description": "Add include directories to targets - manage header paths for JUCE projects",
+  "source": "cmake.org",
+  "harvested_at": "2026-03-29T06:05:16.079801",
+  "kb_type": "build",
+  "audio_relevance": 8,
+  "difficulty": "beginner",
+  "implementation_examples": [
+    {
+      "title": "JUCE Project with Custom Includes",
+      "code": "target_include_directories(MyPlugin\n    PRIVATE\n        ${CMAKE_CURRENT_SOURCE_DIR}/Source\n        ${CMAKE_CURRENT_SOURCE_DIR}/DSP/Modules\n    PUBLIC\n        ${CMAKE_CURRENT_SOURCE_DIR}/PublicHeaders\n)"
+    }
+  ],
+  "tags": [
+    "cmake",
+    "include",
+    "directories",
+    "headers",
+    "target",
+    "juce"
+  ],
+  "related_topics": [
+    "target_link_libraries",
+    "target_compile_definitions",
+    "add_library"
+  ]
+}

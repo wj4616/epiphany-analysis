@@ -1,0 +1,33 @@
+{
+  "id": "bridge_dark_default",
+  "category": "dark",
+  "descriptor": "dark",
+  "parameters": [
+    {
+      "parameter": "filter_cutoff",
+      "value_range": [0.1, 0.3],
+      "typical_default": 0.2,
+      "why": "Low cutoff removes high frequencies for dark character"
+    },
+    {
+      "parameter": "filter_resonance",
+      "value_range": [0.1, 0.3],
+      "typical_default": 0.2,
+      "why": "Moderate resonance adds character at low cutoff"
+    }
+  ],
+  "source": "Sound Design KB",
+  "confidence": 0.85,
+  "why": "Dark sounds emphasize low frequencies by filtering highs, often with some resonance for character.",
+  "anti_patterns": [
+    {
+      "avoid": "High resonance with very low cutoff",
+      "reason": "Creates rumble rather than dark character"
+    }
+  ],
+  "related_descriptors": ["warm", "deep"],
+  "example_plugins": [
+    {"name": "Native Instruments Massive X", "how_used": "Low-pass filter with moderate resonance"}
+  ],
+  "user_feedback": []
+}

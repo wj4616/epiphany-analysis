@@ -1,0 +1,146 @@
+#include "TextureBodyDetector.h"
+#include "FastMath.h"
+#include <cmath>
+
+namespace CogDSP
+{
+
+void TextureBodyDetector::prepare(double sr, int samplesPerBlock)
+{
+    sampleRate = sr;
+
+    // Time constants for envelope followers
+    // Fast: 2ms attack, 80ms release
+    // Slow: 80ms attack, 400ms release
+    constexpr float fastAttackMs = 2.0f;
+    constexpr float fastReleaseMs = 80.0f;
+    constexpr float slowAttackMs = 80.0f;
+    constexpr float slowReleaseMs = 400.0f;
+    constexpr float smoothingMs = 5.0f;
+
+    // Calculate coefficients: coeff = 1 - exp(-2.2 / (time * sr/1000))
+    // Using tau-based: coeff = exp(-1 / (time * sr/1000))
+    const auto calcCoeff = [sr](float ms) -> float {
+        return static_cast<float>(std::exp(-1.0 / (ms * sr / 1000.0)));
+    };
+
+    fastAttackCoeff = calcCoeff(fastAttackMs);
+    fastReleaseCoeff = calcCoeff(fastReleaseMs);
+    slowAttackCoeff = calcCoeff(slowAttackMs);
+    slowReleaseCoeff = calcCoeff(slowReleaseMs);
+    smoothingCoeff = calcCoeff(smoothingMs);
+
+    // Initialize smoothed value
+    smoothedTextureCoeff.reset(sampleRate, 0.005);  // 5ms smoothing
+    smoothedTextureCoeff.setCurrentAndTargetValue(0.5f);
+
+    // Initialize FFT
+    fft = std::make_unique<juce::dsp::FFT>(static_cast<int>(std::log2(fftSize)));
+    previousMagnitude.resize(fftSize / 2 + 1, 0.0f);
+    fftHopCounter = 0;
+
+    reset();
+}
+
+void TextureBodyDetector::process(const float* input, int numSamples)
+{
+    updateEnvelopes(input, numSamples);
+    computeSpectralFlux(input, numSamples);
+}
+
+void TextureBodyDetector::updateEnvelopes(const float* input, int numSamples)
+{
+    for (int i = 0; i < numSamples; ++i)
+    {
+        const float x = std::abs(input[i]);
+
+        // Fast envelope follower (2ms attack, 80ms release)
+        if (x > fastEnvelope)
+            fastEnvelope = fastAttackCoeff * fastEnvelope + (1.0f - fastAttackCoeff) * x;
+        else
+            fastEnvelope = fastReleaseCoeff * fastEnvelope + (1.0f - fastReleaseCoeff) * x;
+
+        // Slow envelope follower (80ms attack, 400ms release)
+        if (x > slowEnvelope)
+            slowEnvelope = slowAttackCoeff * slowEnvelope + (1.0f - slowAttackCoeff) * x;
+        else
+            slowEnvelope = slowReleaseCoeff * slowEnvelope + (1.0f - slowReleaseCoeff) * x;
+
+        // Texture coefficient = (fast - slow) normalized 0-1
+        // When fast >> slow, there's transient content (texture)
+        // When fast ≈ slow, there's sustained content (body)
+        const float diff = fastEnvelope - slowEnvelope;
+        rawTextureCoeff = std::clamp(0.5f + diff * sensitivity * 2.0f, 0.0f, 1.0f);
+    }
+
+    // Apply 5ms smoothing to prevent AM artifacts at the split point
+    smoothedTextureCoeff.setTargetValue(rawTextureCoeff);
+    smoothedTextureCoeff.skip(numSamples);
+    const float smoothed = smoothedTextureCoeff.getCurrentValue();
+
+    // Calculate path gains with minimum 5% bleed to prevent silent dead zones
+    // pathAGain = max(0.05, smoothed)  -- texture path
+    // pathBGain = max(0.05, 1 - smoothed)  -- body path
+    pathAGain = std::max(0.05f, smoothed);
+    pathBGain = std::max(0.05f, 1.0f - smoothed);
+}
+
+void TextureBodyDetector::computeSpectralFlux(const float* input, int numSamples)
+{
+    // Process FFT on hop boundaries (50% overlap)
+    fftHopCounter += numSamples;
+
+    if (fftHopCounter >= fftSize / 2)
+    {
+        fftHopCounter = 0;
+
+        // Prepare FFT input (complex array)
+        std::vector<std::complex<float>> fftInput(fftSize);
+        std::vector<std::complex<float>> fftOutput(fftSize);
+
+        for (int i = 0; i < fftSize && i < numSamples; ++i)
+        {
+            // Hann window
+            const float window = 0.5f * (1.0f - std::cos(2.0f * Constants::PI * i / static_cast<float>(fftSize - 1)));
+            fftInput[i] = std::complex<float>(input[i] * window, 0.0f);
+        }
+
+        // Perform FFT
+        fft->perform(fftInput.data(), fftOutput.data(), false);
+
+        // Compute spectral flux (sum of positive magnitude differences)
+        float flux = 0.0f;
+        const int numBins = fftSize / 2 + 1;
+
+        for (int bin = 0; bin < numBins; ++bin)
+        {
+            const float mag = std::abs(fftOutput[bin]);
+
+            // Positive difference only (onset detection)
+            const float diff = mag - previousMagnitude[bin];
+            if (diff > 0.0f)
+                flux += diff * diff;
+
+            previousMagnitude[bin] = mag;
+        }
+
+        // Normalize and smooth
+        spectralFlux = std::sqrt(flux) / static_cast<float>(numBins);
+    }
+}
+
+void TextureBodyDetector::reset()
+{
+    fastEnvelope = 0.0f;
+    slowEnvelope = 0.0f;
+    rawTextureCoeff = 0.5f;
+    smoothedTextureCoeff.setCurrentAndTargetValue(0.5f);
+    pathAGain = 0.5f;
+    pathBGain = 0.5f;
+    spectralFlux = 0.0f;
+    fftHopCounter = 0;
+
+    std::fill(previousMagnitude.begin(), previousMagnitude.end(), 0.0f);
+}
+
+} // namespace CogDSP

@@ -1,0 +1,38 @@
+{
+  "kb_name": "sound-design-kb",
+  "schema_version": "1.0.0",
+  "last_updated": "2026-04-02",
+  "authority_score": 0.85,
+  "topics": {
+    "synthesis-theory": {"entry_count": 0, "entries": []},
+    "oscillator-design": {"entry_count": 0, "entries": []},
+    "filter-design": {"entry_count": 0, "entries": []},
+    "modulation": {"entry_count": 0, "entries": []},
+    "effects": {"entry_count": 0, "entries": []},
+    "psychedelic": {"entry_count": 0, "entries": []},
+    "ambient": {"entry_count": 0, "entries": []},
+    "pad": {"entry_count": 0, "entries": []},
+    "creative": {"entry_count": 0, "entries": []},
+    "psybient": {"entry_count": 0, "entries": []},
+    "presets": {"entry_count": 0, "entries": []}
+  },
+  "bridge_count": 6,
+  "bridges": [
+    {"id": "bridge_warm_default", "descriptor": "warm", "confidence": 0.85},
+    {"id": "bridge_bright_default", "descriptor": "bright", "confidence": 0.90},
+    {"id": "bridge_lush_default", "descriptor": "lush", "confidence": 0.80},
+    {"id": "bridge_punchy_default", "descriptor": "punchy", "confidence": 0.85},
+    {"id": "bridge_psychedelic_delay", "descriptor": "psychedelic", "confidence": 0.75},
+    {"id": "bridge_ambient_default", "descriptor": "ambient", "confidence": 0.80},
+    {"id": "bridge_dark_default", "descriptor": "dark", "confidence": 0.85}
+  ],
+  "status_counts": {
+    "placeholder": 0,
+    "harvested": 0,
+    "curated": 0,
+    "synced": 0
+  },
+  "sync_history": [
+    {"date": "2026-04-02", "action": "initial_population", "bridges_added": 7}
+  ]
+}

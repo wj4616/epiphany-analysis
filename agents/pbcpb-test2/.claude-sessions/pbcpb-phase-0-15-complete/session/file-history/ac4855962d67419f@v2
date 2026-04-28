@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_genre-techniques_ambient",
+  "kb": "sound-design",
+  "topic": "genre-techniques",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Ambient Sound Design Techniques",
+  "summary": "Placeholder: Creating evolving pads, drones, and atmospheric textures.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["genre", "ambient", "pad", "drone", "atmosphere"],
+  "related_topics": ["genre-techniques", "effects", "synthesis-types"],
+  "difficulty": "intermediate",
+  "domain_relevance": 10
+}

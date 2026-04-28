@@ -1,0 +1,181 @@
+#include "DriveCircuit.h"
+#include <cmath>
+
+namespace CogDSP
+{
+
+void DriveCircuit::prepare(double sr, int samplesPerBlock)
+{
+    sampleRate = sr;
+
+    // RMS smoothing coefficient (~5ms window)
+    rmsCoeff = static_cast<float>(std::exp(-1.0 / (0.005 * sampleRate)));
+
+    // Initialize smoothed values
+    smoothedDrive.reset(sampleRate, 0.02);  // 20ms smoothing
+    smoothedDrive.setCurrentAndTargetValue(drive);
+
+    smoothedTone.reset(sampleRate, 0.02);
+    smoothedTone.setCurrentAndTargetValue(tone);
+
+    reset();
+}
+
+void DriveCircuit::process(float* left, float* right, int numSamples)
+{
+    // Update smoothed parameters
+    smoothedDrive.setTargetValue(drive);
+    smoothedTone.setTargetValue(tone);
+
+    // Check for bypass condition - use current value, not target
+    if (drive < 0.001f)
+    {
+        // Bypass entirely - transparent passthrough
+        return;
+    }
+
+    // Stage 1: Compute adaptive pre-gain based on input RMS (computed once per block)
+    const float rms = computeRMS(left, right, numSamples);
+    const float preGain = computeAdaptivePreGain(rms);
+
+    // Process samples with per-sample smoothing
+    for (int i = 0; i < numSamples; ++i)
+    {
+        const float currentDrive = smoothedDrive.getNextValue();
+        const float currentTone = smoothedTone.getNextValue();
+
+        // Stage 1: Apply adaptive pre-gain
+        float outL = left[i] * preGain;
+        float outR = right[i] * preGain;
+
+        // Stage 2: Saturation core
+        outL = processSaturation(outL, currentDrive);
+        outR = processSaturation(outR, currentDrive);
+
+        // Stage 3: Tone tilt (per-channel)
+        processToneTilt(outL, tiltStateL);
+        processToneTilt(outR, tiltStateR);
+
+        left[i] = outL;
+        right[i] = outR;
+    }
+}
+
+float DriveCircuit::computeAdaptivePreGain(float rms)
+{
+    // Pre-gain: 0 to +24dB based on drive parameter
+    float preGainDB = drive * 24.0f;
+
+    // Adaptive compression: reduce pre-gain if input is hot
+    // 10:1 compression above 0dBFS input
+    if (rms > 1.0f)
+    {
+        const float overshootDB = 20.0f * std::log10(rms);
+        preGainDB -= overshootDB * 0.9f;  // ~10:1 ratio
+    }
+
+    // Never attenuate below -6dB
+    preGainDB = std::max(preGainDB, -6.0f);
+
+    // Convert to linear gain
+    return std::pow(10.0f, preGainDB / 20.0f);
+}
+
+float DriveCircuit::processSaturation(float input, float currentDrive)
+{
+    // Blend between warm and grit characters based on drive
+    // 0-0.5: warm saturation (tanh)
+    // 0.5-1: grit character
+
+    if (currentDrive <= 0.5f)
+    {
+        // Warm saturation: tanh(x * (1 + drive * 3))
+        const float warmDrive = currentDrive * 2.0f;  // Scale 0-0.5 to 0-1
+        const float gain = 1.0f + warmDrive * 3.0f;
+        return fastTanh(input * gain);
+    }
+    else
+    {
+        // Grit: x / (1 + |x|) + 0.1 * sin(x * PI) * exp(-x * x)
+        // Blend from warm to grit as drive goes from 0.5 to 1
+        const float gritBlend = (currentDrive - 0.5f) * 2.0f;  // 0-1 over this range
+
+        // Warm component
+        const float warmOutput = fastTanh(input);
+
+        // Grit component
+        const float x = input;
+        const float softClip = x / (1.0f + std::abs(x));
+        const float sineFold = 0.1f * std::sin(x * Constants::PI) * fastExpNegSquare(x);
+        const float gritOutput = softClip + sineFold;
+
+        // Blend
+        return lerp(warmOutput, gritOutput, gritBlend);
+    }
+}
+
+void DriveCircuit::processToneTilt(float& sample, float& tiltState)
+{
+    // First-order shelf filter around 1kHz
+    // Tone 0: -6dB highs, Tone 1: +6dB highs
+
+    const float currentTone = smoothedTone.getCurrentValue();
+
+    if (std::abs(currentTone - 0.5f) < 0.001f)
+    {
+        // Flat response - no filtering
+        return;
+    }
+
+    // High shelf implementation
+    // When tone > 0.5: boost highs
+    // When tone < 0.5: cut highs
+
+    const float shelfGain = (currentTone - 0.5f) * 12.0f;  // -6 to +6 dB
+    const float A = std::pow(10.0f, shelfGain / 40.0f);
+
+    // First-order high shelf
+    // y[n] = x[n] - state + A * state
+    // This is simplified - using one-pole filter
+
+    const float highPass = sample - tiltState;
+    tiltState = highPass * 0.3f + tiltState * 0.7f;  // Lowpass the HP output
+
+    // Mix: lows pass through, highs are boosted/cut
+    const float output = sample + (A - 1.0f) * highPass;
+
+    sample = output;
+
+    // Denormal prevention
+    if (std::abs(sample) < denormalThreshold)
+        sample = 0.0f;
+}
+
+float DriveCircuit::computeRMS(float* left, float* right, int numSamples)
+{
+    // Compute RMS over the block, smoothed across blocks
+    float sumSq = 0.0f;
+    for (int i = 0; i < numSamples; ++i)
+    {
+        const float mono = (left[i] + right[i]) * 0.5f;
+        sumSq += mono * mono;
+    }
+
+    const float blockRMS = std::sqrt(sumSq / numSamples);
+
+    // Exponential smoothing
+    rmsValue = rmsCoeff * rmsValue + (1.0f - rmsCoeff) * blockRMS;
+
+    return rmsValue;
+}
+
+void DriveCircuit::reset()
+{
+    rmsValue = 0.0f;
+    tiltStateL = 0.0f;
+    tiltStateR = 0.0f;
+    smoothedDrive.setCurrentAndTargetValue(drive);
+    smoothedTone.setCurrentAndTargetValue(tone);
+}
+
+} // namespace CogDSP

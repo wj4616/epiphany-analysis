@@ -1,0 +1,546 @@
+{
+  "playbook_version": "1.0.0",
+  "version_name": "Creative VST Plugin Development & Commercial Release",
+  "generated_date": "2026-04-02",
+  "target_domain": "JUCE VST Audio Plugin Development with Commercial Release",
+
+  "workflow_model": "role-based-single-agent",
+  "description": "Playbook for developing and commercially releasing creative VST audio plugins using JUCE framework. Guides single developer + Claude Code through full lifecycle: sound design research, DSP implementation, UI design, DAW testing, licensing, marketplace listing, and sales strategy.",
+
+  "roles": {
+    "human": {
+      "description": "Creative director, sound designer, final decision-maker on ALL audio/UX choices",
+      "responsibilities": ["Define plugin concept", "Approve all creative decisions", "DAW testing and sound approval", "Final launch execution"]
+    },
+    "ai": {
+      "description": "Code architect, implementation engine, reviewer, test generator",
+      "responsibilities": ["Research synthesis", "DSP implementation", "Code generation", "Testing and documentation"]
+    },
+    "coordinator": {
+      "description": "Phase gates, tracking, status updates, blocker escalation",
+      "responsibilities": ["Verify gate conditions", "Update tracking files", "Manage session handoffs"]
+    }
+  },
+
+  "knowledge_base": {
+    "architecture": "5-layer-structured",
+    "layers": ["Technical", "Sound Design", "UI/UX", "Commercial", "Reference"],
+    "bridge_layer": "descriptor-to-dsp translation for Sound Design → Technical",
+    "directory": "kb/"
+  },
+
+  "cross_cutting_concerns": [
+    {
+      "id": "CCC-01",
+      "title": "Human Creative Decisions",
+      "description": "Human makes ALL creative decisions: sound identity, aesthetic direction, signal flow, target genre, pricing",
+      "enforcement": "AI asks, never assumes defaults"
+    },
+    {
+      "id": "CCC-02",
+      "title": "Audio Thread Safety",
+      "description": "No allocations, locks, or I/O in processBlock",
+      "enforcement": "Audit before each commit"
+    },
+    {
+      "id": "CCC-03",
+      "title": "Parameter Smoothing",
+      "description": "All audio parameters must use SmoothedValue",
+      "enforcement": "SmoothedValue audit after parameter work"
+    },
+    {
+      "id": "CCC-04",
+      "title": "Session Boundaries",
+      "description": "Multiple sessions expected per major feature",
+      "enforcement": "Update tracking files at each session end"
+    }
+  ],
+
+  "phases": [
+    {
+      "phase_id": 0,
+      "phase_name": "Plugin Concept & Specification",
+      "owner": "human",
+      "duration": "1-2 sessions",
+      "description": "Define exactly what you're building before writing code. AI asks questions, human decides.",
+      "output_artifacts": ["SPEC.md", "constraints.md", "decisions-ledger.md"],
+      "tasks": [
+        {"id": "T0-01", "title": "[Coordinator] Create project structure", "owner": "coordinator", "output": "Project structure with tracking files"},
+        {"id": "T0-02", "title": "[Human] Define plugin type", "owner": "human", "description": "Specify: synth, effect, module, or tool"},
+        {"id": "T0-03", "title": "[Human] Define signal flow", "owner": "human", "description": "Draw or describe signal routing"},
+        {"id": "T0-04", "title": "[Human] Define sound identity", "owner": "human", "description": "Exact words, AI records verbatim"},
+        {"id": "T0-05", "title": "[Human] Define technical constraints", "owner": "human", "output": "constraints.md"},
+        {"id": "T0-06", "title": "[Human] Define gain staging philosophy", "owner": "human"},
+        {"id": "T0-07", "title": "[Human] Define preset theme", "owner": "human"},
+        {"id": "T0-08", "title": "[AI] Write one-page spec", "owner": "ai", "output": "SPEC.md"},
+        {"id": "T0-09", "title": "[AI] Spec self-review", "owner": "ai"},
+        {"id": "T0-10", "title": "[Coordinator] Phase 0 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "Plugin type defined",
+        "Signal flow documented",
+        "Sound identity in human's words",
+        "Technical constraints locked",
+        "Gain staging explicit",
+        "One-page spec written"
+      ],
+      "prevention_rules": [
+        {"id": "PR-001", "rule": "AI NEVER proposes signal flow unprompted"},
+        {"id": "PR-002", "rule": "AI NEVER paraphrases sound identity words"},
+        {"id": "PR-003", "rule": "Always audit gain staging early"},
+        {"id": "PR-004", "rule": "Always verify formulas at boundaries (param=0, param=1)"}
+      ],
+      "failure_modes": ["FM-61", "FM-62", "FM-63"]
+    },
+    {
+      "phase_id": 1,
+      "phase_name": "Performance Audit (if upgrading)",
+      "owner": "ai",
+      "duration": "0-1 sessions",
+      "description": "Baseline existing code if upgrading. Skip for new projects.",
+      "output_artifacts": ["baseline.md (if applicable)"],
+      "tasks": [
+        {"id": "T1-01", "title": "[AI] Benchmark existing code", "owner": "ai", "condition": "if upgrading"},
+        {"id": "T1-02", "title": "[AI] Identify hotspots", "owner": "ai", "condition": "if upgrading"},
+        {"id": "T1-03", "title": "[Coordinator] Phase 1 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": ["Baseline documented OR N/A for new project"],
+      "failure_modes": ["FM-17"]
+    },
+    {
+      "phase_id": 2,
+      "phase_name": "Architecture & Task Breakdown",
+      "owner": "ai",
+      "duration": "1-2 sessions",
+      "description": "Design module structure and create implementation plan.",
+      "output_artifacts": ["architecture.md", "implementation-plan.md"],
+      "tasks": [
+        {"id": "T2-01", "title": "[AI] Design module structure", "owner": "ai", "output": "Module diagram"},
+        {"id": "T2-02", "title": "[AI] Design DSP chain", "owner": "ai", "output": "DSP chain doc"},
+        {"id": "T2-03", "title": "[AI] Design KB architecture", "owner": "ai", "output": "KB structure"},
+        {"id": "T2-04", "title": "[AI] Create implementation plan", "owner": "ai", "output": "implementation-plan.md"},
+        {"id": "T2-05", "title": "[Human] Approve architecture", "owner": "human"},
+        {"id": "T2-06", "title": "[Coordinator] Phase 2 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "Module structure defined",
+        "DSP chain documented",
+        "KB architecture defined",
+        "Implementation plan written",
+        "Human approval recorded"
+      ],
+      "failure_modes": ["FM-18", "FM-19"]
+    },
+    {
+      "phase_id": 3,
+      "phase_name": "Project Setup & Test Framework",
+      "owner": "ai",
+      "duration": "1 session",
+      "description": "Create CMake project, test framework, and plugin stub.",
+      "output_artifacts": ["CMakeLists.txt", "test framework", "PluginProcessor stub"],
+      "tasks": [
+        {"id": "T3-01", "title": "[AI] Create CMakeLists.txt", "owner": "ai", "output": "CMakeLists.txt"},
+        {"id": "T3-02", "title": "[AI] Set up Catch2", "owner": "ai"},
+        {"id": "T3-03", "title": "[AI] Create directory structure", "owner": "ai"},
+        {"id": "T3-04", "title": "[AI] Create PluginProcessor stub", "owner": "ai"},
+        {"id": "T3-05", "title": "[AI] Create PluginEditor stub", "owner": "ai"},
+        {"id": "T3-06", "title": "[AI] Seed KB directories", "owner": "ai"},
+        {"id": "T3-07", "title": "[AI] Verify build", "owner": "ai"},
+        {"id": "T3-08", "title": "[Coordinator] Phase 3 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "CMake builds successfully",
+        "Test framework runs",
+        "Plugin loads in REAPER",
+        "KB directories created"
+      ],
+      "failure_modes": ["FM-24", "FM-25", "FM-26", "FM-27"]
+    },
+    {
+      "phase_id": 4,
+      "phase_name": "Core DSP Implementation",
+      "owner": "ai",
+      "duration": "3-6 sessions",
+      "description": "Implement all DSP modules per spec.",
+      "output_artifacts": ["DSP modules", "unit tests", "audit reports"],
+      "skill": "juce-dsp-implementation",
+      "tasks": [
+        {"id": "T4-01", "title": "[AI] Implement oscillators", "owner": "ai", "condition": "if synth"},
+        {"id": "T4-02", "title": "[AI] Implement filters", "owner": "ai"},
+        {"id": "T4-03", "title": "[AI] Implement effects", "owner": "ai"},
+        {"id": "T4-04", "title": "[AI] Implement modulation", "owner": "ai"},
+        {"id": "T4-05", "title": "[AI] Audio thread audit", "owner": "ai", "skill": "juce-audio-thread-audit"},
+        {"id": "T4-06", "title": "[AI] Add SmoothedValue", "owner": "ai"},
+        {"id": "T4-07", "title": "[AI] Unit tests", "owner": "ai"},
+        {"id": "T4-08", "title": "[Coordinator] Phase 4 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "All DSP modules implemented",
+        "Audio thread safety audit passed",
+        "SmoothedValue audit passed",
+        "Unit tests pass",
+        "No allocations in processBlock"
+      ],
+      "prevention_rules": [
+        {"id": "PR-005", "rule": "Pre-allocate all buffers in prepareToPlay"},
+        {"id": "PR-006", "rule": "Use lock-free queues for GUI communication"},
+        {"id": "PR-007", "rule": "Call getNextValue() per sample, not per block"}
+      ],
+      "failure_modes": ["FM-01", "FM-02", "FM-03", "FM-04", "FM-05", "FM-06", "FM-07", "EM-13", "CM-05"]
+    },
+    {
+      "phase_id": 5,
+      "phase_name": "Preset Data & State Management",
+      "owner": "ai",
+      "duration": "1-2 sessions",
+      "description": "Configure APVTS and preset system.",
+      "output_artifacts": ["APVTS setup", "preset system", "factory presets"],
+      "tasks": [
+        {"id": "T5-01", "title": "[AI] Configure APVTS", "owner": "ai"},
+        {"id": "T5-02", "title": "[AI] Define parameters", "owner": "ai", "output": "Parameter layout"},
+        {"id": "T5-03", "title": "[AI] Implement state save", "owner": "ai"},
+        {"id": "T5-04", "title": "[AI] Implement state load", "owner": "ai"},
+        {"id": "T5-05", "title": "[AI] Create factory presets", "owner": "ai"},
+        {"id": "T5-06", "title": "[AI] Implement preset browser", "owner": "ai", "condition": "if specified"},
+        {"id": "T5-07", "title": "[Coordinator] Phase 5 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "All parameters connected to APVTS",
+        "Preset save/load works",
+        "Factory presets validated"
+      ],
+      "failure_modes": ["FM-08", "FM-09", "FM-10", "FM-11", "FM-12", "FM-13", "FM-14", "FM-15"]
+    },
+    {
+      "phase_id": 6,
+      "phase_name": "Processor Integration",
+      "owner": "ai",
+      "duration": "1-2 sessions",
+      "description": "Connect DSP modules in Processor.",
+      "output_artifacts": ["Integrated processor", "integration tests"],
+      "tasks": [
+        {"id": "T6-01", "title": "[AI] Connect DSP modules", "owner": "ai"},
+        {"id": "T6-02", "title": "[AI] Connect parameters", "owner": "ai"},
+        {"id": "T6-03", "title": "[AI] Implement processBlock", "owner": "ai"},
+        {"id": "T6-04", "title": "[AI] Add gain staging", "owner": "ai"},
+        {"id": "T6-05", "title": "[AI] Integration tests", "owner": "ai"},
+        {"id": "T6-06", "title": "[Coordinator] Phase 6 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "Signal flow matches spec",
+        "All parameters functional",
+        "Integration tests pass"
+      ],
+      "failure_modes": ["FM-10", "FM-18", "FM-22"]
+    },
+    {
+      "phase_id": 7,
+      "phase_name": "GUI / Editor Implementation",
+      "owner": "human",
+      "duration": "2-4 sessions",
+      "description": "Design and implement plugin UI.",
+      "output_artifacts": ["PluginEditor", "LookAndFeel", "UI components"],
+      "skill": "juce-ui-bridge",
+      "tasks": [
+        {"id": "T7-01", "title": "[Human] Design layout", "owner": "human", "output": "Layout sketch"},
+        {"id": "T7-02", "title": "[AI] Create LookAndFeel", "owner": "ai"},
+        {"id": "T7-03", "title": "[AI] Implement controls", "owner": "ai"},
+        {"id": "T7-04", "title": "[AI] Add attachments", "owner": "ai"},
+        {"id": "T7-05", "title": "[AI] Add visualizations", "owner": "ai", "condition": "if specified"},
+        {"id": "T7-06", "title": "[AI] Test scaling", "owner": "ai"},
+        {"id": "T7-07", "title": "[Human] Approve GUI", "owner": "human"},
+        {"id": "T7-08", "title": "[Coordinator] Phase 7 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "Layout approved by human",
+        "All controls functional",
+        "Responsive scaling works"
+      ],
+      "prevention_rules": [
+        {"id": "PR-008", "rule": "Human approves all visual decisions"},
+        {"id": "PR-009", "rule": "Use single LookAndFeel throughout"}
+      ],
+      "failure_modes": ["FM-31", "FM-32", "FM-33", "FM-34", "FM-35", "FM-36", "FM-37", "FM-38"]
+    },
+    {
+      "phase_id": 8,
+      "phase_name": "Build Verification",
+      "owner": "ai",
+      "duration": "1 session",
+      "description": "Create and verify release build.",
+      "output_artifacts": ["Release build", "test results"],
+      "tasks": [
+        {"id": "T8-01", "title": "[AI] Create Release build", "owner": "ai"},
+        {"id": "T8-02", "title": "[AI] Test in REAPER", "owner": "ai"},
+        {"id": "T8-03", "title": "[AI] Test sample rates", "owner": "ai"},
+        {"id": "T8-04", "title": "[AI] Test buffer sizes", "owner": "ai"},
+        {"id": "T8-05", "title": "[AI] Create installer", "owner": "ai", "condition": "if specified"},
+        {"id": "T8-06", "title": "[Coordinator] Phase 8 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "Release build succeeds",
+        "Plugin loads in REAPER",
+        "Works at all sample rates",
+        "Works at all buffer sizes"
+      ],
+      "failure_modes": ["FM-28", "FM-29", "FM-30"]
+    },
+    {
+      "phase_id": 9,
+      "phase_name": "DAW Testing & Sound Approval",
+      "owner": "human",
+      "duration": "1-2 sessions",
+      "description": "Human tests plugin in DAW and approves sound. HUMAN-ONLY phase.",
+      "output_artifacts": ["Sound approval", "issue log"],
+      "skill": "juce-daw-testing",
+      "tasks": [
+        {"id": "T9-01", "title": "[Human] Load in REAPER", "owner": "human"},
+        {"id": "T9-02", "title": "[Human] Test presets", "owner": "human"},
+        {"id": "T9-03", "title": "[Human] Test parameters", "owner": "human"},
+        {"id": "T9-04", "title": "[Human] Listen for artifacts", "owner": "human"},
+        {"id": "T9-05", "title": "[Human] Approve sound", "owner": "human"},
+        {"id": "T9-06", "title": "[AI] Log issues", "owner": "ai"},
+        {"id": "T9-07", "title": "[Coordinator] Phase 9 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "Human approves sound",
+        "No clicks/pops",
+        "Presets sound correct"
+      ],
+      "prevention_rules": [
+        {"id": "PR-010", "rule": "This is HUMAN-ONLY phase"},
+        {"id": "PR-011", "rule": "Human must listen, not just verify function"}
+      ],
+      "failure_modes": ["FM-18", "FM-22", "FM-50"]
+    },
+    {
+      "phase_id": 10,
+      "phase_name": "Quality Audits",
+      "owner": "ai",
+      "duration": "1 session",
+      "description": "Run all quality audits.",
+      "output_artifacts": ["Audit reports"],
+      "tasks": [
+        {"id": "T10-01", "title": "[AI] Audio thread audit", "owner": "ai", "skill": "juce-audio-thread-audit"},
+        {"id": "T10-02", "title": "[AI] SmoothedValue audit", "owner": "ai", "skill": "juce-smoothedvalue-audit"},
+        {"id": "T10-03", "title": "[AI] Memory leak check", "owner": "ai"},
+        {"id": "T10-04", "title": "[AI] CPU profile", "owner": "ai"},
+        {"id": "T10-05", "title": "[AI] Document findings", "owner": "ai"},
+        {"id": "T10-06", "title": "[Coordinator] Phase 10 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "Audio thread safety: PASS",
+        "SmoothedValue: PASS",
+        "No memory leaks",
+        "CPU usage acceptable"
+      ],
+      "failure_modes": ["FM-32", "FM-33"]
+    },
+    {
+      "phase_id": 11,
+      "phase_name": "Profiling & Optimization",
+      "owner": "ai",
+      "duration": "1 session",
+      "description": "Profile and optimize if needed.",
+      "output_artifacts": ["Profile data", "optimized code"],
+      "tasks": [
+        {"id": "T11-01", "title": "[AI] Profile DSP", "owner": "ai"},
+        {"id": "T11-02", "title": "[AI] Identify bottlenecks", "owner": "ai"},
+        {"id": "T11-03", "title": "[AI] Optimize critical paths", "owner": "ai"},
+        {"id": "T11-04", "title": "[AI] Re-verify", "owner": "ai"},
+        {"id": "T11-05", "title": "[Coordinator] Phase 11 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "CPU usage within budget",
+        "No performance regressions"
+      ],
+      "failure_modes": ["FM-16", "FM-17"]
+    },
+    {
+      "phase_id": 12,
+      "phase_name": "Release Preparation",
+      "owner": "ai",
+      "duration": "1 session",
+      "description": "Prepare release package.",
+      "output_artifacts": ["Release package", "changelog"],
+      "tasks": [
+        {"id": "T12-01", "title": "[AI] Version bump", "owner": "ai"},
+        {"id": "T12-02", "title": "[AI] Update changelog", "owner": "ai"},
+        {"id": "T12-03", "title": "[AI] Create release notes", "owner": "ai"},
+        {"id": "T12-04", "title": "[AI] Final build", "owner": "ai"},
+        {"id": "T12-05", "title": "[AI] Package for distribution", "owner": "ai"},
+        {"id": "T12-06", "title": "[Coordinator] Phase 12 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "Version updated",
+        "Changelog updated",
+        "Release build tested",
+        "Package ready"
+      ],
+      "failure_modes": ["FM-29", "FM-30"]
+    },
+    {
+      "phase_id": 13,
+      "phase_name": "Licensing Integration",
+      "owner": "ai",
+      "duration": "2-3 sessions",
+      "description": "Implement commercial licensing.",
+      "output_artifacts": ["Licensed plugin", "license generation workflow"],
+      "tasks": [
+        {"id": "T13-01", "title": "[AI] Research options", "owner": "ai", "kb_source": "commercial/licensing"},
+        {"id": "T13-02", "title": "[Human] Select approach", "owner": "human"},
+        {"id": "T13-03", "title": "[AI] Implement validation", "owner": "ai"},
+        {"id": "T13-04", "title": "[AI] Create license generation", "owner": "ai"},
+        {"id": "T13-05", "title": "[AI] Test enforcement", "owner": "ai"},
+        {"id": "T13-06", "title": "[AI] Create demo version", "owner": "ai", "condition": "if specified"},
+        {"id": "T13-07", "title": "[Coordinator] Phase 13 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "Licensing system functional",
+        "License generation works",
+        "Demo restrictions work"
+      ],
+      "failure_modes": ["FM-53", "FM-54", "FM-59"]
+    },
+    {
+      "phase_id": 14,
+      "phase_name": "Marketplace Preparation",
+      "owner": "ai",
+      "duration": "2 sessions",
+      "description": "Prepare marketplace listings.",
+      "output_artifacts": ["Product page", "screenshots", "listings"],
+      "tasks": [
+        {"id": "T14-01", "title": "[AI] Write product description", "owner": "ai"},
+        {"id": "T14-02", "title": "[AI] Create screenshots", "owner": "ai"},
+        {"id": "T14-03", "title": "[AI] Create demo audio", "owner": "ai"},
+        {"id": "T14-04", "title": "[AI] Create demo video", "owner": "ai", "condition": "if specified"},
+        {"id": "T14-05", "title": "[AI] Prepare KVR listing", "owner": "ai", "kb_source": "commercial/marketplaces/kvr-audio"},
+        {"id": "T14-06", "title": "[AI] Prepare Plugin Boutique", "owner": "ai", "condition": "if specified"},
+        {"id": "T14-07", "title": "[Human] Set pricing", "owner": "human"},
+        {"id": "T14-08", "title": "[Coordinator] Phase 14 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "Product description written",
+        "Screenshots created",
+        "Demo audio available",
+        "KVR listing prepared",
+        "Pricing set"
+      ],
+      "failure_modes": ["FM-55", "FM-58"]
+    },
+    {
+      "phase_id": 15,
+      "phase_name": "Marketing Strategy",
+      "owner": "ai",
+      "duration": "1-2 sessions",
+      "description": "Create marketing plan.",
+      "output_artifacts": ["Marketing plan", "content templates"],
+      "tasks": [
+        {"id": "T15-01", "title": "[AI] Pre-launch plan", "owner": "ai"},
+        {"id": "T15-02", "title": "[AI] Launch week plan", "owner": "ai"},
+        {"id": "T15-03", "title": "[AI] Post-launch plan", "owner": "ai"},
+        {"id": "T15-04", "title": "[AI] Identify reviewers", "owner": "ai"},
+        {"id": "T15-05", "title": "[AI] Social schedule", "owner": "ai"},
+        {"id": "T15-06", "title": "[AI] Content templates", "owner": "ai"},
+        {"id": "T15-07", "title": "[Human] Approve plan", "owner": "human"},
+        {"id": "T15-08", "title": "[Coordinator] Phase 15 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "Marketing plan documented",
+        "Content templates ready",
+        "Reviewer list prepared",
+        "Human approval recorded"
+      ],
+      "failure_modes": ["FM-57"]
+    },
+    {
+      "phase_id": 16,
+      "phase_name": "Launch Execution",
+      "owner": "human",
+      "duration": "Launch week",
+      "description": "Execute product launch.",
+      "output_artifacts": ["Live product", "launch announcement"],
+      "tasks": [
+        {"id": "T16-01", "title": "[Human] Submit listings", "owner": "human"},
+        {"id": "T16-02", "title": "[Human] Send announcements", "owner": "human"},
+        {"id": "T16-03", "title": "[Human] Send review copies", "owner": "human"},
+        {"id": "T16-04", "title": "[Human] Post on forums", "owner": "human"},
+        {"id": "T16-05", "title": "[AI] Monitor feedback", "owner": "ai"},
+        {"id": "T16-06", "title": "[AI] Address issues", "owner": "ai"},
+        {"id": "T16-07", "title": "[Coordinator] Phase 16 gate", "owner": "coordinator"}
+      ],
+      "gate_conditions": [
+        "Product live on marketplace(s)",
+        "Launch announcement sent",
+        "Review copies distributed",
+        "Initial feedback addressed"
+      ],
+      "failure_modes": ["FM-56", "FM-60"]
+    },
+    {
+      "phase_id": 17,
+      "phase_name": "Updates & Analytics",
+      "owner": "human",
+      "duration": "Ongoing",
+      "description": "Monitor and update post-launch.",
+      "output_artifacts": ["Analytics", "updates"],
+      "tasks": [
+        {"id": "T17-01", "title": "[AI] Track analytics", "owner": "ai"},
+        {"id": "T17-02", "title": "[AI] Collect feedback", "owner": "ai"},
+        {"id": "T17-03", "title": "[AI] Plan updates", "owner": "ai"},
+        {"id": "T17-04", "title": "[AI] Implement updates", "owner": "ai"},
+        {"id": "T17-05", "title": "[AI] Release updates", "owner": "ai"}
+      ],
+      "gate_conditions": [
+        "Analytics tracked",
+        "Update process defined"
+      ],
+      "failure_modes": ["FM-67"]
+    }
+  ],
+
+  "failure_modes": {
+    "categories": [
+      {"id": "audio-thread", "range": "FM-01 to FM-07", "description": "Audio thread safety violations"},
+      {"id": "parameters", "range": "FM-08 to FM-15", "description": "Parameter handling failures"},
+      {"id": "dsp", "range": "FM-16 to FM-23", "description": "DSP implementation failures"},
+      {"id": "build", "range": "FM-24 to FM-30", "description": "Build and deployment failures"},
+      {"id": "gui", "range": "FM-31 to FM-38", "description": "GUI implementation failures"},
+      {"id": "state", "range": "FM-39 to FM-45", "description": "State management failures"},
+      {"id": "testing", "range": "FM-46 to FM-52", "description": "Testing failures"},
+      {"id": "commercial", "range": "FM-53 to FM-60", "description": "Commercial/release failures"},
+      {"id": "project", "range": "FM-61 to FM-67", "description": "Project management failures"}
+    ],
+    "total": 67
+  },
+
+  "skills": {
+    "phase_0": "brainstorming",
+    "phase_4": "juce-dsp-implementation",
+    "phase_7": "juce-ui-bridge",
+    "phase_9": "juce-daw-testing",
+    "audio_audit": "juce-audio-thread-audit",
+    "smoothedvalue_audit": "juce-smoothedvalue-audit"
+  },
+
+  "session_boundaries": {
+    "target_tokens": {
+      "planning": 40000,
+      "implementation": 30000,
+      "review": 20000,
+      "commercial": 25000
+    },
+    "phases_per_session": {
+      "foundation": "1-2",
+      "development": "1 per major work",
+      "validation": "1-2",
+      "commercial": "1-2"
+    }
+  },
+
+  "tracking_files": {
+    "decisions_ledger": "decisions-ledger.md",
+    "artifact_manifest": "artifact-manifest.md",
+    "metrics_tracker": "metrics-tracker.md"
+  }
+}

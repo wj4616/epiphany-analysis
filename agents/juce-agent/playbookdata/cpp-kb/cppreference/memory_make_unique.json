@@ -1,0 +1,44 @@
+{
+  "id": "cpp-kb_cppreference_memory_make_unique",
+  "kb": "cpp-kb",
+  "topic": "cppreference",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "std::make_unique creates a unique_ptr with exception-safe construction. It constructs an object and wraps it in a std::unique_ptr, providing memory safety and preventing leaks when exceptions are thrown.",
+  "concepts": ["smart-pointer", "unique-ownership", "exception-safety", "memory-management"],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "#include <memory>\n#include <iostream>\n\nstruct Vec3 {\n    int x, y, z;\n    Vec3(int x = 0, int y = 0, int z = 0) noexcept : x(x), y(y), z(z) {}\n};\n\nint main() {\n    // Non-array types\n    auto v1 = std::make_unique<Vec3>();           // default constructor\n    auto v2 = std::make_unique<Vec3>(0, 1, 2);     // with arguments\n\n    // Array type (unknown bound)\n    auto arr = std::make_unique<Vec3[]>(5);        // 5 value-initialized elements\n\n    std::cout << \"v2: {\" << v2->x << \", \" << v2->y << \", \" << v2->z << \"}\\n\";\n    return 0;\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Exception safety comparison:\n\n// Dangerous: potential leak if computePriority() throws\n// processWidget(std::unique_ptr<Widget>(new Widget), computePriority());\n\n// Safe: make_unique guarantees no leak\n// processWidget(std::make_unique<Widget>(), computePriority());\n\n// Why make_unique is safer:\n// 1. Single allocation for the Widget\n// 2. No interleaving of allocations between arguments\n// 3. Automatic cleanup if any argument throws\n",
+      "preserved": true
+    }
+  ],
+  "references": [
+    {
+      "title": "std::make_unique",
+      "url": "https://en.cppreference.com/w/cpp/memory/unique_ptr/make_unique",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::unique_ptr",
+      "url": "https://en.cppreference.com/w/cpp/memory/unique_ptr",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::make_shared",
+      "url": "https://en.cppreference.com/w/cpp/memory/shared_ptr/make_shared",
+      "domain": "en.cppreference.com"
+    }
+  ],
+  "source_url": "https://en.cppreference.com/w/cpp/memory/unique_ptr/make_unique",
+  "harvested_at": "2026-03-30T12:00:00.000000+00:00",
+  "synced_at": "2026-03-30T12:00:00.000000+00:00",
+  "cpp_version": "C++14",
+  "cpp17_notes": "C++17 improves unique_ptr with constexpr support. C++20 adds make_unique_for_overwrite for default-initialized (uninitialized) objects. Array support with make_unique<T[]> is fully available.",
+  "audio_thread_notes": "std::make_unique MUST NOT be called from the audio thread. It allocates heap memory. Pre-allocate unique_ptr instances during initialization. unique_ptr itself is fine to use on audio thread if already constructed - just don't reset() or release() to allocate."
+}

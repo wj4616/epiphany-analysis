@@ -1,0 +1,290 @@
+# Directory Structure
+
+## Root Layout
+
+```
+knowledge-base/
+├── master-index.json           # Registry of all KBs
+├── technical/                  # Layer 1: Technical KB
+├── sound-design/                # Layer 2: Sound Design KB
+├── ui-ux/                       # Layer 3: UI/UX KB
+├── commercial/                  # Layer 4: Commercial KB
+├── reference/                   # Layer 5: Reference KB
+└── bridge/                      # Bridge layer
+```
+
+## Per-Layer Structure
+
+Each KB layer follows this structure:
+
+```
+{layer-name}/
+├── index.json                  # File listing by topic
+├── manifest.json               # Status and sync history
+└── topics/
+    ├── {topic-1}/
+    │   ├── {entry-id}.json
+    │   └── {entry-id}.json
+    ├── {topic-2}/
+    │   ├── {entry-id}.json
+    │   └── {entry-id}.json
+    └── ...
+```
+
+## Complete Directory Tree
+
+```
+knowledge-base/
+│
+├── master-index.json
+│   ├── kb_registry: [technical, sound-design, ui-ux, commercial, reference]
+│   ├── cross_topic_mappings: {...}
+│   └── bridge_references: [...]
+│
+├── technical/
+│   ├── index.json
+│   ├── manifest.json
+│   └── topics/
+│       ├── realtime-safety/
+│       │   ├── technical_realtime-safety_atomic-audio.json
+│       │   ├── technical_realtime-safety_lock-free-patterns.json
+│       │   └── technical_realtime-safety_allocation-avoidance.json
+│       ├── juce-patterns/
+│       │   ├── technical_juce-patterns_apvts-setup.json
+│       │   ├── technical_juce-patterns_state-management.json
+│       │   └── technical_juce-patterns_parameter-smoothing.json
+│       ├── dsp-algorithms/
+│       │   ├── technical_dsp-algorithms_filter-basics.json
+│       │   ├── technical_dsp-algorithms_oscillator-basics.json
+│       │   └── technical_dsp-algorithms_gain-staging.json
+│       ├── build-systems/
+│       │   ├── technical_build-systems_cmake-fetchcontent.json
+│       │   └── technical_build-systems_ci-github-actions.json
+│       └── testing/
+│           ├── technical_testing_catch2-setup.json
+│           └── technical_testing_pluginval-validation.json
+│
+├── sound-design/
+│   ├── index.json
+│   ├── manifest.json
+│   └── topics/
+│       ├── synthesis-types/
+│       │   ├── sound-design_synthesis-types_subtractive.json
+│       │   ├── sound-design_synthesis-types_fm.json
+│       │   ├── sound-design_synthesis-types_wavetable.json
+│       │   ├── sound-design_synthesis-types_granular.json
+│       │   └── sound-design_synthesis-types_additive.json
+│       ├── oscillators/
+│       │   ├── sound-design_oscillators_waveform-types.json
+│       │   ├── sound-design_oscillators_detune.json
+│       │   └── sound-design_oscillators_sync.json
+│       ├── filters/
+│       │   ├── sound-design_filters_filter-types.json
+│       │   ├── sound-design_filters_resonance.json
+│       │   └── sound-design_filters_modulation.json
+│       ├── modulation/
+│       │   ├── sound-design_modulation_lfo-basics.json
+│       │   ├── sound-design_modulation_envelope-basics.json
+│       │   └── sound-design_modulation_routing.json
+│       ├── effects/
+│       │   ├── sound-design_effects_reverb.json
+│       │   ├── sound-design_effects_delay.json
+│       │   └── sound-design_effects_distortion.json
+│       ├── genre-techniques/
+│       │   ├── sound-design_genre-techniques_psychedelic.json
+│       │   ├── sound-design_genre-techniques_ambient.json
+│       │   ├── sound-design_genre-techniques_pad.json
+│       │   └── sound-design_genre-techniques_bass.json
+│       └── preset-methodology/
+│           ├── sound-design_preset-methodology_naming-conventions.json
+│           └── sound-design_preset-methodology_preset-structure.json
+│
+├── ui-ux/
+│   ├── index.json
+│   ├── manifest.json
+│   └── topics/
+│       ├── control-types/
+│       │   ├── ui-ux_control-types_knobs.json
+│       │   ├── ui-ux_control-types_sliders.json
+│       │   ├── ui-ux_control-types_buttons.json
+│       │   └── ui-ux_control-types_meters.json
+│       ├── layout-patterns/
+│       │   ├── ui-ux_layout-patterns_grouping.json
+│       │   ├── ui-ux_layout-patterns_hierarchy.json
+│       │   └── ui-ux_layout-patterns_spacing.json
+│       ├── accessibility/
+│       │   ├── ui-ux_accessibility_keyboard-support.json
+│       │   └── ui-ux_accessibility_screen-readers.json
+│       ├── feedback/
+│       │   ├── ui-ux_feedback_visual-feedback.json
+│       │   └── ui-ux_feedback_tooltips.json
+│       └── platform-standards/
+│           └── ui-ux_platform-standards_daw-conventions.json
+│
+├── commercial/
+│   ├── index.json
+│   ├── manifest.json
+│   └── topics/
+│       ├── marketplaces/
+│       │   ├── commercial_marketplaces_kvr-audio.json
+│       │   ├── commercial_marketplaces_plugin-boutique.json
+│       │   └── commercial_marketplaces_direct-sales.json
+│       ├── licensing/
+│       │   ├── commercial_licensing_ilok.json
+│       │   ├── commercial_licensing_custom-solutions.json
+│       │   └── commercial_licensing_anti-piracy.json
+│       ├── pricing/
+│       │   ├── commercial_pricing_strategy.json
+│       │   ├── commercial_pricing_positioning.json
+│       │   └── commercial_pricing_bundles.json
+│       ├── marketing/
+│       │   ├── commercial_marketing_launch-timeline.json
+│       │   ├── commercial_marketing_content-strategy.json
+│       │   └── commercial_marketing_community-building.json
+│       └── distribution/
+│           ├── commercial_distribution_installers.json
+│           ├── commercial_distribution_updates.json
+│           └── commercial_distribution_support.json
+│
+├── reference/
+│   ├── index.json
+│   ├── manifest.json
+│   └── topics/
+│       ├── textbooks/
+│       │   ├── reference_textbooks_pirkle-dsp.json
+│       │   ├── reference_textbooks_zolzer-dafx.json
+│       │   └── reference_textbooks_smith-audio.json
+│       ├── documentation/
+│       │   ├── reference_documentation_juce-docs.json
+│       │   └── reference_documentation_vst3-sdk.json
+│       ├── talks/
+│       │   └── reference_talks_adc-presentations.json
+│       ├── papers/
+│       │   └── reference_papers_dsp-research.json
+│       └── tutorials/
+│           └── reference_tutorials_community-tutorials.json
+│
+└── bridge/
+    ├── index.json
+    ├── manifest.json
+    ├── bridge_warm-filter.json
+    ├── bridge_bright-filter.json
+    ├── bridge_lush-pad.json
+    ├── bridge_punchy-envelope.json
+    ├── bridge_deep-bass.json
+    ├── bridge_ambient-space.json
+    └── ... (additional bridge entries)
+```
+
+## File Naming Conventions
+
+### KB Entry Files
+
+**Pattern:** `{kb}_{topic}_{entry-name}.json`
+
+- All lowercase
+- Hyphens between words
+- No special characters
+- Example: `technical_realtime-safety_atomic-audio.json`
+
+### Bridge Entry Files
+
+**Pattern:** `bridge_{descriptor}.json` or `bridge_{category}.json`
+
+- All lowercase
+- Hyphens between words
+- Descriptive name matching the subjective concept
+- Example: `bridge_warm-filter.json`
+
+## Index Formats
+
+### Master Index (`master-index.json`)
+
+```json
+{
+  "version": "1.0.0",
+  "last_updated": "2026-04-02",
+  "kb_registry": [
+    {"name": "technical", "authority": 0.95, "entry_count": 15},
+    {"name": "sound-design", "authority": 0.70, "entry_count": 20},
+    {"name": "ui-ux", "authority": 0.75, "entry_count": 12},
+    {"name": "commercial", "authority": 0.60, "entry_count": 14},
+    {"name": "reference", "authority": 0.90, "entry_count": 10}
+  ],
+  "bridge_status": {
+    "seeded": 8,
+    "validated": 0,
+    "refined": 0
+  },
+  "cross_topic_mappings": {
+    "realtime-safety": ["juce-patterns", "dsp-algorithms"],
+    "synthesis-types": ["oscillators", "filters", "modulation"]
+  }
+}
+```
+
+### Per-KB Index (`{layer}/index.json`)
+
+```json
+{
+  "kb": "technical",
+  "version": "1.0.0",
+  "topics": {
+    "realtime-safety": {
+      "entries": ["atomic-audio", "lock-free-patterns", "allocation-avoidance"],
+      "last_updated": "2026-04-02"
+    },
+    "juce-patterns": {
+      "entries": ["apvts-setup", "state-management", "parameter-smoothing"],
+      "last_updated": "2026-04-02"
+    }
+  }
+}
+```
+
+### Per-KB Manifest (`{layer}/manifest.json`)
+
+```json
+{
+  "kb": "technical",
+  "status_summary": {
+    "placeholder": 2,
+    "harvested": 10,
+    "curated": 3,
+    "synced": 0
+  },
+  "sync_history": [
+    {"date": "2026-04-02", "action": "initial_population", "entries_added": 15}
+  ],
+  "curation_queue": [
+    {"entry_id": "technical_realtime-safety_atomic-audio", "status": "pending_review"},
+    {"entry_id": "technical_juce-patterns_apvts-setup", "status": "pending_review"}
+  ]
+}
+```
+
+## Cross-Reference Rules
+
+### Results Ranked by Authority Score
+
+When querying across multiple KBs:
+
+1. **Same topic query:** Return entries from all relevant KBs, ranked by authority
+2. **Cross-topic query:** Return entries ordered by domain_relevance, then authority
+3. **Bridge query:** Return parameter mappings with confidence scores
+
+### Cross-Reference Format
+
+Within an entry:
+
+```json
+{
+  "related_kb_entries": [
+    {
+      "kb": "sound-design",
+      "entry_id": "sound-design_filters_filter-types",
+      "relationship": "implementation-details"
+    }
+  ]
+}
+```

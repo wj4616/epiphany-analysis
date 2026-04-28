@@ -1,0 +1,16 @@
+{
+  "id": "commercial_licensing_anti-piracy",
+  "kb": "commercial",
+  "topic": "licensing",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Anti-Piracy Strategies for Plugins",
+  "summary": "Placeholder: Protection methods, obfuscation, and practical security.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["licensing", "anti-piracy", "protection", "security"],
+  "related_topics": ["licensing", "marketplaces"],
+  "difficulty": "intermediate",
+  "domain_relevance": 7
+}

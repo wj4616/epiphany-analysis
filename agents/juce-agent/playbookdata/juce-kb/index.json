@@ -1,0 +1,80 @@
+{
+  "kb_name": "juce-kb",
+  "version": "1.0.0",
+  "last_updated": "2026-03-30T12:24:56.299975+00:00",
+  "topics": {
+    "state-advanced": {
+      "files": [
+        "automation-optimization.json",
+        "apvts-patterns.json",
+        "preset-performance.json"
+      ],
+      "file_count": 3,
+      "last_updated": "2026-03-30T12:24:56.299978+00:00"
+    },
+    "realtime": {
+      "files": [
+        "realtime-profiling.json",
+        "lock-free-queues.json",
+        "audio-thread-safety.json",
+        "allocation-free-patterns.json"
+      ],
+      "file_count": 4,
+      "last_updated": "2026-03-30T12:24:56.299979+00:00"
+    },
+    "agent": {
+      "files": [
+        "juce-vst-plugin-development-agent.json"
+      ],
+      "file_count": 1,
+      "last_updated": "2026-03-30T12:24:56.299980+00:00"
+    },
+    "tooling": {
+      "files": [
+        "juce-plugin-tooling.json"
+      ],
+      "file_count": 1,
+      "last_updated": "2026-03-30T12:24:56.299981+00:00"
+    },
+    "performance": {
+      "files": [
+        "simd-optimization.json",
+        "opengl-rendering.json",
+        "memory-pooling.json"
+      ],
+      "file_count": 3,
+      "last_updated": "2026-03-30T12:24:56.299982+00:00"
+    },
+    "failure-modes": {
+      "files": [
+        "juce-plugin-failure-modes.json"
+      ],
+      "file_count": 1,
+      "last_updated": "2026-03-30T12:24:56.299983+00:00"
+    },
+    "api": {
+      "files": [
+        "juce-7-api-reference.json"
+      ],
+      "file_count": 1,
+      "last_updated": "2026-03-30T12:24:56.299984+00:00"
+    },
+    "formats": {
+      "files": [
+        "vst3-specifics.json",
+        "plugin-sandboxing.json",
+        "aax-considerations.json",
+        "au-specifics.json"
+      ],
+      "file_count": 4,
+      "last_updated": "2026-03-30T12:24:56.299985+00:00"
+    },
+    "patterns": {
+      "files": [
+        "juce-patterns-best-practices.json"
+      ],
+      "file_count": 1,
+      "last_updated": "2026-03-30T12:24:56.299986+00:00"
+    }
+  }
+}

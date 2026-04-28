@@ -1,0 +1,22 @@
+{
+  "kb_name": "dsp-kb",
+  "topic": "sample rate conversion interpolation",
+  "filename": "sample-rate-conversion-interpolation.json",
+  "status": "harvested",
+  "harvested_at": "2026-03-30T23:34:48.506061+00:00",
+  "sources": 1,
+  "rejected": 37,
+  "credits_used": 80,
+  "search_queries": [
+    "sample rate conversion interpolation audio DSP resampling sinc",
+    "sample rate conversion interpolation tutorial",
+    "sample rate conversion interpolation implementation",
+    "sample rate conversion interpolation guide"
+  ],
+  "quality_thresholds": {
+    "min_content_length": 500,
+    "min_relevance_score": 0.2,
+    "max_noise_ratio": 0.5
+  },
+  "notes": "Auto-harvested via harvest-data skill"
+}

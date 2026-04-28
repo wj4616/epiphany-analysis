@@ -1,0 +1,129 @@
+#pragma once
+
+#include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_gui_basics/juce_gui_basics.h>
+
+#include "DSP/FastMath.h"
+#include "DSP/DCBlocker.h"
+#include "DSP/DelayLine.h"
+#include "DSP/TextureBodyDetector.h"
+#include "DSP/Waveshaper.h"
+#include "DSP/SpectralDroneEngine.h"
+#include "DSP/ChorusEnsemble.h"
+#include "DSP/ResonantFilter.h"
+#include "DSP/DriveCircuit.h"
+#include "DSP/StereoWidener.h"
+#include "DSP/ModulationEngine.h"
+
+class CogVSTAudioProcessor : public juce::AudioProcessor
+{
+public:
+    CogVSTAudioProcessor();
+    ~CogVSTAudioProcessor() override;
+
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
+    void releaseResources() override;
+
+    bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
+
+    void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) override;
+
+    juce::AudioProcessorEditor* createEditor() override;
+    bool hasEditor() const override { return true; }
+
+    const juce::String getName() const override { return "Cog VST"; }
+
+    bool acceptsMidi() const override { return false; }
+    bool producesMidi() const override { return false; }
+    bool isMidiEffect() const override { return false; }
+    double getTailLengthSeconds() const override { return 0.0; }
+
+    int getNumPrograms() override { return 1; }
+    int getCurrentProgram() override { return 0; }
+    void setCurrentProgram(int index) override { juce::ignoreUnused(index); }
+    const juce::String getProgramName(int index) override { juce::ignoreUnused(index); return {}; }
+    void changeProgramName(int index, const juce::String& newName) override { juce::ignoreUnused(index, newName); }
+
+    void getStateInformation(juce::MemoryBlock& destData) override;
+    void setStateInformation(const void* data, int sizeInBytes) override;
+
+    // Parameter IDs
+    static const juce::StringArray paramIDs;
+
+    // Parameter accessors
+    juce::AudioProcessorValueTreeState& getAPVTS() { return apvts; }
+
+private:
+    juce::AudioProcessorValueTreeState apvts;
+
+    // DSP Modules
+    CogDSP::TextureBodyDetector detector;
+    CogDSP::Waveshaper waveshaper;
+    CogDSP::SpectralDroneEngine spectralEngine;
+    CogDSP::ChorusEnsemble chorus;
+    CogDSP::ResonantFilterStereo filterA;
+    CogDSP::ResonantFilterStereo filterB;
+    CogDSP::DriveCircuit driveCircuit;
+    CogDSP::StereoWidener widener;
+    CogDSP::ModulationEngine modulation;
+
+    // Delay lines
+    CogDSP::DelayLine<float> dryDelay;      // Dry copy latency compensation
+    CogDSP::DelayLine<float> feedbackDelay;  // Feedback loop delay
+
+    // DC blockers for feedback path
+    CogDSP::DCBlocker feedbackDCBlockerL, feedbackDCBlockerR;
+
+    // Latency (from spectral engine)
+    int spectralLatency = 0;
+
+    // Parameter pointers (atomic)
+    std::atomic<float>* paramSensitivity = nullptr;
+    std::atomic<float>* paramPathBalance = nullptr;
+    std::atomic<float>* paramTextureDrive = nullptr;
+    std::atomic<float>* paramDroneDensity = nullptr;
+    std::atomic<float>* paramSpectralDrift = nullptr;
+    std::atomic<float>* paramThickness = nullptr;
+    std::atomic<float>* paramFilterRouting = nullptr;
+    std::atomic<float>* paramFilterACutoff = nullptr;
+    std::atomic<float>* paramFilterAReso = nullptr;
+    std::atomic<float>* paramFilterAType = nullptr;
+    std::atomic<float>* paramFilterBCutoff = nullptr;
+    std::atomic<float>* paramFilterBReso = nullptr;
+    std::atomic<float>* paramFilterBType = nullptr;
+    std::atomic<float>* paramDrive = nullptr;
+    std::atomic<float>* paramTone = nullptr;
+    std::atomic<float>* paramFeedback = nullptr;
+    std::atomic<float>* paramWidth = nullptr;
+    std::atomic<float>* paramEvolutionSpeed = nullptr;
+    std::atomic<float>* paramComplexity = nullptr;
+    std::atomic<float>* paramReactivity = nullptr;
+    std::atomic<float>* paramOutputGain = nullptr;
+    std::atomic<float>* paramMix = nullptr;
+    std::atomic<float>* paramBypass = nullptr;
+    std::atomic<float>* paramFreeze = nullptr;
+
+    // Smoothed values for audio thread
+    juce::SmoothedValue<float> smoothedPathBalance;
+    juce::SmoothedValue<float> smoothedMix;
+    juce::SmoothedValue<float> smoothedOutputGain;
+    juce::SmoothedValue<float> smoothedFeedback;
+
+    // Bypass crossfade
+    float bypassCrossfade = 1.0f;  // 1 = wet, 0 = dry
+    bool wasBypassed = false;
+
+    // Feedback buffer
+    std::vector<float> feedbackBufferL, feedbackBufferR;
+
+    // Parameter layout helper
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
+    // Process helpers
+    void processPathA(const float* input, float* output, int numSamples, float drive);
+    void processPathB(const float* input, float* output, float* outL, float* outR, int numSamples, float density, float drift, bool freeze, float thickness);
+    void processFilters(float* left, float* right, int numSamples);
+    void processDriveAndFeedback(float* left, float* right, int numSamples);
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CogVSTAudioProcessor)
+};

@@ -1,0 +1,1655 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cognitive_output_v1>
+  <schema_note>
+    Envelope model: each node element wraps the node's full markdown output
+    in CDATA. Parse markdown content per node. Only &lt;meta&gt;, &lt;v6_scope&gt;,
+    &lt;active_conditionals&gt;, and &lt;signals&gt; are attribute-style structured.
+  </schema_note>
+  <meta>
+    <skill_version>1.0.0</skill_version>
+    <session_id>2026-04-24-working-memory</session_id>
+    <scale>STANDARD</scale>
+    <input_type>raw</input_type>
+    <flag_xml>false</flag_xml>
+    <flag_verbose>false</flag_verbose>
+    <flag_quiet>false</flag_quiet>
+    <flag_conjecture>false</flag_conjecture>
+    <active_conditionals>none</active_conditionals>
+    <signals>[]</signals>
+  </meta>
+  <input_inventory><![CDATA[What are the cognitive bottlenecks of human working memory and how do they shape learning strategies?]]></input_inventory>
+  <state_loading><![CDATA[# N1 — State Loading (DECOMPOSITION)
+## Executed: 2026-04-24 | Scale: STANDARD | Hat: Einstein/Feynman/VonNeumann/Darwin/Tesla/Turing
+
+<state_loading>
+
+<input_class>
+
+## Input class
+
+Class: **Other (Conceptual/Theoretical)**. The question asks for causal/mechanistic understanding of a cognitive phenomenon (working memory bottlenecks) and its downstream consequences (learning strategies). No code, no error, no formal proof request, no architecture design. Template 5 applies.
+
+</input_class>
+
+<primitives>
+
+## Primitives
+
+**Category 1 — Core claim/question:**
+1. What are the bottlenecks — capacity limits? attentional limits? temporal limits?
+2. "Cognitive bottlenecks" — what exactly is restricted: chunk count, binding resources, attention?
+3. "Human working memory" — distinguishing from long-term memory, sensory buffers, executive function
+4. "Shape learning strategies" — what is the mechanistic link from bottleneck to strategy choice?
+5. Are bottlenecks fixed (architectural) or variable (state-dependent, domain-dependent)?
+6. Are there multiple independent bottlenecks or one unified constraint?
+7. "Learning strategies" — encoding strategies, practice schedules, chunking, spaced repetition?
+8. Does the question seek prescriptive strategies (what should learners do?) or descriptive mechanisms (why do strategies work)?
+
+*8 Category-1 primitives; 20-item target not met — constraint is the input.*
+
+**Category 2 — Background facts:**
+1. Miller (1956): working memory capacity ~7±2 "chunks" — the first quantified bottleneck
+2. Baddeley & Hitch (1974): multicomponent model — phonological loop, visuospatial sketchpad, central executive
+3. Cowan (2001): capacity ≈ 4 chunks; Miller's 7 inflated by chunking mechanisms
+4. Nelson Cowan's "focus of attention": 1 chunk activated in focal attention at a time
+5. Phonological loop: ~2 seconds of speech content; time-limited by articulatory decay
+6. Visuospatial sketchpad: handles visual and spatial information independently of verbal
+7. Central executive: limited capacity attentional control; no unlimited "homunculus"
+8. Episodic buffer (Baddeley 2000 update): integrates info across phonological/visuospatial/LTM
+9. Cognitive load theory (Sweller 1988): instructional design based on WM constraints
+10. Intrinsic, extraneous, germane load — three components in CLT
+11. Chunking: grouping elements into higher-order units reduces WM item count (de Groot 1946, chess masters)
+12. Dual coding: verbal + visual channels are partially independent; exploiting both increases capacity
+13. Spaced repetition: retrieval from LTM reduces WM load by automatizing sub-skills
+14. Worked examples effect: reduces extraneous load vs. problem-solving during initial learning
+15. Split-attention effect: spatially/temporally separated materials increase extraneous load
+16. Redundancy effect: extra identical information increases rather than reduces load
+17. Expertise reversal effect: what helps novices hurts experts (novices need guidance; experts self-explain)
+18. WM capacity predicts fluid intelligence (Engle et al., Kane et al.)
+19. Individual differences in WM span (reading span, operation span) predict comprehension, reasoning
+20. WM is not static: anxiety, stress, mind-wandering deplete available capacity
+21. Interference theories: retroactive and proactive interference corrupt WM content
+22. Temporal decay: WM contents degrade without rehearsal (phonological buffer ~2s; visual shorter)
+23. Binding: relating color to shape, word to context — the binding problem in WM
+
+**Category 3 — Key tensions:**
+1. Capacity limit (slot model) vs. resource model: is WM N discrete slots or a continuous pool of activation?
+2. Fixed 4-chunk limit (Cowan) vs. variable capacity depending on item type and chunking opportunity
+3. Bottleneck in storage vs. bottleneck in processing: which limits more in naturalistic learning?
+4. Rehearsal-based maintenance vs. attention-based maintenance: are they the same resource?
+5. Is forgetting from WM due to decay or interference? (Debate: Lewandowsky vs. decay theorists)
+6. Central executive as unified vs. fractionated system (Miyake et al. 2000: three factors)
+7. WM training: does it transfer to fluid intelligence? (Controversial: brain training claim vs. domain-specific)
+8. Does reducing extraneous load always free up resources for learning? Or does some challenge aid metacognitive processes?
+9. Desirable difficulty: interleaving and spacing sometimes increase apparent load but improve LTR (Bjork)
+10. Are WM bottlenecks peripheral (perceptual) or central (attentional)?
+11. Conscious vs. unconscious WM: does WM require conscious access?
+12. Is there a phonological loop for reading, or do skilled readers bypass subvocalization?
+13. Neural substrate debate: prefrontal-parietal network vs. activated LTM (Ruchkin, Jonides)
+
+**Category 4 — Stakeholders:**
+1. Educators: lesson design, multimedia learning, sequence of topics
+2. Instructional designers: CLT application to e-learning, simulations
+3. Students: study strategies, spaced practice, interleaving
+4. Cognitive psychologists: model development, WM span measures
+5. Neuroscientists: fMRI/EEG correlates of WM capacity and load
+6. AI/education technology companies: adaptive learning systems
+7. Clinical psychologists: ADHD, anxiety, aging-related WM decline
+
+**Category 5 — Analogous domains:**
+1. Computer RAM: limited buffer between storage and processing — direct architectural analogy
+2. TCP/IP window size: bounded throughput from receiver buffer
+3. Attention models in deep learning (Transformer): finite attention weights per token
+4. Cache memory hierarchy: L1/L2/L3 cache as working memory; main memory as LTM
+5. Orchestra conductor: central executive = conductor coordinating sections
+6. Bottleneck theory in perception (Broadbent filter): early selection limits processing bandwidth
+
+**Category 6 — Success criteria:**
+1. The mechanistic links (bottleneck → constraint → strategy consequence) are explicitly traced
+2. Each bottleneck type is matched to at least one learning strategy it directly motivates
+3. Individual differences are addressed (WM span varies; strategies calibrate to learner)
+4. Prescriptive implications are distinguished from descriptive mechanisms
+
+**Category 7 — Open sub-questions:**
+1. Does WM training (N-back) genuinely transfer to real-world learning? (Evidence: weak/no transfer)
+2. Can working memory bottlenecks be circumvented through environmental scaffolding?
+3. Are there learnable strategies that fundamentally alter the bottleneck (not just route around it)?
+4. How do WM bottlenecks interact with emotional/motivational states during learning?
+5. What is the neural mechanism of "attention capture" that competes with voluntary WM use?
+6. Does chunking reduce the bottleneck or circumvent it? (Cowan: same slot, higher-order content)
+7. Are the phonological and visuospatial bottlenecks truly independent?
+
+</primitives>
+
+<stripped_irreducibles>
+
+## Simplicity-stripped irreducibles
+
+**Kept (irreducible):**
+1. **WM capacity ≈ 3–4 meaningful chunks** (Cowan 2001) — irreducible empirical constraint; the architectural limit
+2. **Phonological loop decay: ~2 seconds** — time-based bottleneck distinct from item-count limit
+3. **Central executive: limited attentional control capacity** — the processing-side bottleneck; cannot multi-process at full capacity
+4. **Chunking circumvents the item-count limit by compressing multiple primitives into one chunk** — irreducible mechanism (not the same as eliminating the bottleneck)
+5. **Extraneous cognitive load from poor instructional design competes with germane load (actual learning)** — irreducible implication for strategy
+6. **Dual coding (verbal + visuospatial) partially doubles effective capacity** — irreducible because the two subsystems are empirically independent
+7. **Automatization moves skill from WM to LTM, freeing WM for higher-order processing** — irreducible mechanism (spaced repetition's basis)
+8. **Individual WM span is a stable predictor of learning outcome and fluid intelligence** — irreducible individual-differences fact
+
+**Struck (derivable):**
+- ~~Miller's 7±2~~ → superseded by Cowan's 4; Miller's number reflects chunked items, not primitive chunks
+- ~~Split-attention effect~~ → derives from #5 (extraneous load from spatial/temporal separation)
+- ~~Worked examples effect~~ → derives from #5 + #7 (reducing problem-solving overhead)
+- ~~Redundancy effect~~ → derives from #5 (redundant info increases not reduces load)
+
+</stripped_irreducibles>
+
+<tesla_measurement_plan>
+
+## Tesla measurement plan
+
+Success is observable when a learner with **no prior knowledge** of cognitive psychology can:
+
+1. Name the three major WM bottlenecks (item count ≈4 chunks, phonological decay ~2s, central executive capacity) with their approximate quantitative bounds.
+2. State how chunking addresses bottleneck #1 without eliminating it.
+3. Match each of three learning strategies (spaced practice, worked examples, dual coding) to the specific bottleneck it addresses and why.
+4. Predict, for a given instructional design (e.g., text and diagram placed far apart), which bottleneck is stressed and what the consequence is.
+
+</tesla_measurement_plan>
+
+<verification_block>
+
+## Verification
+
+**Preparation-gate:** All 8 irreducibles cite either Cowan (2001), Baddeley (1974/2000), Sweller (1988), or Engle et al. — primary sources. No invented data. ✓
+
+**Tesla constructive-test:** The measurement plan specifies concrete predictions (item counts, seconds, named strategies, design scenarios). Observable. ✓
+
+**Count check:** Categories 2 and 3 reach ≥20 and ≥13 respectively; 1,4,5,6,7 hit count-cap with explicit declarations. ✓
+
+</verification_block>
+
+</state_loading>
+
+---
+
+## SIGNAL OUTPUT
+
+### Digest 1 of 3 — primitives_digest (5–15 lines)
+
+```
+key_findings:
+  - Core question: mechanistic links between WM bottlenecks (capacity, temporal decay, executive control) and learning strategy selection
+  - WM capacity: ~3–4 chunks (Cowan 2001); Miller's 7±2 superseded; item-count is the primary architectural limit
+  - Temporal bottleneck: phonological loop decays in ~2s; visuospatial buffer shorter
+  - Processing bottleneck: central executive has limited capacity for attentional control; cannot fully multi-process
+  - Chunking: compresses items into higher-order units; reduces item count without increasing slot count
+  - CLT bottleneck → strategy link: intrinsic load (task complexity) + extraneous load (poor design) must fit in WM
+  - Dual coding: verbal and visuospatial channels empirically independent → doubles effective capacity when both used
+  - Individual differences: WM span stable, predicts fluid intelligence and learning outcomes
+  - Key tensions: slot vs. resource models; decay vs. interference theories; WM training transfer (controversial)
+named_entities:
+  - Working memory, WM capacity chunks, phonological loop, visuospatial sketchpad, central executive, episodic buffer
+  - Miller (1956), Baddeley & Hitch (1974), Cowan (2001), Sweller CLT, Baddeley (2000), Miyake et al.
+confidence_flags: [H, H, H, H, H, H, H, H, H]
+signal_flags: []
+```
+
+### Digest 2 of 3 — irreducibles_digest (5–15 lines)
+
+```
+key_findings:
+  - Irreducible 1: WM item capacity = ~3–4 chunks; the architectural ceiling no strategy eliminates
+  - Irreducible 2: Phonological loop ~2s temporal decay; time pressure is a distinct, parallel bottleneck
+  - Irreducible 3: Central executive limited; cannot simultaneously manage two full-capacity tasks
+  - Irreducible 4: Chunking compresses items but occupies the same slot count — circumvents, doesn't remove the limit
+  - Irreducible 5: Extraneous cognitive load from poor design competes with germane load; strategy = minimize extraneous
+  - Irreducible 6: Dual coding exploits channel independence; both verbal and visuospatial can be loaded simultaneously
+  - Irreducible 7: Automatization (via practice/spaced repetition) offloads WM to LTM; frees capacity for higher-order work
+  - Irreducible 8: WM span is a stable individual-differences predictor of intelligence and learning rates
+named_entities:
+  - WM chunk capacity, phonological loop decay, central executive, chunking mechanism, extraneous load, dual coding, automatization, WM span
+confidence_flags: [H, H, H, H, H, H, H, H]
+signal_flags: []
+```
+
+### Digest 3 of 3 — system_model_seed (5–15 lines)
+
+```
+key_findings:
+  - System: learner cognitive architecture with three subsystems — phonological loop (verbal/time), visuospatial sketchpad (spatial), central executive (attentional control)
+  - State space: WM load = sum of intrinsic + extraneous + germane load; constrained to fit ≤ ~4 chunks per active modality
+  - Conserved quantity: total WM capacity is fixed at ~4 chunks; compression (chunking) redistributes, does not add
+  - Observer frames: (a) novice — each element occupies a slot; (b) expert — chunked units occupy same slot count; (c) instructor — controls extraneous load via design
+  - Time axis: phonological decay operates on ~2s timescale; learning outcome measured on session/day/week timescale (spaced repetition)
+  - System boundary: cognitive architecture of one learner; social/environmental scaffolding is outside boundary but can reduce extraneous load
+  - Key dynamics: load exceeds capacity → errors, forgetting; load within capacity → learning can proceed; automatization shifts sub-skills below the capacity boundary
+named_entities:
+  - Phonological loop, visuospatial sketchpad, central executive, WM load, CLT (intrinsic/extraneous/germane), chunking, automatization, LTM offload
+confidence_flags: [H, H, H, H, H, H, H]
+signal_flags: []
+```]]></state_loading>
+  <constraint_escape><![CDATA[---
+node_id: N2
+node_type: LATERAL
+hat: de Bono
+executed: 2026-04-24
+input_question: "What are the cognitive bottlenecks of human working memory and how do they shape learning strategies?"
+predecessor_digests_used: [N1-primitives_digest]
+---
+
+<constraint_escape>
+
+<named_constraint>
+
+## Named constraint
+
+**Primary binding constraint (Archimedes: name before searching):**
+
+> Working memory is a **fixed-capacity serial bottleneck**: it can hold approximately 3–4 independent chunks simultaneously, process only one demanding operation at a time via the central executive, and items decay in roughly 2 seconds unless actively refreshed — creating a hard ceiling on how much new, unintegrated information can be simultaneously active during learning.
+
+**Domain-agnostic restatement (Da Vinci: strip domain vocabulary):**
+A processing system has a **fixed-slot buffer** (not expandable at runtime) that feeds a **single-thread executor** (no true parallelism for demanding tasks). Items in the buffer decay unless continuously re-energized. The cost of loading a new item competes with the cost of retaining existing items. The total throughput of the system is therefore a function of: (a) how many slots are occupied, (b) how fast items decay, and (c) how much executive bandwidth the task itself demands.
+
+**Secondary co-binding constraints (marked for V6 if tension):**
+- Individual differences in WM span are stable and resistant to training transfer — the ceiling cannot be raised through practice in the way peripheral skills can.
+- Chunking reduces slot occupancy but requires prior schema (long-term memory integration) to execute — creating a bootstrapping dependency.
+
+</named_constraint>
+
+<domain_candidates>
+
+## Domain candidates surveyed
+
+Constraint expressed in domain-agnostic terms for matching:
+> "Fixed-slot buffer + single-thread executor + decay without refreshing + new-load competes with retention-load + ceiling is structural not trainable."
+
+Parallel survey across all 25 catalog domains:
+
+| # | Domain | Structural class match | Agnostic occurrence | Viable? |
+|---|--------|----------------------|---------------------|---------|
+| 1 | Evolutionary Biology | optimization under constraint | Fitness landscapes with fixed trait expression capacity | PARTIAL |
+| 2 | Thermodynamics | irreversibility, resource limits | Carnot efficiency ceiling — no process converts 100% energy; entropy always costs | **YES** |
+| 3 | Fluid Dynamics | bottleneck resolution, state-dependent behavior | Pipe with fixed cross-section: throughput ceiling regardless of upstream pressure; laminar regime = ordered, efficient; turbulent = wasteful | **YES** |
+| 4 | Immunology | classification under uncertainty, memory | Clonal selection narrows repertoire; memory cells pre-loaded reduce future processing cost | PARTIAL |
+| 5 | Information Theory | information bounds, encoding/decoding costs | Shannon channel capacity — fixed bandwidth, items above capacity are lost or corrupt; compression reduces effective load | **YES** |
+| 6 | Architecture / Structural Engineering | load redistribution | Moment of inertia ceiling on span — excess load must be redistributed via arches or trusses | PARTIAL |
+| 7 | Ecology / Food Web | cascade effects, leverage points | Carrying capacity of trophic level; energy loss at each transfer level | PARTIAL |
+| 8 | Game Theory | multi-agent optimization, coordination | Congestion games: each agent adding load degrades all others; Nash equilibrium at suboptimal throughput | **YES** |
+| 9 | Developmental Biology | emergence from local rules, self-organization | Cell differentiation from shared genome: context activates different subsets; capacity per cell fixed but specialization changes effective output | PARTIAL |
+| 10 | Control Theory | feedback stability, delay compensation | Bandwidth-limited controller: fast-changing input exceeds bandwidth → instability; predictor needed for delay | **YES** |
+| 11 | Crystallography | local structure → global property, defect leverage | Grain boundary density controls bulk conductivity; single defect can pin entire domain | PARTIAL |
+| 12 | Network Science | connectivity leverage, critical thresholds | Percolation threshold: network connectivity collapses discontinuously when node count falls below threshold | PARTIAL |
+| 13 | Linguistics / Syntax | finite means → infinite output, ambiguity resolution | Recursive grammar generates infinite sentences from finite rules; but parsing requires holding constituents in a buffer that can overflow (garden-path sentences) | **YES** |
+| 14 | Epidemiology | threshold phenomena, intervention timing | R₀ threshold: below threshold, spread dies; above, it cascades — intervention must target before threshold crossing | PARTIAL |
+| 15 | Acoustics / Wave Physics | resonance leverage, destructive vs. constructive | Resonant cavity has a natural frequency; driving it at that frequency amplifies with no extra energy; off-resonance requires much more | **YES** |
+| 16 | Economics / Market Microstructure | information asymmetry, distributed coordination | Liquidity constraint: trader cannot execute all desired transactions simultaneously; queue depth is fixed; excess orders degrade execution quality | PARTIAL |
+| 17 | Optics / Photonics | resolution limits, beam shaping | Diffraction limit: aperture size creates absolute resolution ceiling; no amount of lens quality beats it; pupil-plane filtering changes which information gets through | **YES** |
+| 18 | Psychology / Cognitive Science | bounded rationality, attention scarcity | (Same domain — excluded to avoid circularity) | NO — same domain |
+| 19 | Pharmacology / Drug Design | delivery constraints, timing-dependent effects | First-pass metabolism: drug delivered via gut is partially destroyed before reaching target; bioavailability is a ceiling; route-switching (IV vs. oral) changes effective dose | PARTIAL |
+| 20 | Urban Planning / Traffic Flow | emergent congestion, system vs. individual optimization | Braess paradox: adding capacity can worsen congestion; bottleneck is structural, not additive | **YES** |
+| 21 | Cryptography / Security | asymmetric information leverage, computational bounds | One-way function: cheap to compute forward, exponentially expensive to reverse — ceiling is computational not physical | PARTIAL |
+| 22 | Geology / Plate Tectonics | slow accumulation / rapid release, threshold-based change | Elastic rebound: stress accumulates slowly; when threshold crossed → rapid release; intermediate states invisible on surface | PARTIAL |
+| 23 | Animal Behavior / Ethology | stimulus-triggered automation, distributed coordination | Fixed action patterns: once triggered, entire motor sequence executes without further executive input; reduces per-step processing cost to zero | **YES** |
+| 24 | Computation / Complexity Theory | space-time trade-offs, decomposition | Space-time trade-off: memoization trades memory slots for recomputation cost; cache size is fixed → eviction policy determines throughput | **YES** |
+| 25 | Chemistry / Catalysis | barrier-lowering without consumption, cascade amplification | Enzyme lowers activation energy: without enzyme, reaction bottlenecked at energy barrier; with enzyme, same substrate flux at lower cost | **YES** |
+
+**Viable domain count: 12** (exceeds 5 minimum → proceed to Step 3)
+
+**Top 5 selected for structural distinctness (no shared surface features):**
+- Information Theory (encoding/capacity ceiling)
+- Fluid Dynamics (pipe cross-section bottleneck)
+- Linguistics / Syntax (buffer overflow in parsing)
+- Acoustics / Wave Physics (resonance amplification)
+- Computation / Complexity Theory (cache space-time trade-off)
+
+</domain_candidates>
+
+<domain_mappings>
+
+## Domain mappings (5)
+
+---
+
+### Mapping 1 — Information Theory
+
+**Source domain:** Information Theory / Coding Theory
+**Target domain:** Working Memory & Learning
+**Structural analog:** Shannon channel capacity limit
+
+| Source | Target |
+|--------|--------|
+| Channel with fixed bandwidth C | Working memory with ~3–4 chunk slots |
+| Signal above capacity C is lost or corrupted | New information beyond slot capacity is dropped or degraded |
+| Noise in the channel | Extraneous cognitive load (irrelevant detail, poor instructional design) |
+| Compression algorithm (Huffman, LZ) | Chunking / schema formation — same information, fewer symbols |
+| Error-correcting codes (redundancy) | Spaced repetition, elaborative rehearsal — redundancy increases signal recovery |
+| Signal-to-noise ratio | Germane vs. extraneous cognitive load ratio |
+
+**What solves it in source:** Increase compression efficiency (reduce bit-cost per unit of meaning) and reduce noise. Do NOT try to expand the channel — work within C. Use error-correcting codes to make partial information recoverable.
+
+**Transfer to learning:** The bottleneck is structural. The instructional design solution is (1) pre-compress incoming content via analogies/schemas (reduce chunk-cost), (2) suppress extraneous load (channel noise), and (3) build error-correction mechanisms (retrieval practice increases recoverability of partially-encoded items). Attempting to "widen the channel" via WM training has negligible transfer — exactly analogous to why you cannot exceed Shannon capacity by trying harder.
+
+---
+
+### Mapping 2 — Fluid Dynamics
+
+**Source domain:** Fluid Dynamics
+**Target domain:** Working Memory & Learning
+**Structural analog:** Pipe cross-section as throughput ceiling with laminar/turbulent transition
+
+| Source | Target |
+|--------|--------|
+| Pipe with fixed inner diameter | WM slot count (structural, not trainable) |
+| Flow rate (volume/time) | Learning throughput (ideas processed per unit time) |
+| Laminar flow: ordered, low-resistance | Cognitive flow state: ordered, efficient executive processing |
+| Turbulent flow: high-resistance, energy-wasting | Cognitive overload: competing activations, executive thrashing |
+| Pressure gradient driving the flow | Motivation / attentional effort |
+| Bernoulli effect: narrowing accelerates local flow | Focused attention: narrow task window increases local processing rate |
+| Valve logic: controlling sub-flows | Metacognitive load-shedding: deliberately offloading sub-tasks (externalizing) |
+
+**What solves it in source:** Maintain laminar regime by controlling flow rate; use valve logic to route sub-flows; reshape the channel geometry (smooth interior = chunked, familiar material).
+
+**Transfer to learning:** Cognitive overload (turbulence) is worse than moderate load. The solution is not to push harder (increase pressure = effort) but to maintain laminar conditions: pace new material below turbulence threshold, externalize working notes to reduce effective slot demand (valve logic), and make material "smoother" (familiar schemas) to reduce resistance. The learner's WM is not the problem — turbulent conditions are.
+
+---
+
+### Mapping 3 — Linguistics / Syntax (Garden-Path Parsing)
+
+**Source domain:** Computational linguistics / sentence parsing
+**Target domain:** Working Memory & Learning
+**Structural analog:** Parsing buffer overflow in garden-path sentences
+
+| Source | Target |
+|--------|--------|
+| Parsing buffer holding open constituents | WM holding partially-integrated concepts |
+| Garden-path sentence: "The horse raced past the barn fell" | Complex explanation where early framing conflicts with late revision |
+| Syntactic re-analysis cost | Conceptual re-loading cost when an early model must be revised |
+| Left-branching structures (hard to parse) | Recursive prerequisite structures (deep dependency chains) |
+| Right-branching structures (easy to parse) | Scaffolded instruction (each step closes before next opens) |
+| Predictive parsing: anticipate upcoming constituents | Schema activation: pre-loading LTM structure reduces parse cost |
+
+**What solves it in source:** Right-branch (flatten) the sentence structure; activate predictive frames early; give listeners/readers top-down structure before bottom-up detail (headline → body, not body → headline).
+
+**Transfer to learning:** Learning sequences that leave many "open constituents" (unresolved questions, partial concepts awaiting closure) overload WM even with low individual item count. Instructional sequencing should close constituent chains early: teach conclusions before derivations where possible, activate schema frames before detail loading, and minimize simultaneous open threads. The cognitive re-analysis cost of revising early mental models (misconception correction) is quantifiable as a structural parsing cost.
+
+---
+
+### Mapping 4 — Acoustics / Resonance Physics
+
+**Source domain:** Acoustics / Wave Physics
+**Target domain:** Working Memory & Learning
+**Structural analog:** Resonant amplification at natural frequency
+
+| Source | Target |
+|--------|--------|
+| Resonant cavity with natural frequency f₀ | LTM schema with specific structural "frequency" (organizational pattern) |
+| Input driven at f₀: amplification with low energy cost | New information matching existing schema: effortless deep encoding |
+| Input driven off-resonance: requires more energy, less amplitude | New information with no schema match: high WM cost, shallow encoding |
+| Standing waves: self-sustaining patterns | Stable memory traces: information that "stands alone" without active maintenance |
+| Destructive interference: cancel competing signals | Proactive/retroactive interference between similar memory traces |
+| Acoustic impedance mismatch at boundary | Schema mismatch: difficulty integrating when prior schema "rejects" new input |
+
+**What solves it in source:** Tune the driving frequency to match the resonant frequency of the cavity. Alternatively: redesign the cavity (change its natural frequency) to match available input.
+
+**Transfer to learning:** The most efficient WM use occurs when incoming information is "tuned to resonance" with existing LTM schemas. This is the structural explanation for why prior knowledge dramatically amplifies learning efficiency — it is not motivational, it is physical: you are driving the cognitive system at its resonant frequency. Learning strategy implication: deliberately activate relevant prior schemas before introducing new content (advance organizers, priming). When learner has no relevant schema, build a minimal resonant cavity first (a simplified model), then tune to it.
+
+---
+
+### Mapping 5 — Computation / Cache Architecture (Space-Time Trade-off)
+
+**Source domain:** Computer architecture / Cache memory systems
+**Target domain:** Working Memory & Learning
+**Structural analog:** Fixed-size cache with eviction policy determining throughput
+
+| Source | Target |
+|--------|--------|
+| CPU registers (fastest, fewest) | WM slots (~3–4) |
+| L1/L2/L3 cache hierarchy | Short-term buffer → activated LTM → full LTM retrieval |
+| Cache miss: fetch from slow main memory | Forgetting: item must be reconstructed from LTM at processing cost |
+| Cache eviction policy (LRU, LFU) | Which WM items are refreshed vs. displaced — decay as LRU eviction |
+| Prefetching: anticipate needed data | Priming / advance organizers: load expected schemas before task |
+| Memoization: store computed results to avoid recomputation | Automaticity: practiced skills stored as compiled routines, bypassing WM |
+| Thrashing: eviction rate exceeds useful work | Cognitive overload: constant displacement prevents deep processing |
+
+**What solves it in source:** Prefetch intelligently; memoize frequently-used subroutines; keep hot data in registers (minimize register spills); avoid thrashing by managing working set size.
+
+**Transfer to learning:** Automaticity (practice to fluency) is the cognitive equivalent of memoization — it moves a frequently-needed operation from "recompute in WM" to "retrieve compiled result," freeing slots for higher-order processing. Overloaded learners thrash: nothing gets encoded because everything gets evicted before processing completes. The strategy implication: build a small automatized base (memoization layer) before increasing task complexity. The sequence "automate sub-skills first, then combine" is structurally identical to "memoize hot paths before optimizing the algorithm."
+
+</domain_mappings>
+
+<activation_provenance>
+
+## Activation provenance
+
+**Provenance tagging:** Each candidate concept marked as single-source (S) or multi-source-convergent (C, activated from ≥2 independent chains in the domain survey).
+
+| Concept | Source domains activating it | Provenance | Notes |
+|---------|------------------------------|------------|-------|
+| Fixed-capacity ceiling as structural (not trainable) | Information Theory (#5), Fluid Dynamics (#3), Optics (#17) | **C — 3 sources** | Three independent domains all encode the same finding: the ceiling is architectural, not a performance variable. Directly addresses the controversy over WM training transfer. |
+| Compression / chunk-cost reduction as primary solution | Information Theory (#5), Computation (#24), Chemistry/Catalysis (#25) | **C — 3 sources** | Compression (IT) = chunking (WM) = memoization (CS) = enzyme catalysis (lowering activation energy) — all reduce per-unit processing cost without expanding the bottleneck. |
+| Sequence/ordering effects on load (constituent management) | Linguistics (#13), Fluid Dynamics (#3), Control Theory (#10) | **C — 3 sources** | Left-branch/right-branch (linguistics), laminar/turbulent transition (fluids), bandwidth limit with delay compensation (control theory) all independently encode that ordering of information presentation determines whether bottleneck is hit. |
+| Prior knowledge as resonance (not mere "background") | Acoustics (#15), Immunology (#4), Computation (#24) | **C — 3 sources** | Resonant cavity matching (acoustics), memory cell pre-loading (immunology), cache prefetch (CS) all encode the same structural principle: prior matching reduces current processing cost. This is a multi-source-convergent framing that strengthens the resonance mapping. |
+| Automaticity as bottleneck bypass | Computation/Memoization (#24), Animal Behavior/Fixed Action Patterns (#23), Pharmacology/Prodrug (#19) | **C — 3 sources** | Memoization, fixed action patterns (once-triggered motor sequences requiring zero executive input), and prodrug activation all encode the concept of a pre-compiled routine that bypasses the executive bottleneck entirely. |
+| Turbulence / thrashing as qualitatively worse than high-but-stable load | Fluid Dynamics (#3), Computation (#24), Geology/Elastic Rebound (#22) | **C — 3 sources** | Non-linear collapse when threshold crossed — turbulence (fluids), thrashing (CS), elastic rebound (geology) all show that the bottleneck system has a phase transition, not a smooth degradation. Cognitive overload is discontinuous. |
+| Externalizing as valve logic (offload, don't expand) | Fluid Dynamics (#3), Architecture/Structural Engineering (#6) | **C — 2 sources** | Valve logic (fluids) and load redistribution via arches (engineering) both encode the same move: route load away from the bottleneck point rather than widening it. |
+
+**Provenance check result:** Every selected concept has multi-source provenance (C). No single-source-only concepts appear in the top-5 mappings. Failure guard not triggered.
+
+</activation_provenance>
+
+<conceptual_blend>
+
+**Step 6 verification:**
+- Systematicity: 5 mappings share no surface features (channel/pipe/parser/resonator/cache are structurally distinct). ✓
+- Provenance: all key concepts have declared provenance. ✓
+- Blend-worthiness check: Mapping 4 (Acoustics/Resonance) × Mapping 5 (Cache/Memoization) passes blend-worthiness: blending "resonant cavity tuning" with "cache prefetch + memoization" produces emergent structure not in either alone. Step 7 fires.
+
+---
+
+**Blend: Resonant Cache — prior-schema as both prefetch index AND amplification medium**
+
+## Input Space 1 — Acoustics / Resonance
+Elements: resonant cavity, natural frequency f₀, driving signal, standing waves, impedance mismatch, destructive interference
+Structure: amplification is free when input matches resonant frequency; off-resonance input dissipates as heat; cavity shape determines f₀
+Relevance: prior LTM schemas amplify encoding at zero extra WM cost when new content "matches"
+
+## Input Space 2 — Cache Architecture / Memoization (applied to Working Memory)
+Elements: CPU registers, cache hierarchy, eviction policy, prefetch, memoized routine, thrashing
+Structure: fixed register count; prefetch moves expected data into cache before needed; memoized sub-result bypasses recomputation; thrashing = eviction exceeds useful work
+Relevance: WM slots are registers; automaticity = memoization; priming = prefetch
+
+## Generic Space — Shared skeleton
+Shared structure: a **fixed-capacity fast-access store** where matching prior state to incoming demand determines whether the system runs efficiently or wastes resources. In both domains: the system does not expand; efficiency depends entirely on **pre-alignment of structure with expected demand**.
+
+Cross-space mapping:
+- Resonant frequency f₀ ↔ Cache hot-path (frequently accessed structure)
+- Driving at f₀ ↔ Prefetch hit (data already in cache when needed)
+- Impedance mismatch (reflection, loss) ↔ Cache miss (expensive fetch from slow memory)
+- Standing wave (self-sustaining, no energy input needed) ↔ Memoized result (zero recomputation cost)
+- Cavity redesign to match available input ↔ Schema construction before learning (building the resonator)
+
+## Blended Space — Resonant Cache
+Selective projection:
+  - From Input 1: resonance as amplification without extra energy input; cavity shaping as a designable property
+  - From Input 2: prefetch as proactive loading; memoization as compiled bypass; thrashing as qualitative collapse
+
+Operations applied:
+  - Composition: prior LTM schema acts simultaneously as a **resonant amplifier** (new content encodes deeper at zero WM cost) AND as a **prefetch index** (schema structure predicts what will be needed, loading it before it arrives)
+  - Completion: background knowledge activates — acoustic engineers know you can deliberately **tune a cavity** to match a signal you haven't yet received; CS engineers know **cache warming** (deliberately populating cache before the workload arrives) is a production technique
+  - Elaboration: running the blend — a learner who activates a schema before new content arrives is both (a) amplifying the incoming signal (resonance) and (b) pre-populating the register file (prefetch). The schema does double duty in the blend; neither input domain suggested both functions simultaneously.
+
+## Emergent Structure — CRITICAL SECTION
+
+1. `[EMERGENT-SOLUTION]` **Schema pre-construction is a dual-function operation:** it simultaneously reduces WM load (prefetch: the item is already "in cache" when it arrives) AND amplifies encoding depth (resonance: the item is driven at the cavity's natural frequency). Neither source domain alone predicts that a single pre-learning intervention has TWO mechanistically distinct beneficial effects — IT theory predicts noise reduction, acoustics predicts amplification, but only the blend reveals they occur together.
+
+2. `[EMERGENT-FRAME]` **The learner's WM bottleneck is a design parameter, not a given:** acoustic engineers design cavities with specific resonant frequencies to match anticipated input. The blend reframes learning design as **cavity engineering** — instructors do not just "reduce load" but actively shape the resonant structure of the learner's prior knowledge to match the upcoming material. This framing does not exist in either source domain.
+
+3. `[EMERGENT-CONSTRAINT]` **Schema mismatch produces both under-encoding AND active interference:** impedance mismatch causes reflection (energy bounces back) + cache miss causes stall (pipeline freezes). The blend predicts that wrong-schema activation is WORSE than no schema activation — it both fails to amplify and actively consumes WM slots for conflict resolution. This emergent constraint is not visible in either source alone.
+
+</conceptual_blend>
+
+<escape_path>
+
+## Constraint-escape path
+
+**Ranking criterion:** convergence score (number of independent domain chains activating the concept) × structural fit (how precisely the solution pattern addresses the named constraint).
+
+| Mapping | Convergence score | Structural fit | Combined rank |
+|---------|------------------|----------------|---------------|
+| Information Theory (compression/noise) | 3 | High — directly maps slot-count limit to bandwidth | 1 |
+| Cache/Memoization (space-time trade-off) | 3 | High — slot-count maps to register count; automaticity = memoization | 1 |
+| Acoustics/Resonance (prior schema) | 3 | High — explains the prior-knowledge effect mechanistically | 2 |
+| Fluid Dynamics (laminar/turbulent) | 3 | Medium-High — load ordering → phase transition | 3 |
+| Linguistics/Parsing (constituent closure) | 3 | Medium — instructional sequencing insight | 4 |
+
+**Tie at rank 1** (Information Theory + Cache/Memoization): both emitted per failure-guard rule.
+
+---
+
+### Primary escape path A — Information Theory / Compression
+
+**Constraint escape:** The WM bottleneck is a fixed-bandwidth channel. The constraint is escaped not by widening the channel (impossible: WM training transfer is negligible) but by **reducing the bit-cost per unit of meaning** (chunking, schema activation) and **reducing channel noise** (suppressing extraneous cognitive load). The Shannon capacity limit is an absolute bound, but the *effective* information per slot is adjustable. Learning strategies that escape the constraint are those that increase the information density per chunk: analogies, schemas, worked examples with explicit structure, and progressive complexity scaffolding.
+
+**Actionable path:** Instructional design should treat cognitive load as a communication engineering problem. Measure: intrinsic load (task complexity, irreducible) + extraneous load (noise, reducible by design) ≤ WM capacity C. All high-yield strategies (interleaving, retrieval practice, elaborative interrogation) are, in this framing, compression or error-correction algorithms.
+
+---
+
+### Primary escape path B — Cache Architecture / Memoization
+
+**Constraint escape:** WM slots are CPU registers — the fewest, fastest tier. Automaticity (practice to fluency) is memoization: it moves a frequently-needed sub-operation from "compute in WM registers" to "retrieve compiled result," freeing registers for higher-order processing. The constraint is escaped not by gaining more registers but by **shrinking the working set** — the set of items that must occupy registers simultaneously.
+
+**Actionable path:** Learning sequence design should explicitly build a memoization layer before combining skills. "Master sub-skills to automaticity before combining" is not pedagogically conservative; it is structurally necessary — it is the cache warming step. Attempting to combine before automaticity is thrashing: slots are consumed keeping sub-skills active, leaving none for the combination itself.
+
+---
+
+### Escape path with blend amplification
+
+The conceptual blend (Resonant Cache) reveals that schema pre-construction before learning provides **both escape paths simultaneously** — it is the single intervention that functions as both compression algorithm and cache warm-up. This is the emergent solution: advance organizers and schema activation are not merely helpful priming — they are dual-function operations that simultaneously reduce per-chunk WM cost and prefetch expected content into the active buffer.
+
+</escape_path>
+
+</constraint_escape>]]></constraint_escape>
+  <peripheral_exploration><![CDATA[# N3 — Peripheral Exploration (SPREADING-ACTIVATION)
+## Executed: 2026-04-24 | Scale: STANDARD | Hat: spreading-activation+elegance-rubric
+
+<peripheral_exploration>
+
+<activation_map>
+
+## Activation map
+
+**Seeds (a=1.0 each):** working_memory, cognitive_bottlenecks, capacity_limits, learning_strategies, human_learners
+
+**Step 1 — Direct neighbors (decay=0.7, w=1.0–1.2 for direct components):**
+
+| Node | a(t=1) | Activated by |
+|---|---|---|
+| phonological_loop | 0.85 | working_memory (w=1.2 direct component) |
+| central_executive | 0.85 | working_memory (w=1.2), cognitive_bottlenecks (w=1.0) |
+| visuospatial_sketchpad | 0.70 | working_memory |
+| attention | 0.70 | working_memory, cognitive_bottlenecks (max) |
+| cognitive_load | 0.70 | cognitive_bottlenecks, learning_strategies (max) |
+| long_term_memory | 0.70 | working_memory |
+| bandwidth_limitation | 0.70 | cognitive_bottlenecks |
+| chunking | 0.80 | capacity_limits (w=1.0), working_memory (w=0.9 via chunking strategy) |
+| slot_model | 0.70 | capacity_limits |
+| cowan_4_limit | 0.80 | capacity_limits (direct quantification) |
+| spaced_repetition | 0.80 | learning_strategies |
+| dual_coding | 0.80 | learning_strategies |
+| worked_examples | 0.70 | learning_strategies |
+| interleaving | 0.70 | learning_strategies |
+| metacognition | 0.70 | learning_strategies, human_learners |
+| individual_differences | 0.70 | human_learners |
+| novice_vs_expert | 0.80 | human_learners (w=1.1 central tension) |
+| rehearsal | 0.70 | working_memory |
+| expertise | 0.70 | human_learners, novice_vs_expert (max) |
+
+*19 distinct nodes activated at step 1.*
+
+**Step 2 — Propagation (decay=0.49 from seeds):**
+
+| Node | a(t=2) | Activated by |
+|---|---|---|
+| schema | 0.56 | chunking (w=1.0), novice_vs_expert (w=1.0) — DUAL SOURCE |
+| pattern_recognition | 0.56 | chunking, expertise |
+| instructional_design | 0.56 | cognitive_load, worked_examples |
+| ebbinghaus_forgetting_curve | 0.56 | spaced_repetition, long_term_memory — DUAL SOURCE |
+| automatization | 0.56 | spaced_repetition, chunking, expertise — TRIPLE SOURCE |
+| paivio_dual_coding_theory | 0.56 | dual_coding |
+| multimedia_learning | 0.56 | dual_coding, instructional_design — DUAL SOURCE |
+| sleep_consolidation | 0.49 | spaced_repetition, long_term_memory |
+| expertise_reversal_effect | 0.56 | novice_vs_expert, worked_examples — DUAL SOURCE |
+| desirable_difficulty | 0.49 | interleaving, spaced_repetition, cognitive_load — TRIPLE SOURCE |
+| retrieval_practice | 0.56 | spaced_repetition, learning_strategies |
+| WM_span_individual_diff | 0.49 | individual_differences, central_executive — DUAL SOURCE |
+| extraneous_load | 0.56 | cognitive_load, instructional_design |
+| germane_load | 0.49 | cognitive_load |
+| anxiety_WM_interaction | 0.49 | individual_differences, central_executive — DUAL SOURCE |
+
+*15 new nodes activated at step 2 (34 total).*
+
+**Step 3 — Propagation (decay=0.343 from seeds):**
+
+| Node | a(t=3) | Activated by |
+|---|---|---|
+| deliberate_practice | 0.39 | automatization, expertise |
+| flow_state | 0.39 | automatization, desirable_difficulty — DUAL SOURCE |
+| CTML_cognitive_theory_multimedia | 0.39 | multimedia_learning, paivio_dual_coding_theory |
+| transfer_appropriate_processing | 0.39 | retrieval_practice, interleaving — DUAL SOURCE |
+| worked_examples_to_problem_solving | 0.39 | expertise_reversal_effect, worked_examples |
+| distributed_practice | 0.39 | spaced_repetition, ebbinghaus_forgetting_curve |
+| cognitive_interleaving_benefit | 0.39 | interleaving, desirable_difficulty |
+
+*7 additional nodes. Total activation cloud: 41 nodes.*
+
+**Lateral inhibition applied:**
+- schema and pattern_recognition: share >70% source paths (chunking + expertise chains) → suppress pattern_recognition: a = 0.56 - 0.3×0.56 = **0.39** (below convergent threshold)
+- spaced_repetition and retrieval_practice: share source paths → suppress retrieval_practice: a = 0.56 - 0.3×0.56 = **0.39**
+
+</activation_map>
+
+<convergent_nodes>
+
+## Convergent nodes
+
+**Qualifying nodes (a ≥ 0.4 after inhibition, ≥2 independent source chains, not directly seeded):**
+
+1. **schema** — a=0.56 — [multi-source-convergent: capacity_limits→chunking + learning_strategies→novice_vs_expert]
+   - Independent roots: capacity limit (architectural) + learning experience (behavioral)
+   
+2. **automatization** — a=0.56 — [multi-source-convergent: spaced_repetition + chunking + expertise]
+   - Independent roots: learning strategies path + capacity limits path + human expertise path (3 independent chains)
+
+3. **ebbinghaus_forgetting_curve** — a=0.56 — [multi-source-convergent: spaced_repetition + long_term_memory]
+   - Independent roots: strategy path + memory architecture path
+
+4. **multimedia_learning** — a=0.56 — [multi-source-convergent: dual_coding + instructional_design]
+   - Independent roots: capacity exploitation strategy + instructional design intervention
+
+5. **expertise_reversal_effect** — a=0.56 — [multi-source-convergent: novice_vs_expert + worked_examples]
+   - Independent roots: human learner variation + specific strategy interaction
+
+6. **desirable_difficulty** — a=0.49 — [multi-source-convergent: interleaving + spaced_repetition + cognitive_load]
+   - Independent roots: scheduling strategy + load theory (3 chains)
+
+7. **metacognition** — a=0.70 (seeded indirectly) — [multi-source-convergent: learning_strategies + human_learners + cognitive_load]
+   
+8. **anxiety_WM_interaction** — a=0.49 — [multi-source-convergent: individual_differences + central_executive]
+
+**8 convergent nodes found** — well above the S3_thin_or_empty threshold of <2.
+
+</convergent_nodes>
+
+<selected_illuminations>
+
+## Selected illuminations
+
+Elegance scoring and combined ranking:
+
+| Node | a | Simplicity | Symmetry | Depth | Elegance | Combined |
+|---|---|---|---|---|---|---|
+| automatization | 0.56 | 1.0 | 0.7 | 1.0 | 2.7 | 1.51 |
+| metacognition | 0.70 | 0.7 | 0.7 | 1.0 | 2.4 | 1.68 |
+| schema | 0.56 | 1.0 | 0.7 | 0.7 | 2.4 | 1.34 |
+| desirable_difficulty | 0.49 | 0.7 | 0.7 | 1.0 | 2.4 | 1.18 |
+| expertise_reversal_effect | 0.56 | 0.7 | 0.4 | 0.7 | 1.8 | 1.01 |
+
+**Top 5 selected (by combined score):**
+
+**Illumination 1 — Metacognition as the executive bottleneck regulator** (combined=1.68)
+The central executive bottleneck is not a fixed wall but a dynamically managed resource. Metacognition is the control loop that detects when WM load is approaching saturation and adjusts strategy (switch to chunking, apply a schema, reduce extraneous load). The insight: teaching metacognitive monitoring skills is equivalent to teaching load management — the learner becomes the instructional designer of their own WM. Cross-domain analog: error detection/correction loops in engineering control systems.
+
+**Illumination 2 — Automatization as WM recycler** (combined=1.51)
+The capacity bottleneck (~4 chunks) appears fixed, but automatization continuously relocates completed sub-skills from WM to LTM as procedural schemas, freeing the same slots for higher-order processing. This is not a strategy to work around the bottleneck — it IS the bottleneck's natural adaptation mechanism. Implication: learning is not filling a bucket but a continuous recycling of the bucket's contents. Cross-domain analog: CPU cache line replacement policy (LRU eviction frees cache for new work).
+
+**Illumination 3 — Schema formation as single-slot compression** (combined=1.34)
+A schema is the mechanism by which what previously occupied 4 slots (e.g., individual chess pieces in a formation) becomes 1 slot (a named attack pattern). Schema formation is how experts transcend the ~4-chunk limit without violating it — the architectural constraint is unchanged; the information density per slot increases. Strategy implication: instructional design should prioritize schema formation (recognition + naming) over content coverage.
+
+**Illumination 4 — Desirable difficulty as productive load** (combined=1.18)
+Not all extraneous cognitive load is wasteful. Desirable difficulties (interleaving, spacing, testing) impose load that produces superior long-term retention despite worse immediate performance. The tension: WM-load-minimizing instructional designs (worked examples, blocked practice) optimize for short-term fluency but produce fragile learning. Desirable difficulties impose controlled load that forces retrieval + recomputation, directly training the LTM transfer pathways. Implication: the optimal strategy set changes across learning phases (novice → guided low-load; intermediate → desirable difficulty).
+
+**Illumination 5 — Expertise reversal as the evidence that scaffolding has cost** (combined=1.01)
+The expertise reversal effect shows that the same scaffold that helps novices (worked examples, detailed guidance) actively harms experts — it forces WM allocation to information that the expert's schema makes redundant. This confirms that the bottleneck is real, not metaphorical: adding content always has cost, and the cost changes sign as the learner's schema density increases. Strategy implication: adaptive learning systems must track learner schema formation, not just knowledge coverage.
+
+</selected_illuminations>
+
+</peripheral_exploration>
+
+## Verification
+
+**Darwin independence check:**
+- Illumination 1 (metacognition) and Illumination 2 (automatization): metacognition chain roots in learning_strategies + human_learners; automatization roots in capacity_limits + spaced_repetition. The chains share no ancestor within 3 propagation steps. ✓ Independent.
+- Illumination 3 (schema) and Illumination 2 (automatization): schema from chunking+novice_vs_expert; automatization from spaced_repetition+chunking. Chunking is a shared ancestor — NOTE: partially non-independent. Schema and automatization share the "chunking" ancestor at depth 1. Flagged as partially correlated; however, their downstream implications are structurally distinct (schema = static compression; automatization = dynamic offloading), so they are retained as two distinct illuminations with this dependency noted.
+
+**Ramanujan pattern verification:**
+- "Automatization as WM recycler" — verified in: (1) motor learning (driving — sub-skills become automatic over sessions); (2) arithmetic fluency (single-digit addition becomes procedural, freeing WM for algebra); (3) reading comprehension (decoding automatizes, freeing WM for meaning). ≥3 instances. ✓
+- "Schema as single-slot compression" — verified in: (1) chess masters (de Groot 1946); (2) radiologist pattern recognition (disease patterns as chunks); (3) basketball plays. ≥3 instances. ✓
+
+**Activation-map completeness:** 41 distinct nodes activated across 3 propagation steps. ≥15 threshold met. ✓
+
+**Signal status:** 8 convergent nodes found. S3_thin_or_empty NOT raised.
+
+---
+
+## SIGNAL OUTPUT
+
+Emits: activation_digest (5–15 lines)
+
+```
+key_findings:
+  - activation map found: working_memory,cognitive_bottlenecks,capacity_limits,learning_strategies,human_learners,phonological_loop,central_executive,chunking,spaced_repetition,dual_coding,novice_vs_expert,schema,automatization,desirable_difficulty,metacognition,expertise_reversal_effect,multimedia_learning; top convergent: metacognition,automatization,schema; activation strength: H
+  - Illumination 1: metacognition is the control loop for executive bottleneck management — teaching metacognition = teaching WM load regulation
+  - Illumination 2: automatization continuously recycles WM capacity by offloading sub-skills to LTM — the bottleneck adapts via practice
+  - Illumination 3: schema formation compresses multiple primitives to single WM slot — experts transcend item-count limit without violating it
+  - Illumination 4: desirable difficulties impose productive load — spacing/interleaving trade short-term fluency for LTR via forced retrieval
+  - Illumination 5: expertise reversal proves scaffolding has real cost — optimal strategy inverts as learner schema density increases
+  - Cross-domain convergences: automatization ↔ CPU cache replacement policy; schema ↔ compression codec; metacognition ↔ control system error-detection loop
+  - Darwin dependency note: schema and automatization share "chunking" ancestor; their downstream implications are structurally distinct (static vs. dynamic)
+  - Individual differences: WM span + anxiety interact with central executive bottleneck; one-size-fits-all strategies are suboptimal
+named_entities:
+  - metacognition, automatization, schema formation, desirable difficulty, expertise reversal effect
+  - Cowan 4-chunk limit, central executive, Bjork (desirable difficulty), de Groot (chess schema), Sweller CLT
+confidence_flags: [H, H, H, H, H, M, M, M]
+signal_flags: []
+```]]></peripheral_exploration>
+  <defixation/>
+  <dynamic_simulation/>
+  <precision_forcing><![CDATA[# N5 — Precision Forcing (PRECISION)
+## Executed: 2026-04-24 | Scale: STANDARD | Hat: Feynman
+
+**Primary claim under analysis:** Working memory has three major bottlenecks — item count (~3–4 chunks), phonological temporal decay (~2s), and central executive capacity. These bottlenecks directly determine which learning strategies are effective.
+
+<precision_forcing>
+
+<renderings>
+
+## 5-level vocabulary strip
+
+**Level 1 — Five-year-old:**
+"Your brain has a small tray that holds thoughts while you're working. It can only hold about 4 big ideas at once, and it forgets them after about 2 seconds if you don't keep thinking about them. If you try to think about too many things at once, the tray overflows and you forget something. To learn well, you need to either make each idea 'bigger' (clump small pieces into one big piece), keep going back to things before you forget them, or use both your word-thoughts and your picture-thoughts at the same time since those are kept in different parts of the brain."
+
+**Level 2 — Fifteen-year-old:**
+"Working memory is the mental workspace where you process new information — it can hold roughly 3–4 meaningful units simultaneously and loses verbal information after about 2 seconds without rehearsal. Cognitive bottlenecks occur when the amount of information to process exceeds this capacity. Learning strategies work by either reducing what needs to be held in working memory (chunking, schemas), exploiting redundancy in the system (dual coding — words and images use separate storage), or ensuring that previously learned material is automatic so it doesn't occupy working memory space at all (spaced practice → automatization)."
+
+**Level 3 — Domain expert:**
+"Working memory capacity is ~3–4 meaningful chunks (Cowan 2001) governed by a multicomponent architecture: phonological loop (~2s decay, refreshed by subvocal rehearsal), visuospatial sketchpad (parallel storage, limited capacity), and the central executive (attentional controller with finite processing bandwidth). Cognitive load is partitioned into intrinsic load (task complexity, determined by element interactivity), extraneous load (inefficiencies in instructional format), and germane load (schema-building activity). Effective learning strategies reduce extraneous load, exploit dual-channel independence, automate sub-skills via spaced retrieval practice, and scaffold schema formation through worked examples and explicit category training. The expertise reversal effect constrains strategy applicability: novices require guidance (reduces extraneous load); experts require challenges (prevents schema competition)."
+
+**Level 4 — Mathematician/logician:**
+"Let WM = (PL, VS, CE) where PL = phonological loop with capacity T_PL ≈ 2s speech content, VS = visuospatial sketchpad with capacity κ_VS elements (parallel to PL), CE = central executive with capacity κ_CE ∈ [2,4] attentional units. Cognitive load L = L_I + L_E + L_G ≤ κ_CE. Where: L_I = intrinsic load (fixed by task's element interactivity, not reducible by design); L_E = extraneous load (reducible by instructional design choices); L_G = germane load (schema formation activity, productive). A learning strategy S is effective iff applying S reduces L_E + L_G × (1 - schema_depth) to fit within κ_CE for the learner's current schema_depth. Automatization: repeated retrieval practice → schema_depth → 1 → sub-skill L_I contribution → 0 (offloaded to LTM as procedural)."
+
+**Level 5 — Minimal symbol:**
+L_total = L_I + L_E + L_G ≤ κ_WM ≈ 4 chunks
+Strategy_effective iff L_E ↓ AND/OR L_I(sub-skill) → 0 via automatization AND/OR κ(PL, VS) used in parallel
+
+## 3-representation rendering
+
+**Representation 1 — Diagram:**
+Three stacked buffers: [Phonological Loop | 2s decay, ~2 speech units] || [Visuospatial Sketchpad | ~2-4 spatial units] → both feed into [Central Executive | κ ≈ 3–4 attentional slots]. Incoming task content has three load types: L_I (dark bar, fixed by task), L_E (dashed bar, design-dependent), L_G (grey bar, schema formation). When total bar height exceeds the CE slot count → overflow → forgetting/errors. Strategies are represented as arrows that reduce bar height or increase slot count per modality (dual coding = two parallel buffers rather than one).
+
+**Representation 2 — Equation:**
+κ_WM ≈ 4 chunks (Cowan 2001 empirical constraint)
+L_total = L_I + L_E + L_G
+Constraint: L_total ≤ κ_WM (must hold or learning is impaired)
+Strategy S* minimizes: L_E + α·L_G(non-schema) subject to schema_depth increasing
+Dual coding: κ_effective = κ_PL + κ_VS (when content is dual-codable)
+Automatization: L_I(sub-skill) → 0 as practice trials → ∞ (power law of practice)
+
+**Representation 3 — Procedural:**
+For a given learning task T:
+1. Measure L_I: count number of interacting elements (item count before any chunking).
+2. Identify L_E sources: separated diagrams and text; redundant information; unclear organization.
+3. Reduce L_E: integrate text into diagrams; remove redundancy; sequence prerequisite skills.
+4. Check if L_I + L_E ≤ κ_WM. If not: split task into simpler sub-goals; provide worked examples.
+5. Exploit dual coding: convert purely verbal content to verbal+visual where possible.
+6. Build automatization: spaced retrieval practice on sub-skills until response time < 2s (automaticity criterion).
+7. Adapt to learner expertise: monitor for expertise reversal (high-prior-knowledge learners → remove scaffolding).
+
+</renderings>
+
+<constructive_specification>
+
+## Constructive specification
+
+**Spec:** An agent that (a) assigns a learner a task with measurable element interactivity L_I, (b) implements two instructional conditions (high-extraneous vs. low-extraneous), (c) measures learning outcomes and WM recall scores after identical practice, and (d) demonstrates L_E(high) > L_E(low) → outcome(high) < outcome(low) at equal L_I, constitutes a demonstration of the WM bottleneck → learning strategy link.
+
+**Minimal-model check:** Can condition (d) be simplified? A within-subjects design with only the dual-coding intervention (adding images to text) at fixed L_I provides the minimum adequate test. The broader L_E manipulation is not eliminable — L_I must be held constant or the test is confounded. Minimal model: single-factor L_E manipulation at fixed L_I, with WM span as covariate.
+
+</constructive_specification>
+
+<flagged_vagueness>
+
+## Flagged vague claims
+
+**[VAGUE]** "working memory capacity"
+Reason: Used in two senses: (a) architectural slot count (κ ≈ 4), a stable individual property; (b) available capacity at a given moment, which varies with fatigue, anxiety, and prior task load. At Level 4, the formal version is κ_effective(t) = κ_max - load_from_prior_activity(t), where the second term is rarely operationalized.
+Possible resolution: Specify "nominal capacity" (κ ≈ 4, architectural) vs. "effective capacity" (κ_effective, state-dependent). Most studies use nominal capacity; individual difference studies use effective.
+
+**[VAGUE]** "chunk"
+Reason: "Chunk" has no consensus formal definition — it is defined circularly as whatever can be recalled as a single unit. At Level 4, there is no predicate that determines whether two elements are one chunk vs. two.
+Possible resolution: Operationalize via recall latency (items recalled in <500ms burst = same chunk) or via transfer error patterns (grouping errors between items → same chunk).
+
+</flagged_vagueness>
+
+<forward_chain>
+
+## Forward-chain consequence tree
+
+Root: L_total = L_I + L_E + L_G ≤ κ_WM ≈ 4 chunks; strategies reduce L_E or redistribute load across parallel channels.
+
+```
+Branch A — When L_I alone exceeds κ_WM (highly complex task, many interacting elements):
+  A.1: Even with L_E=0 and L_G=0, task cannot be processed without error/forgetting
+    A.1.1: Prerequisite decomposition required — break task into sub-skills with lower individual L_I
+    A.1.2: Worked examples reduce L_I by providing solution structure as external memory
+  A.2: Schema formation cannot begin until L_I sub-skills are handled
+    A.2.1: Learning sequence must proceed from simple to complex (merrill's first principles)
+    [CONTRADICTION] A.2.1 vs. desirable difficulty: complex tasks sometimes benefit from early interleaving — resolution: interleaving increases L_G but reduces eventual L_I via forced retrieval; optimal only after basic schemas formed
+
+Branch B — When dual coding is applied (visual + verbal for same content):
+  B.1: κ_effective doubles for dual-coded content (PL and VS channels parallel)
+    B.1.1: Modality effect — spoken + visual beats text + visual (text loads PL and VS; speech loads PL, image loads VS)
+    B.1.2: Redundancy effect — spoken text + same written text increases L_E not decreases it (same channel overloaded)
+    [DEGENERATE] B.1.2: Redundancy effect reverses dual-coding benefit — degenerate case where "dual" means same channel twice
+  B.2: Content must be structurally mappable across modalities for dual coding to work
+    B.2.1: Abstract relationships (proofs, logical chains) resist visual encoding → dual coding benefit limited for pure abstraction
+
+Branch C — When automatization occurs (spaced practice to asymptote):
+  C.1: Sub-skill L_I contribution → ~0 (LTM procedural encoding)
+    C.1.1: WM κ freed for higher-order processing at same task
+    C.1.2: Expertise reversal effect emerges — formerly helpful scaffolding now adds L_E (redundant with LTM content)
+  C.2: Power law of practice: response time RT = a·N^(-b) — automaticity measurable as performance asymptote
+    C.2.1: Individual b exponents vary with WM span — higher WM span → faster automatization
+    C.2.2: Domain-specific automatization; does not transfer across unrelated tasks (limited WM training transfer evidence)
+
+Branch D — When L_E is reduced (split-attention fix, worked examples):
+  D.1: Freed capacity re-allocated to L_G (schema formation)
+    D.1.1: Learning rate increases for novices
+    D.1.2: Beyond expertise transition: L_E reduction provides no benefit (expert already processes content as schema)
+  D.2: Redundancy effect: over-reduction of L_E (removing all challenge) can reduce L_G
+    D.2.1: Minimum viable L_E may exist below which germane load fails to engage schema elaboration
+
+Branch E — Individual differences in κ_WM:
+  E.1: High-WM learners tolerate higher L_total before overflow
+    E.1.1: High-WM learners benefit less from scaffolding; may be hindered by it (expertise reversal analog)
+    E.1.2: Same instructional design produces different outcomes by WM span — adaptive design is required
+  E.2: Anxiety reduces κ_effective (Eysenck attentional control theory)
+    E.2.1: Test anxiety → lower κ_effective → higher failure rate at same nominal L_total → vicious cycle
+    E.2.2: Desirable difficulties become undesirable difficulties for high-anxiety learners at critical threshold
+
+Branch F — When learning occurs across sessions (spaced repetition):
+  F.1: Between-session consolidation moves WM trace to LTM (sleep consolidation)
+    F.1.1: Items rehearsed at WM → encoded in LTM → next session begins with lower L_I
+    F.1.2: Spacing interval = optimal interval at which trace has weakened but not disappeared (Ebbinghaus curve)
+  F.2: Forgetting between sessions is adaptive — reloading weakened trace is the mechanism of LTR
+    F.2.1: Massed practice avoids forgetting but avoids the strengthening mechanism → fragile memory
+    F.2.2: Interleaving forces reloading across topics within session — same mechanism at short timescale
+
+Branch G — Expert instructional design (CLT application):
+  G.1: Split-attention fix: integrate text and diagram spatially → reduces L_E by eliminating eye-movement overhead
+    G.1.1: Reduces referential load (must-hold-text-in-mind-while-looking-at-diagram)
+    G.1.2: No benefit if content is purely verbal (no diagram to integrate)
+  G.2: Worked examples → completion problems → full problems (fading technique)
+    G.2.1: Fading reduces L_E progressively as schema depth grows
+    G.2.2: Fading rate must track schema formation rate — too fast → L_total overflow; too slow → expertise reversal
+
+Branch H — Metacognition as load monitor:
+  H.1: Metacognitive awareness of WM saturation allows proactive strategy switching
+    H.1.1: Learner switches from elaboration to schema recall when sensing overload
+    H.1.2: Metacognitive skill itself occupies WM — novices cannot afford the overhead
+  H.2: Metacognitive monitoring is teachable (Schraw et al., Butler & Winne)
+    H.2.1: Explicit metacognitive instruction improves learning outcomes but requires initial scaffolding to offset H.1.2 overhead
+
+Branch I — Transfer of learning:
+  I.1: Near transfer: same task, different surface features → high transfer via schema
+    I.1.1: Transfer proportional to schema abstraction level (higher abstraction → wider transfer)
+    I.1.2: WM load during encoding predicts transfer — low WM load → richer LTM encoding → more transfer
+  I.2: Far transfer: structurally different task domain
+    I.2.1: Far transfer requires schema abstraction + explicit analogical comparison — cannot be achieved via drill alone
+    I.2.2: Analogical comparison during learning increases WM load temporarily but produces higher transfer (Gentner)
+
+Branch J — Technology-mediated learning:
+  J.1: Adaptive learning systems can reduce L_E dynamically by tracking learner performance
+    J.1.1: Granularity of adaptation determines benefit — concept-level vs. item-level tracking
+    J.1.2: Excessive adaptive scaffolding may induce learned helplessness (removes all L_G challenge)
+  J.2: Multimedia learning environments can induce split-attention if interface design is poor
+    J.2.1: Interaction adds cognitive load (navigation overhead) before content load — design must budget for interface L_E
+```
+
+## Flags Summary
+
+[CONTRADICTION] Branch A.2.1 vs. desirable difficulty (A.2): early interleaving appears to conflict with prerequisite sequencing; resolved by learning phase (novice: sequenced; intermediate: interleaved).
+[DEGENERATE] Branch B.1.2: redundancy effect degenerates the dual-coding benefit when both channels carry identical content.
+
+## Tree Statistics
+
+Branches: 10 (A–J) | Flags: 1 contradiction (resolvable), 1 degenerate | Depth: 3–4
+
+</forward_chain>
+
+</precision_forcing>
+
+---
+
+## SIGNAL OUTPUT
+
+Emits: precision_digest (5–15 lines)
+
+```
+key_findings:
+  - Formal model: L_total = L_I + L_E + L_G ≤ κ_WM ≈ 4 chunks; all effective strategies reduce L_E or exploit parallel channels
+  - Three bottleneck types mapped to strategies: (1) item-count → chunking/schema; (2) temporal decay → rehearsal/spaced repetition; (3) executive capacity → dual coding/load reduction
+  - Dual coding: κ_effective = κ_PL + κ_VS when content is structurally dual-codable; redundancy effect is the failure mode
+  - Automatization: L_I(sub-skill) → 0 via power law of practice; expertise reversal emerges as threshold crossed
+  - Two vague claims flagged: "working memory capacity" (nominal vs. effective); "chunk" (no consensus formal definition)
+  - Key contradiction: desirable difficulty vs. prerequisite sequencing — resolved by learning phase (novice: scaffold; intermediate+: challenge)
+  - Metacognition occupies WM — novices cannot afford it; scaffolded metacognitive training required for novices
+  - Individual differences (WM span, anxiety) → adaptive instructional design is required; single strategy is suboptimal
+  - Constructive spec: measure L_I (element interactivity count), manipulate L_E (design conditions), measure outcomes — minimum adequate single-factor test
+named_entities:
+  - cognitive load theory, intrinsic load L_I, extraneous load L_E, germane load L_G, κ_WM≈4, phonological loop, visuospatial sketchpad, dual coding, automatization, expertise reversal, desirable difficulty
+confidence_flags: [H, H, H, H, H, H, H, H, H]
+signal_flags: []
+```]]></precision_forcing>
+  <falsification><![CDATA[# N6 — Falsification (ADVERSARIAL)
+## Executed: 2026-04-24 | Scale: STANDARD | Hat: Popper+Millikan
+## scale_gate: STANDARD
+
+<falsification>
+
+<inference_modes>
+
+<abductive>
+
+## Abductive mode results
+
+**Anomaly identified (Step A1):**
+The most surprising element: despite working memory being a fixed 3–4 chunk architectural constraint, skilled learners demonstrably handle far more complexity than that limit would predict — yet the limit never changes. If the ceiling is real, why does expertise appear to transcend it without raising it?
+
+**Candidate explanations generated (Step A2):**
+
+**H-1 — Chunking is the primary mechanism (Chunk-Compression Hypothesis)**
+IF hierarchical compression of primitives into higher-order chunks is the dominant mechanism, THEN complexity growth in expertise is explained without violating the slot ceiling. The anomaly resolves: the ceiling holds, but slot contents are denser.
+- Parsimony: 0.90 (single mechanism, already empirically established)
+- Explanatory power: 0.80 (explains expert–novice gap; less clear on why chunking forms at the rate it does)
+- Uberty: 0.65 (also explains language comprehension, musical reading, pattern recognition)
+- Testability: High — falsification condition: if experts' recall from brief exposure is NOT superior to novices when controlling for familiarity (random chess boards vs. game positions), the chunking account fails. (De Groot 1946 already tested; Ericsson replications exist.)
+
+**H-2 — LTM-as-WM Extension (Ericsson & Kintsch Long-Term WM Hypothesis)**
+IF expert performance operates by building retrieval structures in LTM that can be accessed as if they were in WM (via retrieval cues held in the small WM buffer), THEN experts effectively extend their WM without increasing chunk count. The anomaly: the "4 slots" are real, but they contain cue pointers to large LTM structures, not raw information.
+- Parsimony: 0.70 (introduces new construct: LT-WM retrieval structure)
+- Explanatory power: 0.85 (explains expert behavior in chess, text recall, medical diagnosis)
+- Uberty: 0.75 (extends to all deliberate practice domains)
+- Testability: High — falsification condition: if degrading LTM access (e.g., interference task during expert recall) collapses expert performance to novice level, LT-WM hypothesis is supported; if it does not, chunking-only account survives.
+
+**H-3 — Central Executive Efficiency Hypothesis**
+IF training does not increase slot count but does improve executive routing efficiency (faster schema selection, reduced attentional switching cost), THEN experts appear to handle more because the executive operates faster on the same 4 slots, not because they have more slots.
+- Parsimony: 0.75 (single efficiency parameter)
+- Explanatory power: 0.60 (explains speed differences; harder to explain the qualitative structure of expert recall)
+- Uberty: 0.55 (applies to dual-task performance, attentional control training)
+- Testability: Medium — falsification condition: if reaction time in executive control tasks does NOT decrease with expertise in a domain, the efficiency account is undermined.
+
+**H-4 — Embodied/Environmental Scaffolding Offload**
+IF experts routinely offload WM content to the environment (notes, gesture, workspace organization, external representations), THEN what looks like expanded WM is actually a human-environment cognitive system. The individual WM limit is unchanged; effective capacity scales with scaffolding.
+- Parsimony: 0.65 (requires external-scaffold variable)
+- Explanatory power: 0.55 (explains laboratory-naturalistic discrepancy; less useful in controlled recall tasks)
+- Uberty: 0.50 (applies broadly in distributed cognition literature)
+- Testability: High — falsification condition: if expert advantage disappears when all external aids are removed (clean-desk experiment), the scaffolding account is supported; if the advantage persists, it fails.
+
+**H-5 — Attentional Filtering Sharpening**
+IF expertise sharpens early attentional filtering so irrelevant items never enter WM (they are inhibited before encoding), THEN the effective load is lower for experts on equivalent tasks — not because they have more capacity, but because they load less.
+- Parsimony: 0.80 (attentional selection mechanism)
+- Explanatory power: 0.65 (explains faster encoding; harder to explain the hierarchical structure of expert chunk recall)
+- Uberty: 0.60 (applies to perceptual expertise in radiology, chess, music reading)
+- Testability: Medium — falsification condition: if experts show equivalent early neural load markers (N2pc, MMN amplitude) to novices on domain-relevant stimuli, filtering sharpening is undermined.
+
+**Step A4 — Top 3 ranked by combined score:**
+
+| Hypothesis | Parsimony | Explan. | Uberty | Test. | Combined |
+|---|---|---|---|---|---|
+| H-2 (LT-WM Extension) | 0.70 | 0.85 | 0.75 | High | **2.30** |
+| H-1 (Chunk-Compression) | 0.90 | 0.80 | 0.65 | High | **2.35** |
+| H-3 (Executive Efficiency) | 0.75 | 0.60 | 0.55 | Med | **1.90** |
+| H-5 (Attentional Filtering) | 0.80 | 0.65 | 0.60 | Med | **2.05** |
+
+H-4 — combined score: 0.65+0.55+0.50 = **1.70** — below development threshold.
+`H-4 — Environmental Scaffolding Offload: combined score 1.70 — below development threshold, reasoning used for consolidation only.`
+
+**Top 3 abductive candidates:**
+1. **H-1 — Chunk-Compression** | combined: 2.35 | falsification: novice/expert parity on random (non-chunked) stimuli
+2. **H-2 — LT-WM Extension** | combined: 2.30 | falsification: LTM interference collapses expert advantage
+3. **H-5 — Attentional Filtering** | combined: 2.05 | falsification: equivalent early neural load in experts and novices
+
+</abductive>
+
+<deductive>
+
+## Deductive mode results
+
+**Step D1 — Premises from N1 irreducibles (serving as the deductive base; N5 not used per module note):**
+
+- P1: WM item capacity ≈ 3–4 meaningful chunks (Cowan 2001, empirical)
+- P2: Phonological loop decays in ~2 seconds without rehearsal (Baddeley 1974)
+- P3: Central executive has limited capacity for attentional control; cannot fully multi-process
+- P4: Chunking compresses multiple primitives into one chunk — circumvents item count, does not remove the limit
+- P5: Extraneous cognitive load competes with germane load (Sweller CLT)
+- P6: Dual coding exploits channel independence; loading verbal and visuospatial simultaneously partially doubles effective capacity
+- P7: Automatization offloads procedural sub-skills from WM to LTM via spaced repetition
+- P8: WM span is a stable individual-differences predictor of fluid intelligence
+
+**Step D2 — Derive consequences:**
+
+*Inference D-A:* P1 + P4 →
+Premise: Total slot count is fixed at ~4. Premise: Chunking fills slots with higher-order units.
+Therefore: **The maximum number of manageable primitives scales with chunk hierarchy depth, not with slot count.** Validity: valid (transitivity).
+→ Consequence: Novice-to-expert progression should be characterized by increased chunk hierarchy depth, not by anything else.
+
+*Inference D-B:* P3 + P5 →
+Premise: Central executive capacity is limited. Premise: Extraneous load competes with germane load.
+Therefore: **Any instructional design that adds extraneous load to a task at the central-executive level will reduce learning, not improve it.** Validity: valid (modus ponens from "competing for same resource").
+→ Consequence: Worked examples should outperform problem-solving during initial learning (reduced extraneous load = more germane capacity).
+
+*Inference D-C:* P7 + P1 →
+Premise: Automatization offloads sub-skills to LTM. Premise: Capacity is ~4 chunks.
+Therefore: **Spaced repetition's benefit is specifically mediated by freeing WM capacity, not by any direct encoding benefit.**
+→ Consequence: Spaced practice should produce a measurable reduction in concurrent WM task performance degradation (i.e., dual-task cost should decrease with automatization). 
+[Test: YES — well-supported in motor learning; PARTIAL in declarative learning]
+
+*Inference D-D:* P6 + P1 →
+Premise: Dual coding uses independent channels. Premise: Total WM is ~4 chunks (per modality independently).
+Therefore: **Dual-coded instruction has a ceiling: if both channels are separately overloaded, dual coding provides no benefit or harm.**
+→ Consequence: Multimedia that separately overloads both verbal and visuospatial channels should produce worse outcomes than single-channel instruction.
+[Test: YES — split-attention and modality effects confirm this; matches CTML predictions]
+
+*Inference D-E:* P8 + P5 →
+Premise: WM span predicts learning outcomes. Premise: Extraneous load competes with germane.
+Therefore: **Low-WM-span learners should benefit MORE from extraneous load reduction than high-span learners.**
+→ Consequence: Instructional interventions that reduce extraneous load should show differential benefit (interaction effect: low-span × reduced-load > high-span × reduced-load).
+[Test: YES — empirically confirmed in several CLT studies; validity: HIGH]
+
+**Step D3 — Consequence testing:**
+- D-A: Holds (chess expertise research supports hierarchy depth as primary change)
+- D-B: Holds at initial learning; FAILS for experts (expertise reversal: worked examples become harmful)
+- D-C: Partial — holds in procedural/motor domain; evidence weaker in purely declarative domains
+- D-D: Holds (confirmed by multimedia learning research)
+- D-E: Holds (confirmed, high-span learners less sensitive to extraneous load manipulations)
+
+**Step D4 — Flagged premises and alternative hypotheses from failures:**
+
+*D-B failure for experts:* P5 ("extraneous load competes with germane") may be **incomplete as stated** — it assumes extraneous load is always harmful. The failure at expertise level implies:
+→ **Alternative D-1:** The premise P5 should be restricted to the condition "novice learner, undeveloped schema." For experts, the same design element that was extraneous becomes redundant and triggers a different cost (redundancy effect). P5 is domain-valid but learner-state-dependent.
+
+*D-C partial failure in declarative domain:* P7 ("automatization frees WM") may over-generalize — in declarative knowledge, the "offloading" mechanism is retrieval-based rather than procedural, and the WM-freeing effect may be weaker.
+→ **Alternative D-2:** Automatization's WM-freeing mechanism operates primarily in procedural/skill domains. In declarative domains, spaced repetition benefits may operate through a different mechanism (consolidation during sleep, not WM-freeing at time of learning).
+
+**Alternative hypotheses from deductive mode:**
+- D-1: CLT's extraneous load principle is learner-state-dependent — harmful for novices, sign-reversed for experts
+- D-2: Automatization's WM benefit is domain-type-specific (procedural > declarative)
+
+</deductive>
+
+<inductive>
+
+## Inductive mode results
+
+**Step I1 — Observed instances from N1 and N3:**
+
+I1a: Chess masters (de Groot 1946) recall full game positions after 5s exposure; fail on random boards.
+I1b: Arithmetic fluency — single-digit addition becomes procedural; adult WM freed for algebra.
+I1c: Reading comprehension — beginning readers load WM with decoding; fluent readers decode automatically, freeing WM for meaning-making.
+I1d: Medical diagnosis (radiology) — expert radiologists encode disease patterns as single perceptual chunks.
+I1e: Musical sight-reading — expert musicians process multi-note phrases as single rhythmic gestures.
+I1f: Basketball plays — team tactics stored as named schemas by experienced players.
+I1g: Language production — novice L2 speakers occupy WM with grammar rules; fluent speakers speak automatically.
+I1h: Anxiety during math tests depletes WM capacity (Ashcraft & Kirk 2001 pattern).
+I1i: Worked examples reduce WM load for novices; become redundant/harmful for experts.
+I1j: Desirable difficulties (interleaving) worsen short-term performance but improve long-term retention.
+
+*10 instances. Induction proceeds.*
+
+**Step I2 — Generalizations:**
+
+**G1 — Domain-specific automatization is universal across expertise acquisition**
+"Across all observed instances of expertise (chess, arithmetic, reading, radiology, music, basketball, language), the pattern 'bottleneck-critical sub-skills become automatic' appears because repeated retrieval re-encodes procedural sequences as LTM schemas, continuously freeing WM."
+→ Extension beyond instances: this should hold in any domain where sub-skills can be decomposed and practiced in isolation.
+
+**G2 — The WM bottleneck is always present; expertise changes information density per slot, not slot count**
+"Across all observed instances, experts show superior recall on structured (meaningful) stimuli but not on random stimuli — consistently. The pattern appears because chunking exploits domain regularities, and random stimuli provide no chunking opportunities."
+→ Extension: expertise advantage should collapse whenever domain regularities are removed (random stimuli, novel domains).
+
+**G3 — Optimal learning strategy is a function of learner schema state, not of task difficulty alone**
+"Across all observed instances where strategy effectiveness was measured at multiple learner levels (worked examples vs. problem solving, spaced vs. massed practice, scaffolded vs. desirable difficulty), the pattern 'optimal strategy inverts as schema density increases' appears because the bottleneck changes in character — for novices it is slot count; for experts it is redundancy tolerance."
+→ Extension: any one-size-fits-all instructional design will be suboptimal for at least one learner population.
+
+**G4 — Emotional states (anxiety) that compete for central executive resources reduce effective WM capacity**
+"In instances involving anxiety (math anxiety, test anxiety), WM available for task processing decreases. The pattern appears because anxiety-related intrusive thoughts occupy central executive resources, leaving fewer attentional resources for task."
+→ Extension: any sufficiently demanding concurrent cognitive task should replicate the anxiety effect (cognitive competition, not emotion-specific).
+
+**Step I3 — Boundary case testing:**
+
+*G1 boundary test:* "Domain-specific automatization is universal" — boundary case: creative domains where variability is rewarded (jazz improvisation, creative writing). Does the automatization of sub-skills produce the same WM-freeing effect when top-level processing ALSO requires novelty?
+→ Result: G1 holds for sub-skills (harmonic patterns, grammar), but the top-level creative generation may require deliberately maintaining WM-intensive search. **G1: ROBUST for sub-skill layer; LIMITED TO sub-skill layer in high-creativity domains.**
+
+*G2 boundary test:* "Expertise advantage collapses on random stimuli" — boundary case: experts with strong perceptual discrimination skills who may have developed domain-general chunking meta-skills.
+→ Result: Literature supports G2 (de Groot random board replication; Chase & Simon 1973). The collapse on random stimuli is documented. **G2: ROBUST.**
+
+*G3 boundary test:* "Optimal strategy inverts as schema density increases" — boundary case: a domain with extremely low regularity (e.g., pure memorization of random lists). No schemas possible; does the expertise reversal still occur?
+→ Result: If there is no schema to form, the worked-examples/guided-discovery inversion cannot occur because there is no expertise state to reverse into. G3 requires that the domain permit schema formation. **G3: LIMITED TO schema-formable domains.**
+
+*G4 boundary test:* "Emotional competition is equivalent to cognitive competition" — boundary case: high-WM-span individuals under anxiety. Do high-span individuals buffer the anxiety effect?
+→ Result: Evidence is mixed. Some studies show high-span individuals suffer more from anxiety (they typically rely on WM more than low-span individuals who may use non-WM strategies by default). **G4: LIMITED TO — effect may be paradoxically stronger in high-span learners.**
+
+**Step I4 — Alternative hypotheses from failed/limited generalizations:**
+
+From G1 limitation:
+→ **Alternative I-1:** In high-creativity/open-ended domains, automatization of sub-skills is necessary but not sufficient for expert performance — the bottleneck may deliberately NOT be reduced at the generative level. Implication: instructional models that aim to minimize all WM load may inadvertently suppress creative processing.
+
+From G3 limitation:
+→ **Alternative I-2:** The expertise-reversal effect is domain-type-dependent: it requires that the domain have learnable regularities (schema-formable). In low-regularity domains, the novice-to-expert progression follows a different curve — not the inverted-strategy model but a sustained high-load acquisition model.
+
+From G4 limitation:
+→ **Alternative I-3:** Anxiety–WM interactions are moderated by WM span in a non-intuitive direction: high-span learners may be MORE vulnerable to anxiety degradation of performance because they have more to lose when executive resources are competed for. One-size-fits-all anxiety reduction interventions may be less effective for high-span learners than expected.
+
+</inductive>
+
+</inference_modes>
+
+<consolidated_hypotheses>
+
+## Consolidated hypotheses
+
+**Step C1 — All candidates collected:**
+- Abductive: H-1 (Chunk-Compression), H-2 (LT-WM Extension), H-3 (Executive Efficiency), H-5 (Attentional Filtering), H-4 (Environmental Scaffolding — below threshold)
+- Deductive: D-1 (CLT extraneous-load principle is learner-state-dependent), D-2 (Automatization WM benefit is domain-type-specific — procedural > declarative)
+- Inductive: I-1 (Automatization insufficient in high-creativity domains), I-2 (Expertise-reversal limited to schema-formable domains), I-3 (High-span learners more vulnerable to anxiety degradation)
+
+**Step C2 — Deduplication and merging:**
+- H-1 (Chunk-Compression) + abductive framing of G2 (expertise advantage on structured stimuli): structurally equivalent — merge as **CA-1**.
+- D-1 (CLT principle is learner-state-dependent) + G3 (inductive expertise-reversal scope) + H-2 partial overlap: D-1 and G3 share the "strategy inversion at schema formation" claim — merge as **CA-2**.
+- D-2 (Automatization domain-specific) + I-1 (insufficient in creativity domains): both restrict automatization's WM benefit to a domain type — merge as **CA-3**.
+- H-2 (LT-WM Extension) is distinct from CA-1 — it proposes a positive mechanism (LTM retrieval structures) not just compression. Retain as **CA-4**.
+- H-5 (Attentional Filtering) is not reducible to any of above — retain as **CA-5**.
+- I-3 (High-span anxiety vulnerability) is independent — retain as **CA-6**.
+
+**Step C3 — Cross-mode validation:**
+
+| Candidate | A | D | I | Supporting modes |
+|---|---|---|---|---|
+| CA-1: Chunking as primary mechanism | YES (H-1) | YES (D-A consequence) | YES (G2 robust) | **3 modes** |
+| CA-2: CLT extraneous-load principle is learner-state-dependent | YES (expertise-reversal touches H-2) | YES (D-1 direct) | YES (G3 direct) | **3 modes** |
+| CA-3: Automatization WM benefit is domain-type-specific | YES (implies LT-WM) | YES (D-2 direct) | YES (I-1 + G1 limitation) | **3 modes** |
+| CA-4: LT-WM Extension (Ericsson-Kintsch) | YES (H-2 direct) | INDIRECT (D-A) | PARTIAL (G1) | **2 modes** |
+| CA-5: Attentional Filtering Sharpening | YES (H-5 direct) | NO | PARTIAL (G2: random stimuli) | **1.5 modes** |
+| CA-6: High-span anxiety vulnerability | NO | NO | YES (I-3 direct) | **1 mode** |
+
+**Step C4 — NLI confidence scores:**
+
+- CA-1: 0.85 — highest support; three independent modes; empirically grounded
+- CA-2: 0.82 — three modes; empirically supported (expertise reversal literature)
+- CA-3: 0.72 — three modes; some empirical support (motor vs. declarative automatization gap)
+- CA-4: 0.65 — two modes; empirically proposed (Ericsson & Kintsch 1995) but contested
+- CA-5: 0.50 — single primary mode; plausible but less-tested mechanism
+- CA-6: 0.48 — single inductive mode; some empirical support but surprising prediction
+
+**Step C5/C6 — Final ranked alternative hypotheses (≥3):**
+
+1. **CA-1 — Chunk-Compression as primary expertise mechanism** | confidence: 0.85 | modes: A+D+I | falsification: expert advantage should disappear on random stimuli with no domain-regular structure; random-board experiments are the critical test
+2. **CA-2 — CLT extraneous-load principle is learner-state-dependent** | confidence: 0.82 | modes: A+D+I | falsification: if extraneous-load reduction helps experts as much as novices, the state-dependence claim fails
+3. **CA-3 — Automatization WM benefit is domain-type-specific (procedural >> declarative)** | confidence: 0.72 | modes: A+D+I | falsification: if declarative spaced repetition produces equivalent dual-task cost reduction to motor learning, domain-specificity claim is undermined
+4. **CA-4 — LT-WM Extension via LTM retrieval structures** | confidence: 0.65 | modes: A+D (indirect) | falsification: LTM interference task during expert recall should collapse expert advantage if LT-WM hypothesis is correct; if advantage persists, hypothesis fails
+5. **CA-5 — Attentional Filtering Sharpening** | confidence: 0.50 | modes: A+(partial I) | falsification: experts should show reduced early neural load markers (N2pc, MMN) on domain-relevant stimuli vs. novices
+
+*6 distinct alternatives. Count ≥ 3 satisfied. S6_no_alternatives NOT raised.*
+
+</consolidated_hypotheses>
+
+<extreme_scenarios>
+
+## Extreme scenarios
+
+**Primary conclusion under test:** The core conclusion from N1+N3 is: "WM bottlenecks (3–4 chunks, phonological decay, central executive limits) directly shape learning strategies via CLT, and strategies like chunking, automatization, dual coding, and metacognition succeed precisely because they address specific bottleneck constraints."
+
+**Checklist 1 applied — 8 boundary regimes:**
+
+| Regime | Scenario | Claim behavior | What failure reveals |
+|---|---|---|---|
+| **Parameter → 0: WM capacity → 0** | Pathological case: learner with ~0 effective WM (severe WM impairment, e.g., severe ADHD, Alzheimer's onset) | Claim still holds — all WM-based strategies fail; external scaffolding becomes the only viable approach | Reveals: the bottleneck framework only provides a floor, not a ceiling; below some threshold, the framework predicts failure but prescribes nothing actionable without environmental scaffolding |
+| **Parameter → ∞: WM capacity → very large** | Hypothetical: eidetic-memory individual with ~40-chunk effective WM | Claim degenerates — strategy prescriptions (chunking, minimize extraneous load) lose urgency; desirable difficulties would still produce LTR benefit through retrieval mechanisms independent of WM constraint | Reveals: CLT-derived prescriptions are bottleneck-dependent; for high-WM individuals, the framework's utility collapses to the retrieval-practice prediction only |
+| **Population → 1: single learner** | A single learner — does the claim hold? | YES — holds trivially; the WM architecture claim is individual-level | N/A — degenerate case that is the intended scope |
+| **Population → ∞: universal instruction** | All human learners simultaneously; universal instructional design | Claim partially fails — individual differences (WM span, anxiety, domain) make no single design optimal; the claim about "strategies shaped by bottlenecks" holds but the prescription becomes underdetermined | Reveals: the framework is a constraint language, not a unique prescription generator |
+| **Time → 0: immediate (single trial, no practice)** | One exposure, no repetition — do bottleneck constraints apply? | YES — but only the encoding bottleneck (item count, phonological decay). The automatization and spaced-repetition prescriptions are inoperative. Dual coding still applies. | Reveals: the framework has two distinct timescale regimes: (1) encoding (immediate, WM constraints apply directly) and (2) consolidation (session/week, LTM mechanisms dominate). Only encoding-phase prescriptions hold at Time → 0 |
+| **Time → ∞: asymptotic expertise** | A learner who has practiced for 10,000 hours in a domain | Claim partially inverts — at extreme expertise, the bottleneck-routing through WM is largely bypassed (near-total automatization); the framework's prescriptions (reduce extraneous load, minimize split attention) become irrelevant or harmful (redundancy effect) | Reveals: the claim's validity envelope is bounded to the acquisition phase; it does not describe expert performance in the limit |
+| **Adversarial: designer with perfect knowledge actively maximizes extraneous load** | Adversarial instructional design: maximize distractors, split attention, redundancy | Claim holds and predicts catastrophic failure — maximum extraneous load should produce near-zero learning | This boundary case is not adversarial to the claim — it confirms it. The real adversarial test is: can you teach effectively despite high extraneous load by training learners to filter it (attentional filtering)? That's NOT predicted by CLT |
+| **Random/noisy: inputs are random noise** | Learner presented with purely random stimuli (random digit strings, incoherent sentences) | Claim partially holds: phonological decay and item count constraints still apply. BUT chunking strategy FAILS entirely (no regularities to chunk). Schema formation FAILS. Automatization FAILS to produce useful units. Metacognition cannot regulate load productively. | Reveals: all regularities-exploiting strategies (chunking, schema, automatization) are parasitic on domain structure; in structureless domains, the entire CLT prescription collapses to "keep load below 4 items and use dual coding" |
+
+**Boundary regime summary:**
+- Claim ROBUST in normal parameter range
+- Claim DEGENERATES at WM → 0 (strategy list reduces to environmental scaffold only)
+- Claim LOSES PRESCRIPTIVE POWER at WM → ∞ and Time → ∞ (expertise ceiling)
+- Claim has a HIDDEN DOMAIN-REGULARITY ASSUMPTION: structureless domains invalidate the most powerful prescriptions (chunking, schema, automatization)
+- The framework contains two implicit time-regime components that are usually conflated: encoding bottleneck (immediate) vs. consolidation benefit (long-horizon). These should be treated as separate claim classes.
+
+</extreme_scenarios>
+
+<millikan_assessment>
+
+## Millikan assessment
+
+**Primary conclusion:** CLT/WM bottleneck theory and its associated learning strategies (chunking, dual coding, spaced repetition, metacognition, desirable difficulty) are well-founded, and the bottleneck framework causally explains strategy effectiveness.
+
+---
+
+**[MILLIKAN] CA-2 — CLT extraneous-load principle is learner-state-dependent:**
+- Effort to refute: LOW — expertise reversal is a well-documented empirical phenomenon; it directly challenges the unconditional CLT extraneous-load claim with real data.
+- Effort to support primary (unconditional CLT): MEDIUM — the primary account must add the caveat "for novices" to survive.
+- Asymmetry: YES — refuting CA-2 (i.e., defending unconditional CLT) requires more argumentative work than accepting CA-2.
+- Additional counter-evidence to seek: Are there conditions where the expertise reversal effect itself reverses? (i.e., very high domain complexity where even experts benefit from guided instruction?)
+- **Millikan flag: the original CLT account is biased toward novice learner data; expertise-reversal evidence is under-weighted in popular presentations of CLT.**
+
+**[MILLIKAN] CA-3 — Automatization WM benefit is domain-type-specific:**
+- Effort to refute: MEDIUM — the declarative domain evidence is weaker, but some spaced-repetition WM-freeing evidence exists in vocabulary learning.
+- Effort to support primary (universal automatization): MEDIUM
+- Asymmetry: SLIGHT YES — the primary account treats automatization as universally WM-freeing; the domain-specificity challenge requires the primary account to search for declarative-domain WM-freeing evidence that it has not systematically collected.
+- Additional counter-evidence to seek: Does vocabulary spaced repetition produce measurable dual-task interference reduction? If YES, CA-3 is undermined.
+
+**[MILLIKAN] CA-4 — LT-WM Extension (Ericsson-Kintsch):**
+- Effort to refute: HIGH — LT-WM is a full competing theory with its own empirical program (text recall, chess, medical expertise). Refuting it requires engaging with Ericsson & Kintsch (1995) directly.
+- Effort to support primary (chunking-only): MEDIUM
+- Asymmetry: YES (in the other direction) — the reasoning worked HARDER to dismiss LT-WM than it did to establish chunking. This is a Millikan flag in reverse: the primary conclusion may be preferred over LT-WM with insufficient justification.
+- Additional counter-evidence to seek: LT-WM interference experiments; expert performance when LTM access is specifically degraded. Do experts recall better from mid-game positions than the pure chunking account predicts?
+- **Millikan flag: LT-WM is treated as an extension of chunking when it may be a genuinely separate and competing mechanism. Underweighted.**
+
+**[MILLIKAN] CA-6 — High-span anxiety vulnerability paradox:**
+- Effort to refute: LOW — the counter-intuitive direction (high-span MORE vulnerable) is surprising; standard reasoning would quickly dismiss it as "high-span should buffer anxiety."
+- Effort to support primary (high-span buffers anxiety): LOW — this is the assumption, not a tested claim.
+- Asymmetry: YES — the primary assumption (high-span buffers anxiety) was never examined for disconfirming evidence. Dismissing CA-6 requires effort; supporting the standard assumption required no effort at all.
+- Additional counter-evidence to seek: Ashcraft studies; Beilock "choking under pressure" research (explicitly: high-skilled performers choke more under pressure because they rely on WM-mediated control that is anxiety-disrupted).
+- **Millikan flag: the standard assumption (high WM span buffers anxiety) is not empirically secure and is contradicted by "choking under pressure" literature (Beilock 2010).**
+
+**Overall Millikan assessment:**
+Three asymmetries detected (CA-2, CA-4, CA-6). The primary CLT account shows signs of:
+1. Novice-learner data bias (CA-2 underweighted)
+2. LT-WM mechanism underweighted vs. chunking-only
+3. High-span anxiety paradox assumed away rather than tested
+
+These are not fatal to the framework but indicate that the standard presentation of the CLT-derived prescriptions requires three precision qualifications.
+
+</millikan_assessment>
+
+<density_report>
+
+## Density report
+
+**Darwin's golden rule applied — active disconfirming-evidence search:**
+
+**1. Known counter-examples to the primary conclusion:**
+
+CE-1: WM training (N-back) studies — if the WM bottleneck is fixed and strategies work only by routing around it, WM training that genuinely increases capacity would partially falsify the "fixed architectural ceiling" claim. Controversy: Jaeggi et al. (2008) reported WM training transfer to fluid intelligence; subsequent replications largely failed. Counter-evidence is mixed — the ceiling is likely real, but the degree of plasticity is contested.
+
+CE-2: Desirable difficulty paradox — CLT predicts minimizing extraneous load = maximizing learning. Desirable difficulties INCREASE load in the short term yet produce superior LTR. This is internally inconsistent with the simplest reading of CLT unless the "germane load" construct is invoked (which Sweller later distanced from CLT, calling it unfalsifiable in its original form). The desirable difficulty phenomenon is a documented anomaly for CLT.
+
+CE-3: Beilock "choking under pressure" — highly skilled performers (high WM span) show performance degradation under high-pressure conditions. The standard CLT account predicts that higher WM span = better performance under load; choking shows the reverse when attention is explicitly directed to automatized procedures. This is a direct counter-example to the simple WM-span → performance linearity claim.
+
+CE-4: The "activated LTM" account (Ruchkin et al., Jonides et al.) argues that WM is not a separate store but is simply activated portions of LTM. If correct, the "4-slot" model is a metaphor, not a separate architectural subsystem — this would require reframing all CLT prescriptions in terms of activation strength rather than slot count.
+
+CE-5: The curse of the expert — highly chunked schemas can impede flexible learning of new material (Einstellung effect in chess). Expert chunks, once formed, can suppress recognition of novel patterns that do not fit the schema. This directly contradicts "more chunking = always better."
+
+CE-6: Individual variation in phonological loop decay — the ~2s decay is a population average; there is substantial individual variability. Low phonological loop capacity individuals may require different encoding strategies that are not derivable from the average-person WM model.
+
+CE-7: Dual coding limits — Sweller and colleagues have documented the modality effect failure under conditions where both channels are overloaded by complex material simultaneously. If both channels are sufficiently loaded, dual coding harms rather than helps — contradicting the simple "dual coding doubles capacity" framing.
+
+**2. Classes of problem where the primary approach fails:**
+- Random/structureless domains (see extreme scenarios): all regularity-exploiting strategies fail
+- Open-ended creative domains: minimizing WM load may suppress generative diversity
+- Clinical populations (severe ADHD, dementia): CLT prescriptions designed for typical WM fail entirely below some threshold
+- Highly emotional/social learning contexts: CLT is cognitively focused; social motivation, identity threat, and emotional regulation are outside its explanatory scope
+
+**3. Theoretical objections:**
+- Cowan's "focus of attention" model (1 item maximally activated at a time) implies the real bottleneck is more severe than "3–4 chunks" — it is 1 item in the attentional spotlight. CLT's ~4 estimate may overstate available capacity.
+- The activated-LTM theory (Ruchkin 2003) challenges the storage-system ontology underlying WM models — if WM is activation, not storage, then CLT's prescriptions may be correct in practice but theoretically misfounded.
+
+**4. Literature that cuts against:**
+- Germane load concept widely criticized as circular (Sweller 2010 retreat) — if it is defined as "whatever leads to schema formation," it cannot be independently measured and the CLT three-component model loses falsifiability.
+- WM training transfer failure meta-analyses (Melby-Lervåg & Hulme 2013; Melby-Lervåg, Redick, & Hulme 2016) — challenge whether WM capacity is plastic at all; if true, the bottleneck is more rigid than CLT prescriptions imply (strategies become more important, not less).
+
+**5. Weakest link in mechanism:**
+The causal chain from "extraneous load reduced" → "germane load increased" → "schema formation accelerated" is the weakest link. Germane load is not independently measurable; the mechanism by which freed-up WM becomes productive schema formation (rather than mind-wandering or idle rehearsal) is not specified. This leaves a gap between the capacity-freeing intervention and the learning outcome.
+
+**Density report:**
+```
+Disconfirming evidence found: 7+ items
+Counter-examples: CE-1 (WM training controversy), CE-2 (desirable difficulty CLT tension), CE-3 (Beilock choking), CE-4 (activated LTM theory), CE-5 (Einstellung effect), CE-6 (phonological variability), CE-7 (dual coding overload)
+Failure classes: random/structureless domains; clinical populations below WM threshold; creative/open-ended domains; emotional/social learning contexts
+Strongest objection: Germane load is unfalsifiable as originally formulated (Sweller 2010 self-critique), which means CLT's three-component model loses predictive precision at the critical juncture between load reduction and learning gain
+Weakest link in mechanism: extraneous-load reduction → germane load activation → schema formation (the last two steps are not independently measurable and not causally specified)
+Density assessment: HIGH (7+ disconfirming items)
+```
+
+**Cargo-cult scan:**
+- No instances of "one could imagine a case..." without specification found.
+- No instances of "further research needed" used as falsification — each disconfirming item names a specific mechanism, study, or documented effect.
+- CE-4 (activated LTM) flags the ontological assumptions of WM models; this is genuine rather than vague.
+- All boundary cases in extreme scenarios name specific conditions and mechanisms.
+- Cargo-cult scan: **CLEAN.**
+
+</density_report>
+
+</falsification>
+
+---
+
+## SIGNAL OUTPUT
+
+```
+key_findings:
+  - Consolidated 6 distinct alternative hypotheses (CA-1 through CA-6); all 3 inference modes produced alternatives; S6_no_alternatives NOT raised
+  - CA-1 (Chunk-Compression) confidence 0.85: primary mechanism; robust across all 3 inference modes; falsified by random-stimuli parity
+  - CA-2 (CLT extraneous-load is learner-state-dependent) confidence 0.82: expertise reversal directly challenges universal CLT; strategy prescriptions must be conditioned on learner schema state
+  - CA-3 (Automatization WM benefit is domain-type-specific: procedural > declarative) confidence 0.72: inductive G1 + deductive D-2 converge; creative domains require deliberate WM maintenance
+  - CA-4 (LT-WM Extension, Ericsson-Kintsch) confidence 0.65: Millikan flag — underweighted vs. chunking-only; LTM retrieval structures may be mechanism distinct from chunk compression
+  - CA-5 (Attentional Filtering Sharpening) confidence 0.50: experts may load less, not just more efficiently; single-mode support
+  - CA-6 (High-span anxiety vulnerability paradox) confidence 0.48: Beilock choking-under-pressure literature directly confirms; counter-intuitive direction; standard assumption (high-span buffers anxiety) is empirically weak
+  - Extreme scenarios: claim degenerates at WM→0, WM→∞, Time→∞, and structureless domains; hidden domain-regularity assumption identified
+  - Millikan flags: CLT biased toward novice data (CA-2); LT-WM underweighted (CA-4); high-span anxiety assumption untested (CA-6)
+  - Density: HIGH — 7 counter-examples found; weakest link is extraneous→germane→schema causal chain (not independently measurable); germane load criticized as unfalsifiable by Sweller himself
+named_entities:
+  - CA-1 Chunk-Compression, CA-2 learner-state-dependent CLT, CA-3 domain-type-specific automatization, CA-4 LT-WM Ericsson-Kintsch, CA-5 attentional filtering, CA-6 high-span anxiety paradox
+  - Beilock (choking under pressure), Ericsson & Kintsch (1995 LT-WM), Sweller (2010 germane load retreat), Melby-Lervåg et al. (WM training meta-analysis), Ruchkin (activated LTM)
+confidence_flags: [H, H, H, M, M, L]
+signal_flags: []
+```]]></falsification>
+  <conjecture/>
+  <integration><![CDATA[# N7 — Integration & Verification (AGGREGATION)
+## Executed: 2026-04-24 | Scale: STANDARD | Hat: Feynman+Boden
+
+---
+
+<integration>
+
+## Convergence signals
+
+**Nodes run:** N1, N2, N3, N5, N6, N8 (router record only). Total: 5 substantive node outputs.
+
+**Von Neumann pass — reading all prior node outputs before conclusion formation:**
+
+| Node | Key contribution |
+|------|----------------|
+| N1 | 8 irreducibles: WM capacity ≈3–4 chunks, phonological decay ~2s, central executive limit, chunking-as-compression, extraneous load, dual coding, automatization, individual WM span. System model: L_total = L_I + L_E + L_G ≤ κ_WM ≈ 4. |
+| N2 | 5 cross-domain mappings: Information Theory (compression/noise), Fluid Dynamics (laminar/turbulent), Linguistics/Parsing (constituent closure), Acoustics/Resonance (prior schema as resonant cavity), Cache/Memoization (register-file model). Conceptual blend: Resonant Cache = schema pre-construction is simultaneously prefetch AND resonant amplifier. |
+| N3 | Spreading-activation: 8 convergent nodes; top: metacognition (a=0.70), automatization (a=0.56, 3 independent chains), schema (a=0.56). Five illuminations — metacognition as executive control loop; automatization as WM recycler; schema as single-slot compressor; desirable difficulty as productive load; expertise reversal as proof that scaffolding has cost. |
+| N5 | Precision-forced formal model confirmed: L_total = L_I + L_E + L_G ≤ κ_WM ≈ 4; 10 forward-chain branches (A–J); two vague claims flagged ("chunk", "WM capacity"); constructive spec: single-factor L_E manipulation at fixed L_I with WM span covariate. |
+| N6 | Adversarial falsification: 6 alternative hypotheses CA-1–CA-6; density HIGH (7+ counter-examples); weakest link = extraneous→germane→schema causal chain; three Millikan flags (novice-data bias, LT-WM underweighted, high-span anxiety paradox); claim degenerates at WM→0, WM→∞, Time→∞, and structureless domains. |
+
+**Convergence signals — claims appearing independently in ≥2 node outputs:**
+
+| Signal | Nodes | Description |
+|--------|-------|-------------|
+| **CS-1: Fixed architectural ceiling** | N1, N2, N3, N5, N6 | κ_WM ≈ 4 chunks is structural and non-trainable; confirmed by all 5 substantive nodes and by the IT/Shannon analogy (cannot exceed channel capacity by trying harder). |
+| **CS-2: Chunking/schema as item-count bypass** | N1, N2, N3, N5, N6 | Schema formation compresses N primitives → 1 slot; circumvents the count without removing the limit. Confirmed architecturally (N1), cross-domain (N2: compression codec), spreading-activation (N3: single-slot illumination), formal (N5: L_I reduction), and adversarially (N6: CA-1 highest confidence). |
+| **CS-3: Automatization as WM recycler** | N1, N2, N3, N5, N6 | Spaced practice → sub-skill L_I → 0 → slots freed. Confirmed architecturally (N1 irreducible 7), cross-domain (N2: memoization), spreading-activation (N3: WM recycler), formal (N5: Branch C), adversarially (N6: CA-3 with scope limitation). |
+| **CS-4: Learner-state-dependence of optimal strategy** | N1, N3, N5, N6 | Expertise reversal: novice benefits from scaffolding; expert harmed by same scaffold. Present in N1 tensions (T17), N3 Illumination 5, N5 Branch C.1.2 and E.1.1, N6 CA-2 (confidence 0.82, three modes). |
+| **CS-5: Dual-channel independence** | N1, N2, N5, N6 | Phonological loop and visuospatial sketchpad are parallel channels; dual coding exploits both (κ_effective = κ_PL + κ_VS when dual-codable). N1 irreducible 6, N2 CTML mapping, N5 equation + Branch B, N6 Inference D-D (confirmed, with failure mode: redundancy effect). |
+| **CS-6: Domain-regularity assumption** | N2, N5, N6 | Strategies exploiting chunking/schema/automatization presuppose learnable structure in the domain. N2 named constraint (bootstrapping dependency), N5 Branch A.2/G (schema precondition), N6 extreme scenarios (random domain collapses all regularity-exploiting strategies). |
+| **CS-7: Individual-differences + adaptive design required** | N1, N3, N5, N6 | WM span, anxiety, and domain expertise produce non-uniform strategy effectiveness; no single design is optimal. N1 irreducible 8, N3 activation (anxiety_WM_interaction), N5 Branch E, N6 CA-6 + population→∞ scenario. |
+
+**Divergence points:**
+
+| Divergence | Nodes | Nature |
+|------------|-------|--------|
+| **D-1: Mechanism of expert capacity expansion** | N6 CA-1 vs CA-4 | Chunk-compression (CA-1, 0.85) vs. LT-WM retrieval structures (CA-4, 0.65) as distinct mechanisms. Not fully resolved — CA-4 may be additive, not exclusive. |
+| **D-2: Automatization domain-scope** | N1, N5 (universal framing) vs. N6 CA-3 (procedural > declarative) | N1/N5 treat automatization as universal WM-freeing mechanism; N6 flags declarative-domain evidence gap. Limited resolution: scope qualification required. |
+| **D-3: Germane load measurability** | N5 (uses germane load in formal model) vs. N6 (Sweller 2010 retreat) | N5 accepts L_G as a formal quantity; N6 flags that germane load is potentially unfalsifiable. Resolution: retain L_G as a conceptual construct; acknowledge it is not independently operationalizable in practice. |
+
+---
+
+## Primary conclusion
+
+**Primary conclusion statement:**
+
+> Working memory imposes three structurally distinct constraints on learning — a fixed item-count ceiling (κ ≈ 3–4 chunks), a short temporal window (~2s phonological decay), and a processing-bandwidth bottleneck (central executive, finite attentional capacity). These constraints are architectural, non-trainable, and fixed across all learners. All effective learning strategies operate through one or more of exactly three mechanisms: (1) reducing extraneous or intrinsic load to keep L_total ≤ κ_WM (chunking, schema pre-activation, worked examples, split-attention reduction); (2) exploiting parallel channels to expand effective capacity without widening the bottleneck (dual coding, modality-separated instruction); or (3) progressively offloading sub-skills from WM to LTM via practice (automatization, spaced repetition). A fourth cross-cutting factor governs all three mechanisms: the learner's current schema state determines which strategies are beneficial and which are harmful (expertise reversal effect), making adaptive learner-state tracking a structural requirement, not an optional enhancement. The cross-domain convergence across Information Theory, Cache/Memoization, Acoustics/Resonance, and Fluid Dynamics independently confirms that the bottleneck is a design constraint, not a deficiency — and that the only engineering paths available are compression, parallel-channel exploitation, and load-offloading.
+
+**Convergence-grounded support:**
+- CS-1 (ceiling fixedness): N1+N2+N3+N5+N6 — 5 nodes
+- CS-2 (schema/chunking): N1+N2+N3+N5+N6 — 5 nodes
+- CS-3 (automatization): N1+N2+N3+N5+N6 — 5 nodes
+- CS-4 (learner-state dependence): N1+N3+N5+N6 — 4 nodes
+- CS-5 (dual-channel): N1+N2+N5+N6 — 4 nodes
+- All 7 convergence signals confirmed.
+
+**Qualifications from divergences:**
+- Automatization applies universally at the sub-skill level but its WM-freeing mechanism is stronger in procedural/motor domains than in purely declarative learning (D-2).
+- Germane load (L_G) is a useful conceptual variable but lacks independent operationalization; CLT predictions involving germane load as a measured quantity are not constructively demonstrable (D-3).
+- LT-WM retrieval structures (Ericsson & Kintsch) may constitute a fourth, additive mechanism beyond the three enumerated above — this is not resolved and is flagged as an open probe (D-1).
+
+---
+
+## Confidence band
+
+**Assessment: HIGH**
+
+Rationale:
+- 7 convergence signals; all supported by ≥4 independent nodes
+- V1 logic: no broken inferential steps identified (see below)
+- V3: symmetric scrutiny — adversarial node (N6) applied equal challenge to primary and rivals
+- Unresolved divergences: D-1, D-2, D-3 are scope qualifications, not contradictions. No divergence falsifies the primary conclusion; each narrows it.
+- Confidence band: HIGH — subject to three scope qualifications (automatization domain-scope, germane load operationalizability, LT-WM mechanism)
+
+---
+
+## Creativity type
+
+**Boden typing:**
+
+The primary conclusion integrates findings from Cognitive Load Theory, Baddeley's multicomponent model, automatization/spaced repetition research, and dual-coding theory — all pre-existing constructs — and organizes them under a single formal constraint language (L_total ≤ κ_WM). The five cross-domain mappings from N2 show that this formal constraint is combinatorially instantiated across Information Theory, Fluid Dynamics, Linguistics, Acoustics, and Cache Architecture. No constitutive constraint of the conceptual space is negated; no new conceptual space is created. The Resonant Cache blend from N2 is a new conceptual structure but operates within the existing possibility space of WM models.
+
+**Creativity type: Combinatorial**
+
+Rationale: The insight is the convergence of the three-mechanism framework (compress / parallelize / offload) as jointly sufficient explanation across multiple independent source domains. The conclusion could be stated as "I found a way to combine constraint theory, CLT, and cross-domain analogies under one formal framework." The space's defining constraints are not violated.
+
+**V6 scope narrowing: Moderate** (Combinatorial type — list the combined domain only).
+
+**Elegance scoring:**
+
+| Component | Score | Justification |
+|-----------|-------|---------------|
+| Simplicity | 0.7 | L_total = L_I + L_E + L_G ≤ κ_WM is near-irreducible as a formal statement; the three-mechanism description adds slight redundancy (compress/parallelize/offload) that could be compressed to "reduce effective load or exploit parallel channels." 1 compression step possible without loss. |
+| Symmetry | 1.0 | Cross-domain recurrence appears in ≥5 independent domains (Information Theory, Fluid Dynamics, Linguistics, Acoustics/Resonance, Cache/Memoization). All five independently instantiate the fixed-capacity bottleneck constraint with a compression-or-parallelization escape. Symmetry score = 1.0. |
+| Depth | 1.0 | The conclusion generates ≥7 independently testable implications: (1) expertise advantage should collapse on random stimuli [N6 CE-1]; (2) high-WM learners benefit less from scaffolding [N5 E.1.1]; (3) dual-coded instruction has a failure mode when both channels independently overloaded [N5 B.1.2]; (4) spaced practice should produce measurable dual-task cost reduction in procedural domains [N6 D-C]; (5) schema pre-activation before new content is a dual-function operation (prefetch + resonance) [N2 Resonant Cache]; (6) wrong-schema activation is worse than no schema (emergent from N2 Resonant Cache blend); (7) optimal instructional design inverts across learner schema states [N6 CA-2]. Each implication is independently testable and opens a distinct problem class. |
+
+**Elegance score: 0.7 + 1.0 + 1.0 = 2.7 — HIGH elegance**
+
+Structural coherence note: The cross-domain recurrence (Symmetry = 1.0) is unexpectedly strong — five structurally distinct domains all independently encode the same constraint + escape architecture. This symmetry strengthens the primary conclusion's claim beyond what any single-domain analysis could provide.
+
+---
+
+## Generalization check
+
+**Generalizes to:** The three-mechanism framework (compress, parallelize, offload) generalizes to any bounded-capacity sequential-processing system where:
+- Capacity is architectural and fixed (non-trainable)
+- Task content is structured with learnable regularities (domain regularity assumption — CS-6)
+- A parallel processing channel is available (dual-coding applies to any dual-channel architecture)
+- Skills can be decomposed into sub-skills amenable to isolated practice (automatization applies)
+
+This includes: instructional design for any domain with learnable structure, adaptive tutoring systems, expert system training programs, and procedural skill acquisition in motor, perceptual, and cognitive domains.
+
+**Scope boundary:** The framework generalizes within the acquisition phase (not expert-plateau or pure performance phases). It does not generalize to random/structureless domains (CS-6 violated), clinical populations below WM threshold, or creative open-ended tasks where WM search-space maintenance is desirable rather than minimized.
+
+The generalization is not a one-off finding. The bottleneck + three-mechanism structure recurs across domains (confirmed by N2 cross-domain survey, 12 viable structural analogs). This is the structural signature of a **generalizable constraint**, not an artifact of a single experimental tradition.
+
+---
+
+## Verification report (V1-V7)
+
+### V1 Logic
+
+**Inferential chain reconstruction (N1 → primary conclusion):**
+
+1. **N1 Step 1:** [Empirical, named sources] WM capacity ≈ 3–4 chunks (Cowan 2001); phonological decay ~2s (Baddeley 1974); central executive has finite attentional bandwidth (Miyake et al. 2000). → These are cited empirical findings, not inferences. ✓
+2. **N1 → N5 Step 2:** [Induction over instances] Multiple learning strategies (chunking, spaced repetition, dual coding, worked examples) each address one or more of the three bottlenecks. Premise: each strategy reduces L_I, L_E, or exploits parallel channels. Conclusion: all effective strategies operate through these bottleneck-reduction mechanisms. Validity: valid by enumeration over the strategy space (N1 covered the full range; N5 verified via forward chain). ✓
+3. **N5 Step 3:** [Modus ponens] IF L_total > κ_WM THEN learning is impaired (encoding errors, forgetting). Strategy_effective IFF it reduces L_total to ≤ κ_WM or expands κ_effective. This inference is valid given the empirical premise (P1–P8 in N5). ✓
+4. **N3 → Primary conclusion Step 4:** [Induction] Spreading activation found 8 convergent nodes; top 3 (metacognition, automatization, schema) each independently reached through ≥2 chains. Cross-domain analogy (N2) independently confirmed each concept in 3+ non-psychology domains. → Convergence across independent reasoning chains strengthens the inductive inference beyond single-chain induction. ✓
+5. **N6 Step 5:** [Adversarial test] 6 alternative hypotheses tested; CA-1 (chunk-compression, 0.85) and CA-2 (learner-state dependence, 0.82) survived scrutiny; none falsified the primary conclusion; all narrowed its scope. Inference: primary conclusion is the best-supported account given available evidence. ✓
+6. **N2 Step 6:** [Structural analogy] Five domains independently instantiate the fixed-capacity + compression/parallel-channel/offload architecture. Analogy-as-illustration only (not proof) — this does not change the logical status; analogies add plausibility not deductive force. No analogy-as-proof committed. ✓
+
+**Weak links:**
+- Step 2 has a partial gap: the induction covers the known strategy space but cannot exclude strategies that operate through unknown mechanisms. This is bounded by N6's density assessment (7+ counter-examples reviewed; none relied on a fourth unknown mechanism as primary explanation).
+- Step 5 assumption: "6 alternative hypotheses" is not a complete enumeration of all possible alternatives. This is acknowledged in N6 (H-4 dropped as below threshold).
+
+**V1 Logic: PARTIAL** — All stated inferential steps are valid; one gap: induction over known strategies cannot exclude unknown mechanisms (acknowledged; bounded by N6 density review). Germane load causal chain (extraneous-load reduction → germane load → schema formation) is not independently measurable at intermediate steps — premise P5 in N5 carries load that its operationalization does not fully support.
+
+---
+
+### V2 Cargo-Cult
+
+**Scan results:**
+
+| Pattern | Found? | Location | Assessment |
+|---------|--------|----------|------------|
+| [CC-JARGON] Jargon-heavy assertion without concrete referent | No | — | All jargon terms (L_I, L_E, L_G, κ_WM, CA-1–CA-6) have explicit referents defined in N1 and N5. |
+| [CC-STAT] Statistical claim without sample size/methodology | No | — | Cowan (2001): reviewed behavioral data with explicit methodology. Capacity ≈ 4 is empirically grounded, not a bare number. |
+| [CC-AUTH] Appeal to authority without reproducible evidence | No | — | Named sources (Baddeley, Cowan, Sweller, Ericsson, Beilock) are cited for reproducible experimental effects, not as authorities. |
+| [CC-ANON] "Studies show..." without naming studies | No | — | All named: de Groot (1946), Baddeley & Hitch (1974), Cowan (2001), Sweller CLT, Ericsson & Kintsch (1995), Beilock (2010), Melby-Lervåg et al. (2013, 2016). |
+| [CC-ANALOGY] Analogy used as proof | No | — | N2 analogies are explicitly labeled "illustration" and "transfer" in N2; N7 primary conclusion does not derive logical force from them. |
+| [CC-PRECISION] Threshold precision without calibration | Minor | κ_WM ≈ 4 | N5 and N1 correctly flag this as approximate (range 3–4); the "≈4" notation signals calibrated uncertainty, not false precision. Not a cargo-cult violation. |
+| [CC-CAUSAL] Correlation stated as causation without mechanism | Minor | extraneous load → learning outcome | The causal chain from extraneous load reduction to schema formation is flagged in N6 as the weakest link. The causal claim is stated in the conclusion, but its mechanistic gap is disclosed. This is a V1 partial, not a CC violation, because the mechanism gap is acknowledged. |
+
+**V2 Cargo-Cult: PASS** — No cargo-cult patterns found. The minor precision and causality flags are calibrated and disclosed, not hidden.
+
+---
+
+### V3 Symmetric Scrutiny
+
+**Challenges applied to primary conclusion:**
+- Fixed ceiling claim challenged by WM training controversy (CE-1) — reviewed
+- Chunk-compression challenged by LT-WM Extension (CA-4) as alternative mechanism — reviewed
+- Universal automatization challenged by domain-specificity (CA-3) — reviewed
+- CLT prescriptions challenged by desirable difficulty anomaly (CE-2) — reviewed
+- Extraneous→germane→schema causal chain challenged as unfalsifiable (Sweller 2010 retreat) — reviewed
+- High-span anxiety paradox applied (CA-6) — reviewed
+- 7+ counter-examples enumerated in N6 density report
+
+**Challenges applied to rivals:**
+- CA-1 (Chunk-Compression): falsification condition named (random-stimuli parity test); literature cited (de Groot 1946)
+- CA-2 (Learner-state CLT): falsification condition named (does extraneous-load reduction help experts as much as novices?)
+- CA-3 (Automatization domain-scope): falsification condition named (declarative domain dual-task cost reduction)
+- CA-4 (LT-WM): falsification condition named (LTM interference collapse); Millikan flag noted that CA-4 was underweighted relative to CA-1 — this flag corrects the asymmetry
+- CA-5 (Attentional Filtering): falsification condition named (neural load markers N2pc/MMN)
+- CA-6 (High-span anxiety): Beilock choking literature cited as confirming counter-intuitive direction
+
+**Symmetry assessment:** The primary conclusion was exposed to at least as many named challenges (7+ counter-examples, 6 alternative hypotheses, 8 boundary regime scenarios) as any rival. The Millikan flags in N6 actively corrected three asymmetries where the primary was given easier treatment. The adversarial node (N6) has equal access to primary and rivals.
+
+**V3 Symmetric Scrutiny: PASS** — Primary conclusion faces more named challenges than any rival; Millikan correction applied to three asymmetries.
+
+---
+
+### V4 Completeness
+
+**Per-node citation check:**
+
+| Node | Used in conclusion? | Where |
+|------|---------------------|-------|
+| N1 | YES | Provides 8 irreducibles, all 3 bottleneck types, system model seed — directly in primary conclusion |
+| N2 | YES | 5 domain mappings; Resonant Cache blend; convergence signals CS-1–CS-6 all draw from N2; Resonant Cache dual-function insight is in primary conclusion's schema pre-activation prescription |
+| N3 | YES | 8 convergent nodes; metacognition-as-control-loop illumination adds the adaptive monitoring layer; automatization recycler and schema compression each appear in primary conclusion |
+| N5 | YES | Formal model L_total = L_I + L_E + L_G ≤ κ_WM; constructive spec; forward-chain branches (all 10) contribute to divergence analysis and boundary qualification |
+| N6 | YES | 6 CAs; density report; extreme scenarios; Millikan flags — all feed V1/V3 and primary conclusion qualifications |
+| N8 | Router record only — no substantive output | — |
+
+**V4 Completeness: PASS** — All 5 substantive nodes (N1, N2, N3, N5, N6) are cited. N8 is a router record with no reasoning content. No thin nodes detected.
+
+---
+
+### V5 Constructive
+
+**Primary conclusion constructive spec (from N5, updated with N6):**
+
+Minimal demonstrating procedure:
+1. Select a learning task T with measurable element interactivity (e.g., multi-step arithmetic with explicit element count).
+2. Assign learners randomly to two instructional conditions: high-L_E (split diagram and text, no schema priming) vs. low-L_E (integrated diagram+text, advance organizer activating relevant schema).
+3. Hold L_I constant across conditions (same task, same complexity level).
+4. Measure: (a) learning outcome (test score), (b) WM recall during task (secondary task paradigm), (c) WM span of each learner (covariate).
+5. Prediction: low-L_E condition → higher learning outcome AND lower WM recall cost, with interaction effect by WM span (low-span learners benefit more from low-L_E).
+
+This is demonstrable in principle, does not presuppose anything not established in the reasoning chain, and is minimal (cannot remove any of the five steps without losing the core test).
+
+**Note:** The constructive spec cannot demonstrate the extraneous→germane→schema causal chain at intermediate steps because germane load is not independently operationalizable (N6 CE-2). The spec demonstrates the bottleneck → outcome link and the extraneous-load manipulation effect, but not the internal mechanism (germane activation). This is disclosed as a V1 partial and V5 limitation.
+
+**V5 Constructive: PASS** — constructive spec: single-factor L_E manipulation at fixed L_I, with WM span as covariate and secondary task measure, demonstrates the bottleneck→strategy link without requiring germane load operationalization.
+
+---
+
+### V6 Scope
+
+**Boden type: Combinatorial → Moderate narrowing.**
+**V7 frame shift (see below): Declarative → Mixed (Symbolic + Procedural); moderate significance → feed to "Does not extend to."**
+
+Scope statement written to `stages/N7-v6-scope.txt` (see V6 entry in verification summary below).
+
+**V6 Scope: PASS** — wrote stages/N7-v6-scope.txt
+
+---
+
+### V7 Representational Coherence
+
+**Input frame identification:** `00-processed-input.md` contains one sentence: *"What are the cognitive bottlenecks of human working memory and how do they shape learning strategies?"*
+- Frame: **Declarative** — the question asks "what are X" and "how do they Y" — it requests statements about what is true (factual description + causal relationship). Dominant frame: Declarative (Frame 4).
+
+**Conclusion frame identification:** The primary conclusion is expressed in multiple frames:
+- Formal symbolic notation: L_total = L_I + L_E + L_G ≤ κ_WM ≈ 4; CA-1 confidence 0.85 (Symbolic, Frame 1)
+- Procedural prescriptions: "exploit parallel channels," "offload sub-skills via spaced practice," "adapt to learner schema state" (Procedural, Frame 3)
+- Declarative claims: "the bottleneck is architectural and non-trainable" (Declarative, Frame 4)
+
+**Dominant conclusion frame: Mixed Symbolic + Procedural (Frames 1 + 3).** The original declarative question received a re-representation that formalized the "what" (Symbolic) and added a "how to respond to it" layer (Procedural).
+
+**Shift detected: Declarative → Symbolic + Procedural**
+
+Shift significance per rubric:
+- Declarative → Symbolic: Low (formalization expected)
+- Declarative → Procedural: Moderate (changed from "what is" to "how to address")
+
+Combined significance: **Moderate**. The conclusion does not directly answer "what are the bottlenecks" in a plain declarative list — it re-represents the answer as a formal constraint model plus a set of design prescriptions. This is valid and more informative than the original question scope, but constitutes a re-representation that must be disclosed.
+
+**V6 feed:** "Does not extend to" must note that the conclusion is in Symbolic+Procedural frame and does not directly translate to other representation frames (e.g., narrative instructional guides, verbal-only policy statements) without translation.
+
+**V7 Representational: Shift: Declarative → Symbolic+Procedural** — conclusion is a re-representation. The formalization and prescriptive framing exceed the original question's declarative scope. V6 scope narrowed to Symbolic+Procedural frame contexts.
+
+---
+
+### Open questions & next probes
+
+From divergence points, V4 completeness, and V6 exclusions:
+
+1. **[PROBE 1 — HIGH PRIORITY]** Does LT-WM (Ericsson & Kintsch) constitute a fourth mechanism distinct from chunk-compression, or is it subsumable under a unified "information-density-per-slot" account?
+   — Why it matters: If LT-WM is a genuinely separate mechanism, the three-mechanism framework is incomplete and a fourth mechanism (LTM retrieval structure scaffolding) must be added. If subsumable, the framework stands.
+   — Test: Experts degraded on LTM access (retroactive interference task) during recall of structured domain material — does performance collapse to novice level? If yes, LT-WM is additive. If not, chunk-compression alone explains the residual.
+   — Priority: HIGH (Millikan flag from N6 CA-4 identified this as underweighted)
+
+2. **[PROBE 2 — HIGH PRIORITY]** Is the extraneous→germane→schema causal chain measurable at intermediate steps, or does germane load remain permanently unfalsifiable?
+   — Why it matters: If germane load is definitionally circular (as Sweller 2010 conceded), the formal model L_G term is a placeholder variable with no operational content, and CLT's prescriptive force reduces to "reduce L_E, observe outcome" without a mechanism between load reduction and schema formation.
+   — Test: Measure fMRI/EEG activation indices of schema formation (hippocampal encoding activity, alpha suppression in schema-relevant regions) concurrently with extraneous load manipulation. If activation-rate correlates independently with L_E manipulation outcome, germane load can be given a neural proxy.
+   — Priority: HIGH (weakest link identified by N6 and V1 partial)
+
+3. **[PROBE 3 — MEDIUM PRIORITY]** Does the "Resonant Cache" dual-function claim (schema pre-construction = both prefetch AND resonant amplification) generate empirically distinct predictions from standard advance-organizer research?
+   — Why it matters: N2 blend claims two mechanistically distinct effects of schema pre-construction; standard advance-organizer research (Ausubel) typically measures only one (retention improvement). If the blend is correct, schema pre-construction should produce both lower WM load during encoding AND deeper retrieval depth on delayed tests — independently measurable as a two-dimensional outcome profile rather than a single benefit.
+   — Test: Pre-learning schema activation condition with dual dependent measures: (1) secondary-task WM load during learning (prefetch prediction) and (2) cued-recall depth at 1-week delay (resonance prediction). If both are elevated vs. no-organizer control, the dual-function claim is supported.
+   — Priority: MEDIUM (novel prediction from N2 blend; not yet tested in this specific form)
+
+4. **[PROBE 4 — MEDIUM PRIORITY]** Does the expertise-reversal effect apply in schema-formable domains universally, or is there a domain-regularity threshold below which it does not emerge?
+   — Why it matters: N6 CA-2 + G3 boundary test both flag that expertise reversal requires learnable regularities. What is the minimum regularity structure for the inversion to occur?
+   — Test: Compare expertise-reversal onset across domains varying in regularity (chess > mathematics > creative writing > random lists). Measure point of worked-example inversion by novice-to-expert continuum. A regularity-threshold curve would bound the generalization of CA-2.
+   — Priority: MEDIUM
+
+5. **[PROBE 5 — LOW PRIORITY]** Does the high-span anxiety vulnerability paradox (CA-6) generalize beyond Beilock's procedural performance tasks to declarative learning tasks?
+   — Why it matters: CA-6 is currently supported primarily by procedural choking-under-pressure data. If the paradox does not generalize to declarative domains, adaptive instructional design targeting high-span learners under anxiety requires different interventions by domain type.
+   — Test: Replicate Beilock-style anxiety induction in a declarative knowledge-test condition with high-span and low-span learners. Measure performance decrement as a function of WM span.
+   — Priority: LOW (CA-6 confidence is 0.48; lower priority pending primary confirmation)
+
+---
+
+</integration>
+
+---
+
+## Verification Summary Block
+
+```
+V1 Logic: PARTIAL — All stated inferential steps are valid; gap: induction over known strategies cannot exclude unknown mechanisms (bounded by N6 density review); germane load causal chain (extraneous → germane → schema) not independently operationalizable at intermediate steps.
+V2 Cargo-Cult: PASS — none detected; minor precision flags (κ_WM ≈ 4; causation claims) are calibrated and disclosed, not hidden.
+V3 Symmetric Scrutiny: PASS — primary conclusion faces 7+ named counter-examples and 8 boundary scenarios; Millikan correction applied to 3 asymmetries identified in N6.
+V4 Completeness: PASS — all 5 substantive nodes (N1, N2, N3, N5, N6) cited; N8 is router record only, no content to cite.
+V5 Constructive: PASS — constructive spec: single-factor L_E manipulation at fixed L_I with WM span covariate and secondary task paradigm; germane load intermediate step not demonstrable (disclosed).
+V6 Scope: PASS — wrote stages/N7-v6-scope.txt
+V7 Representational: Shift: Declarative → Symbolic+Procedural — conclusion re-represents the original declarative question as a formal constraint model plus design prescriptions; V6 scope reflects frame shift.
+Overall: 5 PASS / 1 PARTIAL / 0 FAIL out of 7 gates
+```
+
+---
+
+## SIGNAL OUTPUT
+
+```yaml
+key_findings:
+  - Primary conclusion: WM imposes 3 structural constraints (item count κ≈4, phonological decay ~2s, central executive bandwidth); all effective learning strategies operate through exactly 3 mechanisms — compress/reduce load, exploit parallel channels, offload via automatization; learner schema state determines which mechanism and strategy applies (expertise reversal)
+  - 7 convergence signals (CS-1 through CS-7) each confirmed by ≥4 independent nodes; strongest: CS-1 (fixed ceiling), CS-2 (schema/chunking), CS-3 (automatization) — all 5 nodes
+  - Resonant Cache blend (N2): schema pre-construction is a dual-function operation — simultaneously prefetch (cache warm-up) AND resonant amplification; emergent prediction: wrong-schema activation is worse than no schema
+  - Learner-state dependence (CS-4, CA-2 confidence 0.82): CLT prescriptions are conditioned on schema state; expertise reversal is not an anomaly but a structural implication of the framework
+  - Domain-regularity assumption (CS-6): all regularity-exploiting strategies (chunking, schema, automatization) require learnable structure in the domain; framework degenerates in structureless domains
+  - Three scope qualifications: automatization WM-freeing stronger in procedural than declarative domains (CA-3, 0.72); germane load is not independently operationalizable (V1 partial); LT-WM as fourth mechanism remains open (CA-4, 0.65)
+  - Elegance score 2.7 (HIGH): Symmetry=1.0 (≥5 independent cross-domain instantiations); Depth=1.0 (≥7 independently testable implications)
+  - Creativity type: Combinatorial — insight is the convergence of constraint theory, CLT, and cross-domain analogy under one formal framework; no constitutive constraint negated
+  - V7 frame shift: Declarative → Symbolic+Procedural; conclusion exceeds original question scope by adding formal model and prescriptive layer
+  - Top open probes: (1) LT-WM as fourth mechanism — HIGH priority; (2) germane load neural proxy — HIGH priority; (3) Resonant Cache dual-prediction test — MEDIUM priority
+named_entities:
+  - κ_WM≈4, L_I/L_E/L_G, phonological loop, visuospatial sketchpad, central executive, CLT, automatization, schema, dual coding, expertise reversal, desirable difficulty, metacognition
+  - CA-1 Chunk-Compression, CA-2 learner-state CLT, CA-3 domain-specific automatization, CA-4 LT-WM Ericsson-Kintsch, Resonant Cache blend
+  - Cowan (2001), Baddeley (1974/2000), Sweller CLT/2010, Ericsson & Kintsch (1995), Beilock (2010), de Groot (1946)
+confidence_flags: [H, H, H, H, H, H, H, H, H, H]
+signal_flags: []
+```]]></integration>
+  <verification_report>
+    <v6_scope><![CDATA[**Applies to:** Human learners acquiring structured knowledge or skills in domains with learnable regularities (schema-formable domains), during the acquisition phase (novice to intermediate to proficient), where instructional design choices can control extraneous cognitive load, and where at least one parallel processing channel (phonological or visuospatial) is available for dual-coding exploitation. Conclusion is expressed in Symbolic+Procedural frame — applies directly to instructional designers, adaptive learning system engineers, and cognitive researchers working within the CLT/WM constraint framework.
+**Does not extend to:** (1) Structureless or random-stimulus domains where no learnable regularities exist — all regularity-exploiting strategies (chunking, schema, automatization) are inapplicable; (2) Asymptotic expert performance (Time → ∞ after full automatization) — the framework's prescriptions become redundant or harmful at this stage; (3) Clinical populations with WM capacity below functional threshold (severe ADHD, dementia onset) — CLT prescriptions designed for typical WM fail below a minimum effective-capacity floor; (4) Open-ended creative domains where deliberate WM-search-space maintenance is required rather than minimized; (5) Purely declarative automatization claims — the WM-freeing mechanism of spaced repetition is better evidenced in procedural/motor domains than in declarative ones; (6) Verbal-only declarative answers to the original question — the conclusion is a re-representation in Symbolic+Procedural frame and does not directly translate to narrative instructional guides without translation back to Declarative frame.
+**Claims refused:** (1) "Germane load (L_G) can be independently measured in practice" — refused: Sweller (2010) retracted the falsifiable form of germane load; it is a conceptual construct without an independently operationalizable measure at the critical extraneous→germane→schema intermediate step; (2) "LT-WM retrieval structures (Ericsson & Kintsch) are subsumed by chunk-compression" — refused: CA-4 (confidence 0.65) is an open competing mechanism; subsuming it requires the LTM-interference falsification experiment, which has not been completed here; (3) "WM capacity can be trained to increase" — refused: WM training transfer meta-analyses (Melby-Lervåg et al. 2013, 2016) show negligible far-transfer; the ceiling is treated as fixed and non-trainable in this analysis.]]></v6_scope>
+    <note>V1-V5 and V7 results are inline in &lt;integration&gt; content.</note>
+  </verification_report>
+  <downstream_handoff/>
+</cognitive_output_v1>

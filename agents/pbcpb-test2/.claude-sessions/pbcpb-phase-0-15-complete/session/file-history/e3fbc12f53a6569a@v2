@@ -1,0 +1,34 @@
+{
+  "kb": "sound-design",
+  "version": "1.0.0",
+  "topics": {
+    "synthesis-types": {
+      "entries": ["subtractive", "fm", "wavetable", "granular", "additive"],
+      "last_updated": "2026-04-02"
+    },
+    "oscillators": {
+      "entries": ["waveform-types", "detune", "sync"],
+      "last_updated": "2026-04-02"
+    },
+    "filters": {
+      "entries": ["filter-types", "resonance", "modulation"],
+      "last_updated": "2026-04-02"
+    },
+    "modulation": {
+      "entries": ["lfo-basics", "envelope-basics", "routing"],
+      "last_updated": "2026-04-02"
+    },
+    "effects": {
+      "entries": ["reverb", "delay", "distortion"],
+      "last_updated": "2026-04-02"
+    },
+    "genre-techniques": {
+      "entries": ["psychedelic", "ambient", "pad", "bass"],
+      "last_updated": "2026-04-02"
+    },
+    "preset-methodology": {
+      "entries": ["naming-conventions", "preset-structure"],
+      "last_updated": "2026-04-02"
+    }
+  }
+}

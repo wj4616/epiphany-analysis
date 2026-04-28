@@ -1,0 +1,7 @@
+# Firecrawl output files - ignore cached web content
+*.json
+*.md
+!README.md
+!config.sh
+!shortcuts.sh
+!test-config.sh

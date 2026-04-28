@@ -1,0 +1,32 @@
+#include "ChorusEnsemble.h"
+
+namespace CogDSP
+{
+
+void ChorusEnsemble::prepare(double sr, int samplesPerBlock)
+{
+    sampleRate = sr;
+    juce::ignoreUnused(samplesPerBlock);
+}
+
+void ChorusEnsemble::process(float* left, float* right, int numSamples)
+{
+    // TODO: Implement chorus ensemble
+    juce::ignoreUnused(left, right, numSamples);
+}
+
+void ChorusEnsemble::setRate(float rateHz)
+{
+    rate = rateHz;
+}
+
+void ChorusEnsemble::setDepth(float d)
+{
+    depth = d;
+}
+
+void ChorusEnsemble::reset()
+{
+}
+
+} // namespace CogDSP

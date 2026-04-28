@@ -1,0 +1,22 @@
+{
+  "kb_name": "dsp-kb",
+  "topic": "reverb algorithm Schroeder",
+  "filename": "reverb-algorithm-schroeder.json",
+  "status": "harvested",
+  "harvested_at": "2026-03-30T23:15:42.031952+00:00",
+  "sources": 5,
+  "rejected": 32,
+  "credits_used": 78,
+  "search_queries": [
+    "reverb algorithm Schroeder audio DSP feedback delay network",
+    "reverb algorithm Schroeder tutorial",
+    "reverb algorithm Schroeder implementation",
+    "reverb algorithm Schroeder guide"
+  ],
+  "quality_thresholds": {
+    "min_content_length": 500,
+    "min_relevance_score": 0.2,
+    "max_noise_ratio": 0.5
+  },
+  "notes": "Auto-harvested via harvest-data skill"
+}

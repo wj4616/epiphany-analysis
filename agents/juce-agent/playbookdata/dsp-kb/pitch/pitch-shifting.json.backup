@@ -1,0 +1,23 @@
+{
+  "title": "Pitch Shifting Algorithm",
+  "description": "Phase vocoder and granular pitch shifting",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:47:37.083240Z",
+  "kb_type": "dsp",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "markdown": "# Pitch Shifting Algorithm\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "pitch shifting algorithm",
+    "phase vocoder pitch",
+    "granular pitch shift",
+    "formant preservation"
+  ],
+  "sources": [
+    "CCRMA papers",
+    "DSP Stack Exchange"
+  ]
+}

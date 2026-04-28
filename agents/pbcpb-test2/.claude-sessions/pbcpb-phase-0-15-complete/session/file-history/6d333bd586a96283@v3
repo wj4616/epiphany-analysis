@@ -1,0 +1,50 @@
+# Decisions Ledger — append at every phase gate
+
+## Configuration
+- **Output Location:** `~/playbooks/juce-vst-business-trial2/`
+- **External Data Sources:** None (fresh playbook, no external sources)
+- **Created:** 2026-04-02
+
+## Phase Inventory
+| Phase | Title | Summary |
+|-------|-------|---------|
+| 0 | Commission & Scoping | Establish configuration, define purpose, scope, constraints, complexity profile |
+| 1 | Domain Research | Research domain, best practices, SME knowledge, competitive landscape |
+| 2 | KB Architecture | Design knowledge base layers, schemas, bridge mappings, population strategy |
+| 3 | KB Bootstrapping | Create directory tree, seed entries, harvest research content, validate schema |
+| 4 | Process Architecture | Design output playbook phase structure, task granularity, dependencies, gates |
+| 5 | Role Engineering | Define functional roles: who does what, who approves, decision authority |
+| 6 | Task Engineering | Write detailed task descriptions, execution guides, templates for each phase |
+| 7 | Output Configuration | Define workflow model, roles, usage instructions, compilation tuning, KB mapping |
+| 8 | Metrics & KPI Definition | Define process, quality, and domain outcome metrics with targets |
+| 9 | JSON Assembly | Assemble complete output playbook JSON from all design documents |
+| 10 | JSON Validation & Consistency | Validate assembled JSON using automated validators and manual review |
+| 11 | Quality Audit — Gap Analysis | Systematic audit against requirements, cross-cutting concerns, completeness |
+| 12 | Stress Testing & Structured Dry-Run | Walk through playbook under structured scenarios to find issues |
+| 13 | Stakeholder Review & Iteration | Final human review before pilot testing |
+| 14 | Documentation & Version Control | Package final playbook with supporting documentation |
+| 15 | Continuous Improvement | After each run, review and optionally improve the playbook |
+
+## Complexity Profile
+| Dimension | Level | Rationale |
+|-----------|-------|-----------|
+| Process | Standard | Multi-skill workflow with 5-10 phases (specification, research, architecture, implementation, testing, release) |
+| Knowledge | Bridged | 5 distinct knowledge types (Technical, Sound Design, UI/UX, Commercial, Reference) requiring translation between vocabularies |
+| Roles | Minimal | Single developer + AI assistant — one doer, one approver role |
+| **Overall** | **Complex** | Highest dimension is Knowledge (bridged) — sets guardrails for KB architecture |
+
+## Session Plan
+Based on `role-based-single-agent` workflow model, session boundaries align with major phase gates where decisions-ledger is updated:
+
+| Session | Phases | Focus |
+|---------|--------|-------|
+| 1 | 0-1 | Commission, Scoping, Research foundation |
+| 2 | 2-3 | KB Architecture, KB Bootstrapping |
+| 3 | 4-5 | Process Architecture, Role Engineering |
+| 4 | 6-7 | Task Engineering, Output Configuration |
+| 5 | 8-9 | Metrics & KPI, JSON Assembly |
+| 6 | 10-11 | JSON Validation, Quality Audit |
+| 7 | 12-13 | Stress Testing, Stakeholder Review |
+| 8 | 14-15 | Documentation, Continuous Improvement |
+
+**Note:** Fresh session context loads decisions-ledger.md and artifact-manifest.md at each session start.

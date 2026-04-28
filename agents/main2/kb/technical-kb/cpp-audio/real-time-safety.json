@@ -1,0 +1,28 @@
+{
+  "id": "technical-kb_cpp-audio_real-time-safety",
+  "kb": "technical-kb",
+  "topic": "cpp-audio",
+  "status": "harvested",
+  "version": "1.0.0",
+  "title": "Real-Time Audio Thread Safety",
+  "summary": "Patterns and anti-patterns for audio thread safety in JUCE plugins.",
+  "description": "## Overview\n\nThe audio thread (processBlock) runs in a real-time context where allocations, locks, and blocking operations are forbidden. This entry covers the essential patterns for maintaining real-time safety.\n\n## Core Rules\n\n### Forbidden Operations\n- **No heap allocations**: `new`, `delete`, `std::vector::push_back()`, `juce::String` construction\n- **No system calls**: file I/O, network, mutex lock attempts\n- **No blocking operations**: `std::mutex::lock()`, `std::condition_variable::wait()`\n- **No unbounded loops**: must have fixed iteration limits\n\n### Required Patterns\n\n```cpp\nvoid processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override {\n    juce::ScopedNoDenormals noDenormals;  // Always first\n    \n    // Use pre-allocated member buffers\n    // Use std::atomic<bool> for cross-thread flags\n    // Call getNextValue() per-sample for smoothed parameters\n}\n```\n\n## Failure Modes\n\n| ID | Symptom | Cause | Prevention |\n|----|---------|-------|------------|\n| FM-01 | Dropouts, crashes | Heap allocation | Pre-allocate in prepareToPlay() |\n| FM-04 | CPU spikes | Denormals | ScopedNoDenormals |\n| FM-07 | Intermittent crashes | Non-atomic callbacks | Use atomic<bool> flags |",
+  "source": "VST Playbook v7 failure modes + JUCE documentation",
+  "concepts": [
+    {"name": "ScopedNoDenormals", "description": "JUCE class that disables denormal floating-point numbers on the current thread"},
+    {"name": "prepareToPlay", "description": "JUCE callback where all buffers must be pre-allocated"}
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "void prepareToPlay(double sampleRate, int samplesPerBlock) override {\n    // Pre-allocate all buffers\n    buffer.setSize(2, samplesPerBlock);\n    smoothedParam.reset(sampleRate, 0.02);\n}\n\nvoid processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override {\n    juce::ScopedNoDenormals noDenormals;\n    \n    for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {\n        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {\n            // Real-time safe: no allocations, no locks\n            buffer.getWritePointer(channel)[sample] = processSample(buffer.getReadPointer(channel)[sample]);\n        }\n    }\n}",
+      "preserved": true
+    }
+  ],
+  "tags": ["audio", "real-time", "thread-safety", "juce", "cpp"],
+  "related_topics": ["audio-thread-safety", "parameter-management"],
+  "difficulty": "intermediate",
+  "domain_relevance": 10,
+  "audio_thread_safe": true,
+  "failure_modes": ["FM-01", "FM-04", "FM-07"]
+}

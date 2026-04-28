@@ -1,0 +1,30 @@
+{
+  "title": "JUCE Audio Plugin CMake Configuration",
+  "description": "Complete CMake configuration for JUCE audio plugins using FetchContent",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "build",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "markdown": "# JUCE Audio Plugin CMake Configuration\n\n## Minimal CMakeLists.txt for JUCE Plugin\n\n```cmake\ncmake_minimum_required(VERSION 3.16)\nproject(MyPlugin VERSION 1.0.0)\n\n# C++ Standard\nset(CMAKE_CXX_STANDARD 17)\nset(CMAKE_CXX_STANDARD_REQUIRED ON)\n\n# Fetch JUCE\ninclude(FetchContent)\nFetchContent_Declare(\n    JUCE\n    GIT_REPOSITORY https://github.com/juce-framework/JUCE.git\n    GIT_TAG origin/master\n)\nFetchContent_MakeAvailable(JUCE)\n\n# Create Plugin\njuce_add_plugin(MyPlugin\n    PLUGIN_NAME \"My Plugin\"\n    PLUGIN_MANUFACTURER \"My Company\"\n    PLUGIN_MANUFACTURER_CODE \"Mycp\"\n    PLUGIN_CODE \"MPlg\"\n    FORMATS VST3 AU Standalone\n)\n\n# Link JUCE modules\ntarget_link_libraries(MyPlugin\n    PRIVATE\n        juce::juce_audio_utils\n        juce::juce_audio_processors\n        juce::juce_dsp\n        juce::juce_gui_basics\n)\n```\n\n## Plugin Output Directory\n\n```cmake\n# Install VST3 to user plugins folder\nif(WIN32)\n    set(PLUGIN_OUTPUT_DIR \"$ENV{LOCALAPPDATA}/Programs/Common/VST3\")\nelseif(APPLE)\n    set(PLUGIN_OUTPUT_DIR \"~/Library/Audio/Plug-Ins/VST3\")\nelse()\n    set(PLUGIN_OUTPUT_DIR \"~/.vst3\")\nendif()\n\nset_target_properties(MyPlugin_VST3 PROPERTIES\n    LIBRARY_OUTPUT_DIRECTORY \"${PLUGIN_OUTPUT_DIR}\"\n)\n```\n\n## Multi-Plugin Project\n\n```cmake\n# Project with multiple plugins\njuce_add_plugin(SynthA\n    PLUGIN_NAME \"Synth A\"\n    # ... settings\n)\n\njuce_add_plugin(SynthB\n    PLUGIN_NAME \"Synth B\"\n    # ... settings\n)\n\n# Shared code library\nadd_library(SharedDSP STATIC\n    Shared/Oscillator.cpp\n    Shared/Filter.cpp\n)\n\ntarget_link_libraries(SynthA PRIVATE SharedDSP juce::juce_dsp)\ntarget_link_libraries(SynthB PRIVATE SharedDSP juce::juce_dsp)\n```",
+  "implementation_examples": [
+    {
+      "title": "Complete Production Setup",
+      "code": "cmake_minimum_required(VERSION 3.16)\nproject(MySynth VERSION 1.0.0)\n\nset(CMAKE_CXX_STANDARD 17)\nset(CMAKE_CXX_STANDARD_REQUIRED ON)\n\n# JUCE via FetchContent\ninclude(FetchContent)\nFetchContent_Declare(\n    JUCE\n    GIT_REPOSITORY https://github.com/juce-framework/JUCE.git\n    GIT_TAG 7.0.12\n)\nFetchContent_MakeAvailable(JUCE)\n\n# Plugin targets\njuce_add_plugin(MySynth\n    PLUGIN_NAME \"MySynth\"\n    PLUGIN_MANUFACTURER \"SynthCo\"\n    PLUGIN_MANUFACTURER_CODE \"SntC\"\n    PLUGIN_CODE \"MSyn\"\n    FORMATS VST3 AU AAX Standalone\n    \n    # Modern settings\n    CXX_STANDARD 17\n)\n\n# Link modules\ntarget_link_libraries(MySynth\n    PRIVATE\n        juce::juce_audio_utils\n        juce::juce_audio_processors\n        juce::juce_dsp\n        juce::juce_gui_basics\n)"
+    }
+  ],
+  "tags": [
+    "cmake",
+    "juce",
+    "plugin",
+    "vst3",
+    "au",
+    "fetchcontent",
+    "build"
+  ],
+  "related_topics": [
+    "add_library",
+    "target_link_libraries",
+    "target_include_directories"
+  ]
+}

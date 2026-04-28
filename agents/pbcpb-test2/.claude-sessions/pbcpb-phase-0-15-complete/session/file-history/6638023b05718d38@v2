@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_filters_filter-types",
+  "kb": "sound-design",
+  "topic": "filters",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Filter Types and Their Sonic Characteristics",
+  "summary": "Placeholder: Low-pass, high-pass, band-pass, notch, and their use cases.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["filter", "lowpass", "highpass", "bandpass", "notch"],
+  "related_topics": ["filters", "synthesis-types"],
+  "difficulty": "beginner",
+  "domain_relevance": 10
+}

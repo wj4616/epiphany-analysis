@@ -1,0 +1,20 @@
+{
+  "id": "commercial-kb_licensing_pace-ilok",
+  "kb": "commercial-kb",
+  "topic": "licensing",
+  "status": "harvested",
+  "version": "1.0.0",
+  "title": "PACE iLok Licensing System",
+  "summary": "Industry-standard plugin licensing and anti-piracy solution.",
+  "description": "## Overview\n\nPACE Anti-Piracy provides the iLok licensing system used by over 13 million users across 20,000 products. Companies like Slate Digital, Neural DSP, and Soundtoys rely on iLok protection.\n\n## Licensing Tiers\n\n| Tier | Annual Cost | Licensing Fees | Features |\n|------|-------------|----------------|----------|\n| **Starter** | $5,000 | 5% perpetual, 10% subscription | iLok USB + Cloud + Machine Activation |\n| **Standard** | Higher | Same | iLok Cloud for subscriptions + Client API |\n| **Premium** | Highest | Same | Fusion code protection + Remote API |\n\n## Indie Program\n\nFor companies:\n- Younger than 3 years\n- Revenue under $75,000\n- Savings up to $3,000\n\n## Activation Methods\n\n| Method | Requirements | User Experience |\n|--------|--------------|-----------------|\n| **iLok USB** | Physical dongle ($50) | Highest security, portable licenses |\n| **iLok Cloud** | Internet connection | Free, no dongle needed |\n| **Machine Activation** | Local machine ID | Free, offline-capable |\n\n## Protection Technologies\n\n- **Fusion**: Code protection with obfuscation and anti-tampering\n- **Fusion AI**: Protection for audio/AI models\n- **White-Box Works**: Cryptographic key protection\n\n## URL\n\nhttps://paceap.com/",
+  "source": "Web research 2026-04-02",
+  "concepts": [
+    {"name": "iLok USB", "description": "Physical dongle for license storage"},
+    {"name": "iLok Cloud", "description": "Cloud-based license activation"},
+    {"name": "Fusion", "description": "PACE code protection technology"}
+  ],
+  "tags": ["licensing", "anti-piracy", "ilok", "pace"],
+  "related_topics": ["anti-piracy", "distribution"],
+  "difficulty": "intermediate",
+  "domain_relevance": 9
+}

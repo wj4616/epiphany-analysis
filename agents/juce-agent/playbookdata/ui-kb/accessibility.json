@@ -1,0 +1,138 @@
+{
+  "kb_name": "ui-kb",
+  "topic": "accessibility",
+  "version": "1.0.0",
+  "last_updated": "2026-03-29T08:50:00Z",
+  "content": {
+    "title": "Audio Plugin Accessibility Guidelines",
+    "overview": "Comprehensive accessibility guidelines for audio plugins including screen readers, keyboard navigation, and WCAG compliance",
+    "screen_reader_support": {
+      "surge_xt_example": {
+        "description": "Native accessibility implementation for VST/audio plugins",
+        "platforms": {
+          "windows": ["NVDA", "JAWS", "Narrator"],
+          "macos": ["VoiceOver"]
+        },
+        "keyboard_shortcuts": [
+          "Extensive navigation between sections",
+          "Slider manipulation with arrow keys (fine/coarse control)",
+          "Patch browsing with keyboard commands",
+          "Context menus via Shift+F10"
+        ],
+        "implementation": "JUCE framework with Windows screen reader bug workarounds"
+      }
+    },
+    "keyboard_navigation": {
+      "red_hat_guidelines": {
+        "controls": [
+          "Tab/Shift+Tab - navigate between controls",
+          "Enter/Space - activate buttons, toggle states",
+          "Arrow Keys - adjust sliders, rewind/forward (15s increments)",
+          "Esc/Space - close menus/features"
+        ],
+        "focus_management": "Logical left-to-right, top-to-bottom focus order"
+      },
+      "slider_controls": {
+        "implementation": "Arrow keys for value adjustment",
+        "fine_control": "Shift+arrow for precise adjustments",
+        "coarse_control": "Ctrl+arrow for larger jumps",
+        "announcement": "Screen readers should announce value changes"
+      }
+    },
+    "wcag_compliance": {
+      "target_level": "WCAG 2.1 AA minimum, AAA for enhanced accessibility",
+      "relevant_standards": [
+        "SC 1.2.1 - Audio-only and Video-only (Prerecorded)",
+        "SC 1.2.2 - Captions (Prerecorded)",
+        "SC 2.1.1 - Keyboard (Level A)",
+        "SC 2.4.3 - Focus Order (Level A)",
+        "SC 2.5.5 - Target Size (Level AAA)"
+      ]
+    },
+    "aria_implementation": {
+      "required_attributes": {
+        "roles": ["slider", "button", "listbox", "combobox", "menu"],
+        "labels": "Descriptive aria-label for all controls",
+        "values": "aria-valuenow, aria-valuemin, aria-valuemax for sliders",
+        "descriptions": "aria-describedby for additional context"
+      },
+      "example": "// Slider implementation\njuce::Slider mySlider;\nmySlider.setAccessible(true);\nmySlider.setTitle(\"Filter Cutoff\");\nmySlider.setDescription(\"Controls the filter cutoff frequency from 20Hz to 20kHz\");\nmySlider.setAccessibleValueRange({20.0, 20000.0});"
+    },
+    "accessible_wordpress_audio_player_patterns": {
+      "wonderplugin_approach": {
+        "solution": "Add HTML text controls with accesskey attributes",
+        "controls": ["Play/Pause", "Stop", "Skip tracks", "Rewind/Forward"],
+        "keyboard_shortcuts": "Custom accesskey shortcuts (Accesskey+P for play)",
+        "limitation": "Original buttons remain invisible to screen readers"
+      },
+      "readabler_plugin": {
+        "features": [
+          "Full screen reader compatibility",
+          "Text-to-speech in 40+ languages",
+          "Complete keyboard control",
+          "Virtual keyboard for mobility-impaired",
+          "Font scaling and contrast adjustment",
+          "Dyslexia-friendly fonts"
+        ],
+        "specialized_profiles": ["Epilepsy-safe", "Visually impaired", "Cognitive disability", "ADHD", "Blind users"],
+        "compliance": "WCAG 2.0 AAA, GDPR/CCPA compliant"
+      }
+    },
+    "testing_guidelines": {
+      "screen_reader_testing": [
+        "Test with NVDA on Firefox/Chrome",
+        "Test with JAWS on Chrome/Edge",
+        "Test with VoiceOver on Safari",
+        "Verify all controls are announced correctly",
+        "Check that value changes are announced"
+      ],
+      "keyboard_testing": [
+        "Verify all functions work with keyboard alone",
+        "Check focus order is logical",
+        "Ensure focus indicators are visible",
+        "Test with screen reader disabled"
+      ],
+      "visual_testing": [
+        "Verify high contrast mode compatibility",
+        "Check color is not the only indicator",
+        "Test at 200% zoom level",
+        "Verify text scaling works correctly"
+      ]
+    },
+    "implementation_checklist": {
+      "aria_labels": "All interactive elements have descriptive labels",
+      "keyboard_accessible": "All functions work with keyboard alone",
+      "focus_management": "Logical focus order and visible indicators",
+      "value_announcements": "Screen readers announce parameter changes",
+      "high_contrast": "Works in high contrast mode",
+      "text_scaling": "Text scales without breaking layout",
+      "color_independence": "Information not conveyed by color alone",
+      "error_messages": "Errors announced to screen readers"
+    },
+    "juce_specific_implementation": {
+      "component_accessibility": [
+        "setAccessible(true) for all interactive components",
+        "setTitle() for control identification",
+        "setDescription() for additional context",
+        "setAccessibleValueRange() for sliders",
+        "setAccessibleValue() for current values"
+      ],
+      "keyboard_handlers": [
+        "keyPressed() override for custom keyboard handling",
+        "grabKeyboardFocus() for programmatic focus",
+        "setWantsKeyboardFocus(true) for focus eligibility"
+      ],
+      "screen_reader_workarounds": [
+        "Windows-specific fixes for screen reader bugs",
+        "macOS VoiceOver optimization",
+        "Linux Orca compatibility"
+      ]
+    }
+  },
+  "sources": [
+    "https://surge-synthesizer.github.io/accessibility/",
+    "https://ux.redhat.com/elements/audio-player/accessibility",
+    "https://www.wonderplugin.com/wordpress-audio-player-tutorial/audio-player-and-screen-readers/",
+    "https://docs.juce.com/master/classComponent.html#accessibility"
+  ]
+}

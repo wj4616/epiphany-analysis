@@ -1,0 +1,70 @@
+{
+  "version": "1.1.0",
+  "description": "Aggregated patterns across all projects with numerical confidence scoring",
+  "last_updated": "2026-03-29",
+  "scoring_algorithm": {
+    "description": "How confidence scores are calculated and updated",
+    "initial_confidence": {
+      "high": 0.85,
+      "medium": 0.65,
+      "low": 0.45,
+      "needs_clarification": 0.25
+    },
+    "adjustments": {
+      "correct_unchanged": 0.05,
+      "correct_minor_adjustment": 0.02,
+      "major_revision": -0.10,
+      "failed_translation": -0.20
+    },
+    "decay": {
+      "rate": 0.02,
+      "min_samples": 5,
+      "description": "Confidence decays 2% per month without testing, minimum 5 samples required for decay"
+    },
+    "formula": "confidence = initial + sum(adjustments) - (months_since_test * decay_rate)",
+    "bounds": {
+      "min": 0.1,
+      "max": 0.99
+    }
+  },
+  "pattern_success_rate": {
+    "warm_pad": {"success": 0, "adjusted": 0, "total": 0, "confidence": 0.85, "last_tested": null},
+    "bright_lead": {"success": 0, "adjusted": 0, "total": 0, "confidence": 0.85, "last_tested": null},
+    "aggressive_bass": {"success": 0, "adjusted": 0, "total": 0, "confidence": 0.75, "last_tested": null},
+    "ambient_drone": {"success": 0, "adjusted": 0, "total": 0, "confidence": 0.70, "last_tested": null},
+    "punchy_bass": {"success": 0, "adjusted": 0, "total": 0, "confidence": 0.80, "last_tested": null}
+  },
+  "common_adjustments": [],
+  "vague_descriptor_clarifications": {
+    "fat": {"clarified_as": [], "count": 0, "most_common": null},
+    "warm": {"clarified_as": [], "count": 0, "most_common": null},
+    "punchy": {"clarified_as": [], "count": 0, "most_common": null},
+    "lush": {"clarified_as": [], "count": 0, "most_common": null}
+  },
+  "translation_accuracy": {
+    "warm": {"correct": 0, "adjusted": 0, "failed": 0, "total": 0, "confidence": 0.85, "samples": 0, "last_validated": null},
+    "bright": {"correct": 0, "adjusted": 0, "failed": 0, "total": 0, "confidence": 0.85, "samples": 0, "last_validated": null},
+    "punchy": {"correct": 0, "adjusted": 0, "failed": 0, "total": 0, "confidence": 0.75, "samples": 0, "last_validated": null},
+    "fat": {"correct": 0, "adjusted": 0, "failed": 0, "total": 0, "confidence": 0.50, "samples": 0, "last_validated": null},
+    "lush": {"correct": 0, "adjusted": 0, "failed": 0, "total": 0, "confidence": 0.70, "samples": 0, "last_validated": null},
+    "aggressive": {"correct": 0, "adjusted": 0, "failed": 0, "total": 0, "confidence": 0.80, "samples": 0, "last_validated": null},
+    "smooth": {"correct": 0, "adjusted": 0, "failed": 0, "total": 0, "confidence": 0.75, "samples": 0, "last_validated": null}
+  },
+  "preset_template_success": {
+    "bright_pad_minimal": {"attempts": 0, "approved": 0, "adjustments_needed": 0, "confidence": 0.85},
+    "warm_pad_classic": {"attempts": 0, "approved": 0, "adjustments_needed": 0, "confidence": 0.85},
+    "aggressive_bass_drive": {"attempts": 0, "approved": 0, "adjustments_needed": 0, "confidence": 0.75},
+    "subtle_chorus_pad": {"attempts": 0, "approved": 0, "adjustments_needed": 0, "confidence": 0.80}
+  },
+  "parameter_adjustment_history": [],
+  "recent_sessions": [],
+  "feedback_ingestion_queue": [],
+  "notes": [
+    "This file is updated automatically by juce-daw-testing skill",
+    "Do not edit manually - use validation logs for specific presets",
+    "Confidence scores range from 0.1 (very low) to 0.99 (very high)",
+    "Initial confidence based on source quality: high=0.85, medium=0.65, low=0.45",
+    "Confidence increases with correct translations, decreases with failures",
+    "Confidence decays over time without testing to prevent stale data"
+  ]
+}

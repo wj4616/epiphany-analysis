@@ -1,0 +1,158 @@
+# Document Tree
+
+## Document Structure
+
+All deliverable documents follow this naming and location convention.
+
+---
+
+## Root Directory
+
+```
+playbooks/juce-vst-business-trial2/
+├── README.md                          # Project overview
+├── scope.md                           # Scope definition
+├── constraints.md                    # Strategic constraints
+├── success-criteria.md               # Success criteria
+├── decisions-ledger.md               # Decision log (persistent)
+├── artifact-manifest.md              # File tracking (persistent)
+├── metrics-tracker.md                # Metrics (persistent)
+│
+├── research/                          # Phase 1 research
+│   ├── domain-analysis.md
+│   ├── best-practices.md
+│   ├── competitive-templates.md
+│   ├── cross-cutting-concerns.md
+│   ├── platform-concerns.md
+│   ├── sme-interviews.md
+│   └── requirements.md
+│
+├── architecture/                      # Phase 2-4 architecture
+│   ├── kb-architecture.md
+│   ├── entry-schema.json
+│   ├── bridge-schema.json
+│   ├── population-strategy.md
+│   ├── directory-structure.md
+│   ├── phase-structure.md
+│   ├── task-granularity.md
+│   ├── dependency-map.md
+│   ├── phase-gates.md
+│   └── document-tree.md
+│
+├── drafts/                            # Phase 6+ drafts
+│   ├── task-list-v0.1.md
+│   ├── phase-checklists/
+│   └── (generated during execution)
+│
+├── audits/                            # Phase 8+ validation
+│   ├── audio-thread-audit.md
+│   ├── gain-staging-audit.md
+│   └── validation-reports/
+│
+├── testing/                           # Phase 9 DAW testing
+│   ├── daw-test-results.md
+│   └── perceptual-issues.md
+│
+├── final/                             # Phase 16 final output
+│   ├── playbook.json                  # The output playbook JSON
+│   ├── playbook-summary.md
+│   └── release-notes.md
+│
+└── kb/                                # Knowledge Base (Phase 3)
+    ├── master-index.json
+    ├── technical/
+    ├── sound-design/
+    ├── ui-ux/
+    ├── commercial/
+    ├── reference/
+    └── bridge/
+```
+
+---
+
+## Document Definitions
+
+### Persistent Documents
+
+| Document | Created | Updated | Purpose |
+|----------|---------|---------|---------|
+| `decisions-ledger.md` | Phase 0 | Every phase gate | Records all decisions |
+| `artifact-manifest.md` | Phase 0 | Every phase gate | Tracks all files |
+| `metrics-tracker.md` | Phase 0 | Every phase gate | Records metrics |
+
+### Phase-Specific Documents
+
+| Phase | Documents Created |
+|-------|-------------------|
+| 0 | README.md, scope.md, constraints.md, success-criteria.md |
+| 1 | research/*.md (6 files) |
+| 2 | architecture/kb-architecture.md, entry-schema.json, bridge-schema.json, population-strategy.md, directory-structure.md |
+| 3 | kb/* (all KB files) |
+| 4 | architecture/phase-structure.md, task-granularity.md, dependency-map.md, phase-gates.md, document-tree.md |
+
+---
+
+## Document Feeds Into Later Tasks
+
+| Document | Used By | Purpose |
+|----------|---------|---------|
+| `scope.md` | All phases | Configuration reference |
+| `constraints.md` | All phases | Constraint checking |
+| `research/requirements.md` | Phases 2-7 | Requirements reference |
+| `architecture/phase-structure.md` | Phases 5+ | Phase context |
+| `kb-architecture.md` | Phases 3+ | KB context loading |
+| `decisions-ledger.md` | All phases | Context restoration |
+
+---
+
+## Output Playbook Structure
+
+The final output (`final/playbook.json`) contains:
+
+```json
+{
+  "title": "JUCE VST Business Playbook",
+  "version": "1.0.0",
+  "workflow_model": "role-based-single-agent",
+  "roles": { ... },
+  "phases": [ ... ],
+  "cross_cutting_concerns": [ ... ],
+  "knowledge_base": {
+    "layers": [ ... ],
+    "entry_schema": { ... },
+    "bridge_schema": { ... }
+  },
+  "defaults": { ... }
+}
+```
+
+---
+
+## Naming Conventions
+
+### Files
+- Lowercase with hyphens: `phase-structure.md`
+- JSON files: `entry-schema.json`
+- Version suffix for iterations: `task-list-v0.1.md`
+
+### Directories
+- Lowercase with hyphens: `knowledge-base/`, `phase-checklists/`
+- KB layers: `technical/`, `sound-design/`, `ui-ux/`, `commercial/`, `reference/`
+
+### KB Entry IDs
+- Format: `{layer}_{topic}_{entry-name}.json`
+- Example: `technical_realtime-safety_atomic-audio.json`
+
+---
+
+## Version Control
+
+All documents should be tracked in version control:
+
+```bash
+git init
+git add .
+git commit -m "Phase 0: Commission & Scoping complete"
+# After each phase gate:
+git commit -m "Phase X: [Phase Name] complete"
+```

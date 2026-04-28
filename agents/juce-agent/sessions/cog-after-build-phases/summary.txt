@@ -1,0 +1,16 @@
+Claude Code Session Summary
+==========================
+
+Session ID: a47f1033-bbfc-4727-bbaf-27c374c38e05
+Export Time: 2026-03-28 20:16:15
+Project Directory: /home/myuser
+Duration: 2026-03-29T01:06:24.235Z to 2026-03-29T03:16:03.654Z
+
+Statistics:
+- Total Messages: 1095
+- User Messages: 355
+- Assistant Messages: 689
+- Tool Uses: 345
+- Models: glm-5
+
+Exported to: /home/myuser/CogVST/.claude-sessions/cog-after-build-phases

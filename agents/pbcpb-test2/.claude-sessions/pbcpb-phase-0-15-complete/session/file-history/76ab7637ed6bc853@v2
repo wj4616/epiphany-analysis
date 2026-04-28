@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_filters_modulation",
+  "kb": "sound-design",
+  "topic": "filters",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Filter Modulation for Movement",
+  "summary": "Placeholder: LFO and envelope modulation of filter cutoff for dynamic sounds.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["filter", "modulation", "lfo", "envelope", "movement"],
+  "related_topics": ["filters", "modulation"],
+  "difficulty": "intermediate",
+  "domain_relevance": 9
+}

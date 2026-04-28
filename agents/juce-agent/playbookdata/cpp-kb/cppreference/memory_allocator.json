@@ -1,0 +1,1266 @@
+{
+  "id": "cpp-kb_cppreference_memory_allocator",
+  "kb": "cpp-kb",
+  "topic": "cppreference",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Create account](https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fmemory%2Fallocator&type=signup)",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "text",
+      "code": "#include <iostream>\n#include <memory>\n#include <string>\n\nint main()\n{\n    // default allocator for ints\n    std::allocator<int> alloc1;\n\n    // demonstrating the few directly usable members\n    static_assert(std::is_same_v<int, decltype(alloc1)::value_type>);\n    int* p1 = alloc1.allocate(1); // space for one int\n    alloc1.deallocate(p1, 1);     // and it is gone\n\n    // Even those can be used through traits though, so no need\n    using traits_t1 = std::allocator_traits<decltype(alloc1)>; // The matching trait\n    p1 = traits_t1::allocate(alloc1, 1);\n    traits_t1::construct(alloc1, p1, 7);  // construct the int\n    std::cout << *p1 << '\\n';\n    traits_t1::deallocate(alloc1, p1, 1); // deallocate space for one int\n\n    // default allocator for strings\n    std::allocator<std::string> alloc2;\n    // matching traits\n    using traits_t2 = std::allocator_traits<decltype(alloc2)>;\n\n    // Rebinding the allocator using the trait for strings gets the same type\n    traits_t2::rebind_alloc<std::string> alloc_ = alloc2;\n\n    std::string* p2 = traits_t2::allocate(alloc2, 2); // space for 2 strings\n\n    traits_t2::construct(alloc2, p2, \"foo\");\n    traits_t2::construct(alloc2, p2 + 1, \"bar\");\n\n    std::cout << p2[0] << ' ' << p2[1] << '\\n';\n\n    traits_t2::destroy(alloc2, p2 + 1);\n    traits_t2::destroy(alloc2, p2);\n    traits_t2::deallocate(alloc2, p2, 2);\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "text",
+      "code": "7\nfoo bar\n",
+      "preserved": true
+    }
+  ],
+  "references": [
+    {
+      "title": "cppreference.com",
+      "url": "https://en.cppreference.com/index.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Create account",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fmemory%2Fallocator&type=signup",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Log in",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fmemory%2Fallocator \"You are encouraged to log in; however, it is not mandatory [o]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Page",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator.html \"View the content page [c]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Discussion",
+      "url": "https://en.cppreference.com/w/Talk%253Acpp/memory/allocator.html \"Discussion about the content page [t]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "View",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit \"You can edit this page. Please use the preview button before saving [e]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "History",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=history \"Past revisions of this page [h]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "cpp",
+      "url": "https://en.cppreference.com/w/cpp.html \"cpp\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "memory",
+      "url": "https://en.cppreference.com/w/cpp/memory.html \"cpp/memory\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Compiler support",
+      "url": "https://en.cppreference.com/w/cpp/compiler_support.html \"cpp/compiler support\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Freestanding and hosted",
+      "url": "https://en.cppreference.com/w/cpp/freestanding.html \"cpp/freestanding\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Language",
+      "url": "https://en.cppreference.com/w/cpp/language.html \"cpp/language\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Standard library",
+      "url": "https://en.cppreference.com/w/cpp/standard_library.html \"cpp/standard library\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Standard library headers",
+      "url": "https://en.cppreference.com/w/cpp/headers.html \"cpp/header\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Named requirements",
+      "url": "https://en.cppreference.com/w/cpp/iterator/concepts.html \"cpp/named req\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Feature test macros",
+      "url": "https://en.cppreference.com/w/cpp/experimental/feature_test.html \"cpp/feature test\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Language support library",
+      "url": "https://en.cppreference.com/w/cpp/utility.html#Language_support \"cpp/utility\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Concepts library",
+      "url": "https://en.cppreference.com/w/cpp/concepts.html \"cpp/concepts\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Diagnostics library",
+      "url": "https://en.cppreference.com/w/cpp/error.html \"cpp/error\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Metaprogramming library",
+      "url": "https://en.cppreference.com/w/cpp/meta.html \"cpp/meta\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "General utilities library",
+      "url": "https://en.cppreference.com/w/cpp/utility.html \"cpp/utility\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Containers library",
+      "url": "https://en.cppreference.com/w/cpp/container.html \"cpp/container\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Iterators library",
+      "url": "https://en.cppreference.com/w/cpp/iterator.html \"cpp/iterator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Ranges library",
+      "url": "https://en.cppreference.com/w/cpp/ranges.html \"cpp/ranges\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Algorithms library",
+      "url": "https://en.cppreference.com/w/cpp/algorithm.html \"cpp/algorithm\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Strings library",
+      "url": "https://en.cppreference.com/w/cpp/string.html \"cpp/string\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Text processing library",
+      "url": "https://en.cppreference.com/w/cpp/text.html \"cpp/text\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Numerics library",
+      "url": "https://en.cppreference.com/w/cpp/numeric.html \"cpp/numeric\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Date and time library",
+      "url": "https://en.cppreference.com/w/cpp/chrono.html \"cpp/chrono\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Input/output library",
+      "url": "https://en.cppreference.com/w/cpp/io.html \"cpp/io\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Filesystem library",
+      "url": "https://en.cppreference.com/w/cpp/filesystem.html \"cpp/filesystem\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Concurrency support library",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Execution control library",
+      "url": "https://en.cppreference.com/w/cpp/experimental/execution.html \"cpp/execution\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Technical specifications",
+      "url": "https://en.cppreference.com/w/cpp/experimental.html \"cpp/experimental\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Symbols index",
+      "url": "https://en.cppreference.com/w/cpp/symbol_index.html \"cpp/symbol index\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "External libraries",
+      "url": "https://en.cppreference.com/w/cpp/links/libs.html \"cpp/links/libs\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "_voidify_",
+      "url": "https://en.cppreference.com/w/cpp/memory/voidify.html \"cpp/memory/voidify\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Allocators",
+      "url": "https://en.cppreference.com/w/cpp/memory.html#Allocators \"cpp/memory\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "allocator\\_traits",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator_traits.html \"cpp/memory/allocator traits\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "allocation\\_result",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocation_result.html \"cpp/memory/allocation result\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "scoped\\_allocator\\_adaptor",
+      "url": "https://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor.html \"cpp/memory/scoped allocator adaptor\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "pmr::polymorphic\\_allocator",
+      "url": "https://en.cppreference.com/w/cpp/memory/polymorphic_allocator.html \"cpp/memory/polymorphic allocator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "allocator\\_arg",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator_arg.html \"cpp/memory/allocator arg\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "uses\\_allocator",
+      "url": "https://en.cppreference.com/w/cpp/memory/uses_allocator.html \"cpp/memory/uses allocator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "uses\\_allocator\\_construction\\_args",
+      "url": "https://en.cppreference.com/w/cpp/memory/uses_allocator_construction_args.html \"cpp/memory/uses allocator construction args\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "make\\_obj\\_using\\_allocator",
+      "url": "https://en.cppreference.com/w/cpp/memory/make_obj_using_allocator.html \"cpp/memory/make obj using allocator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "uninitialized\\_construct\\_using\\_allocator",
+      "url": "https://en.cppreference.com/w/cpp/memory/uninitialized_construct_using_allocator.html \"cpp/memory/uninitialized construct using allocator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Uninitialized memory algorithms",
+      "url": "https://en.cppreference.com/w/cpp/memory.html#Uninitialized_memory_algorithms \"cpp/memory\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "uninitialized\\_copy",
+      "url": "https://en.cppreference.com/w/cpp/memory/uninitialized_copy.html \"cpp/memory/uninitialized copy\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "uninitialized\\_fill",
+      "url": "https://en.cppreference.com/w/cpp/memory/uninitialized_fill.html \"cpp/memory/uninitialized fill\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "uninitialized\\_move",
+      "url": "https://en.cppreference.com/w/cpp/memory/uninitialized_move.html \"cpp/memory/uninitialized move\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "uninitialized\\_copy\\_n",
+      "url": "https://en.cppreference.com/w/cpp/memory/uninitialized_copy_n.html \"cpp/memory/uninitialized copy n\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "uninitialized\\_fill\\_n",
+      "url": "https://en.cppreference.com/w/cpp/memory/uninitialized_fill_n.html \"cpp/memory/uninitialized fill n\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "uninitialized\\_move\\_n",
+      "url": "https://en.cppreference.com/w/cpp/memory/uninitialized_move_n.html \"cpp/memory/uninitialized move n\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "construct\\_at",
+      "url": "https://en.cppreference.com/w/cpp/memory/construct_at.html \"cpp/memory/construct at\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "uninitialized\\_default\\_construct",
+      "url": "https://en.cppreference.com/w/cpp/memory/uninitialized_default_construct.html \"cpp/memory/uninitialized default construct\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "uninitialized\\_value\\_construct",
+      "url": "https://en.cppreference.com/w/cpp/memory/uninitialized_value_construct.html \"cpp/memory/uninitialized value construct\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "destroy",
+      "url": "https://en.cppreference.com/w/cpp/memory/destroy.html \"cpp/memory/destroy\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "uninitialized\\_default\\_construct\\_n",
+      "url": "https://en.cppreference.com/w/cpp/memory/uninitialized_default_construct_n.html \"cpp/memory/uninitialized default construct n\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "uninitialized\\_value\\_construct\\_n",
+      "url": "https://en.cppreference.com/w/cpp/memory/uninitialized_value_construct_n.html \"cpp/memory/uninitialized value construct n\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "destroy\\_n",
+      "url": "https://en.cppreference.com/w/cpp/memory/destroy_n.html \"cpp/memory/destroy n\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "destroy\\_at",
+      "url": "https://en.cppreference.com/w/cpp/memory/destroy_at.html \"cpp/memory/destroy at\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Constrained uninitialized memory algorithms",
+      "url": "https://en.cppreference.com/w/cpp/memory.html#Constrained_uninitialized_memory_algorithms \"cpp/memory\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ranges::uninitialized\\_copy",
+      "url": "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_copy.html \"cpp/memory/ranges/uninitialized copy\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ranges::uninitialized\\_fill",
+      "url": "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_fill.html \"cpp/memory/ranges/uninitialized fill\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ranges::uninitialized\\_move",
+      "url": "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_move.html \"cpp/memory/ranges/uninitialized move\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ranges::uninitialized\\_copy\\_n",
+      "url": "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_copy_n.html \"cpp/memory/ranges/uninitialized copy n\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ranges::uninitialized\\_fill\\_n",
+      "url": "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_fill_n.html \"cpp/memory/ranges/uninitialized fill n\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ranges::uninitialized\\_move\\_n",
+      "url": "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_move_n.html \"cpp/memory/ranges/uninitialized move n\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ranges::construct\\_at",
+      "url": "https://en.cppreference.com/w/cpp/memory/ranges/construct_at.html \"cpp/memory/ranges/construct at\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ranges::uninitialized\\_default\\_construct",
+      "url": "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_default_construct.html \"cpp/memory/ranges/uninitialized default construct\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ranges::uninitialized\\_value\\_construct",
+      "url": "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_value_construct.html \"cpp/memory/ranges/uninitialized value construct\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ranges::destroy",
+      "url": "https://en.cppreference.com/w/cpp/memory/ranges/destroy.html \"cpp/memory/ranges/destroy\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ranges::uninitialized\\_default\\_construct\\_n",
+      "url": "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_default_construct_n.html \"cpp/memory/ranges/uninitialized default construct n\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ranges::uninitialized\\_value\\_construct\\_n",
+      "url": "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_value_construct_n.html \"cpp/memory/ranges/uninitialized value construct n\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ranges::destroy\\_n",
+      "url": "https://en.cppreference.com/w/cpp/memory/ranges/destroy_n.html \"cpp/memory/ranges/destroy n\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ranges::destroy\\_at",
+      "url": "https://en.cppreference.com/w/cpp/memory/ranges/destroy_at.html \"cpp/memory/ranges/destroy at\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Memory resources",
+      "url": "https://en.cppreference.com/w/cpp/memory.html#Memory_resources \"cpp/memory\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "pmr::memory\\_resource",
+      "url": "https://en.cppreference.com/w/cpp/memory/memory_resource.html \"cpp/memory/memory resource\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "pmr::get\\_default\\_resource",
+      "url": "https://en.cppreference.com/w/cpp/memory/get_default_resource.html \"cpp/memory/get default resource\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "pmr::set\\_default\\_resource",
+      "url": "https://en.cppreference.com/w/cpp/memory/set_default_resource.html \"cpp/memory/set default resource\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "pmr::new\\_delete\\_resource",
+      "url": "https://en.cppreference.com/w/cpp/memory/new_delete_resource.html \"cpp/memory/new delete resource\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "pmr::pool\\_options",
+      "url": "https://en.cppreference.com/w/cpp/memory/pool_options.html \"cpp/memory/pool options\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "pmr::null\\_memory\\_resource",
+      "url": "https://en.cppreference.com/w/cpp/memory/null_memory_resource.html \"cpp/memory/null memory resource\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "pmr::synchronized\\_pool\\_resource",
+      "url": "https://en.cppreference.com/w/cpp/memory/synchronized_pool_resource.html \"cpp/memory/synchronized pool resource\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "pmr::unsynchronized\\_pool\\_resource",
+      "url": "https://en.cppreference.com/w/cpp/memory/unsynchronized_pool_resource.html \"cpp/memory/unsynchronized pool resource\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "pmr::monotonic\\_buffer\\_resource",
+      "url": "https://en.cppreference.com/w/cpp/memory/monotonic_buffer_resource.html \"cpp/memory/monotonic buffer resource\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Explicit lifetime management",
+      "url": "https://en.cppreference.com/w/cpp/memory.html#Explicit_lifetime_management \"cpp/memory\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "start\\_lifetime\\_as",
+      "url": "https://en.cppreference.com/w/cpp/memory/start_lifetime_as.html \"cpp/memory/start lifetime as\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Types for composite class design",
+      "url": "https://en.cppreference.com/w/cpp/memory.html#Types_for_composite_class_design \"cpp/memory\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "indirect",
+      "url": "https://en.cppreference.com/w/cpp/memory/indirect.html \"cpp/memory/indirect\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "polymorphic",
+      "url": "https://en.cppreference.com/w/cpp/memory/polymorphic.html \"cpp/memory/polymorphic\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Uninitialized storage",
+      "url": "https://en.cppreference.com/w/cpp/memory.html#Uninitialized_storage \"cpp/memory\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "raw\\_storage\\_iterator",
+      "url": "https://en.cppreference.com/w/cpp/memory/raw_storage_iterator.html \"cpp/memory/raw storage iterator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "get\\_temporary\\_buffer",
+      "url": "https://en.cppreference.com/w/cpp/memory/get_temporary_buffer.html \"cpp/memory/get temporary buffer\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "return\\_temporary\\_buffer",
+      "url": "https://en.cppreference.com/w/cpp/memory/return_temporary_buffer.html \"cpp/memory/return temporary buffer\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Garbage collector support",
+      "url": "https://en.cppreference.com/w/cpp/memory.html#Garbage_collector_support \"cpp/memory\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "declare\\_reachable",
+      "url": "https://en.cppreference.com/w/cpp/memory/gc/declare_reachable.html \"cpp/memory/gc/declare reachable\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "declare\\_no\\_pointers",
+      "url": "https://en.cppreference.com/w/cpp/memory/gc/declare_no_pointers.html \"cpp/memory/gc/declare no pointers\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "pointer\\_safety",
+      "url": "https://en.cppreference.com/w/cpp/memory/gc/pointer_safety.html \"cpp/memory/gc/pointer safety\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "undeclare\\_reachable",
+      "url": "https://en.cppreference.com/w/cpp/memory/gc/undeclare_reachable.html \"cpp/memory/gc/undeclare reachable\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "undeclare\\_no\\_pointers",
+      "url": "https://en.cppreference.com/w/cpp/memory/gc/undeclare_no_pointers.html \"cpp/memory/gc/undeclare no pointers\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "get\\_pointer\\_safety",
+      "url": "https://en.cppreference.com/w/cpp/memory/gc/get_pointer_safety.html \"cpp/memory/gc/get pointer safety\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Low level memory\\<br>\\<br>management",
+      "url": "https://en.cppreference.com/w/cpp/memory/new.html#Low_level_memory_management \"cpp/memory/new\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "nothrow\\_t",
+      "url": "https://en.cppreference.com/w/cpp/memory/new/nothrow_t.html \"cpp/memory/new/nothrow t\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "nothrow",
+      "url": "https://en.cppreference.com/w/cpp/memory/new/nothrow.html \"cpp/memory/new/nothrow\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "new\\_handler",
+      "url": "https://en.cppreference.com/w/cpp/memory/new/new_handler.html \"cpp/memory/new/new handler\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "set\\_new\\_handler",
+      "url": "https://en.cppreference.com/w/cpp/memory/new/set_new_handler.html \"cpp/memory/new/set new handler\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "get\\_new\\_handler",
+      "url": "https://en.cppreference.com/w/cpp/memory/new/get_new_handler.html \"cpp/memory/new/get new handler\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "bad\\_alloc",
+      "url": "https://en.cppreference.com/w/cpp/memory/new/bad_alloc.html \"cpp/memory/new/bad alloc\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "bad\\_array\\_new\\_length",
+      "url": "https://en.cppreference.com/w/cpp/memory/new/bad_array_new_length.html \"cpp/memory/new/bad array new length\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "align\\_val\\_t",
+      "url": "https://en.cppreference.com/w/cpp/memory/new/align_val_t.html \"cpp/memory/new/align val t\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "destroying\\_delete\\_t",
+      "url": "https://en.cppreference.com/w/cpp/memory/new/destroying_delete_t.html \"cpp/memory/new/destroying delete t\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "launder",
+      "url": "https://en.cppreference.com/w/cpp/utility/launder.html \"cpp/utility/launder\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Smart pointers",
+      "url": "https://en.cppreference.com/w/cpp/memory.html#Smart_pointers \"cpp/memory\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "unique\\_ptr",
+      "url": "https://en.cppreference.com/w/cpp/memory/unique_ptr.html \"cpp/memory/unique ptr\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "shared\\_ptr",
+      "url": "https://en.cppreference.com/w/cpp/memory/shared_ptr.html \"cpp/memory/shared ptr\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "weak\\_ptr",
+      "url": "https://en.cppreference.com/w/cpp/memory/weak_ptr.html \"cpp/memory/weak ptr\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "auto\\_ptr",
+      "url": "https://en.cppreference.com/w/cpp/memory/auto_ptr.html \"cpp/memory/auto ptr\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "owner\\_less",
+      "url": "https://en.cppreference.com/w/cpp/memory/owner_less.html \"cpp/memory/owner less\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "owner\\_less<void>",
+      "url": "https://en.cppreference.com/w/cpp/memory/owner_less_void.html \"cpp/memory/owner less void\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "owner\\_hash",
+      "url": "https://en.cppreference.com/w/cpp/memory/owner_hash.html \"cpp/memory/owner hash\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "owner\\_equal",
+      "url": "https://en.cppreference.com/w/cpp/memory/owner_equal.html \"cpp/memory/owner equal\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "enable\\_shared\\_from\\_this",
+      "url": "https://en.cppreference.com/w/cpp/memory/enable_shared_from_this.html \"cpp/memory/enable shared from this\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "bad\\_weak\\_ptr",
+      "url": "https://en.cppreference.com/w/cpp/memory/bad_weak_ptr.html \"cpp/memory/bad weak ptr\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "default\\_delete",
+      "url": "https://en.cppreference.com/w/cpp/memory/default_delete.html \"cpp/memory/default delete\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "out\\_ptr\\_t",
+      "url": "https://en.cppreference.com/w/cpp/memory/out_ptr_t.html \"cpp/memory/out ptr t\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "inout\\_ptr\\_t",
+      "url": "https://en.cppreference.com/w/cpp/memory/inout_ptr_t.html \"cpp/memory/inout ptr t\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Miscellaneous",
+      "url": "https://en.cppreference.com/w/cpp/memory.html#Miscellaneous \"cpp/memory\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "pointer\\_traits",
+      "url": "https://en.cppreference.com/w/cpp/memory/pointer_traits.html \"cpp/memory/pointer traits\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "to\\_address",
+      "url": "https://en.cppreference.com/w/cpp/memory/to_address.html \"cpp/memory/to address\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "addressof",
+      "url": "https://en.cppreference.com/w/cpp/memory/addressof.html \"cpp/memory/addressof\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "align",
+      "url": "https://en.cppreference.com/w/cpp/memory/align.html \"cpp/memory/align\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "assume\\_aligned",
+      "url": "https://en.cppreference.com/w/cpp/memory/assume_aligned.html \"cpp/memory/assume aligned\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "is\\_sufficiently\\_aligned",
+      "url": "https://en.cppreference.com/w/cpp/memory/is_sufficiently_aligned.html \"cpp/memory/is sufficiently aligned\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "C Library",
+      "url": "https://en.cppreference.com/w/cpp/memory/c.html \"cpp/memory/c\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "malloc",
+      "url": "https://en.cppreference.com/w/cpp/memory/c/malloc.html \"cpp/memory/c/malloc\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "calloc",
+      "url": "https://en.cppreference.com/w/cpp/memory/c/calloc.html \"cpp/memory/c/calloc\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "realloc",
+      "url": "https://en.cppreference.com/w/cpp/memory/c/realloc.html \"cpp/memory/c/realloc\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "free",
+      "url": "https://en.cppreference.com/w/cpp/memory/c/free.html \"cpp/memory/c/free\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "aligned\\_alloc",
+      "url": "https://en.cppreference.com/w/cpp/memory/c/aligned_alloc.html \"cpp/memory/c/aligned alloc\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "allocator::allocator",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator/allocator.html \"cpp/memory/allocator/allocator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "allocator::~allocator",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator/~allocator.html \"cpp/memory/allocator/~allocator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "allocator::address",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator/address.html \"cpp/memory/allocator/address\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "allocator::allocate",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator/allocate.html \"cpp/memory/allocator/allocate\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "allocator::allocate\\_at\\_least",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator/allocate_at_least.html \"cpp/memory/allocator/allocate at least\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "allocator::deallocate",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator/deallocate.html \"cpp/memory/allocator/deallocate\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "allocator::max\\_size",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator/max_size.html \"cpp/memory/allocator/max size\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "allocator::construct",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator/construct.html \"cpp/memory/allocator/construct\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "allocator::destroy",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator/destroy.html \"cpp/memory/allocator/destroy\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "operator==operator!=",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator/operator_cmp.html \"cpp/memory/allocator/operator cmp\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Allocator",
+      "url": "https://en.cppreference.com/w/cpp/named_req/Allocator.html \"cpp/named req/Allocator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "allocator completeness requirements",
+      "url": "https://en.cppreference.com/w/cpp/named_req/Allocator.html#Allocator_completeness_requirements \"cpp/named req/Allocator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "1Member types",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator.html#Member_types",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "2Member functions",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator.html#Member_functions",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "3Non-member functions",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator.html#Non-member_functions",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "4Notes",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator.html#Notes",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "5Example",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator.html#Example",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "6Defect reports",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator.html#Defect_reports",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "7See also",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator.html#See_also",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=1 \"Edit section: Member types\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::size\\_t",
+      "url": "https://en.cppreference.com/w/cpp/types/size_t.html \"cpp/types/size t\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::ptrdiff\\_t",
+      "url": "https://en.cppreference.com/w/cpp/types/ptrdiff_t.html \"cpp/types/ptrdiff t\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::true\\_type",
+      "url": "https://en.cppreference.com/w/cpp/types/integral_constant.html \"cpp/types/integral constant\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=2 \"Edit section: Member functions\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=3 \"Edit section: Non-member functions\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=4 \"Edit section: Notes\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::list",
+      "url": "https://en.cppreference.com/w/cpp/container/list.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::allocator\\_traits",
+      "url": "https://en.cppreference.com/w/cpp/memory/allocator_traits.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "LWG issue 3170",
+      "url": "https://cplusplus.github.io/LWG/issue3170",
+      "domain": "cplusplus.github.io"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=5 \"Edit section: Example\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=6 \"Edit section: Defect reports\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "LWG 2103",
+      "url": "https://cplusplus.github.io/LWG/issue2103",
+      "domain": "cplusplus.github.io"
+    },
+    {
+      "title": "LWG 2108",
+      "url": "https://cplusplus.github.io/LWG/issue2108",
+      "domain": "cplusplus.github.io"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=7 \"Edit section: See also\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&oldid=163381",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&oldid=163381",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Support us",
+      "url": "http://www.cppreference.com/support",
+      "domain": "www.cppreference.com"
+    },
+    {
+      "title": "Recent changes",
+      "url": "https://en.cppreference.com/w/Special:RecentChanges \"A list of recent changes in the wiki [r]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "FAQ",
+      "url": "https://en.cppreference.com/w/Cppreference%253AAbout.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Offline version",
+      "url": "https://en.cppreference.com/w/Cppreference%253AArchives.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "What links here",
+      "url": "https://en.cppreference.com/w/Special:WhatLinksHere/cpp/memory/allocator \"A list of all wiki pages that link here [j]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Related changes",
+      "url": "https://en.cppreference.com/w/Special:RecentChangesLinked/cpp/memory/allocator \"Recent changes in pages linked from this page [k]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Upload file",
+      "url": "http://upload.cppreference.com/w/Special:Upload \"Upload files [u]\"",
+      "domain": "upload.cppreference.com"
+    },
+    {
+      "title": "Special pages",
+      "url": "https://en.cppreference.com/w/Special:SpecialPages \"A list of all special pages [q]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Printable version",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&printable=yes \"Printable version of this page [p]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Permanent link",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&oldid=163381 \"Permanent link to this revision of the page\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Page information",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=info",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Deutsch",
+      "url": "http://de.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\"",
+      "domain": "de.cppreference.com"
+    },
+    {
+      "title": "Espa\u00f1ol",
+      "url": "http://es.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\"",
+      "domain": "es.cppreference.com"
+    },
+    {
+      "title": "Fran\u00e7ais",
+      "url": "http://fr.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\"",
+      "domain": "fr.cppreference.com"
+    },
+    {
+      "title": "Italiano",
+      "url": "http://it.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\"",
+      "domain": "it.cppreference.com"
+    },
+    {
+      "title": "\u65e5\u672c\u8a9e",
+      "url": "http://ja.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\"",
+      "domain": "ja.cppreference.com"
+    },
+    {
+      "title": "Portugu\u00eas",
+      "url": "http://pt.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\"",
+      "domain": "pt.cppreference.com"
+    },
+    {
+      "title": "\u0420\u0443\u0441\u0441\u043a\u0438\u0439",
+      "url": "http://ru.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\"",
+      "domain": "ru.cppreference.com"
+    },
+    {
+      "title": "\u4e2d\u6587",
+      "url": "http://zh.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\"",
+      "domain": "zh.cppreference.com"
+    },
+    {
+      "title": "Privacy policy",
+      "url": "https://en.cppreference.com/w/Cppreference%253APrivacy_policy.html \"Cppreference:Privacy policy\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "About cppreference.com",
+      "url": "https://en.cppreference.com/w/Cppreference%253AAbout.html \"Cppreference:About\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Disclaimers",
+      "url": "https://en.cppreference.com/w/Cppreference%253AGeneral_disclaimer.html \"Cppreference:General disclaimer\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "![Powered by MediaWiki",
+      "url": "https://en.cppreference.com/mwiki/skins/common/images/poweredby_mediawiki_88x31.png",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "![Powered by GeSHi",
+      "url": "https://upload.cppreference.com/mwiki/images/2/2b/powered_by_geshi_88x31.png",
+      "domain": "upload.cppreference.com"
+    },
+    {
+      "title": "![Hosted by Tiger Technologies",
+      "url": "https://upload.cppreference.com/mwiki/images/9/94/powered_by_tigertech_88x31.png",
+      "domain": "upload.cppreference.com"
+    }
+  ],
+  "original_markdown": "##### [cppreference.com](https://en.cppreference.com/index.html)\n\n[Create account](https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fmemory%2Fallocator&type=signup)\n\n- [Log in](https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fmemory%2Fallocator \"You are encouraged to log in; however, it is not mandatory [o]\")\n\n##### Namespaces\n\n- [Page](https://en.cppreference.com/w/cpp/memory/allocator.html \"View the content page [c]\")\n- [Discussion](https://en.cppreference.com/w/Talk%253Acpp/memory/allocator.html \"Discussion about the content page [t]\")\n\n##### Variants\n\n##### Views\n\n- [View](https://en.cppreference.com/w/cpp/memory/allocator.html)\n- [Edit](https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit \"You can edit this page. Please use the preview button before saving [e]\")\n- [History](https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=history \"Past revisions of this page [h]\")\n\n##### Actions\n\n# std::allocator\n\nFrom cppreference.com\n\n< [cpp](https://en.cppreference.com/w/cpp.html \"cpp\") \u200e \\| [memory](https://en.cppreference.com/w/cpp/memory.html \"cpp/memory\")\n\n[C++](https://en.cppreference.com/w/cpp.html \"cpp\")\n\n|     |\n| --- |\n| [Compiler support](https://en.cppreference.com/w/cpp/compiler_support.html \"cpp/compiler support\") |\n| [Freestanding and hosted](https://en.cppreference.com/w/cpp/freestanding.html \"cpp/freestanding\") |\n| [Language](https://en.cppreference.com/w/cpp/language.html \"cpp/language\") |\n| [Standard library](https://en.cppreference.com/w/cpp/standard_library.html \"cpp/standard library\") |\n| [Standard library headers](https://en.cppreference.com/w/cpp/headers.html \"cpp/header\") |\n| [Named requirements](https://en.cppreference.com/w/cpp/iterator/concepts.html \"cpp/named req\") |\n| [Feature test macros](https://en.cppreference.com/w/cpp/experimental/feature_test.html \"cpp/feature test\")(C++20) |\n| [Language support library](https://en.cppreference.com/w/cpp/utility.html#Language_support \"cpp/utility\") |\n| [Concepts library](https://en.cppreference.com/w/cpp/concepts.html \"cpp/concepts\")(C++20) |\n| [Diagnostics library](https://en.cppreference.com/w/cpp/error.html \"cpp/error\") |\n| [Memory management library](https://en.cppreference.com/w/cpp/memory.html \"cpp/memory\") |\n| [Metaprogramming library](https://en.cppreference.com/w/cpp/meta.html \"cpp/meta\")(C++11) |\n| [General utilities library](https://en.cppreference.com/w/cpp/utility.html \"cpp/utility\") |\n| [Containers library](https://en.cppreference.com/w/cpp/container.html \"cpp/container\") |\n| [Iterators library](https://en.cppreference.com/w/cpp/iterator.html \"cpp/iterator\") |\n| [Ranges library](https://en.cppreference.com/w/cpp/ranges.html \"cpp/ranges\")(C++20) |\n| [Algorithms library](https://en.cppreference.com/w/cpp/algorithm.html \"cpp/algorithm\") |\n| [Strings library](https://en.cppreference.com/w/cpp/string.html \"cpp/string\") |\n| [Text processing library](https://en.cppreference.com/w/cpp/text.html \"cpp/text\") |\n| [Numerics library](https://en.cppreference.com/w/cpp/numeric.html \"cpp/numeric\") |\n| [Date and time library](https://en.cppreference.com/w/cpp/chrono.html \"cpp/chrono\") |\n| [Input/output library](https://en.cppreference.com/w/cpp/io.html \"cpp/io\") |\n| [Filesystem library](https://en.cppreference.com/w/cpp/filesystem.html \"cpp/filesystem\")(C++17) |\n| [Concurrency support library](https://en.cppreference.com/w/cpp/atomic.html \"cpp/thread\")(C++11) |\n| [Execution control library](https://en.cppreference.com/w/cpp/experimental/execution.html \"cpp/execution\")(C++26) |\n| [Technical specifications](https://en.cppreference.com/w/cpp/experimental.html \"cpp/experimental\") |\n| [Symbols index](https://en.cppreference.com/w/cpp/symbol_index.html \"cpp/symbol index\") |\n| [External libraries](https://en.cppreference.com/w/cpp/links/libs.html \"cpp/links/libs\") |\n\n[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/navbar_content&action=edit)\n\n[Memory management library](https://en.cppreference.com/w/cpp/memory.html \"cpp/memory\")\n\n|     |     |\n| --- | --- |\n| |     |     |\n| --- | --- |\n| [_voidify_](https://en.cppreference.com/w/cpp/memory/voidify.html \"cpp/memory/voidify\")<br>(exposition only\\*) |\n| [Allocators](https://en.cppreference.com/w/cpp/memory.html#Allocators \"cpp/memory\") |\n| |     |\n| --- |\n| **allocator** |\n| [allocator\\_traits](https://en.cppreference.com/w/cpp/memory/allocator_traits.html \"cpp/memory/allocator traits\")<br>(C++11) |\n| [allocation\\_result](https://en.cppreference.com/w/cpp/memory/allocation_result.html \"cpp/memory/allocation result\")<br>(C++23) |\n| [scoped\\_allocator\\_adaptor](https://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor.html \"cpp/memory/scoped allocator adaptor\")<br>(C++11) |\n| [pmr::polymorphic\\_allocator](https://en.cppreference.com/w/cpp/memory/polymorphic_allocator.html \"cpp/memory/polymorphic allocator\")<br>(C++17) | | |     |\n| --- |\n| [allocator\\_arg](https://en.cppreference.com/w/cpp/memory/allocator_arg.html \"cpp/memory/allocator arg\")<br>(C++11) |\n| [uses\\_allocator](https://en.cppreference.com/w/cpp/memory/uses_allocator.html \"cpp/memory/uses allocator\")<br>(C++11) |\n| [uses\\_allocator\\_construction\\_args](https://en.cppreference.com/w/cpp/memory/uses_allocator_construction_args.html \"cpp/memory/uses allocator construction args\")<br>(C++20) |\n| [make\\_obj\\_using\\_allocator](https://en.cppreference.com/w/cpp/memory/make_obj_using_allocator.html \"cpp/memory/make obj using allocator\")<br>(C++20) |\n| [uninitialized\\_construct\\_using\\_allocator](https://en.cppreference.com/w/cpp/memory/uninitialized_construct_using_allocator.html \"cpp/memory/uninitialized construct using allocator\")<br>(C++20) | |\n| [Uninitialized memory algorithms](https://en.cppreference.com/w/cpp/memory.html#Uninitialized_memory_algorithms \"cpp/memory\") |\n| |     |\n| --- |\n| [uninitialized\\_copy](https://en.cppreference.com/w/cpp/memory/uninitialized_copy.html \"cpp/memory/uninitialized copy\") |\n| [uninitialized\\_fill](https://en.cppreference.com/w/cpp/memory/uninitialized_fill.html \"cpp/memory/uninitialized fill\") |\n| [uninitialized\\_move](https://en.cppreference.com/w/cpp/memory/uninitialized_move.html \"cpp/memory/uninitialized move\")<br>(C++17) |\n| [uninitialized\\_copy\\_n](https://en.cppreference.com/w/cpp/memory/uninitialized_copy_n.html \"cpp/memory/uninitialized copy n\")<br>(C++11) |\n| [uninitialized\\_fill\\_n](https://en.cppreference.com/w/cpp/memory/uninitialized_fill_n.html \"cpp/memory/uninitialized fill n\") |\n| [uninitialized\\_move\\_n](https://en.cppreference.com/w/cpp/memory/uninitialized_move_n.html \"cpp/memory/uninitialized move n\")<br>(C++17) |\n| [construct\\_at](https://en.cppreference.com/w/cpp/memory/construct_at.html \"cpp/memory/construct at\")<br>(C++20) | | |     |\n| --- |\n| [uninitialized\\_default\\_construct](https://en.cppreference.com/w/cpp/memory/uninitialized_default_construct.html \"cpp/memory/uninitialized default construct\")<br>(C++17) |\n| [uninitialized\\_value\\_construct](https://en.cppreference.com/w/cpp/memory/uninitialized_value_construct.html \"cpp/memory/uninitialized value construct\")<br>(C++17) |\n| [destroy](https://en.cppreference.com/w/cpp/memory/destroy.html \"cpp/memory/destroy\")<br>(C++17) |\n| [uninitialized\\_default\\_construct\\_n](https://en.cppreference.com/w/cpp/memory/uninitialized_default_construct_n.html \"cpp/memory/uninitialized default construct n\")<br>(C++17) |\n| [uninitialized\\_value\\_construct\\_n](https://en.cppreference.com/w/cpp/memory/uninitialized_value_construct_n.html \"cpp/memory/uninitialized value construct n\")<br>(C++17) |\n| [destroy\\_n](https://en.cppreference.com/w/cpp/memory/destroy_n.html \"cpp/memory/destroy n\")<br>(C++17) |\n| [destroy\\_at](https://en.cppreference.com/w/cpp/memory/destroy_at.html \"cpp/memory/destroy at\")<br>(C++17) | |\n| [Constrained uninitialized memory algorithms](https://en.cppreference.com/w/cpp/memory.html#Constrained_uninitialized_memory_algorithms \"cpp/memory\") |\n| |     |\n| --- |\n| [ranges::uninitialized\\_copy](https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_copy.html \"cpp/memory/ranges/uninitialized copy\")<br>(C++20) |\n| [ranges::uninitialized\\_fill](https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_fill.html \"cpp/memory/ranges/uninitialized fill\")<br>(C++20) |\n| [ranges::uninitialized\\_move](https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_move.html \"cpp/memory/ranges/uninitialized move\")<br>(C++20) |\n| [ranges::uninitialized\\_copy\\_n](https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_copy_n.html \"cpp/memory/ranges/uninitialized copy n\")<br>(C++20)`` |\n| [ranges::uninitialized\\_fill\\_n](https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_fill_n.html \"cpp/memory/ranges/uninitialized fill n\")<br>(C++20) |\n| [ranges::uninitialized\\_move\\_n](https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_move_n.html \"cpp/memory/ranges/uninitialized move n\")<br>(C++20) |\n| [ranges::construct\\_at](https://en.cppreference.com/w/cpp/memory/ranges/construct_at.html \"cpp/memory/ranges/construct at\")<br>(C++20) | | |     |\n| --- |\n| [ranges::uninitialized\\_default\\_construct](https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_default_construct.html \"cpp/memory/ranges/uninitialized default construct\")<br>(C++20) |\n| [ranges::uninitialized\\_value\\_construct](https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_value_construct.html \"cpp/memory/ranges/uninitialized value construct\")<br>(C++20) |\n| [ranges::destroy](https://en.cppreference.com/w/cpp/memory/ranges/destroy.html \"cpp/memory/ranges/destroy\")<br>(C++20) |\n| [ranges::uninitialized\\_default\\_construct\\_n](https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_default_construct_n.html \"cpp/memory/ranges/uninitialized default construct n\")<br>(C++20)`` |\n| [ranges::uninitialized\\_value\\_construct\\_n](https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_value_construct_n.html \"cpp/memory/ranges/uninitialized value construct n\")<br>(C++20) |\n| [ranges::destroy\\_n](https://en.cppreference.com/w/cpp/memory/ranges/destroy_n.html \"cpp/memory/ranges/destroy n\")<br>(C++20) |\n| [ranges::destroy\\_at](https://en.cppreference.com/w/cpp/memory/ranges/destroy_at.html \"cpp/memory/ranges/destroy at\")<br>(C++20) | |\n| [Memory resources](https://en.cppreference.com/w/cpp/memory.html#Memory_resources \"cpp/memory\") |\n| |     |\n| --- |\n| [pmr::memory\\_resource](https://en.cppreference.com/w/cpp/memory/memory_resource.html \"cpp/memory/memory resource\")<br>(C++17) |\n| [pmr::get\\_default\\_resource](https://en.cppreference.com/w/cpp/memory/get_default_resource.html \"cpp/memory/get default resource\")<br>(C++17) |\n| [pmr::set\\_default\\_resource](https://en.cppreference.com/w/cpp/memory/set_default_resource.html \"cpp/memory/set default resource\")<br>(C++17) |\n| [pmr::new\\_delete\\_resource](https://en.cppreference.com/w/cpp/memory/new_delete_resource.html \"cpp/memory/new delete resource\")<br>(C++17) |\n| [pmr::pool\\_options](https://en.cppreference.com/w/cpp/memory/pool_options.html \"cpp/memory/pool options\")<br>(C++17) | | |     |\n| --- |\n| [pmr::null\\_memory\\_resource](https://en.cppreference.com/w/cpp/memory/null_memory_resource.html \"cpp/memory/null memory resource\")<br>(C++17) |\n| [pmr::synchronized\\_pool\\_resource](https://en.cppreference.com/w/cpp/memory/synchronized_pool_resource.html \"cpp/memory/synchronized pool resource\")<br>(C++17) |\n| [pmr::unsynchronized\\_pool\\_resource](https://en.cppreference.com/w/cpp/memory/unsynchronized_pool_resource.html \"cpp/memory/unsynchronized pool resource\")<br>(C++17) |\n| [pmr::monotonic\\_buffer\\_resource](https://en.cppreference.com/w/cpp/memory/monotonic_buffer_resource.html \"cpp/memory/monotonic buffer resource\")<br>(C++17) |\n|  | |\n| |     |\n| --- |\n| [Explicit lifetime management](https://en.cppreference.com/w/cpp/memory.html#Explicit_lifetime_management \"cpp/memory\") |\n| [start\\_lifetime\\_as](https://en.cppreference.com/w/cpp/memory/start_lifetime_as.html \"cpp/memory/start lifetime as\")<br>(C++23) |\n| [start\\_lifetime\\_as\\_array](https://en.cppreference.com/w/cpp/memory/start_lifetime_as.html \"cpp/memory/start lifetime as\")<br>(C++23) | | |     |\n| --- |\n| [Types for composite class design](https://en.cppreference.com/w/cpp/memory.html#Types_for_composite_class_design \"cpp/memory\") |\n| [indirect](https://en.cppreference.com/w/cpp/memory/indirect.html \"cpp/memory/indirect\")<br>(C++26) |\n| [polymorphic](https://en.cppreference.com/w/cpp/memory/polymorphic.html \"cpp/memory/polymorphic\")<br>(C++26) | |\n| [Uninitialized storage](https://en.cppreference.com/w/cpp/memory.html#Uninitialized_storage \"cpp/memory\")(until C++20) |\n| |     |\n| --- |\n| [raw\\_storage\\_iterator](https://en.cppreference.com/w/cpp/memory/raw_storage_iterator.html \"cpp/memory/raw storage iterator\")<br>(until C++20\\*) |\n| [get\\_temporary\\_buffer](https://en.cppreference.com/w/cpp/memory/get_temporary_buffer.html \"cpp/memory/get temporary buffer\")<br>(until C++20\\*) | | |     |\n| --- |\n| [return\\_temporary\\_buffer](https://en.cppreference.com/w/cpp/memory/return_temporary_buffer.html \"cpp/memory/return temporary buffer\")<br>(until C++20\\*) |\n|  | |\n| [Garbage collector support](https://en.cppreference.com/w/cpp/memory.html#Garbage_collector_support \"cpp/memory\")(until C++23) |\n| |     |\n| --- |\n| [declare\\_reachable](https://en.cppreference.com/w/cpp/memory/gc/declare_reachable.html \"cpp/memory/gc/declare reachable\")<br>(C++11)(until C++23) |\n| [declare\\_no\\_pointers](https://en.cppreference.com/w/cpp/memory/gc/declare_no_pointers.html \"cpp/memory/gc/declare no pointers\")<br>(C++11)(until C++23) |\n| [pointer\\_safety](https://en.cppreference.com/w/cpp/memory/gc/pointer_safety.html \"cpp/memory/gc/pointer safety\")<br>(C++11)(until C++23) | | |     |\n| --- |\n| [undeclare\\_reachable](https://en.cppreference.com/w/cpp/memory/gc/undeclare_reachable.html \"cpp/memory/gc/undeclare reachable\")<br>(C++11)(until C++23) |\n| [undeclare\\_no\\_pointers](https://en.cppreference.com/w/cpp/memory/gc/undeclare_no_pointers.html \"cpp/memory/gc/undeclare no pointers\")<br>(C++11)(until C++23) |\n| [get\\_pointer\\_safety](https://en.cppreference.com/w/cpp/memory/gc/get_pointer_safety.html \"cpp/memory/gc/get pointer safety\")<br>(C++11)(until C++23) | | | |     |     |\n| --- | --- |\n| [Low level memory\\<br>\\<br>management](https://en.cppreference.com/w/cpp/memory/new.html#Low_level_memory_management \"cpp/memory/new\") |\n| [operator newoperator new\\[\\]](https://en.cppreference.com/w/cpp/memory/new/operator_new.html \"cpp/memory/new/operator new\") |\n| [operator deleteoperator delete\\[\\]](https://en.cppreference.com/w/cpp/memory/new/operator_delete.html \"cpp/memory/new/operator delete\") |\n| [nothrow\\_t](https://en.cppreference.com/w/cpp/memory/new/nothrow_t.html \"cpp/memory/new/nothrow t\") |\n| [nothrow](https://en.cppreference.com/w/cpp/memory/new/nothrow.html \"cpp/memory/new/nothrow\") |\n| [new\\_handler](https://en.cppreference.com/w/cpp/memory/new/new_handler.html \"cpp/memory/new/new handler\") |\n| [set\\_new\\_handler](https://en.cppreference.com/w/cpp/memory/new/set_new_handler.html \"cpp/memory/new/set new handler\") |\n| [get\\_new\\_handler](https://en.cppreference.com/w/cpp/memory/new/get_new_handler.html \"cpp/memory/new/get new handler\")<br>(C++11) |\n| [bad\\_alloc](https://en.cppreference.com/w/cpp/memory/new/bad_alloc.html \"cpp/memory/new/bad alloc\") |\n| [bad\\_array\\_new\\_length](https://en.cppreference.com/w/cpp/memory/new/bad_array_new_length.html \"cpp/memory/new/bad array new length\")<br>(C++11) |\n| [align\\_val\\_t](https://en.cppreference.com/w/cpp/memory/new/align_val_t.html \"cpp/memory/new/align val t\")<br>(C++17) |\n| [destroying\\_delete\\_t](https://en.cppreference.com/w/cpp/memory/new/destroying_delete_t.html \"cpp/memory/new/destroying delete t\")<br>(C++20) |\n| [launder](https://en.cppreference.com/w/cpp/utility/launder.html \"cpp/utility/launder\")<br>(C++17) |\n| [Smart pointers](https://en.cppreference.com/w/cpp/memory.html#Smart_pointers \"cpp/memory\") |\n| [unique\\_ptr](https://en.cppreference.com/w/cpp/memory/unique_ptr.html \"cpp/memory/unique ptr\")<br>(C++11) |\n| [shared\\_ptr](https://en.cppreference.com/w/cpp/memory/shared_ptr.html \"cpp/memory/shared ptr\")<br>(C++11) |\n| [weak\\_ptr](https://en.cppreference.com/w/cpp/memory/weak_ptr.html \"cpp/memory/weak ptr\")<br>(C++11) |\n| [auto\\_ptr](https://en.cppreference.com/w/cpp/memory/auto_ptr.html \"cpp/memory/auto ptr\")<br>(until C++17\\*) |\n| [owner\\_less](https://en.cppreference.com/w/cpp/memory/owner_less.html \"cpp/memory/owner less\")<br>(C++11) |\n| [owner\\_less<void>](https://en.cppreference.com/w/cpp/memory/owner_less_void.html \"cpp/memory/owner less void\")<br>(C++17) |\n| [owner\\_hash](https://en.cppreference.com/w/cpp/memory/owner_hash.html \"cpp/memory/owner hash\")<br>(C++26) |\n| [owner\\_equal](https://en.cppreference.com/w/cpp/memory/owner_equal.html \"cpp/memory/owner equal\")<br>(C++26) |\n| [enable\\_shared\\_from\\_this](https://en.cppreference.com/w/cpp/memory/enable_shared_from_this.html \"cpp/memory/enable shared from this\")<br>(C++11) |\n| [bad\\_weak\\_ptr](https://en.cppreference.com/w/cpp/memory/bad_weak_ptr.html \"cpp/memory/bad weak ptr\")<br>(C++11) |\n| [default\\_delete](https://en.cppreference.com/w/cpp/memory/default_delete.html \"cpp/memory/default delete\")<br>(C++11) |\n| [out\\_ptr\\_t](https://en.cppreference.com/w/cpp/memory/out_ptr_t.html \"cpp/memory/out ptr t\")<br>(C++23) |\n| [inout\\_ptr\\_t](https://en.cppreference.com/w/cpp/memory/inout_ptr_t.html \"cpp/memory/inout ptr t\")<br>(C++23) |\n| [Miscellaneous](https://en.cppreference.com/w/cpp/memory.html#Miscellaneous \"cpp/memory\") |\n| [pointer\\_traits](https://en.cppreference.com/w/cpp/memory/pointer_traits.html \"cpp/memory/pointer traits\")<br>(C++11) |\n| [to\\_address](https://en.cppreference.com/w/cpp/memory/to_address.html \"cpp/memory/to address\")<br>(C++20) |\n| [addressof](https://en.cppreference.com/w/cpp/memory/addressof.html \"cpp/memory/addressof\")<br>(C++11) |\n| [align](https://en.cppreference.com/w/cpp/memory/align.html \"cpp/memory/align\")<br>(C++11) |\n| [assume\\_aligned](https://en.cppreference.com/w/cpp/memory/assume_aligned.html \"cpp/memory/assume aligned\")<br>(C++20) |\n| [is\\_sufficiently\\_aligned](https://en.cppreference.com/w/cpp/memory/is_sufficiently_aligned.html \"cpp/memory/is sufficiently aligned\")<br>(C++26) |\n| [C Library](https://en.cppreference.com/w/cpp/memory/c.html \"cpp/memory/c\") |\n| |     |\n| --- |\n| [malloc](https://en.cppreference.com/w/cpp/memory/c/malloc.html \"cpp/memory/c/malloc\") |\n| [calloc](https://en.cppreference.com/w/cpp/memory/c/calloc.html \"cpp/memory/c/calloc\") |\n| [realloc](https://en.cppreference.com/w/cpp/memory/c/realloc.html \"cpp/memory/c/realloc\") | | |     |\n| --- |\n| [free](https://en.cppreference.com/w/cpp/memory/c/free.html \"cpp/memory/c/free\") |\n| [aligned\\_alloc](https://en.cppreference.com/w/cpp/memory/c/aligned_alloc.html \"cpp/memory/c/aligned alloc\")<br>(C++17) |\n|  | | |\n\n[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/navbar_content&action=edit)\n\n**`std::allocator`**\n\n|     |\n| --- |\n| Member functions |\n| [allocator::allocator](https://en.cppreference.com/w/cpp/memory/allocator/allocator.html \"cpp/memory/allocator/allocator\") |\n| [allocator::~allocator](https://en.cppreference.com/w/cpp/memory/allocator/~allocator.html \"cpp/memory/allocator/~allocator\") |\n| [allocator::address](https://en.cppreference.com/w/cpp/memory/allocator/address.html \"cpp/memory/allocator/address\")<br>(until C++20) |\n| [allocator::allocate](https://en.cppreference.com/w/cpp/memory/allocator/allocate.html \"cpp/memory/allocator/allocate\") |\n| [allocator::allocate\\_at\\_least](https://en.cppreference.com/w/cpp/memory/allocator/allocate_at_least.html \"cpp/memory/allocator/allocate at least\")<br>(C++23) |\n| [allocator::deallocate](https://en.cppreference.com/w/cpp/memory/allocator/deallocate.html \"cpp/memory/allocator/deallocate\") |\n| [allocator::max\\_size](https://en.cppreference.com/w/cpp/memory/allocator/max_size.html \"cpp/memory/allocator/max size\")<br>(until C++20) |\n| [allocator::construct](https://en.cppreference.com/w/cpp/memory/allocator/construct.html \"cpp/memory/allocator/construct\")<br>(until C++20) |\n| [allocator::destroy](https://en.cppreference.com/w/cpp/memory/allocator/destroy.html \"cpp/memory/allocator/destroy\")<br>(until C++20) |\n| Non-member functions |\n| [operator==operator!=](https://en.cppreference.com/w/cpp/memory/allocator/operator_cmp.html \"cpp/memory/allocator/operator cmp\")<br>(until C++20) |\n\n[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/navbar_content&action=edit)\n\n|     |     |     |\n| --- | --- | --- |\n| Defined in header `<memory>` |  |  |\n| template<class T ><br>struct allocator; | (1) |  |\n| template<><br>struct allocator<void>; | (2) | (deprecated in C++17)<br>(removed in C++20) |\n|  |  |  |\n\nThe `std::allocator` class template is the default [Allocator](https://en.cppreference.com/w/cpp/named_req/Allocator.html \"cpp/named req/Allocator\") used by all standard library containers if no user-specified allocator is provided. The default allocator is stateless, that is, all instances of the given allocator are interchangeable, compare equal and can deallocate memory allocated by any other instance of the same allocator type.\n\n|     |     |\n| --- | --- |\n| The explicit specialization for void lacks the member typedefs `reference`, `const_reference`, `size_type` and `difference_type`. This specialization declares no member functions. | (until C++20) |\n\n|     |     |\n| --- | --- |\n| The default allocator satisfies [allocator completeness requirements](https://en.cppreference.com/w/cpp/named_req/Allocator.html#Allocator_completeness_requirements \"cpp/named req/Allocator\"). | (since C++17) |\n\n|     |\n| --- |\n| ## Contents<br>- [1Member types](https://en.cppreference.com/w/cpp/memory/allocator.html#Member_types)<br>- [2Member functions](https://en.cppreference.com/w/cpp/memory/allocator.html#Member_functions)<br>- [3Non-member functions](https://en.cppreference.com/w/cpp/memory/allocator.html#Non-member_functions)<br>- [4Notes](https://en.cppreference.com/w/cpp/memory/allocator.html#Notes)<br>- [5Example](https://en.cppreference.com/w/cpp/memory/allocator.html#Example)<br>- [6Defect reports](https://en.cppreference.com/w/cpp/memory/allocator.html#Defect_reports)<br>- [7See also](https://en.cppreference.com/w/cpp/memory/allocator.html#See_also) |\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=1 \"Edit section: Member types\")\\]Member types\n\n|     |     |\n| --- | --- |\n| Type | Definition |\n| `value_type` | `T` |\n| `pointer`(deprecated in C++17)(removed in C++20) | `T*` |\n| `const_pointer`(deprecated in C++17)(removed in C++20) | const T\\* |\n| `reference`(deprecated in C++17)(removed in C++20) | `T&` |\n| `const_reference`(deprecated in C++17)(removed in C++20) | const T& |\n| `size_type` | [std::size\\_t](https://en.cppreference.com/w/cpp/types/size_t.html \"cpp/types/size t\") |\n| `difference_type` | [std::ptrdiff\\_t](https://en.cppreference.com/w/cpp/types/ptrdiff_t.html \"cpp/types/ptrdiff t\") |\n| `propagate_on_container_move_assignment`(C++11) | [std::true\\_type](https://en.cppreference.com/w/cpp/types/integral_constant.html \"cpp/types/integral constant\") |\n| `rebind`(deprecated in C++17)(removed in C++20) | template<class U ><br>struct rebind<br>{<br>typedef allocator<U> other;<br>}; |\n| `is_always_equal`(C++11)(deprecated in C++23)(removed in C++26) | [std::true\\_type](https://en.cppreference.com/w/cpp/types/integral_constant.html \"cpp/types/integral constant\") |\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=2 \"Edit section: Member functions\")\\]Member functions\n\n|     |     |\n| --- | --- |\n| [(constructor)](https://en.cppreference.com/w/cpp/memory/allocator/allocator.html \"cpp/memory/allocator/allocator\") | creates a new allocator instance <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_allocator&action=edit) |\n| [(destructor)](https://en.cppreference.com/w/cpp/memory/allocator/~allocator.html \"cpp/memory/allocator/~allocator\") | destructs an allocator instance <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_%7Eallocator&action=edit) |\n| [address](https://en.cppreference.com/w/cpp/memory/allocator/address.html \"cpp/memory/allocator/address\")<br>(until C++20) | obtains the address of an object, even if operator& is overloaded <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_address&action=edit) |\n| [allocate](https://en.cppreference.com/w/cpp/memory/allocator/allocate.html \"cpp/memory/allocator/allocate\") | allocates uninitialized storage <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_allocate&action=edit) |\n| [allocate\\_at\\_least](https://en.cppreference.com/w/cpp/memory/allocator/allocate_at_least.html \"cpp/memory/allocator/allocate at least\")<br>(C++23) | allocates uninitialized storage at least as large as requested size <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_allocate_at_least&action=edit) |\n| [deallocate](https://en.cppreference.com/w/cpp/memory/allocator/deallocate.html \"cpp/memory/allocator/deallocate\") | deallocates storage <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_deallocate&action=edit) |\n| [max\\_size](https://en.cppreference.com/w/cpp/memory/allocator/max_size.html \"cpp/memory/allocator/max size\")<br>(until C++20) | returns the largest supported allocation size <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_max_size&action=edit) |\n| [construct](https://en.cppreference.com/w/cpp/memory/allocator/construct.html \"cpp/memory/allocator/construct\")<br>(until C++20) | constructs an object in allocated storage <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_construct&action=edit) |\n| [destroy](https://en.cppreference.com/w/cpp/memory/allocator/destroy.html \"cpp/memory/allocator/destroy\")<br>(until C++20) | destructs an object in allocated storage <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_destroy&action=edit) |\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=3 \"Edit section: Non-member functions\")\\]Non-member functions\n\n|     |     |\n| --- | --- |\n| [operator==operator!=](https://en.cppreference.com/w/cpp/memory/allocator/operator_cmp.html \"cpp/memory/allocator/operator cmp\")<br>(removed in C++20) | compares two allocator instances <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_operator_cmp&action=edit) |\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=4 \"Edit section: Notes\")\\]Notes\n\nThe member template class `rebind` provides a way to obtain an allocator for a different type. For example, [std::list](https://en.cppreference.com/w/cpp/container/list.html) <T, A> allocates nodes of some internal type `Node<T>`, using the allocator `A::rebind<Node<T>>::other`(until C++11)[std::allocator\\_traits](https://en.cppreference.com/w/cpp/memory/allocator_traits.html) <A>::rebind\\_alloc<Node<T>>, which is implemented in terms of `A::rebind<Node<T>>::other` if A is an `std::allocator`(since C++11).\n\nMember type `is_always_equal` is deprecated via [LWG issue 3170](https://cplusplus.github.io/LWG/issue3170), because it makes custom allocators derived from `std::allocator` treated as always equal by default. [std::allocator\\_traits](https://en.cppreference.com/w/cpp/memory/allocator_traits.html) <std::allocator<T>>::is\\_always\\_equal is not deprecated and its member constant `value` is true for any `T`.\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=5 \"Edit section: Example\")\\]Example\n\nRun this code\n\n```\n#include <iostream>\n#include <memory>\n#include <string>\n\nint main()\n{\n    // default allocator for ints\n    std::allocator<int> alloc1;\n\n    // demonstrating the few directly usable members\n    static_assert(std::is_same_v<int, decltype(alloc1)::value_type>);\n    int* p1 = alloc1.allocate(1); // space for one int\n    alloc1.deallocate(p1, 1);     // and it is gone\n\n    // Even those can be used through traits though, so no need\n    using traits_t1 = std::allocator_traits<decltype(alloc1)>; // The matching trait\n    p1 = traits_t1::allocate(alloc1, 1);\n    traits_t1::construct(alloc1, p1, 7);  // construct the int\n    std::cout << *p1 << '\\n';\n    traits_t1::deallocate(alloc1, p1, 1); // deallocate space for one int\n\n    // default allocator for strings\n    std::allocator<std::string> alloc2;\n    // matching traits\n    using traits_t2 = std::allocator_traits<decltype(alloc2)>;\n\n    // Rebinding the allocator using the trait for strings gets the same type\n    traits_t2::rebind_alloc<std::string> alloc_ = alloc2;\n\n    std::string* p2 = traits_t2::allocate(alloc2, 2); // space for 2 strings\n\n    traits_t2::construct(alloc2, p2, \"foo\");\n    traits_t2::construct(alloc2, p2 + 1, \"bar\");\n\n    std::cout << p2[0] << ' ' << p2[1] << '\\n';\n\n    traits_t2::destroy(alloc2, p2 + 1);\n    traits_t2::destroy(alloc2, p2);\n    traits_t2::deallocate(alloc2, p2, 2);\n}\n```\n\nOutput:\n\n```\n7\nfoo bar\n```\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=6 \"Edit section: Defect reports\")\\]Defect reports\n\nThe following behavior-changing defect reports were applied retroactively to previously published C++ standards.\n\n| DR | Applied to | Behavior as published | Correct behavior |\n| --- | --- | --- | --- |\n| [LWG 2103](https://cplusplus.github.io/LWG/issue2103) | C++11 | redundant comparison between `allocator` might be required | `propagate_on_container_move_assignment` provided |\n| [LWG 2108](https://cplusplus.github.io/LWG/issue2108) | C++11 | there was no way to show `allocator` is stateless | `is_always_equal` provided |\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=7 \"Edit section: See also\")\\]See also\n\n|     |     |\n| --- | --- |\n| [allocator\\_traits](https://en.cppreference.com/w/cpp/memory/allocator_traits.html \"cpp/memory/allocator traits\")<br>(C++11) | provides information about allocator types <br>(class template)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/dsc_allocator_traits&action=edit) |\n| [scoped\\_allocator\\_adaptor](https://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor.html \"cpp/memory/scoped allocator adaptor\")<br>(C++11) | implements multi-level allocator for multi-level containers <br>(class template)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/dsc_scoped_allocator_adaptor&action=edit) |\n| [uses\\_allocator](https://en.cppreference.com/w/cpp/memory/uses_allocator.html \"cpp/memory/uses allocator\")<br>(C++11) | checks if the specified type supports uses-allocator construction <br>(class template)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/dsc_uses_allocator&action=edit) |\n\nRetrieved from \" [https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&oldid=163381](https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&oldid=163381)\"\n\n##### Navigation\n\n- [Support us](http://www.cppreference.com/support)\n- [Recent changes](https://en.cppreference.com/w/Special:RecentChanges \"A list of recent changes in the wiki [r]\")\n- [FAQ](https://en.cppreference.com/w/Cppreference%253AAbout.html)\n- [Offline version](https://en.cppreference.com/w/Cppreference%253AArchives.html)\n\n##### Toolbox\n\n- [What links here](https://en.cppreference.com/w/Special:WhatLinksHere/cpp/memory/allocator \"A list of all wiki pages that link here [j]\")\n- [Related changes](https://en.cppreference.com/w/Special:RecentChangesLinked/cpp/memory/allocator \"Recent changes in pages linked from this page [k]\")\n- [Upload file](http://upload.cppreference.com/w/Special:Upload \"Upload files [u]\")\n- [Special pages](https://en.cppreference.com/w/Special:SpecialPages \"A list of all special pages [q]\")\n- [Printable version](https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&printable=yes \"Printable version of this page [p]\")\n- [Permanent link](https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&oldid=163381 \"Permanent link to this revision of the page\")\n- [Page information](https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=info)\n\n- In other languages\n\n- [Deutsch](http://de.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\")\n- [Espa\u00f1ol](http://es.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\")\n- [Fran\u00e7ais](http://fr.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\")\n- [Italiano](http://it.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\")\n- [\u65e5\u672c\u8a9e](http://ja.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\")\n- [Portugu\u00eas](http://pt.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\")\n- [\u0420\u0443\u0441\u0441\u043a\u0438\u0439](http://ru.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\")\n- [\u4e2d\u6587](http://zh.cppreference.com/w/cpp/memory/allocator \"cpp/memory/allocator\")\n\n- This page was last modified on 22 November 2023, at 09:49.\n\n- [Privacy policy](https://en.cppreference.com/w/Cppreference%253APrivacy_policy.html \"Cppreference:Privacy policy\")\n- [About cppreference.com](https://en.cppreference.com/w/Cppreference%253AAbout.html \"Cppreference:About\")\n- [Disclaimers](https://en.cppreference.com/w/Cppreference%253AGeneral_disclaimer.html \"Cppreference:General disclaimer\")\n\n- [![Powered by MediaWiki](https://en.cppreference.com/mwiki/skins/common/images/poweredby_mediawiki_88x31.png)](https://www.mediawiki.org/)[![Powered by GeSHi](https://upload.cppreference.com/mwiki/images/2/2b/powered_by_geshi_88x31.png)](http://qbnz.com/highlighter/)[![Hosted by Tiger Technologies](https://upload.cppreference.com/mwiki/images/9/94/powered_by_tigertech_88x31.png)](http://www.tigertech.net/referral/cppreference.com)",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.896232+00:00"
+  },
+  "html": "<!DOCTYPE html><html lang=\"en\" dir=\"ltr\" class=\"client-nojs\">\n<body class=\"mediawiki ltr sitedir-ltr ns-0 ns-subject page-cpp_memory_allocator skin-cppreference2 action-view cpp-navbar\">\n        <!-- header -->\n        <div id=\"mw-head\" class=\"noprint\">\n            <div id=\"cpp-head-first-base\">\n                <div id=\"cpp-head-first\">\n                    <h5><a href=\"https://en.cppreference.com/index.html\">\n                        cppreference.com                        </a></h5>\n                    <div id=\"cpp-head-search\">\n                        \n<!-- 0 -->\n<div id=\"p-search\">\n<form action=\"https://duckduckgo.com/\" method=\"get\">\n  \n  <input type=\"search\" name=\"q\">\n  <input type=\"submit\" value=\"Search\">\n</form>\n</div>\n\n<!-- /0 -->\n                    </div>\n                    <div id=\"cpp-head-personal\">\n                        \n<!-- 0 -->\n<div id=\"p-personal\" class=\"\">\n<span id=\"pt-createaccount\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&amp;returnto=cpp%2Fmemory%2Fallocator&amp;type=signup\">Create account</a></span>\t<div class=\"menu\">\n        <ul>\n<li id=\"pt-login\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&amp;returnto=cpp%2Fmemory%2Fallocator\" title=\"You are encouraged to log in; however, it is not mandatory [o]\" accesskey=\"o\">Log in</a></li>        </ul>\n    </div>\n</div>\n\n<!-- /0 -->\n                    </div>\n\n                </div>\n            </div>\n            <div id=\"cpp-head-second-base\">\n                <div id=\"cpp-head-second\">\n                    <div id=\"cpp-head-tools-left\">\n                        \n<!-- 0 -->\n<div id=\"p-namespaces\" class=\"vectorTabs\">\n\t<h5>Namespaces</h5>\n\t<ul>\n\t\t\t\t\t<li id=\"ca-nstab-main\" class=\"selected\"><span><a href=\"https://en.cppreference.com/w/cpp/memory/allocator.html\" title=\"View the content page [c]\" accesskey=\"c\">Page</a></span></li>\n\t\t\t\t\t<li id=\"ca-talk\"><span><a href=\"https://en.cppreference.com/w/Talk%253Acpp/memory/allocator.html\" title=\"Discussion about the content page [t]\" accesskey=\"t\">Discussion</a></span></li>\n\t\t\t</ul>\n</div>\n\n<!-- /0 -->\n\n<!-- 1 -->\n<div id=\"p-variants\" class=\"vectorMenu emptyPortlet\">\n\t\t<h5><span>Variants</span><a href=\"https://en.cppreference.com/w/cpp/memory/allocator.html#\"></a></h5>\n\t<div class=\"menu\">\n\t\t<ul>\n\t\t\t\t\t</ul>\n\t</div>\n</div>\n\n<!-- /1 -->\n                    </div>\n                    <div id=\"cpp-head-tools-right\">\n                        \n<!-- 0 -->\n<div id=\"p-views\" class=\"vectorTabs\">\n\t<h5>Views</h5>\n\t<ul>\n\t\t\t\t\t<li id=\"ca-view\" class=\"selected\"><span><a href=\"https://en.cppreference.com/w/cpp/memory/allocator.html\">View</a></span></li>\n\t\t\t\t\t<li id=\"ca-edit\"><span><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&amp;action=edit\" title=\"You can edit this page. Please use the preview button before saving [e]\" accesskey=\"e\">Edit</a></span></li>\n\t\t\t\t\t<li id=\"ca-history\" class=\"collapsible\"><span><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&amp;action=history\" title=\"Past revisions of this page [h]\" accesskey=\"h\">History</a></span></li>\n\t\t\t</ul>\n</div>\n\n<!-- /0 -->\n\n<!-- 1 -->\n<div id=\"p-cactions\" class=\"vectorMenu emptyPortlet\">\n\t<h5><span>Actions</span><a href=\"https://en.cppreference.com/w/cpp/memory/allocator.html#\"></a></h5>\n\t<div class=\"menu\">\n\t\t<ul>\n\t\t\t\t\t</ul>\n\t</div>\n</div>\n\n<!-- /1 -->\n                    </div>\n                </div>\n            </div>\n        </div>\n        <!-- /header -->\n        <!-- content -->\n\n        <div id=\"cpp-content-base\">\n            <div id=\"content\">\n                <a id=\"top\"></a>\n                <div id=\"mw-js-message\" style=\"display:none;\"></div>\n                                <!-- firstHeading -->\n\n\n\n\n                <h1 id=\"firstHeading\" class=\"firstHeading\"><span style=\"font-size:0.7em; line-height:130%\">std::</span>allocator</h1>\n                <!-- /firstHeading -->\n                <!-- bodyContent -->\n                <div id=\"bodyContent\">\n                                        <!-- tagline -->\n                    <div id=\"siteSub\">From cppreference.com</div>\n                    <!-- /tagline -->\n                                        <!-- subtitle -->\n                    <div id=\"contentSub\"><span class=\"subpages\">&lt; <a href=\"https://en.cppreference.com/w/cpp.html\" title=\"cpp\">cpp</a>\u200e | <a href=\"https://en.cppreference.com/w/cpp/memory.html\" title=\"cpp/memory\">memory</a></span></div>\n                    <!-- /subtitle -->\n                                                            <!-- bodycontent -->\n                    <div id=\"mw-content-text\" lang=\"en\" dir=\"ltr\" class=\"mw-content-ltr\"><div class=\"t-navbar\" style=\"\"><div class=\"t-navbar-sep\">&nbsp;</div><div class=\"t-navbar-head\"><a href=\"https://en.cppreference.com/w/cpp.html\" title=\"cpp\">C++</a><div class=\"t-navbar-menu\"><div><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"line-height:1.1em;\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/compiler_support.html\" title=\"cpp/compiler support\">Compiler support</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/freestanding.html\" title=\"cpp/freestanding\">Freestanding and hosted</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/language.html\" title=\"cpp/language\">Language</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/standard_library.html\" title=\"cpp/standard library\">Standard library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/headers.html\" title=\"cpp/header\">Standard library headers</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/iterator/concepts.html\" title=\"cpp/named req\">Named requirements</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/experimental/feature_test.html\" title=\"cpp/feature test\">Feature test macros</a> <span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/utility.html#Language_support\" title=\"cpp/utility\">Language support library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/concepts.html\" title=\"cpp/concepts\">Concepts library</a> <span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/error.html\" title=\"cpp/error\">Diagnostics library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory.html\" title=\"cpp/memory\">Memory management library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/meta.html\" title=\"cpp/meta\">Metaprogramming library</a> <span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/utility.html\" title=\"cpp/utility\">General utilities library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container.html\" title=\"cpp/container\">Containers library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/iterator.html\" title=\"cpp/iterator\">Iterators library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/ranges.html\" title=\"cpp/ranges\">Ranges library</a> <span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/algorithm.html\" title=\"cpp/algorithm\">Algorithms library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/string.html\" title=\"cpp/string\">Strings library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/text.html\" title=\"cpp/text\">Text processing library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/numeric.html\" title=\"cpp/numeric\">Numerics library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/chrono.html\" title=\"cpp/chrono\">Date and time library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/io.html\" title=\"cpp/io\">Input/output library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/filesystem.html\" title=\"cpp/filesystem\">Filesystem library</a> <span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html\" title=\"cpp/thread\">Concurrency support library</a> <span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/experimental/execution.html\" title=\"cpp/execution\">Execution control library</a> <span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/experimental.html\" title=\"cpp/experimental\">Technical specifications</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/symbol_index.html\" title=\"cpp/symbol index\">Symbols index</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/links/libs.html\" title=\"cpp/links/libs\">External libraries</a></td></tr>\n</tbody></table></div><div><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/navbar_content&amp;action=edit\">[edit]</a></span></div></div></div></div><div class=\"t-navbar-sep\">&nbsp;</div><div class=\"t-navbar-head\"><a href=\"https://en.cppreference.com/w/cpp/memory.html\" title=\"cpp/memory\">Memory management library</a><div class=\"t-navbar-menu\"><div><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/voidify.html\" title=\"cpp/memory/voidify\"><span class=\"t-lines\"><span><i>voidify</i></span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark t-mark-expos\">(<span title=\"This definition is for illustration purposes only. An implementation does not need to define an entity in this manner. The name of this entity is unspecified.\">exposition only*</span>)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory.html#Allocators\" title=\"cpp/memory\">Allocators</a></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><strong class=\"selflink\"><span class=\"t-lines\"><span>allocator</span></span></strong></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator_traits.html\" title=\"cpp/memory/allocator traits\"><span class=\"t-lines\"><span>allocator_traits</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocation_result.html\" title=\"cpp/memory/allocation result\"><span class=\"t-lines\"><span>allocation_result</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx23\">(C++23)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor.html\" title=\"cpp/memory/scoped allocator adaptor\"><span class=\"t-lines\"><span>scoped_allocator_adaptor</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/polymorphic_allocator.html\" title=\"cpp/memory/polymorphic allocator\"><span class=\"t-lines\"><span>pmr::polymorphic_allocator</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator_arg.html\" title=\"cpp/memory/allocator arg\"><span class=\"t-lines\"><span>allocator_arg</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/uses_allocator.html\" title=\"cpp/memory/uses allocator\"><span class=\"t-lines\"><span>uses_allocator</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/uses_allocator_construction_args.html\" title=\"cpp/memory/uses allocator construction args\"><span class=\"t-lines\"><span>uses_allocator_construction_args</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/make_obj_using_allocator.html\" title=\"cpp/memory/make obj using allocator\"><span class=\"t-lines\"><span>make_obj_using_allocator</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/uninitialized_construct_using_allocator.html\" title=\"cpp/memory/uninitialized construct using allocator\"><span class=\"t-lines\"><span>uninitialized_construct_using_allocator</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory.html#Uninitialized_memory_algorithms\" title=\"cpp/memory\">Uninitialized memory algorithms</a></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/uninitialized_copy.html\" title=\"cpp/memory/uninitialized copy\"><span class=\"t-lines\"><span>uninitialized_copy</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/uninitialized_fill.html\" title=\"cpp/memory/uninitialized fill\"><span class=\"t-lines\"><span>uninitialized_fill</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/uninitialized_move.html\" title=\"cpp/memory/uninitialized move\"><span class=\"t-lines\"><span>uninitialized_move</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/uninitialized_copy_n.html\" title=\"cpp/memory/uninitialized copy n\"><span class=\"t-lines\"><span>uninitialized_copy_n</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/uninitialized_fill_n.html\" title=\"cpp/memory/uninitialized fill n\"><span class=\"t-lines\"><span>uninitialized_fill_n</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/uninitialized_move_n.html\" title=\"cpp/memory/uninitialized move n\"><span class=\"t-lines\"><span>uninitialized_move_n</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/construct_at.html\" title=\"cpp/memory/construct at\"><span class=\"t-lines\"><span>construct_at</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/uninitialized_default_construct.html\" title=\"cpp/memory/uninitialized default construct\"><span class=\"t-lines\"><span>uninitialized_default_construct</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/uninitialized_value_construct.html\" title=\"cpp/memory/uninitialized value construct\"><span class=\"t-lines\"><span>uninitialized_value_construct</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/destroy.html\" title=\"cpp/memory/destroy\"><span class=\"t-lines\"><span>destroy</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/uninitialized_default_construct_n.html\" title=\"cpp/memory/uninitialized default construct n\"><span class=\"t-lines\"><span>uninitialized_default_construct_n</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/uninitialized_value_construct_n.html\" title=\"cpp/memory/uninitialized value construct n\"><span class=\"t-lines\"><span>uninitialized_value_construct_n</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/destroy_n.html\" title=\"cpp/memory/destroy n\"><span class=\"t-lines\"><span>destroy_n</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/destroy_at.html\" title=\"cpp/memory/destroy at\"><span class=\"t-lines\"><span>destroy_at</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory.html#Constrained_uninitialized_memory_algorithms\" title=\"cpp/memory\">Constrained uninitialized memory algorithms</a></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_copy.html\" title=\"cpp/memory/ranges/uninitialized copy\"><span class=\"t-lines\"><span>ranges::uninitialized_copy</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_fill.html\" title=\"cpp/memory/ranges/uninitialized fill\"><span class=\"t-lines\"><span>ranges::uninitialized_fill</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_move.html\" title=\"cpp/memory/ranges/uninitialized move\"><span class=\"t-lines\"><span>ranges::uninitialized_move</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_copy_n.html\" title=\"cpp/memory/ranges/uninitialized copy n\"><span class=\"t-lines\"><span>ranges::uninitialized_copy_n</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span><code>&nbsp;</code></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_fill_n.html\" title=\"cpp/memory/ranges/uninitialized fill n\"><span class=\"t-lines\"><span>ranges::uninitialized_fill_n</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_move_n.html\" title=\"cpp/memory/ranges/uninitialized move n\"><span class=\"t-lines\"><span>ranges::uninitialized_move_n</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/ranges/construct_at.html\" title=\"cpp/memory/ranges/construct at\"><span class=\"t-lines\"><span>ranges::construct_at</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_default_construct.html\" title=\"cpp/memory/ranges/uninitialized default construct\"><span class=\"t-lines\"><span>ranges::uninitialized_default_construct</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_value_construct.html\" title=\"cpp/memory/ranges/uninitialized value construct\"><span class=\"t-lines\"><span>ranges::uninitialized_value_construct</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/ranges/destroy.html\" title=\"cpp/memory/ranges/destroy\"><span class=\"t-lines\"><span>ranges::destroy</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_default_construct_n.html\" title=\"cpp/memory/ranges/uninitialized default construct n\"><span class=\"t-lines\"><span>ranges::uninitialized_default_construct_n</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span><code>&nbsp;</code></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_value_construct_n.html\" title=\"cpp/memory/ranges/uninitialized value construct n\"><span class=\"t-lines\"><span>ranges::uninitialized_value_construct_n</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/ranges/destroy_n.html\" title=\"cpp/memory/ranges/destroy n\"><span class=\"t-lines\"><span>ranges::destroy_n</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/ranges/destroy_at.html\" title=\"cpp/memory/ranges/destroy at\"><span class=\"t-lines\"><span>ranges::destroy_at</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory.html#Memory_resources\" title=\"cpp/memory\">Memory resources</a></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/memory_resource.html\" title=\"cpp/memory/memory resource\"><span class=\"t-lines\"><span>pmr::memory_resource</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/get_default_resource.html\" title=\"cpp/memory/get default resource\"><span class=\"t-lines\"><span>pmr::get_default_resource</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/set_default_resource.html\" title=\"cpp/memory/set default resource\"><span class=\"t-lines\"><span>pmr::set_default_resource</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/new_delete_resource.html\" title=\"cpp/memory/new delete resource\"><span class=\"t-lines\"><span>pmr::new_delete_resource</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/pool_options.html\" title=\"cpp/memory/pool options\"><span class=\"t-lines\"><span>pmr::pool_options</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/null_memory_resource.html\" title=\"cpp/memory/null memory resource\"><span class=\"t-lines\"><span>pmr::null_memory_resource</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/synchronized_pool_resource.html\" title=\"cpp/memory/synchronized pool resource\"><span class=\"t-lines\"><span>pmr::synchronized_pool_resource</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/unsynchronized_pool_resource.html\" title=\"cpp/memory/unsynchronized pool resource\"><span class=\"t-lines\"><span>pmr::unsynchronized_pool_resource</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/monotonic_buffer_resource.html\" title=\"cpp/memory/monotonic buffer resource\"><span class=\"t-lines\"><span>pmr::monotonic_buffer_resource</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><br>\n</td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory.html#Explicit_lifetime_management\" title=\"cpp/memory\">Explicit lifetime management</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/start_lifetime_as.html\" title=\"cpp/memory/start lifetime as\"><span class=\"t-lines\"><span>start_lifetime_as</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx23\">(C++23)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/start_lifetime_as.html\" title=\"cpp/memory/start lifetime as\"><span class=\"t-lines\"><span>start_lifetime_as_array</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx23\">(C++23)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory.html#Types_for_composite_class_design\" title=\"cpp/memory\">Types for composite class design</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/indirect.html\" title=\"cpp/memory/indirect\"><span class=\"t-lines\"><span>indirect</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/polymorphic.html\" title=\"cpp/memory/polymorphic\"><span class=\"t-lines\"><span>polymorphic</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory.html#Uninitialized_storage\" title=\"cpp/memory\">Uninitialized storage</a> <span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/raw_storage_iterator.html\" title=\"cpp/memory/raw storage iterator\"><span class=\"t-lines\"><span>raw_storage_iterator</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark\">(<span title=\"deprecated in C++17\">until C++20*</span>)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/get_temporary_buffer.html\" title=\"cpp/memory/get temporary buffer\"><span class=\"t-lines\"><span>get_temporary_buffer</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark\">(<span title=\"deprecated in C++17\">until C++20*</span>)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/return_temporary_buffer.html\" title=\"cpp/memory/return temporary buffer\"><span class=\"t-lines\"><span>return_temporary_buffer</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark\">(<span title=\"deprecated in C++17\">until C++20*</span>)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><br>\n</td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory.html#Garbage_collector_support\" title=\"cpp/memory\">Garbage collector support</a> <span class=\"t-mark-rev t-until-cxx23\">(until C++23)</span></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/gc/declare_reachable.html\" title=\"cpp/memory/gc/declare reachable\"><span class=\"t-lines\"><span>declare_reachable</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-until-cxx23\">(until C++23)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/gc/declare_no_pointers.html\" title=\"cpp/memory/gc/declare no pointers\"><span class=\"t-lines\"><span>declare_no_pointers</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-until-cxx23\">(until C++23)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/gc/pointer_safety.html\" title=\"cpp/memory/gc/pointer safety\"><span class=\"t-lines\"><span>pointer_safety</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-until-cxx23\">(until C++23)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/gc/undeclare_reachable.html\" title=\"cpp/memory/gc/undeclare reachable\"><span class=\"t-lines\"><span>undeclare_reachable</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-until-cxx23\">(until C++23)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/gc/undeclare_no_pointers.html\" title=\"cpp/memory/gc/undeclare no pointers\"><span class=\"t-lines\"><span>undeclare_no_pointers</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-until-cxx23\">(until C++23)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/gc/get_pointer_safety.html\" title=\"cpp/memory/gc/get pointer safety\"><span class=\"t-lines\"><span>get_pointer_safety</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-until-cxx23\">(until C++23)</span></span></span></div></div></td></tr>\n</tbody></table></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory/new.html#Low_level_memory_management\" title=\"cpp/memory/new\">Low level memory<br>management</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/new/operator_new.html\" title=\"cpp/memory/new/operator new\"><span class=\"t-lines\"><span>operator new</span><span>operator new[]</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/new/operator_delete.html\" title=\"cpp/memory/new/operator delete\"><span class=\"t-lines\"><span>operator delete</span><span>operator delete[]</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/new/nothrow_t.html\" title=\"cpp/memory/new/nothrow t\" class=\"mw-redirect\"><span class=\"t-lines\"><span>nothrow_t</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/new/nothrow.html\" title=\"cpp/memory/new/nothrow\"><span class=\"t-lines\"><span>nothrow</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/new/new_handler.html\" title=\"cpp/memory/new/new handler\"><span class=\"t-lines\"><span>new_handler</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/new/set_new_handler.html\" title=\"cpp/memory/new/set new handler\"><span class=\"t-lines\"><span>set_new_handler</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/new/get_new_handler.html\" title=\"cpp/memory/new/get new handler\"><span class=\"t-lines\"><span>get_new_handler</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/new/bad_alloc.html\" title=\"cpp/memory/new/bad alloc\"><span class=\"t-lines\"><span>bad_alloc</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/new/bad_array_new_length.html\" title=\"cpp/memory/new/bad array new length\"><span class=\"t-lines\"><span>bad_array_new_length</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/new/align_val_t.html\" title=\"cpp/memory/new/align val t\"><span class=\"t-lines\"><span>align_val_t</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/new/destroying_delete_t.html\" title=\"cpp/memory/new/destroying delete t\" class=\"mw-redirect\"><span class=\"t-lines\"><span>destroying_delete_t</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/utility/launder.html\" title=\"cpp/utility/launder\"><span class=\"t-lines\"><span>launder</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory.html#Smart_pointers\" title=\"cpp/memory\">Smart pointers</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/unique_ptr.html\" title=\"cpp/memory/unique ptr\"><span class=\"t-lines\"><span>unique_ptr</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/shared_ptr.html\" title=\"cpp/memory/shared ptr\"><span class=\"t-lines\"><span>shared_ptr</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/weak_ptr.html\" title=\"cpp/memory/weak ptr\"><span class=\"t-lines\"><span>weak_ptr</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/auto_ptr.html\" title=\"cpp/memory/auto ptr\"><span class=\"t-lines\"><span>auto_ptr</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark\">(<span title=\"deprecated in C++11\">until C++17*</span>)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/owner_less.html\" title=\"cpp/memory/owner less\"><span class=\"t-lines\"><span>owner_less</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/owner_less_void.html\" title=\"cpp/memory/owner less void\"><span class=\"t-lines\"><span>owner_less&lt;void&gt;</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/owner_hash.html\" title=\"cpp/memory/owner hash\"><span class=\"t-lines\"><span>owner_hash</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/owner_equal.html\" title=\"cpp/memory/owner equal\"><span class=\"t-lines\"><span>owner_equal</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/enable_shared_from_this.html\" title=\"cpp/memory/enable shared from this\"><span class=\"t-lines\"><span>enable_shared_from_this</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/bad_weak_ptr.html\" title=\"cpp/memory/bad weak ptr\"><span class=\"t-lines\"><span>bad_weak_ptr</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/default_delete.html\" title=\"cpp/memory/default delete\"><span class=\"t-lines\"><span>default_delete</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/out_ptr_t.html\" title=\"cpp/memory/out ptr t\"><span class=\"t-lines\"><span>out_ptr_t</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx23\">(C++23)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/inout_ptr_t.html\" title=\"cpp/memory/inout ptr t\"><span class=\"t-lines\"><span>inout_ptr_t</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx23\">(C++23)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory.html#Miscellaneous\" title=\"cpp/memory\">Miscellaneous</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/pointer_traits.html\" title=\"cpp/memory/pointer traits\"><span class=\"t-lines\"><span>pointer_traits</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/to_address.html\" title=\"cpp/memory/to address\"><span class=\"t-lines\"><span>to_address</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/addressof.html\" title=\"cpp/memory/addressof\"><span class=\"t-lines\"><span>addressof</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/align.html\" title=\"cpp/memory/align\"><span class=\"t-lines\"><span>align</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/assume_aligned.html\" title=\"cpp/memory/assume aligned\"><span class=\"t-lines\"><span>assume_aligned</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/is_sufficiently_aligned.html\" title=\"cpp/memory/is sufficiently aligned\"><span class=\"t-lines\"><span>is_sufficiently_aligned</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory/c.html\" title=\"cpp/memory/c\">C Library</a></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/c/malloc.html\" title=\"cpp/memory/c/malloc\"><span class=\"t-lines\"><span>malloc</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/c/calloc.html\" title=\"cpp/memory/c/calloc\"><span class=\"t-lines\"><span>calloc</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/c/realloc.html\" title=\"cpp/memory/c/realloc\"><span class=\"t-lines\"><span>realloc</span></span></a></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/c/free.html\" title=\"cpp/memory/c/free\"><span class=\"t-lines\"><span>free</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/c/aligned_alloc.html\" title=\"cpp/memory/c/aligned alloc\"><span class=\"t-lines\"><span>aligned_alloc</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><br>\n</td></tr>\n</tbody></table></div></td></tr>\n</tbody></table></div></td></tr>\n</tbody></table></div><div><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/navbar_content&amp;action=edit\">[edit]</a></span></div></div></div></div><div class=\"t-navbar-sep\">&nbsp;</div><div class=\"t-navbar-head\"><strong class=\"selflink\"><tt>std::allocator</tt></strong><div class=\"t-navbar-menu\"><div><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv-h1\"><td colspan=\"5\">Member functions</td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/allocator.html\" title=\"cpp/memory/allocator/allocator\"><span class=\"t-lines\"><span>allocator::allocator</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/~allocator.html\" title=\"cpp/memory/allocator/~allocator\"><span class=\"t-lines\"><span>allocator::~allocator</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/address.html\" title=\"cpp/memory/allocator/address\"><span class=\"t-lines\"><span>allocator::address</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/allocate.html\" title=\"cpp/memory/allocator/allocate\"><span class=\"t-lines\"><span>allocator::allocate</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/allocate_at_least.html\" title=\"cpp/memory/allocator/allocate at least\"><span class=\"t-lines\"><span>allocator::allocate_at_least</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx23\">(C++23)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/deallocate.html\" title=\"cpp/memory/allocator/deallocate\"><span class=\"t-lines\"><span>allocator::deallocate</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/max_size.html\" title=\"cpp/memory/allocator/max size\"><span class=\"t-lines\"><span>allocator::max_size</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/construct.html\" title=\"cpp/memory/allocator/construct\"><span class=\"t-lines\"><span>allocator::construct</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/destroy.html\" title=\"cpp/memory/allocator/destroy\"><span class=\"t-lines\"><span>allocator::destroy</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\">Non-member functions</td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/operator_cmp.html\" title=\"cpp/memory/allocator/operator cmp\"><span class=\"t-lines\"><span>operator==</span><span>operator!=</span></span></a></div><div><span class=\"t-lines\"><span></span><span><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></span></span></div></div></td></tr>\n</tbody></table></div><div><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/navbar_content&amp;action=edit\">[edit]</a></span></div></div></div></div><div class=\"t-navbar-sep\">&nbsp;</div></div>\n<table class=\"t-dcl-begin\"><tbody>\n<tr class=\"t-dsc-header\">\n<td> <div>Defined in header <code><a href=\"https://en.cppreference.com/w/cpp/header/memory.html\" title=\"cpp/header/memory\">&lt;memory&gt;</a></code>\n </div></td>\n<td></td>\n<td></td>\n</tr>\n<tr class=\"t-dcl\">\n<td> <div><span class=\"mw-geshi cpp source-cpp\"><span class=\"kw1\">template</span><span class=\"sy1\">&lt;</span> <span class=\"kw1\">class</span> T <span class=\"sy1\">&gt;</span><br>\n<span class=\"kw1\">struct</span> allocator<span class=\"sy4\">;</span></span></div></td>\n<td> (1) </td>\n<td class=\"t-dcl-nopad\">  </td>\n</tr>\n<tr class=\"t-dcl t-until-cxx20\">\n<td> <div><span class=\"mw-geshi cpp source-cpp\"><span class=\"kw1\">template</span><span class=\"sy1\">&lt;&gt;</span><br>\n<span class=\"kw1\">struct</span> allocator<span class=\"sy1\">&lt;</span><span class=\"kw4\">void</span><span class=\"sy1\">&gt;</span><span class=\"sy4\">;</span></span></div></td>\n<td> (2) </td>\n<td> <span class=\"t-mark\">(deprecated in C++17)</span> <br><span class=\"t-mark-rev t-until-cxx20\">(removed in C++20)</span> </td>\n</tr>\n<tr class=\"t-dcl-sep\"><td></td><td></td><td></td></tr>\n</tbody></table>\n<p>The <code>std::allocator</code> class template is the default <a href=\"https://en.cppreference.com/w/cpp/named_req/Allocator.html\" title=\"cpp/named req/Allocator\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">Allocator</span></a> used by all standard library containers if no user-specified allocator is provided. The default allocator is stateless, that is, all instances of the given allocator are interchangeable, compare equal and can deallocate memory allocated by any other instance of the same allocator type.\n</p>\n<table class=\"t-rev-begin\">\n<tbody><tr class=\"t-rev t-until-cxx20\"><td>\n<p>The explicit specialization for <span class=\"mw-geshi cpp source-cpp\"><span class=\"kw4\">void</span></span> lacks the member typedefs <code>reference</code>, <code>const_reference</code>, <code>size_type</code> and <code>difference_type</code>. This specialization declares no member functions.\n</p>\n</td>\n<td><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></td></tr>\n</tbody></table>\n<table class=\"t-rev-begin\">\n<tbody><tr class=\"t-rev t-since-cxx17\"><td>\n<p>The default allocator satisfies <a href=\"https://en.cppreference.com/w/cpp/named_req/Allocator.html#Allocator_completeness_requirements\" title=\"cpp/named req/Allocator\">allocator completeness requirements</a>.\n</p>\n</td>\n<td><span class=\"t-mark-rev t-since-cxx17\">(since C++17)</span></td></tr>\n</tbody></table>\n<table id=\"toc\" class=\"toc\"><tbody><tr><td><div id=\"toctitle\"><h2>Contents</h2></div>\n<ul>\n<li class=\"toclevel-1 tocsection-1\"><a href=\"https://en.cppreference.com/w/cpp/memory/allocator.html#Member_types\"><span class=\"tocnumber\">1</span> <span class=\"toctext\">Member types</span></a></li>\n<li class=\"toclevel-1 tocsection-2\"><a href=\"https://en.cppreference.com/w/cpp/memory/allocator.html#Member_functions\"><span class=\"tocnumber\">2</span> <span class=\"toctext\">Member functions</span></a></li>\n<li class=\"toclevel-1 tocsection-3\"><a href=\"https://en.cppreference.com/w/cpp/memory/allocator.html#Non-member_functions\"><span class=\"tocnumber\">3</span> <span class=\"toctext\">Non-member functions</span></a></li>\n<li class=\"toclevel-1 tocsection-4\"><a href=\"https://en.cppreference.com/w/cpp/memory/allocator.html#Notes\"><span class=\"tocnumber\">4</span> <span class=\"toctext\">Notes</span></a></li>\n<li class=\"toclevel-1 tocsection-5\"><a href=\"https://en.cppreference.com/w/cpp/memory/allocator.html#Example\"><span class=\"tocnumber\">5</span> <span class=\"toctext\">Example</span></a></li>\n<li class=\"toclevel-1 tocsection-6\"><a href=\"https://en.cppreference.com/w/cpp/memory/allocator.html#Defect_reports\"><span class=\"tocnumber\">6</span> <span class=\"toctext\">Defect reports</span></a></li>\n<li class=\"toclevel-1 tocsection-7\"><a href=\"https://en.cppreference.com/w/cpp/memory/allocator.html#See_also\"><span class=\"tocnumber\">7</span> <span class=\"toctext\">See also</span></a></li>\n</ul>\n</td></tr></tbody></table>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&amp;action=edit&amp;section=1\" title=\"Edit section: Member types\">edit</a>]</span> <span class=\"mw-headline\" id=\"Member_types\">Member types</span></h3>\n<table class=\"t-dsc-begin\">\n\n<tbody><tr class=\"t-dsc-hitem\">\n<td> Type\n</td>\n<td> Definition\n</td></tr>\n\n\n<tr class=\"t-dsc\">\n<td> <code>value_type</code>\n</td>\n<td> <code>T</code>\n</td></tr>\n\n\n<tr class=\"t-dsc\">\n<td> <code>pointer</code> <span class=\"t-mark-rev t-deprecated-cxx17\">(deprecated in C++17)</span><span class=\"t-mark-rev t-until-cxx20\">(removed in C++20)</span>\n</td>\n<td> <code>T*</code>\n</td></tr>\n\n\n<tr class=\"t-dsc\">\n<td> <code>const_pointer</code> <span class=\"t-mark-rev t-deprecated-cxx17\">(deprecated in C++17)</span><span class=\"t-mark-rev t-until-cxx20\">(removed in C++20)</span>\n</td>\n<td> <span class=\"mw-geshi cpp source-cpp\"><span class=\"kw4\">const</span> T<span class=\"sy2\">*</span></span>\n</td></tr>\n\n\n<tr class=\"t-dsc\">\n<td> <code>reference</code> <span class=\"t-mark-rev t-deprecated-cxx17\">(deprecated in C++17)</span><span class=\"t-mark-rev t-until-cxx20\">(removed in C++20)</span>\n</td>\n<td> <code>T&amp;</code>\n</td></tr>\n\n\n<tr class=\"t-dsc\">\n<td> <code>const_reference</code> <span class=\"t-mark-rev t-deprecated-cxx17\">(deprecated in C++17)</span><span class=\"t-mark-rev t-until-cxx20\">(removed in C++20)</span>\n</td>\n<td> <span class=\"mw-geshi cpp source-cpp\"><span class=\"kw4\">const</span> T<span class=\"sy3\">&amp;</span></span>\n</td></tr>\n\n\n<tr class=\"t-dsc\">\n<td> <code>size_type</code>\n</td>\n<td> <span class=\"t-lc\"><a href=\"https://en.cppreference.com/w/cpp/types/size_t.html\" title=\"cpp/types/size t\">std::size_t</a></span>\n</td></tr>\n\n\n<tr class=\"t-dsc\">\n<td> <code>difference_type</code>\n</td>\n<td> <span class=\"t-lc\"><a href=\"https://en.cppreference.com/w/cpp/types/ptrdiff_t.html\" title=\"cpp/types/ptrdiff t\">std::ptrdiff_t</a></span>\n</td></tr>\n\n\n<tr class=\"t-dsc\">\n<td> <code>propagate_on_container_move_assignment</code> <span class=\"t-mark-rev t-since-cxx11\">(C++11)</span>\n</td>\n<td> <span class=\"t-lc\"><a href=\"https://en.cppreference.com/w/cpp/types/integral_constant.html\" title=\"cpp/types/integral constant\">std::true_type</a></span>\n</td></tr>\n\n\n<tr class=\"t-dsc\">\n<td> <code>rebind</code> <span class=\"t-mark-rev t-deprecated-cxx17\">(deprecated in C++17)</span><span class=\"t-mark-rev t-until-cxx20\">(removed in C++20)</span>\n</td>\n<td> <span class=\"t-c\"><span class=\"mw-geshi cpp source-cpp\"><span class=\"kw1\">template</span><span class=\"sy1\">&lt;</span> <span class=\"kw1\">class</span> U <span class=\"sy1\">&gt;</span><br>\n<p><span class=\"kw1\">struct</span> rebind<br>\n<span class=\"br0\">{</span><br>\n&nbsp; &nbsp; <span class=\"kw1\">typedef</span> allocator<span class=\"sy1\">&lt;</span>U<span class=\"sy1\">&gt;</span> other<span class=\"sy4\">;</span><br>\n<span class=\"br0\">}</span><span class=\"sy4\">;</span>\n</p>\n</span></span></td></tr>\n\n\n<tr class=\"t-dsc\">\n<td> <code>is_always_equal</code> <span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-deprecated-cxx23\">(deprecated in C++23)</span><span class=\"t-mark-rev t-until-cxx26\">(removed in C++26)</span>\n</td>\n<td> <span class=\"t-lc\"><a href=\"https://en.cppreference.com/w/cpp/types/integral_constant.html\" title=\"cpp/types/integral constant\">std::true_type</a></span>\n</td></tr>\n\n</tbody></table>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&amp;action=edit&amp;section=2\" title=\"Edit section: Member functions\">edit</a>]</span> <span class=\"mw-headline\" id=\"Member_functions\">Member functions</span></h3>\n<table class=\"t-dsc-begin\">\n\n<tbody><tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div t-dsc-member-nobold-div\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/allocator.html\" title=\"cpp/memory/allocator/allocator\"> <span class=\"t-lines\"><span>(constructor)</span></span></a></div></div>\n</td>\n<td>  creates a new allocator instance <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_allocator&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div t-dsc-member-nobold-div\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/~allocator.html\" title=\"cpp/memory/allocator/~allocator\"> <span class=\"t-lines\"><span>(destructor)</span></span></a></div></div>\n</td>\n<td>  destructs an allocator instance <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_%7Eallocator&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/address.html\" title=\"cpp/memory/allocator/address\"> <span class=\"t-lines\"><span>address</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></span></span></div></div>\n</td>\n<td>  obtains the address of an object, even if <span class=\"mw-geshi cpp source-cpp\">operator<span class=\"sy3\">&amp;</span></span> is overloaded <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_address&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/allocate.html\" title=\"cpp/memory/allocator/allocate\"> <span class=\"t-lines\"><span>allocate</span></span></a></div></div>\n</td>\n<td>  allocates uninitialized storage <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_allocate&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/allocate_at_least.html\" title=\"cpp/memory/allocator/allocate at least\"> <span class=\"t-lines\"><span>allocate_at_least</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx23\">(C++23)</span></span></span></div></div>\n</td>\n<td>  allocates uninitialized storage at least as large as requested size <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_allocate_at_least&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/deallocate.html\" title=\"cpp/memory/allocator/deallocate\"> <span class=\"t-lines\"><span>deallocate</span></span></a></div></div>\n</td>\n<td>  deallocates storage <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_deallocate&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/max_size.html\" title=\"cpp/memory/allocator/max size\"> <span class=\"t-lines\"><span>max_size</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></span></span></div></div>\n</td>\n<td>  returns the largest supported allocation size <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_max_size&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/construct.html\" title=\"cpp/memory/allocator/construct\"> <span class=\"t-lines\"><span>construct</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></span></span></div></div>\n</td>\n<td>  constructs an object in allocated storage <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_construct&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/destroy.html\" title=\"cpp/memory/allocator/destroy\"> <span class=\"t-lines\"><span>destroy</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></span></span></div></div>\n</td>\n<td>  destructs an object in allocated storage <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_destroy&amp;action=edit\">[edit]</a></span>\n</td></tr>\n</tbody></table>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&amp;action=edit&amp;section=3\" title=\"Edit section: Non-member functions\">edit</a>]</span> <span class=\"mw-headline\" id=\"Non-member_functions\">Non-member functions</span></h3>\n<table class=\"t-dsc-begin\">\n\n<tbody><tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator/operator_cmp.html\" title=\"cpp/memory/allocator/operator cmp\"> <span class=\"t-lines\"><span>operator==</span><span>operator!=</span></span></a></div><div><span class=\"t-lines\"><span></span><span><span class=\"t-mark-rev t-until-cxx20\">(removed in C++20)</span></span></span></div></div>\n</td>\n<td>  compares two allocator instances <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_operator_cmp&amp;action=edit\">[edit]</a></span>\n</td></tr>\n</tbody></table>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&amp;action=edit&amp;section=4\" title=\"Edit section: Notes\">edit</a>]</span> <span class=\"mw-headline\" id=\"Notes\">Notes</span></h3>\n<p>The member template class <code>rebind</code> provides a way to obtain an allocator for a different type. For example, <span class=\"mw-geshi cpp source-cpp\"><a href=\"https://en.cppreference.com/w/cpp/container/list.html\"><span class=\"kw1283\">std::<span class=\"me2\">list</span></span></a><span class=\"sy1\">&lt;</span>T, A<span class=\"sy1\">&gt;</span></span> allocates nodes of some internal type <code>Node&lt;T&gt;</code>, using the allocator <span class=\"t-rev-inl t-until-cxx11\"><span><code>A::rebind&lt;Node&lt;T&gt;&gt;::other</code></span><span><span class=\"t-mark-rev t-until-cxx11\">(until C++11)</span></span></span><span class=\"t-rev-inl t-since-cxx11\"><span><span class=\"mw-geshi cpp source-cpp\"><a href=\"https://en.cppreference.com/w/cpp/memory/allocator_traits.html\"><span class=\"kw705\">std::<span class=\"me2\">allocator_traits</span></span></a><span class=\"sy1\">&lt;</span>A<span class=\"sy1\">&gt;</span><span class=\"sy4\">::</span><span class=\"me2\">rebind_alloc</span><span class=\"sy1\">&lt;</span>Node<span class=\"sy1\">&lt;</span>T<span class=\"sy1\">&gt;&gt;</span></span>, which is implemented in terms of <code>A::rebind&lt;Node&lt;T&gt;&gt;::other</code> if A is an <code>std::allocator</code></span><span><span class=\"t-mark-rev t-since-cxx11\">(since C++11)</span></span></span>.\n</p><p>Member type <code>is_always_equal</code> is deprecated via <a rel=\"nofollow\" class=\"external text\" href=\"https://cplusplus.github.io/LWG/issue3170\">LWG issue 3170</a>, because it makes custom allocators derived from <code>std::allocator</code> treated as always equal by default. <span class=\"mw-geshi cpp source-cpp\"><a href=\"https://en.cppreference.com/w/cpp/memory/allocator_traits.html\"><span class=\"kw705\">std::<span class=\"me2\">allocator_traits</span></span></a><span class=\"sy1\">&lt;</span>std<span class=\"sy4\">::</span><span class=\"me2\">allocator</span><span class=\"sy1\">&lt;</span>T<span class=\"sy1\">&gt;&gt;</span><span class=\"sy4\">::</span><span class=\"me2\">is_always_equal</span></span> is not deprecated and its member constant <code>value</code> is <span class=\"t-c\"><span class=\"mw-geshi cpp source-cpp\"><span class=\"kw2\">true</span></span></span> for any <code>T</code>.\n</p>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&amp;action=edit&amp;section=5\" title=\"Edit section: Example\">edit</a>]</span> <span class=\"mw-headline\" id=\"Example\">Example</span></h3>\n<div class=\"t-example\"><div class=\"t-example-live-link\"><div class=\"coliru-btn coliru-btn-run-init\">Run this code</div></div>\n<div dir=\"ltr\" class=\"mw-geshi\" style=\"text-align: left;\"><div class=\"cpp source-cpp\"><pre class=\"de1\"><span class=\"co2\">#include &lt;iostream&gt;</span>\n<span class=\"co2\">#include &lt;memory&gt;</span>\n<span class=\"co2\">#include &lt;string&gt;</span>\n&nbsp;\n<span class=\"kw4\">int</span> main<span class=\"br0\">(</span><span class=\"br0\">)</span>\n<span class=\"br0\">{</span>\n    <span class=\"co1\">// default allocator for ints</span>\n    std<span class=\"sy4\">::</span><span class=\"me2\">allocator</span><span class=\"sy1\">&lt;</span><span class=\"kw4\">int</span><span class=\"sy1\">&gt;</span> alloc1<span class=\"sy4\">;</span>\n&nbsp;\n    <span class=\"co1\">// demonstrating the few directly usable members</span>\n    static_assert<span class=\"br0\">(</span><a href=\"https://en.cppreference.com/w/cpp/types/is_same.html\"><span class=\"kw593\">std::<span class=\"me2\">is_same_v</span></span></a><span class=\"sy1\">&lt;</span><span class=\"kw4\">int</span>, decltype<span class=\"br0\">(</span>alloc1<span class=\"br0\">)</span><span class=\"sy4\">::</span><span class=\"me2\">value_type</span><span class=\"sy1\">&gt;</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>\n    <span class=\"kw4\">int</span><span class=\"sy2\">*</span> p1 <span class=\"sy1\">=</span> alloc1.<span class=\"me1\">allocate</span><span class=\"br0\">(</span><span class=\"nu0\">1</span><span class=\"br0\">)</span><span class=\"sy4\">;</span> <span class=\"co1\">// space for one int</span>\n    alloc1.<span class=\"me1\">deallocate</span><span class=\"br0\">(</span>p1, <span class=\"nu0\">1</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>     <span class=\"co1\">// and it is gone</span>\n&nbsp;\n    <span class=\"co1\">// Even those can be used through traits though, so no need</span>\n    <span class=\"kw1\">using</span> traits_t1 <span class=\"sy1\">=</span> <a href=\"https://en.cppreference.com/w/cpp/memory/allocator_traits.html\"><span class=\"kw705\">std::<span class=\"me2\">allocator_traits</span></span></a><span class=\"sy1\">&lt;</span>decltype<span class=\"br0\">(</span>alloc1<span class=\"br0\">)</span><span class=\"sy1\">&gt;</span><span class=\"sy4\">;</span> <span class=\"co1\">// The matching trait</span>\n    p1 <span class=\"sy1\">=</span> traits_t1<span class=\"sy4\">::</span><span class=\"me2\">allocate</span><span class=\"br0\">(</span>alloc1, <span class=\"nu0\">1</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>\n    traits_t1<span class=\"sy4\">::</span><span class=\"me2\">construct</span><span class=\"br0\">(</span>alloc1, p1, <span class=\"nu0\">7</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>  <span class=\"co1\">// construct the int</span>\n    <a href=\"https://en.cppreference.com/w/cpp/io/cout.html\"><span class=\"kw1775\">std::<span class=\"me2\">cout</span></span></a> <span class=\"sy1\">&lt;&lt;</span> <span class=\"sy2\">*</span>p1 <span class=\"sy1\">&lt;&lt;</span> <span class=\"st0\">'<span class=\"es1\">\\n</span>'</span><span class=\"sy4\">;</span>\n    traits_t1<span class=\"sy4\">::</span><span class=\"me2\">deallocate</span><span class=\"br0\">(</span>alloc1, p1, <span class=\"nu0\">1</span><span class=\"br0\">)</span><span class=\"sy4\">;</span> <span class=\"co1\">// deallocate space for one int</span>\n&nbsp;\n    <span class=\"co1\">// default allocator for strings</span>\n    std<span class=\"sy4\">::</span><span class=\"me2\">allocator</span><span class=\"sy1\">&lt;</span><a href=\"https://en.cppreference.com/w/cpp/string/basic_string.html\"><span class=\"kw1238\">std::<span class=\"me2\">string</span></span></a><span class=\"sy1\">&gt;</span> alloc2<span class=\"sy4\">;</span>\n    <span class=\"co1\">// matching traits</span>\n    <span class=\"kw1\">using</span> traits_t2 <span class=\"sy1\">=</span> <a href=\"https://en.cppreference.com/w/cpp/memory/allocator_traits.html\"><span class=\"kw705\">std::<span class=\"me2\">allocator_traits</span></span></a><span class=\"sy1\">&lt;</span>decltype<span class=\"br0\">(</span>alloc2<span class=\"br0\">)</span><span class=\"sy1\">&gt;</span><span class=\"sy4\">;</span>\n&nbsp;\n    <span class=\"co1\">// Rebinding the allocator using the trait for strings gets the same type</span>\n    traits_t2<span class=\"sy4\">::</span><span class=\"me2\">rebind_alloc</span><span class=\"sy1\">&lt;</span><a href=\"https://en.cppreference.com/w/cpp/string/basic_string.html\"><span class=\"kw1238\">std::<span class=\"me2\">string</span></span></a><span class=\"sy1\">&gt;</span> alloc_ <span class=\"sy1\">=</span> alloc2<span class=\"sy4\">;</span>\n&nbsp;\n    <a href=\"https://en.cppreference.com/w/cpp/string/basic_string.html\"><span class=\"kw1238\">std::<span class=\"me2\">string</span></span></a><span class=\"sy2\">*</span> p2 <span class=\"sy1\">=</span> traits_t2<span class=\"sy4\">::</span><span class=\"me2\">allocate</span><span class=\"br0\">(</span>alloc2, <span class=\"nu0\">2</span><span class=\"br0\">)</span><span class=\"sy4\">;</span> <span class=\"co1\">// space for 2 strings</span>\n&nbsp;\n    traits_t2<span class=\"sy4\">::</span><span class=\"me2\">construct</span><span class=\"br0\">(</span>alloc2, p2, <span class=\"st0\">\"foo\"</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>\n    traits_t2<span class=\"sy4\">::</span><span class=\"me2\">construct</span><span class=\"br0\">(</span>alloc2, p2 <span class=\"sy2\">+</span> <span class=\"nu0\">1</span>, <span class=\"st0\">\"bar\"</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>\n&nbsp;\n    <a href=\"https://en.cppreference.com/w/cpp/io/cout.html\"><span class=\"kw1775\">std::<span class=\"me2\">cout</span></span></a> <span class=\"sy1\">&lt;&lt;</span> p2<span class=\"br0\">[</span><span class=\"nu0\">0</span><span class=\"br0\">]</span> <span class=\"sy1\">&lt;&lt;</span> <span class=\"st0\">' '</span> <span class=\"sy1\">&lt;&lt;</span> p2<span class=\"br0\">[</span><span class=\"nu0\">1</span><span class=\"br0\">]</span> <span class=\"sy1\">&lt;&lt;</span> <span class=\"st0\">'<span class=\"es1\">\\n</span>'</span><span class=\"sy4\">;</span>\n&nbsp;\n    traits_t2<span class=\"sy4\">::</span><span class=\"me2\">destroy</span><span class=\"br0\">(</span>alloc2, p2 <span class=\"sy2\">+</span> <span class=\"nu0\">1</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>\n    traits_t2<span class=\"sy4\">::</span><span class=\"me2\">destroy</span><span class=\"br0\">(</span>alloc2, p2<span class=\"br0\">)</span><span class=\"sy4\">;</span>\n    traits_t2<span class=\"sy4\">::</span><span class=\"me2\">deallocate</span><span class=\"br0\">(</span>alloc2, p2, <span class=\"nu0\">2</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>\n<span class=\"br0\">}</span></pre></div></div>\n<p>Output:\n</p>\n<div dir=\"ltr\" class=\"mw-geshi\" style=\"text-align: left;\"><div class=\"text source-text\"><pre class=\"de1\">7\nfoo bar</pre></div></div> \n</div>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&amp;action=edit&amp;section=6\" title=\"Edit section: Defect reports\">edit</a>]</span> <span class=\"mw-headline\" id=\"Defect_reports\">Defect reports</span></h3>\n<p>The following behavior-changing defect reports were applied retroactively to previously published C++ standards.\n</p>\n<table class=\"dsctable\" style=\"font-size:0.8em\">\n<tbody><tr>\n<th>DR\n</th>\n<th>Applied to\n</th>\n<th>Behavior as published\n</th>\n<th>Correct behavior\n</th></tr>\n<tr>\n<td><a rel=\"nofollow\" class=\"external text\" href=\"https://cplusplus.github.io/LWG/issue2103\">LWG 2103</a>\n</td>\n<td>C++11\n</td>\n<td>redundant comparison between <code>allocator</code> might be required\n</td>\n<td><code>propagate_on_container_move_assignment</code> provided\n</td></tr>\n<tr>\n<td><a rel=\"nofollow\" class=\"external text\" href=\"https://cplusplus.github.io/LWG/issue2108\">LWG 2108</a>\n</td>\n<td>C++11\n</td>\n<td>there was no way to show <code>allocator</code> is stateless\n</td>\n<td><code>is_always_equal</code> provided\n</td></tr></tbody></table>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&amp;action=edit&amp;section=7\" title=\"Edit section: See also\">edit</a>]</span> <span class=\"mw-headline\" id=\"See_also\">See also</span></h3>\n<table class=\"t-dsc-begin\">\n\n<tbody><tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/allocator_traits.html\" title=\"cpp/memory/allocator traits\"> <span class=\"t-lines\"><span>allocator_traits</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div>\n</td>\n<td>  provides information about allocator types <br> <span class=\"t-mark\">(class template)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/dsc_allocator_traits&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor.html\" title=\"cpp/memory/scoped allocator adaptor\"> <span class=\"t-lines\"><span>scoped_allocator_adaptor</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div>\n</td>\n<td>  implements multi-level allocator for multi-level containers <br> <span class=\"t-mark\">(class template)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/dsc_scoped_allocator_adaptor&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/memory/uses_allocator.html\" title=\"cpp/memory/uses allocator\"> <span class=\"t-lines\"><span>uses_allocator</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div>\n</td>\n<td>  checks if the specified type supports uses-allocator construction <br> <span class=\"t-mark\">(class template)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/dsc_uses_allocator&amp;action=edit\">[edit]</a></span>\n</td></tr>\n</tbody></table>\n\n<!-- \nNewPP limit report\nPreprocessor visited node count: 12628/1000000\nPreprocessor generated node count: 16493/1000000\nPost\u2010expand include size: 389379/4194304 bytes\nTemplate argument size: 80154/4194304 bytes\nHighest expansion depth: 23/40\nExpensive parser function count: 0/100\n-->\n\n<!-- Saved in parser cache with key mwiki1-mwiki_en_:pcache:idhash:3383-0!*!0!!en!*!* and timestamp 20250418073627 -->\n</div>                    <!-- /bodycontent -->\n                                        <!-- printfooter -->\n                    <div class=\"printfooter\">\n                    Retrieved from \"<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&amp;oldid=163381\">https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&amp;oldid=163381</a>\"                    </div>\n                    <!-- /printfooter -->\n                                                            <!-- catlinks -->\n                    <div id=\"catlinks\" class=\"catlinks catlinks-allhidden\"></div>                    <!-- /catlinks -->\n                                                            <div class=\"visualClear\"></div>\n                    <!-- debughtml -->\n                                        <!-- /debughtml -->\n                </div>\n                <!-- /bodyContent -->\n            </div>\n        </div>\n        <!-- /content -->\n        <!-- footer -->\n        <div id=\"cpp-footer-base\" class=\"noprint\">\n            <div id=\"footer\">\n                        <div id=\"cpp-navigationn\">\n            <h5>Navigation</h5>\n            <ul>\n<li id=\"n-Support-us\"><a href=\"http://www.cppreference.com/support\" rel=\"nofollow\">Support us</a></li><li id=\"n-recentchanges\"><a href=\"https://en.cppreference.com/w/Special:RecentChanges\" title=\"A list of recent changes in the wiki [r]\" accesskey=\"r\">Recent changes</a></li><li id=\"n-FAQ\"><a href=\"https://en.cppreference.com/w/Cppreference%253AAbout.html\">FAQ</a></li><li id=\"n-Offline-version\"><a href=\"https://en.cppreference.com/w/Cppreference%253AArchives.html\">Offline version</a></li>            </ul>\n        </div>\n                        <div id=\"cpp-toolbox\">\n            <h5><span>Toolbox</span><a href=\"https://en.cppreference.com/w/cpp/memory/allocator.html#\"></a></h5>\n            <ul>\n<li id=\"t-whatlinkshere\"><a href=\"https://en.cppreference.com/w/Special:WhatLinksHere/cpp/memory/allocator\" title=\"A list of all wiki pages that link here [j]\" accesskey=\"j\">What links here</a></li><li id=\"t-recentchangeslinked\"><a href=\"https://en.cppreference.com/w/Special:RecentChangesLinked/cpp/memory/allocator\" title=\"Recent changes in pages linked from this page [k]\" accesskey=\"k\">Related changes</a></li><li id=\"t-upload\"><a href=\"http://upload.cppreference.com/w/Special:Upload\" title=\"Upload files [u]\" accesskey=\"u\">Upload file</a></li><li id=\"t-specialpages\"><a href=\"https://en.cppreference.com/w/Special:SpecialPages\" title=\"A list of all special pages [q]\" accesskey=\"q\">Special pages</a></li><li id=\"t-print\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&amp;printable=yes\" rel=\"alternate\" title=\"Printable version of this page [p]\" accesskey=\"p\">Printable version</a></li><li id=\"t-permalink\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&amp;oldid=163381\" title=\"Permanent link to this revision of the page\">Permanent link</a></li><li id=\"t-info\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&amp;action=info\">Page information</a></li>            </ul>\n        </div>\n                        <div id=\"cpp-languagess\">\n            <div><ul><li>In other languages</li></ul></div>\n            <div><ul>\n<li class=\"interwiki-de\"><a href=\"http://de.cppreference.com/w/cpp/memory/allocator\" title=\"cpp/memory/allocator\" lang=\"de\" hreflang=\"de\">Deutsch</a></li><li class=\"interwiki-es\"><a href=\"http://es.cppreference.com/w/cpp/memory/allocator\" title=\"cpp/memory/allocator\" lang=\"es\" hreflang=\"es\">Espa\u00f1ol</a></li><li class=\"interwiki-fr\"><a href=\"http://fr.cppreference.com/w/cpp/memory/allocator\" title=\"cpp/memory/allocator\" lang=\"fr\" hreflang=\"fr\">Fran\u00e7ais</a></li><li class=\"interwiki-it\"><a href=\"http://it.cppreference.com/w/cpp/memory/allocator\" title=\"cpp/memory/allocator\" lang=\"it\" hreflang=\"it\">Italiano</a></li><li class=\"interwiki-ja\"><a href=\"http://ja.cppreference.com/w/cpp/memory/allocator\" title=\"cpp/memory/allocator\" lang=\"ja\" hreflang=\"ja\">\u65e5\u672c\u8a9e</a></li><li class=\"interwiki-pt\"><a href=\"http://pt.cppreference.com/w/cpp/memory/allocator\" title=\"cpp/memory/allocator\" lang=\"pt\" hreflang=\"pt\">Portugu\u00eas</a></li><li class=\"interwiki-ru\"><a href=\"http://ru.cppreference.com/w/cpp/memory/allocator\" title=\"cpp/memory/allocator\" lang=\"ru\" hreflang=\"ru\">\u0420\u0443\u0441\u0441\u043a\u0438\u0439</a></li><li class=\"interwiki-zh\"><a href=\"http://zh.cppreference.com/w/cpp/memory/allocator\" title=\"cpp/memory/allocator\" lang=\"zh\" hreflang=\"zh\">\u4e2d\u6587</a></li>            </ul></div>\n        </div>\n            <ul id=\"footer-info\">\n                                    <li id=\"footer-info-lastmod\"> This page was last modified on 22 November 2023, at 09:49.</li>\n                            </ul>\n                    <ul id=\"footer-places\">\n                                    <li id=\"footer-places-privacy\"><a href=\"https://en.cppreference.com/w/Cppreference%253APrivacy_policy.html\" title=\"Cppreference:Privacy policy\">Privacy policy</a></li>\n                                    <li id=\"footer-places-about\"><a href=\"https://en.cppreference.com/w/Cppreference%253AAbout.html\" title=\"Cppreference:About\">About cppreference.com</a></li>\n                                    <li id=\"footer-places-disclaimer\"><a href=\"https://en.cppreference.com/w/Cppreference%253AGeneral_disclaimer.html\" title=\"Cppreference:General disclaimer\">Disclaimers</a></li>\n                            </ul>\n                                    <ul id=\"footer-icons\" class=\"noprint\">\n                                    <li id=\"footer-poweredbyico\">\n                                            <a href=\"https://www.mediawiki.org/\"><img src=\"https://en.cppreference.com/mwiki/skins/common/images/poweredby_mediawiki_88x31.png\" alt=\"Powered by MediaWiki\" width=\"88\" height=\"31\"></a>                                            <a href=\"http://qbnz.com/highlighter/\"><img src=\"https://upload.cppreference.com/mwiki/images/2/2b/powered_by_geshi_88x31.png\" alt=\"Powered by GeSHi\" height=\"31\" width=\"88\"></a>                                            <a href=\"http://www.tigertech.net/referral/cppreference.com\"><img src=\"https://upload.cppreference.com/mwiki/images/9/94/powered_by_tigertech_88x31.png\" alt=\"Hosted by Tiger Technologies\" height=\"31\" width=\"88\"></a>                                        </li>\n                                </ul>\n                        <div style=\"clear:both\">\n            </div>\n            </div>\n        </div>\n        <!-- /footer -->\n        \n\n\n\n<!-- Served in 2.537 secs. -->\n\t\n\n\n</body><!-- Cached 20250418073627 --></html>",
+  "links": [
+    "https://en.cppreference.com/index.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fmemory%2Fallocator&type=signup",
+    "https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fmemory%2Fallocator",
+    "https://en.cppreference.com/w/cpp/memory/allocator.html",
+    "https://en.cppreference.com/w/Talk%253Acpp/memory/allocator.html",
+    "https://en.cppreference.com/w/cpp/memory/allocator.html#",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=history",
+    "https://en.cppreference.com/w/cpp.html",
+    "https://en.cppreference.com/w/cpp/memory.html",
+    "https://en.cppreference.com/w/cpp/compiler_support.html",
+    "https://en.cppreference.com/w/cpp/freestanding.html",
+    "https://en.cppreference.com/w/cpp/language.html",
+    "https://en.cppreference.com/w/cpp/standard_library.html",
+    "https://en.cppreference.com/w/cpp/headers.html",
+    "https://en.cppreference.com/w/cpp/iterator/concepts.html",
+    "https://en.cppreference.com/w/cpp/experimental/feature_test.html",
+    "https://en.cppreference.com/w/cpp/utility.html#Language_support",
+    "https://en.cppreference.com/w/cpp/concepts.html",
+    "https://en.cppreference.com/w/cpp/error.html",
+    "https://en.cppreference.com/w/cpp/meta.html",
+    "https://en.cppreference.com/w/cpp/utility.html",
+    "https://en.cppreference.com/w/cpp/container.html",
+    "https://en.cppreference.com/w/cpp/iterator.html",
+    "https://en.cppreference.com/w/cpp/ranges.html",
+    "https://en.cppreference.com/w/cpp/algorithm.html",
+    "https://en.cppreference.com/w/cpp/string.html",
+    "https://en.cppreference.com/w/cpp/text.html",
+    "https://en.cppreference.com/w/cpp/numeric.html",
+    "https://en.cppreference.com/w/cpp/chrono.html",
+    "https://en.cppreference.com/w/cpp/io.html",
+    "https://en.cppreference.com/w/cpp/filesystem.html",
+    "https://en.cppreference.com/w/cpp/atomic.html",
+    "https://en.cppreference.com/w/cpp/experimental/execution.html",
+    "https://en.cppreference.com/w/cpp/experimental.html",
+    "https://en.cppreference.com/w/cpp/symbol_index.html",
+    "https://en.cppreference.com/w/cpp/links/libs.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/navbar_content&action=edit",
+    "https://en.cppreference.com/w/cpp/memory/voidify.html",
+    "https://en.cppreference.com/w/cpp/memory.html#Allocators",
+    "https://en.cppreference.com/w/cpp/memory/allocator_traits.html",
+    "https://en.cppreference.com/w/cpp/memory/allocation_result.html",
+    "https://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor.html",
+    "https://en.cppreference.com/w/cpp/memory/polymorphic_allocator.html",
+    "https://en.cppreference.com/w/cpp/memory/allocator_arg.html",
+    "https://en.cppreference.com/w/cpp/memory/uses_allocator.html",
+    "https://en.cppreference.com/w/cpp/memory/uses_allocator_construction_args.html",
+    "https://en.cppreference.com/w/cpp/memory/make_obj_using_allocator.html",
+    "https://en.cppreference.com/w/cpp/memory/uninitialized_construct_using_allocator.html",
+    "https://en.cppreference.com/w/cpp/memory.html#Uninitialized_memory_algorithms",
+    "https://en.cppreference.com/w/cpp/memory/uninitialized_copy.html",
+    "https://en.cppreference.com/w/cpp/memory/uninitialized_fill.html",
+    "https://en.cppreference.com/w/cpp/memory/uninitialized_move.html",
+    "https://en.cppreference.com/w/cpp/memory/uninitialized_copy_n.html",
+    "https://en.cppreference.com/w/cpp/memory/uninitialized_fill_n.html",
+    "https://en.cppreference.com/w/cpp/memory/uninitialized_move_n.html",
+    "https://en.cppreference.com/w/cpp/memory/construct_at.html",
+    "https://en.cppreference.com/w/cpp/memory/uninitialized_default_construct.html",
+    "https://en.cppreference.com/w/cpp/memory/uninitialized_value_construct.html",
+    "https://en.cppreference.com/w/cpp/memory/destroy.html",
+    "https://en.cppreference.com/w/cpp/memory/uninitialized_default_construct_n.html",
+    "https://en.cppreference.com/w/cpp/memory/uninitialized_value_construct_n.html",
+    "https://en.cppreference.com/w/cpp/memory/destroy_n.html",
+    "https://en.cppreference.com/w/cpp/memory/destroy_at.html",
+    "https://en.cppreference.com/w/cpp/memory.html#Constrained_uninitialized_memory_algorithms",
+    "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_copy.html",
+    "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_fill.html",
+    "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_move.html",
+    "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_copy_n.html",
+    "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_fill_n.html",
+    "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_move_n.html",
+    "https://en.cppreference.com/w/cpp/memory/ranges/construct_at.html",
+    "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_default_construct.html",
+    "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_value_construct.html",
+    "https://en.cppreference.com/w/cpp/memory/ranges/destroy.html",
+    "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_default_construct_n.html",
+    "https://en.cppreference.com/w/cpp/memory/ranges/uninitialized_value_construct_n.html",
+    "https://en.cppreference.com/w/cpp/memory/ranges/destroy_n.html",
+    "https://en.cppreference.com/w/cpp/memory/ranges/destroy_at.html",
+    "https://en.cppreference.com/w/cpp/memory.html#Memory_resources",
+    "https://en.cppreference.com/w/cpp/memory/memory_resource.html",
+    "https://en.cppreference.com/w/cpp/memory/get_default_resource.html",
+    "https://en.cppreference.com/w/cpp/memory/set_default_resource.html",
+    "https://en.cppreference.com/w/cpp/memory/new_delete_resource.html",
+    "https://en.cppreference.com/w/cpp/memory/pool_options.html",
+    "https://en.cppreference.com/w/cpp/memory/null_memory_resource.html",
+    "https://en.cppreference.com/w/cpp/memory/synchronized_pool_resource.html",
+    "https://en.cppreference.com/w/cpp/memory/unsynchronized_pool_resource.html",
+    "https://en.cppreference.com/w/cpp/memory/monotonic_buffer_resource.html",
+    "https://en.cppreference.com/w/cpp/memory.html#Explicit_lifetime_management",
+    "https://en.cppreference.com/w/cpp/memory/start_lifetime_as.html",
+    "https://en.cppreference.com/w/cpp/memory.html#Types_for_composite_class_design",
+    "https://en.cppreference.com/w/cpp/memory/indirect.html",
+    "https://en.cppreference.com/w/cpp/memory/polymorphic.html",
+    "https://en.cppreference.com/w/cpp/memory.html#Uninitialized_storage",
+    "https://en.cppreference.com/w/cpp/memory/raw_storage_iterator.html",
+    "https://en.cppreference.com/w/cpp/memory/get_temporary_buffer.html",
+    "https://en.cppreference.com/w/cpp/memory/return_temporary_buffer.html",
+    "https://en.cppreference.com/w/cpp/memory.html#Garbage_collector_support",
+    "https://en.cppreference.com/w/cpp/memory/gc/declare_reachable.html",
+    "https://en.cppreference.com/w/cpp/memory/gc/declare_no_pointers.html",
+    "https://en.cppreference.com/w/cpp/memory/gc/pointer_safety.html",
+    "https://en.cppreference.com/w/cpp/memory/gc/undeclare_reachable.html",
+    "https://en.cppreference.com/w/cpp/memory/gc/undeclare_no_pointers.html",
+    "https://en.cppreference.com/w/cpp/memory/gc/get_pointer_safety.html",
+    "https://en.cppreference.com/w/cpp/memory/new.html#Low_level_memory_management",
+    "https://en.cppreference.com/w/cpp/memory/new/operator_new.html",
+    "https://en.cppreference.com/w/cpp/memory/new/operator_delete.html",
+    "https://en.cppreference.com/w/cpp/memory/new/nothrow_t.html",
+    "https://en.cppreference.com/w/cpp/memory/new/nothrow.html",
+    "https://en.cppreference.com/w/cpp/memory/new/new_handler.html",
+    "https://en.cppreference.com/w/cpp/memory/new/set_new_handler.html",
+    "https://en.cppreference.com/w/cpp/memory/new/get_new_handler.html",
+    "https://en.cppreference.com/w/cpp/memory/new/bad_alloc.html",
+    "https://en.cppreference.com/w/cpp/memory/new/bad_array_new_length.html",
+    "https://en.cppreference.com/w/cpp/memory/new/align_val_t.html",
+    "https://en.cppreference.com/w/cpp/memory/new/destroying_delete_t.html",
+    "https://en.cppreference.com/w/cpp/utility/launder.html",
+    "https://en.cppreference.com/w/cpp/memory.html#Smart_pointers",
+    "https://en.cppreference.com/w/cpp/memory/unique_ptr.html",
+    "https://en.cppreference.com/w/cpp/memory/shared_ptr.html",
+    "https://en.cppreference.com/w/cpp/memory/weak_ptr.html",
+    "https://en.cppreference.com/w/cpp/memory/auto_ptr.html",
+    "https://en.cppreference.com/w/cpp/memory/owner_less.html",
+    "https://en.cppreference.com/w/cpp/memory/owner_less_void.html",
+    "https://en.cppreference.com/w/cpp/memory/owner_hash.html",
+    "https://en.cppreference.com/w/cpp/memory/owner_equal.html",
+    "https://en.cppreference.com/w/cpp/memory/enable_shared_from_this.html",
+    "https://en.cppreference.com/w/cpp/memory/bad_weak_ptr.html",
+    "https://en.cppreference.com/w/cpp/memory/default_delete.html",
+    "https://en.cppreference.com/w/cpp/memory/out_ptr_t.html",
+    "https://en.cppreference.com/w/cpp/memory/inout_ptr_t.html",
+    "https://en.cppreference.com/w/cpp/memory.html#Miscellaneous",
+    "https://en.cppreference.com/w/cpp/memory/pointer_traits.html",
+    "https://en.cppreference.com/w/cpp/memory/to_address.html",
+    "https://en.cppreference.com/w/cpp/memory/addressof.html",
+    "https://en.cppreference.com/w/cpp/memory/align.html",
+    "https://en.cppreference.com/w/cpp/memory/assume_aligned.html",
+    "https://en.cppreference.com/w/cpp/memory/is_sufficiently_aligned.html",
+    "https://en.cppreference.com/w/cpp/memory/c.html",
+    "https://en.cppreference.com/w/cpp/memory/c/malloc.html",
+    "https://en.cppreference.com/w/cpp/memory/c/calloc.html",
+    "https://en.cppreference.com/w/cpp/memory/c/realloc.html",
+    "https://en.cppreference.com/w/cpp/memory/c/free.html",
+    "https://en.cppreference.com/w/cpp/memory/c/aligned_alloc.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/navbar_content&action=edit",
+    "https://en.cppreference.com/w/cpp/memory/allocator/allocator.html",
+    "https://en.cppreference.com/w/cpp/memory/allocator/~allocator.html",
+    "https://en.cppreference.com/w/cpp/memory/allocator/address.html",
+    "https://en.cppreference.com/w/cpp/memory/allocator/allocate.html",
+    "https://en.cppreference.com/w/cpp/memory/allocator/allocate_at_least.html",
+    "https://en.cppreference.com/w/cpp/memory/allocator/deallocate.html",
+    "https://en.cppreference.com/w/cpp/memory/allocator/max_size.html",
+    "https://en.cppreference.com/w/cpp/memory/allocator/construct.html",
+    "https://en.cppreference.com/w/cpp/memory/allocator/destroy.html",
+    "https://en.cppreference.com/w/cpp/memory/allocator/operator_cmp.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/navbar_content&action=edit",
+    "https://en.cppreference.com/w/cpp/header/memory.html",
+    "https://en.cppreference.com/w/cpp/named_req/Allocator.html",
+    "https://en.cppreference.com/w/cpp/named_req/Allocator.html#Allocator_completeness_requirements",
+    "https://en.cppreference.com/w/cpp/memory/allocator.html#Member_types",
+    "https://en.cppreference.com/w/cpp/memory/allocator.html#Member_functions",
+    "https://en.cppreference.com/w/cpp/memory/allocator.html#Non-member_functions",
+    "https://en.cppreference.com/w/cpp/memory/allocator.html#Notes",
+    "https://en.cppreference.com/w/cpp/memory/allocator.html#Example",
+    "https://en.cppreference.com/w/cpp/memory/allocator.html#Defect_reports",
+    "https://en.cppreference.com/w/cpp/memory/allocator.html#See_also",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=1",
+    "https://en.cppreference.com/w/cpp/types/size_t.html",
+    "https://en.cppreference.com/w/cpp/types/ptrdiff_t.html",
+    "https://en.cppreference.com/w/cpp/types/integral_constant.html",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=2",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_allocator&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_%7Eallocator&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_address&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_allocate&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_allocate_at_least&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_deallocate&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_max_size&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_construct&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_destroy&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=3",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/allocator/dsc_operator_cmp&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=4",
+    "https://en.cppreference.com/w/cpp/container/list.html",
+    "https://cplusplus.github.io/LWG/issue3170",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=5",
+    "https://en.cppreference.com/w/cpp/types/is_same.html",
+    "https://en.cppreference.com/w/cpp/io/cout.html",
+    "https://en.cppreference.com/w/cpp/string/basic_string.html",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=6",
+    "https://cplusplus.github.io/LWG/issue2103",
+    "https://cplusplus.github.io/LWG/issue2108",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=edit&section=7",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/dsc_allocator_traits&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/dsc_scoped_allocator_adaptor&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/memory/dsc_uses_allocator&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&oldid=163381",
+    "http://www.cppreference.com/support",
+    "https://en.cppreference.com/w/Special:RecentChanges",
+    "https://en.cppreference.com/w/Cppreference%253AAbout.html",
+    "https://en.cppreference.com/w/Cppreference%253AArchives.html",
+    "https://en.cppreference.com/w/Special:WhatLinksHere/cpp/memory/allocator",
+    "https://en.cppreference.com/w/Special:RecentChangesLinked/cpp/memory/allocator",
+    "http://upload.cppreference.com/w/Special:Upload",
+    "https://en.cppreference.com/w/Special:SpecialPages",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&printable=yes",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/memory/allocator&action=info",
+    "http://de.cppreference.com/w/cpp/memory/allocator",
+    "http://es.cppreference.com/w/cpp/memory/allocator",
+    "http://fr.cppreference.com/w/cpp/memory/allocator",
+    "http://it.cppreference.com/w/cpp/memory/allocator",
+    "http://ja.cppreference.com/w/cpp/memory/allocator",
+    "http://pt.cppreference.com/w/cpp/memory/allocator",
+    "http://ru.cppreference.com/w/cpp/memory/allocator",
+    "http://zh.cppreference.com/w/cpp/memory/allocator",
+    "https://en.cppreference.com/w/Cppreference%253APrivacy_policy.html",
+    "https://en.cppreference.com/w/Cppreference%253AGeneral_disclaimer.html",
+    "https://www.mediawiki.org/",
+    "http://qbnz.com/highlighter/",
+    "http://www.tigertech.net/referral/cppreference.com"
+  ],
+  "source_url": "https://en.cppreference.com/w/cpp/memory/allocator",
+  "source": "cppreference",
+  "harvested_at": "2026-03-29T06:03:44.435560",
+  "kb_type": "cpp"
+}

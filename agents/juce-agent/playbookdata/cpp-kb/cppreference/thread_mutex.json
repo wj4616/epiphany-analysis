@@ -1,0 +1,1205 @@
+{
+  "id": "cpp-kb_cppreference_thread_mutex",
+  "kb": "cpp-kb",
+  "topic": "cppreference",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Create account](https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fthread%2Fmutex&type=signup)",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "text",
+      "code": "#include <chrono>\n#include <iostream>\n#include <map>\n#include <mutex>\n#include <string>\n#include <thread>\n\nstd::map<std::string, std::string> g_pages;\nstd::mutex g_pages_mutex;\n\nvoid save_page(const std::string& url)\n{\n    // simulate a long page fetch\n    std::this_thread::sleep_for(std::chrono::seconds(2));\n    std::string result = \"fake content\";\n\n    std::lock_guard<std::mutex> guard(g_pages_mutex);\n    g_pages[url] = result;\n}\n\nint main()\n{\n    std::thread t1(save_page, \"http://foo\");\n    std::thread t2(save_page, \"http://bar\");\n    t1.join();\n    t2.join();\n\n    // safe to access g_pages without lock now, as the threads are joined\n    for (const auto& [url, page] : g_pages)\n        std::cout << url << \" => \" << page << '\\n';\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "text",
+      "code": "http://bar => fake content\nhttp://foo => fake content\n",
+      "preserved": true
+    }
+  ],
+  "references": [
+    {
+      "title": "cppreference.com",
+      "url": "https://en.cppreference.com/index.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Create account",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fthread%2Fmutex&type=signup",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Log in",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fthread%2Fmutex \"You are encouraged to log in; however, it is not mandatory [o]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Page",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex.html \"View the content page [c]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Discussion",
+      "url": "https://en.cppreference.com/w/Talk%253Acpp/thread/mutex.html \"Discussion about the content page [t]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "View",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit \"You can edit this page. Please use the preview button before saving [e]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "History",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=history \"Past revisions of this page [h]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "cpp",
+      "url": "https://en.cppreference.com/w/cpp.html \"cpp\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "thread",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Compiler support",
+      "url": "https://en.cppreference.com/w/cpp/compiler_support.html \"cpp/compiler support\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Freestanding and hosted",
+      "url": "https://en.cppreference.com/w/cpp/freestanding.html \"cpp/freestanding\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Language",
+      "url": "https://en.cppreference.com/w/cpp/language.html \"cpp/language\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Standard library",
+      "url": "https://en.cppreference.com/w/cpp/standard_library.html \"cpp/standard library\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Standard library headers",
+      "url": "https://en.cppreference.com/w/cpp/headers.html \"cpp/header\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Named requirements",
+      "url": "https://en.cppreference.com/w/cpp/iterator/concepts.html \"cpp/named req\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Feature test macros",
+      "url": "https://en.cppreference.com/w/cpp/experimental/feature_test.html \"cpp/feature test\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Language support library",
+      "url": "https://en.cppreference.com/w/cpp/utility.html#Language_support \"cpp/utility\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Concepts library",
+      "url": "https://en.cppreference.com/w/cpp/concepts.html \"cpp/concepts\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Diagnostics library",
+      "url": "https://en.cppreference.com/w/cpp/error.html \"cpp/error\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Memory management library",
+      "url": "https://en.cppreference.com/w/cpp/memory.html \"cpp/memory\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Metaprogramming library",
+      "url": "https://en.cppreference.com/w/cpp/meta.html \"cpp/meta\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "General utilities library",
+      "url": "https://en.cppreference.com/w/cpp/utility.html \"cpp/utility\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Containers library",
+      "url": "https://en.cppreference.com/w/cpp/container.html \"cpp/container\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Iterators library",
+      "url": "https://en.cppreference.com/w/cpp/iterator.html \"cpp/iterator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Ranges library",
+      "url": "https://en.cppreference.com/w/cpp/ranges.html \"cpp/ranges\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Algorithms library",
+      "url": "https://en.cppreference.com/w/cpp/algorithm.html \"cpp/algorithm\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Strings library",
+      "url": "https://en.cppreference.com/w/cpp/string.html \"cpp/string\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Text processing library",
+      "url": "https://en.cppreference.com/w/cpp/text.html \"cpp/text\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Numerics library",
+      "url": "https://en.cppreference.com/w/cpp/numeric.html \"cpp/numeric\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Date and time library",
+      "url": "https://en.cppreference.com/w/cpp/chrono.html \"cpp/chrono\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Input/output library",
+      "url": "https://en.cppreference.com/w/cpp/io.html \"cpp/io\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Filesystem library",
+      "url": "https://en.cppreference.com/w/cpp/filesystem.html \"cpp/filesystem\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Execution control library",
+      "url": "https://en.cppreference.com/w/cpp/experimental/execution.html \"cpp/execution\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Technical specifications",
+      "url": "https://en.cppreference.com/w/cpp/experimental.html \"cpp/experimental\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Symbols index",
+      "url": "https://en.cppreference.com/w/cpp/symbol_index.html \"cpp/symbol index\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "External libraries",
+      "url": "https://en.cppreference.com/w/cpp/links/libs.html \"cpp/links/libs\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Threads",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Threads \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "thread",
+      "url": "https://en.cppreference.com/w/cpp/thread/thread.html \"cpp/thread/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "jthread",
+      "url": "https://en.cppreference.com/w/cpp/thread/jthread.html \"cpp/thread/jthread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "hardware\\_destructive\\_interference\\_sizehardware\\_constructive\\_interference\\_size",
+      "url": "https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size.html \"cpp/thread/hardware destructive interference size\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "`this_thread` namespace",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Functions_managing_the_current_thread \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "get\\_id",
+      "url": "https://en.cppreference.com/w/cpp/thread/get_id.html \"cpp/thread/get id\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "yield",
+      "url": "https://en.cppreference.com/w/cpp/thread/yield.html \"cpp/thread/yield\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "sleep\\_for",
+      "url": "https://en.cppreference.com/w/cpp/thread/sleep_for.html \"cpp/thread/sleep for\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "sleep\\_until",
+      "url": "https://en.cppreference.com/w/cpp/thread/sleep_until.html \"cpp/thread/sleep until\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Cooperative cancellation",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Cooperative_cancellation \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "stop\\_token",
+      "url": "https://en.cppreference.com/w/cpp/thread/stop_token.html \"cpp/thread/stop token\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "inplace\\_stop\\_token",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/inplace_stop_token&action=edit&redlink=1 \"cpp/thread/inplace stop token (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "never\\_stop\\_token",
+      "url": "https://en.cppreference.com/w/cpp/thread/never_stop_token.html \"cpp/thread/never stop token\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "stop\\_source",
+      "url": "https://en.cppreference.com/w/cpp/thread/stop_source.html \"cpp/thread/stop source\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "inplace\\_stop\\_source",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/inplace_stop_source&action=edit&redlink=1 \"cpp/thread/inplace stop source (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "stop\\_callback",
+      "url": "https://en.cppreference.com/w/cpp/thread/stop_callback.html \"cpp/thread/stop callback\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "inplace\\_stop\\_callback",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/inplace_stop_callback&action=edit&redlink=1 \"cpp/thread/inplace stop callback (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "stop\\_callback\\_for\\_t",
+      "url": "https://en.cppreference.com/w/cpp/thread/stop_callback_for_t.html \"cpp/thread/stop callback for t\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "stoppable\\_token",
+      "url": "https://en.cppreference.com/w/cpp/thread/stoppable_token.html \"cpp/thread/stoppable token\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "unstoppable\\_token",
+      "url": "https://en.cppreference.com/w/cpp/thread/unstoppable_token.html \"cpp/thread/unstoppable token\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "_stoppable-source_",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/stoppable_source&action=edit&redlink=1 \"cpp/thread/stoppable source (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "_stoppable-callback-for_",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/stoppable_callback_for&action=edit&redlink=1 \"cpp/thread/stoppable callback for (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Mutual exclusion",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Mutual_exclusion \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "recursive\\_mutex",
+      "url": "https://en.cppreference.com/w/cpp/thread/recursive_mutex.html \"cpp/thread/recursive mutex\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "shared\\_mutex",
+      "url": "https://en.cppreference.com/w/cpp/thread/shared_mutex.html \"cpp/thread/shared mutex\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "timed\\_mutex",
+      "url": "https://en.cppreference.com/w/cpp/thread/timed_mutex.html \"cpp/thread/timed mutex\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "recursive\\_timed\\_mutex",
+      "url": "https://en.cppreference.com/w/cpp/thread/recursive_timed_mutex.html \"cpp/thread/recursive timed mutex\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "shared\\_timed\\_mutex",
+      "url": "https://en.cppreference.com/w/cpp/thread/shared_timed_mutex.html \"cpp/thread/shared timed mutex\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Generic lock management",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Generic_mutex_management \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "lock",
+      "url": "https://en.cppreference.com/w/cpp/thread/lock.html \"cpp/thread/lock\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "lock\\_guard",
+      "url": "https://en.cppreference.com/w/cpp/thread/lock_guard.html \"cpp/thread/lock guard\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "scoped\\_lock",
+      "url": "https://en.cppreference.com/w/cpp/thread/scoped_lock.html \"cpp/thread/scoped lock\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "unique\\_lock",
+      "url": "https://en.cppreference.com/w/cpp/thread/unique_lock.html \"cpp/thread/unique lock\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "shared\\_lock",
+      "url": "https://en.cppreference.com/w/cpp/thread/shared_lock.html \"cpp/thread/shared lock\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "once\\_flag",
+      "url": "https://en.cppreference.com/w/cpp/thread/once_flag.html \"cpp/thread/once flag\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "call\\_once",
+      "url": "https://en.cppreference.com/w/cpp/thread/call_once.html \"cpp/thread/call once\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "try\\_lock",
+      "url": "https://en.cppreference.com/w/cpp/thread/try_lock.html \"cpp/thread/try lock\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "defer\\_locktry\\_to\\_lockadopt\\_lockdefer\\_lock\\_ttry\\_to\\_lock\\_tadopt\\_lock\\_t",
+      "url": "https://en.cppreference.com/w/cpp/thread/lock_tag_t.html \"cpp/thread/lock tag\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Condition variables",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Condition_variables \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "condition\\_variable",
+      "url": "https://en.cppreference.com/w/cpp/thread/condition_variable.html \"cpp/thread/condition variable\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "condition\\_variable\\_any",
+      "url": "https://en.cppreference.com/w/cpp/thread/condition_variable_any.html \"cpp/thread/condition variable any\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "notify\\_all\\_at\\_thread\\_exit",
+      "url": "https://en.cppreference.com/w/cpp/thread/notify_all_at_thread_exit.html \"cpp/thread/notify all at thread exit\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "cv\\_status",
+      "url": "https://en.cppreference.com/w/cpp/thread/cv_status.html \"cpp/thread/cv status\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Semaphores",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Semaphores \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "counting\\_semaphorebinary\\_semaphore",
+      "url": "https://en.cppreference.com/w/cpp/thread/counting_semaphore.html \"cpp/thread/counting semaphore\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Latches and Barriers",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Latches_and_Barriers \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "latch",
+      "url": "https://en.cppreference.com/w/cpp/thread/latch.html \"cpp/thread/latch\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "barrier",
+      "url": "https://en.cppreference.com/w/cpp/thread/barrier.html \"cpp/thread/barrier\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Futures",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Futures \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "promise",
+      "url": "https://en.cppreference.com/w/cpp/thread/promise.html \"cpp/thread/promise\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "future",
+      "url": "https://en.cppreference.com/w/cpp/thread/future.html \"cpp/thread/future\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "shared\\_future",
+      "url": "https://en.cppreference.com/w/cpp/thread/shared_future.html \"cpp/thread/shared future\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "packaged\\_task",
+      "url": "https://en.cppreference.com/w/cpp/thread/packaged_task.html \"cpp/thread/packaged task\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "async",
+      "url": "https://en.cppreference.com/w/cpp/thread/async.html \"cpp/thread/async\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "launch",
+      "url": "https://en.cppreference.com/w/cpp/thread/launch.html \"cpp/thread/launch\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "future\\_status",
+      "url": "https://en.cppreference.com/w/cpp/thread/future_status.html \"cpp/thread/future status\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "future\\_error",
+      "url": "https://en.cppreference.com/w/cpp/thread/future_error.html \"cpp/thread/future error\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "future\\_category",
+      "url": "https://en.cppreference.com/w/cpp/thread/future_category.html \"cpp/thread/future category\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "future\\_errc",
+      "url": "https://en.cppreference.com/w/cpp/thread/future_errc.html \"cpp/thread/future errc\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Safe reclamation",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Safe_reclamation \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "rcu\\_obj\\_base",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_obj_base&action=edit&redlink=1 \"cpp/thread/rcu obj base (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "rcu\\_domain",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_domain&action=edit&redlink=1 \"cpp/thread/rcu domain (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "rcu\\_default\\_domain",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_default_domain&action=edit&redlink=1 \"cpp/thread/rcu default domain (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "rcu\\_synchronize",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_synchronize&action=edit&redlink=1 \"cpp/thread/rcu synchronize (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "rcu\\_barrier",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_barrier&action=edit&redlink=1 \"cpp/thread/rcu barrier (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "rcu\\_retire",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_retire&action=edit&redlink=1 \"cpp/thread/rcu retire (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Hazard pointers",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Hazard_pointers \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "hazard\\_pointer\\_obj\\_base",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/hazard_pointer_obj_base&action=edit&redlink=1 \"cpp/thread/hazard pointer obj base (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "hazard\\_pointer",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/hazard_pointer&action=edit&redlink=1 \"cpp/thread/hazard pointer (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "make\\_hazard\\_pointer",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/make_hazard_pointer&action=edit&redlink=1 \"cpp/thread/make hazard pointer (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Atomic types",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Atomic_types \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic.html \"cpp/atomic/atomic\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_ref",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_ref.html \"cpp/atomic/atomic ref\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_flag",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_flag.html \"cpp/atomic/atomic flag\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Initialization of atomic types",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Initialization \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_init",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_init.html \"cpp/atomic/atomic init\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ATOMIC\\_VAR\\_INIT",
+      "url": "https://en.cppreference.com/w/cpp/atomic/ATOMIC_VAR_INIT.html \"cpp/atomic/ATOMIC VAR INIT\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ATOMIC\\_FLAG\\_INIT",
+      "url": "https://en.cppreference.com/w/cpp/atomic/ATOMIC_FLAG_INIT.html \"cpp/atomic/ATOMIC FLAG INIT\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Memory ordering",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Memory_synchronization_ordering \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "memory\\_order",
+      "url": "https://en.cppreference.com/w/cpp/atomic/memory_order.html \"cpp/atomic/memory order\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "kill\\_dependency",
+      "url": "https://en.cppreference.com/w/cpp/atomic/kill_dependency.html \"cpp/atomic/kill dependency\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_thread\\_fence",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence.html \"cpp/atomic/atomic thread fence\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_signal\\_fence",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_signal_fence.html \"cpp/atomic/atomic signal fence\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Free functions for atomic operations",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Operations_on_atomic_types \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_storeatomic\\_store\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_store.html \"cpp/atomic/atomic store\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_loadatomic\\_load\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_load.html \"cpp/atomic/atomic load\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_exchangeatomic\\_exchange\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_exchange.html \"cpp/atomic/atomic exchange\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_compare\\_exchange\\_weakatomic\\_compare\\_exchange\\_weak\\_explicitatomic\\_compare\\_exchange\\_strongatomic\\_compare\\_exchange\\_strong\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_compare_exchange.html \"cpp/atomic/atomic compare exchange\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_fetch\\_addatomic\\_fetch\\_add\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_fetch_add.html \"cpp/atomic/atomic fetch add\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_fetch\\_subatomic\\_fetch\\_sub\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_fetch_sub.html \"cpp/atomic/atomic fetch sub\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_fetch\\_andatomic\\_fetch\\_and\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_fetch_and.html \"cpp/atomic/atomic fetch and\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_fetch\\_oratomic\\_fetch\\_or\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_fetch_or.html \"cpp/atomic/atomic fetch or\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_fetch\\_xoratomic\\_fetch\\_xor\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_fetch_xor.html \"cpp/atomic/atomic fetch xor\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_fetch\\_maxatomic\\_fetch\\_max\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_fetch_max.html \"cpp/atomic/atomic fetch max\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_fetch\\_minatomic\\_fetch\\_min\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_fetch_min.html \"cpp/atomic/atomic fetch min\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_is\\_lock\\_free",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_is_lock_free.html \"cpp/atomic/atomic is lock free\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_waitatomic\\_wait\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_wait.html \"cpp/atomic/atomic wait\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_notify\\_one",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_notify_one.html \"cpp/atomic/atomic notify one\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_notify\\_all",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_notify_all.html \"cpp/atomic/atomic notify all\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Free functions for atomic flags",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html#Flag_type_and_operations \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_flag\\_test\\_and\\_setatomic\\_flag\\_test\\_and\\_set\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_flag_test_and_set.html \"cpp/atomic/atomic flag test and set\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_flag\\_clearatomic\\_flag\\_clear\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_flag_clear.html \"cpp/atomic/atomic flag clear\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_flag\\_testatomic\\_flag\\_test\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_flag_test.html \"cpp/atomic/atomic flag test\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_flag\\_waitatomic\\_flag\\_wait\\_explicit",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_flag_wait.html \"cpp/atomic/atomic flag wait\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_flag\\_notify\\_one",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_flag_notify_one.html \"cpp/atomic/atomic flag notify one\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "atomic\\_flag\\_notify\\_all",
+      "url": "https://en.cppreference.com/w/cpp/atomic/atomic_flag_notify_all.html \"cpp/atomic/atomic flag notify all\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "mutex::mutex",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex/mutex.html \"cpp/thread/mutex/mutex\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "mutex::~mutex",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex/~mutex.html \"cpp/thread/mutex/~mutex\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "mutex::lock",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex/lock.html \"cpp/thread/mutex/lock\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "mutex::try\\_lock",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex/try_lock.html \"cpp/thread/mutex/try lock\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "mutex::unlock",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex/unlock.html \"cpp/thread/mutex/unlock\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "mutex::native\\_handle",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex/native_handle.html \"cpp/thread/mutex/native handle\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Mutex",
+      "url": "https://en.cppreference.com/w/cpp/named_req/Mutex.html \"cpp/named req/Mutex\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "StandardLayoutType",
+      "url": "https://en.cppreference.com/w/cpp/named_req/StandardLayoutType.html \"cpp/named req/StandardLayoutType\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "1Nested types",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex.html#Nested_types",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "2Member functions",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex.html#Member_functions",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "2.1Locking",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex.html#Locking",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "2.2Native handle",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex.html#Native_handle",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "3Notes",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex.html#Notes",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "4Example",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex.html#Example",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "5See also",
+      "url": "https://en.cppreference.com/w/cpp/thread/mutex.html#See_also",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=1 \"Edit section: Nested types\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=2 \"Edit section: Member functions\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=3 \"Edit section: Notes\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=4 \"Edit section: Example\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::map",
+      "url": "https://en.cppreference.com/w/cpp/container/map.html \"cpp/container/map\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=5 \"Edit section: See also\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&oldid=170085",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&oldid=170085",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Support us",
+      "url": "http://www.cppreference.com/support",
+      "domain": "www.cppreference.com"
+    },
+    {
+      "title": "Recent changes",
+      "url": "https://en.cppreference.com/w/Special:RecentChanges \"A list of recent changes in the wiki [r]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "FAQ",
+      "url": "https://en.cppreference.com/w/Cppreference%253AAbout.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Offline version",
+      "url": "https://en.cppreference.com/w/Cppreference%253AArchives.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "What links here",
+      "url": "https://en.cppreference.com/w/Special:WhatLinksHere/cpp/thread/mutex \"A list of all wiki pages that link here [j]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Related changes",
+      "url": "https://en.cppreference.com/w/Special:RecentChangesLinked/cpp/thread/mutex \"Recent changes in pages linked from this page [k]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Upload file",
+      "url": "http://upload.cppreference.com/w/Special:Upload \"Upload files [u]\"",
+      "domain": "upload.cppreference.com"
+    },
+    {
+      "title": "Special pages",
+      "url": "https://en.cppreference.com/w/Special:SpecialPages \"A list of all special pages [q]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Printable version",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&printable=yes \"Printable version of this page [p]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Permanent link",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&oldid=170085 \"Permanent link to this revision of the page\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Page information",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=info",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+      "url": "http://ar.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\"",
+      "domain": "ar.cppreference.com"
+    },
+    {
+      "title": "Deutsch",
+      "url": "http://de.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\"",
+      "domain": "de.cppreference.com"
+    },
+    {
+      "title": "Espa\u00f1ol",
+      "url": "http://es.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\"",
+      "domain": "es.cppreference.com"
+    },
+    {
+      "title": "Fran\u00e7ais",
+      "url": "http://fr.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\"",
+      "domain": "fr.cppreference.com"
+    },
+    {
+      "title": "Italiano",
+      "url": "http://it.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\"",
+      "domain": "it.cppreference.com"
+    },
+    {
+      "title": "\u65e5\u672c\u8a9e",
+      "url": "http://ja.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\"",
+      "domain": "ja.cppreference.com"
+    },
+    {
+      "title": "\ud55c\uad6d\uc5b4",
+      "url": "http://ko.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\"",
+      "domain": "ko.cppreference.com"
+    },
+    {
+      "title": "Portugu\u00eas",
+      "url": "http://pt.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\"",
+      "domain": "pt.cppreference.com"
+    },
+    {
+      "title": "\u0420\u0443\u0441\u0441\u043a\u0438\u0439",
+      "url": "http://ru.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\"",
+      "domain": "ru.cppreference.com"
+    },
+    {
+      "title": "\u4e2d\u6587",
+      "url": "http://zh.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\"",
+      "domain": "zh.cppreference.com"
+    },
+    {
+      "title": "Privacy policy",
+      "url": "https://en.cppreference.com/w/Cppreference%253APrivacy_policy.html \"Cppreference:Privacy policy\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "About cppreference.com",
+      "url": "https://en.cppreference.com/w/Cppreference%253AAbout.html \"Cppreference:About\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Disclaimers",
+      "url": "https://en.cppreference.com/w/Cppreference%253AGeneral_disclaimer.html \"Cppreference:General disclaimer\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "![Powered by MediaWiki",
+      "url": "https://en.cppreference.com/mwiki/skins/common/images/poweredby_mediawiki_88x31.png",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "![Powered by GeSHi",
+      "url": "https://upload.cppreference.com/mwiki/images/2/2b/powered_by_geshi_88x31.png",
+      "domain": "upload.cppreference.com"
+    },
+    {
+      "title": "![Hosted by Tiger Technologies",
+      "url": "https://upload.cppreference.com/mwiki/images/9/94/powered_by_tigertech_88x31.png",
+      "domain": "upload.cppreference.com"
+    }
+  ],
+  "original_markdown": "##### [cppreference.com](https://en.cppreference.com/index.html)\n\n[Create account](https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fthread%2Fmutex&type=signup)\n\n- [Log in](https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fthread%2Fmutex \"You are encouraged to log in; however, it is not mandatory [o]\")\n\n##### Namespaces\n\n- [Page](https://en.cppreference.com/w/cpp/thread/mutex.html \"View the content page [c]\")\n- [Discussion](https://en.cppreference.com/w/Talk%253Acpp/thread/mutex.html \"Discussion about the content page [t]\")\n\n##### Variants\n\n##### Views\n\n- [View](https://en.cppreference.com/w/cpp/thread/mutex.html)\n- [Edit](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit \"You can edit this page. Please use the preview button before saving [e]\")\n- [History](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=history \"Past revisions of this page [h]\")\n\n##### Actions\n\n# std::mutex\n\nFrom cppreference.com\n\n< [cpp](https://en.cppreference.com/w/cpp.html \"cpp\") \u200e \\| [thread](https://en.cppreference.com/w/cpp/atomic.html \"cpp/thread\")\n\n[C++](https://en.cppreference.com/w/cpp.html \"cpp\")\n\n|     |\n| --- |\n| [Compiler support](https://en.cppreference.com/w/cpp/compiler_support.html \"cpp/compiler support\") |\n| [Freestanding and hosted](https://en.cppreference.com/w/cpp/freestanding.html \"cpp/freestanding\") |\n| [Language](https://en.cppreference.com/w/cpp/language.html \"cpp/language\") |\n| [Standard library](https://en.cppreference.com/w/cpp/standard_library.html \"cpp/standard library\") |\n| [Standard library headers](https://en.cppreference.com/w/cpp/headers.html \"cpp/header\") |\n| [Named requirements](https://en.cppreference.com/w/cpp/iterator/concepts.html \"cpp/named req\") |\n| [Feature test macros](https://en.cppreference.com/w/cpp/experimental/feature_test.html \"cpp/feature test\")(C++20) |\n| [Language support library](https://en.cppreference.com/w/cpp/utility.html#Language_support \"cpp/utility\") |\n| [Concepts library](https://en.cppreference.com/w/cpp/concepts.html \"cpp/concepts\")(C++20) |\n| [Diagnostics library](https://en.cppreference.com/w/cpp/error.html \"cpp/error\") |\n| [Memory management library](https://en.cppreference.com/w/cpp/memory.html \"cpp/memory\") |\n| [Metaprogramming library](https://en.cppreference.com/w/cpp/meta.html \"cpp/meta\")(C++11) |\n| [General utilities library](https://en.cppreference.com/w/cpp/utility.html \"cpp/utility\") |\n| [Containers library](https://en.cppreference.com/w/cpp/container.html \"cpp/container\") |\n| [Iterators library](https://en.cppreference.com/w/cpp/iterator.html \"cpp/iterator\") |\n| [Ranges library](https://en.cppreference.com/w/cpp/ranges.html \"cpp/ranges\")(C++20) |\n| [Algorithms library](https://en.cppreference.com/w/cpp/algorithm.html \"cpp/algorithm\") |\n| [Strings library](https://en.cppreference.com/w/cpp/string.html \"cpp/string\") |\n| [Text processing library](https://en.cppreference.com/w/cpp/text.html \"cpp/text\") |\n| [Numerics library](https://en.cppreference.com/w/cpp/numeric.html \"cpp/numeric\") |\n| [Date and time library](https://en.cppreference.com/w/cpp/chrono.html \"cpp/chrono\") |\n| [Input/output library](https://en.cppreference.com/w/cpp/io.html \"cpp/io\") |\n| [Filesystem library](https://en.cppreference.com/w/cpp/filesystem.html \"cpp/filesystem\")(C++17) |\n| [Concurrency support library](https://en.cppreference.com/w/cpp/atomic.html \"cpp/thread\")(C++11) |\n| [Execution control library](https://en.cppreference.com/w/cpp/experimental/execution.html \"cpp/execution\")(C++26) |\n| [Technical specifications](https://en.cppreference.com/w/cpp/experimental.html \"cpp/experimental\") |\n| [Symbols index](https://en.cppreference.com/w/cpp/symbol_index.html \"cpp/symbol index\") |\n| [External libraries](https://en.cppreference.com/w/cpp/links/libs.html \"cpp/links/libs\") |\n\n[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/navbar_content&action=edit)\n\n[Concurrency support library](https://en.cppreference.com/w/cpp/atomic.html \"cpp/thread\")\n\n|     |     |\n| --- | --- |\n| |     |     |\n| --- | --- |\n| [Threads](https://en.cppreference.com/w/cpp/atomic.html#Threads \"cpp/thread\") |\n| [thread](https://en.cppreference.com/w/cpp/thread/thread.html \"cpp/thread/thread\")<br>(C++11) |\n| [jthread](https://en.cppreference.com/w/cpp/thread/jthread.html \"cpp/thread/jthread\")<br>(C++20) |\n| [hardware\\_destructive\\_interference\\_sizehardware\\_constructive\\_interference\\_size](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size.html \"cpp/thread/hardware destructive interference size\")<br>(C++17)(C++17) |\n| [`this_thread` namespace](https://en.cppreference.com/w/cpp/atomic.html#Functions_managing_the_current_thread \"cpp/thread\") |\n| |     |\n| --- |\n| [get\\_id](https://en.cppreference.com/w/cpp/thread/get_id.html \"cpp/thread/get id\")<br>(C++11) |\n| [yield](https://en.cppreference.com/w/cpp/thread/yield.html \"cpp/thread/yield\")<br>(C++11) | | |     |\n| --- |\n| [sleep\\_for](https://en.cppreference.com/w/cpp/thread/sleep_for.html \"cpp/thread/sleep for\")<br>(C++11) |\n| [sleep\\_until](https://en.cppreference.com/w/cpp/thread/sleep_until.html \"cpp/thread/sleep until\")<br>(C++11) | |\n| [Cooperative cancellation](https://en.cppreference.com/w/cpp/atomic.html#Cooperative_cancellation \"cpp/thread\") |\n| |     |\n| --- |\n| [stop\\_token](https://en.cppreference.com/w/cpp/thread/stop_token.html \"cpp/thread/stop token\")<br>(C++20) |\n| [inplace\\_stop\\_token](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/inplace_stop_token&action=edit&redlink=1 \"cpp/thread/inplace stop token (page does not exist)\")<br>(C++26) |\n| [never\\_stop\\_token](https://en.cppreference.com/w/cpp/thread/never_stop_token.html \"cpp/thread/never stop token\")<br>(C++26) |\n| [stop\\_source](https://en.cppreference.com/w/cpp/thread/stop_source.html \"cpp/thread/stop source\")<br>(C++20) |\n| [inplace\\_stop\\_source](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/inplace_stop_source&action=edit&redlink=1 \"cpp/thread/inplace stop source (page does not exist)\")<br>(C++26)`` |\n| [stop\\_callback](https://en.cppreference.com/w/cpp/thread/stop_callback.html \"cpp/thread/stop callback\")<br>(C++20) | | |     |\n| --- |\n| [inplace\\_stop\\_callback](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/inplace_stop_callback&action=edit&redlink=1 \"cpp/thread/inplace stop callback (page does not exist)\")<br>(C++26) |\n| [stop\\_callback\\_for\\_t](https://en.cppreference.com/w/cpp/thread/stop_callback_for_t.html \"cpp/thread/stop callback for t\")<br>(C++26) |\n| [stoppable\\_token](https://en.cppreference.com/w/cpp/thread/stoppable_token.html \"cpp/thread/stoppable token\")<br>(C++26) |\n| [unstoppable\\_token](https://en.cppreference.com/w/cpp/thread/unstoppable_token.html \"cpp/thread/unstoppable token\")<br>(C++26) |\n| [_stoppable-source_](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/stoppable_source&action=edit&redlink=1 \"cpp/thread/stoppable source (page does not exist)\")<br>(C++26) |\n| [_stoppable-callback-for_](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/stoppable_callback_for&action=edit&redlink=1 \"cpp/thread/stoppable callback for (page does not exist)\")<br>(C++26)`` | |\n| [Mutual exclusion](https://en.cppreference.com/w/cpp/atomic.html#Mutual_exclusion \"cpp/thread\") |\n| |     |\n| --- |\n| **mutex**<br>(C++11) |\n| [recursive\\_mutex](https://en.cppreference.com/w/cpp/thread/recursive_mutex.html \"cpp/thread/recursive mutex\")<br>(C++11) |\n| [shared\\_mutex](https://en.cppreference.com/w/cpp/thread/shared_mutex.html \"cpp/thread/shared mutex\")<br>(C++17) | | |     |\n| --- |\n| [timed\\_mutex](https://en.cppreference.com/w/cpp/thread/timed_mutex.html \"cpp/thread/timed mutex\")<br>(C++11) |\n| [recursive\\_timed\\_mutex](https://en.cppreference.com/w/cpp/thread/recursive_timed_mutex.html \"cpp/thread/recursive timed mutex\")<br>(C++11) |\n| [shared\\_timed\\_mutex](https://en.cppreference.com/w/cpp/thread/shared_timed_mutex.html \"cpp/thread/shared timed mutex\")<br>(C++14) | |\n| [Generic lock management](https://en.cppreference.com/w/cpp/atomic.html#Generic_mutex_management \"cpp/thread\") |\n| |     |\n| --- |\n| [lock](https://en.cppreference.com/w/cpp/thread/lock.html \"cpp/thread/lock\")<br>(C++11) |\n| [lock\\_guard](https://en.cppreference.com/w/cpp/thread/lock_guard.html \"cpp/thread/lock guard\")<br>(C++11) |\n| [scoped\\_lock](https://en.cppreference.com/w/cpp/thread/scoped_lock.html \"cpp/thread/scoped lock\")<br>(C++17) |\n| [unique\\_lock](https://en.cppreference.com/w/cpp/thread/unique_lock.html \"cpp/thread/unique lock\")<br>(C++11) |\n| [shared\\_lock](https://en.cppreference.com/w/cpp/thread/shared_lock.html \"cpp/thread/shared lock\")<br>(C++14) |\n| [once\\_flag](https://en.cppreference.com/w/cpp/thread/once_flag.html \"cpp/thread/once flag\")<br>(C++11) |\n| [call\\_once](https://en.cppreference.com/w/cpp/thread/call_once.html \"cpp/thread/call once\")<br>(C++11) | | |     |\n| --- |\n| [try\\_lock](https://en.cppreference.com/w/cpp/thread/try_lock.html \"cpp/thread/try lock\")<br>(C++11) |\n| [defer\\_locktry\\_to\\_lockadopt\\_lockdefer\\_lock\\_ttry\\_to\\_lock\\_tadopt\\_lock\\_t](https://en.cppreference.com/w/cpp/thread/lock_tag_t.html \"cpp/thread/lock tag\")<br>(C++11)(C++11)(C++11)(C++11)(C++11)(C++11) | |\n| [Condition variables](https://en.cppreference.com/w/cpp/atomic.html#Condition_variables \"cpp/thread\") |\n| [condition\\_variable](https://en.cppreference.com/w/cpp/thread/condition_variable.html \"cpp/thread/condition variable\")<br>(C++11) |\n| [condition\\_variable\\_any](https://en.cppreference.com/w/cpp/thread/condition_variable_any.html \"cpp/thread/condition variable any\")<br>(C++11) |\n| [notify\\_all\\_at\\_thread\\_exit](https://en.cppreference.com/w/cpp/thread/notify_all_at_thread_exit.html \"cpp/thread/notify all at thread exit\")<br>(C++11) |\n| [cv\\_status](https://en.cppreference.com/w/cpp/thread/cv_status.html \"cpp/thread/cv status\")<br>(C++11) |\n| [Semaphores](https://en.cppreference.com/w/cpp/atomic.html#Semaphores \"cpp/thread\") |\n| [counting\\_semaphorebinary\\_semaphore](https://en.cppreference.com/w/cpp/thread/counting_semaphore.html \"cpp/thread/counting semaphore\")<br>(C++20)(C++20) |\n| [Latches and Barriers](https://en.cppreference.com/w/cpp/atomic.html#Latches_and_Barriers \"cpp/thread\") |\n| |     |\n| --- |\n| [latch](https://en.cppreference.com/w/cpp/thread/latch.html \"cpp/thread/latch\")<br>(C++20) | | |     |\n| --- |\n| [barrier](https://en.cppreference.com/w/cpp/thread/barrier.html \"cpp/thread/barrier\")<br>(C++20) | |\n| [Futures](https://en.cppreference.com/w/cpp/atomic.html#Futures \"cpp/thread\") |\n| |     |\n| --- |\n| [promise](https://en.cppreference.com/w/cpp/thread/promise.html \"cpp/thread/promise\")<br>(C++11) |\n| [future](https://en.cppreference.com/w/cpp/thread/future.html \"cpp/thread/future\")<br>(C++11) |\n| [shared\\_future](https://en.cppreference.com/w/cpp/thread/shared_future.html \"cpp/thread/shared future\")<br>(C++11) |\n| [packaged\\_task](https://en.cppreference.com/w/cpp/thread/packaged_task.html \"cpp/thread/packaged task\")<br>(C++11) |\n| [async](https://en.cppreference.com/w/cpp/thread/async.html \"cpp/thread/async\")<br>(C++11) | | |     |\n| --- |\n| [launch](https://en.cppreference.com/w/cpp/thread/launch.html \"cpp/thread/launch\")<br>(C++11) |\n| [future\\_status](https://en.cppreference.com/w/cpp/thread/future_status.html \"cpp/thread/future status\")<br>(C++11) |\n| [future\\_error](https://en.cppreference.com/w/cpp/thread/future_error.html \"cpp/thread/future error\")<br>(C++11) |\n| [future\\_category](https://en.cppreference.com/w/cpp/thread/future_category.html \"cpp/thread/future category\")<br>(C++11) |\n| [future\\_errc](https://en.cppreference.com/w/cpp/thread/future_errc.html \"cpp/thread/future errc\")<br>(C++11) | |\n| [Safe reclamation](https://en.cppreference.com/w/cpp/atomic.html#Safe_reclamation \"cpp/thread\") |\n| |     |\n| --- |\n| [rcu\\_obj\\_base](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_obj_base&action=edit&redlink=1 \"cpp/thread/rcu obj base (page does not exist)\")<br>(C++26) |\n| [rcu\\_domain](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_domain&action=edit&redlink=1 \"cpp/thread/rcu domain (page does not exist)\")<br>(C++26) |\n| [rcu\\_default\\_domain](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_default_domain&action=edit&redlink=1 \"cpp/thread/rcu default domain (page does not exist)\")<br>(C++26) | | |     |\n| --- |\n| [rcu\\_synchronize](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_synchronize&action=edit&redlink=1 \"cpp/thread/rcu synchronize (page does not exist)\")<br>(C++26) |\n| [rcu\\_barrier](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_barrier&action=edit&redlink=1 \"cpp/thread/rcu barrier (page does not exist)\")<br>(C++26) |\n| [rcu\\_retire](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_retire&action=edit&redlink=1 \"cpp/thread/rcu retire (page does not exist)\")<br>(C++26) | |\n| [Hazard pointers](https://en.cppreference.com/w/cpp/atomic.html#Hazard_pointers \"cpp/thread\") |\n| [hazard\\_pointer\\_obj\\_base](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/hazard_pointer_obj_base&action=edit&redlink=1 \"cpp/thread/hazard pointer obj base (page does not exist)\")<br>(C++26) |\n| [hazard\\_pointer](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/hazard_pointer&action=edit&redlink=1 \"cpp/thread/hazard pointer (page does not exist)\")<br>(C++26) |\n| [make\\_hazard\\_pointer](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/make_hazard_pointer&action=edit&redlink=1 \"cpp/thread/make hazard pointer (page does not exist)\")<br>(C++26) | | |     |\n| --- |\n| [Atomic types](https://en.cppreference.com/w/cpp/atomic.html#Atomic_types \"cpp/thread\") |\n| [atomic](https://en.cppreference.com/w/cpp/atomic/atomic.html \"cpp/atomic/atomic\")<br>(C++11) |\n| [atomic\\_ref](https://en.cppreference.com/w/cpp/atomic/atomic_ref.html \"cpp/atomic/atomic ref\")<br>(C++20) |\n| [atomic\\_flag](https://en.cppreference.com/w/cpp/atomic/atomic_flag.html \"cpp/atomic/atomic flag\")<br>(C++11) |\n| [Initialization of atomic types](https://en.cppreference.com/w/cpp/atomic.html#Initialization \"cpp/thread\") |\n| [atomic\\_init](https://en.cppreference.com/w/cpp/atomic/atomic_init.html \"cpp/atomic/atomic init\")<br>(C++11)(deprecated in C++20) |\n| [ATOMIC\\_VAR\\_INIT](https://en.cppreference.com/w/cpp/atomic/ATOMIC_VAR_INIT.html \"cpp/atomic/ATOMIC VAR INIT\")<br>(C++11)(deprecated in C++20) |\n| [ATOMIC\\_FLAG\\_INIT](https://en.cppreference.com/w/cpp/atomic/ATOMIC_FLAG_INIT.html \"cpp/atomic/ATOMIC FLAG INIT\")<br>(C++11) |\n| [Memory ordering](https://en.cppreference.com/w/cpp/atomic.html#Memory_synchronization_ordering \"cpp/thread\") |\n| [memory\\_order](https://en.cppreference.com/w/cpp/atomic/memory_order.html \"cpp/atomic/memory order\")<br>(C++11) |\n| [kill\\_dependency](https://en.cppreference.com/w/cpp/atomic/kill_dependency.html \"cpp/atomic/kill dependency\")<br>(C++11)(deprecated in C++26) |\n| [atomic\\_thread\\_fence](https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence.html \"cpp/atomic/atomic thread fence\")<br>(C++11) |\n| [atomic\\_signal\\_fence](https://en.cppreference.com/w/cpp/atomic/atomic_signal_fence.html \"cpp/atomic/atomic signal fence\")<br>(C++11) |\n| [Free functions for atomic operations](https://en.cppreference.com/w/cpp/atomic.html#Operations_on_atomic_types \"cpp/thread\") |\n| [atomic\\_storeatomic\\_store\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_store.html \"cpp/atomic/atomic store\")<br>(C++11)(C++11) |\n| [atomic\\_loadatomic\\_load\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_load.html \"cpp/atomic/atomic load\")<br>(C++11)(C++11) |\n| [atomic\\_exchangeatomic\\_exchange\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_exchange.html \"cpp/atomic/atomic exchange\")<br>(C++11)(C++11) |\n| [atomic\\_compare\\_exchange\\_weakatomic\\_compare\\_exchange\\_weak\\_explicitatomic\\_compare\\_exchange\\_strongatomic\\_compare\\_exchange\\_strong\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_compare_exchange.html \"cpp/atomic/atomic compare exchange\")<br>(C++11)(C++11)(C++11)(C++11) |\n| [atomic\\_fetch\\_addatomic\\_fetch\\_add\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_fetch_add.html \"cpp/atomic/atomic fetch add\")<br>(C++11)(C++11) |\n| [atomic\\_fetch\\_subatomic\\_fetch\\_sub\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_fetch_sub.html \"cpp/atomic/atomic fetch sub\")<br>(C++11)(C++11) |\n| [atomic\\_fetch\\_andatomic\\_fetch\\_and\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_fetch_and.html \"cpp/atomic/atomic fetch and\")<br>(C++11)(C++11) |\n| [atomic\\_fetch\\_oratomic\\_fetch\\_or\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_fetch_or.html \"cpp/atomic/atomic fetch or\")<br>(C++11)(C++11) |\n| [atomic\\_fetch\\_xoratomic\\_fetch\\_xor\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_fetch_xor.html \"cpp/atomic/atomic fetch xor\")<br>(C++11)(C++11) |\n| [atomic\\_fetch\\_maxatomic\\_fetch\\_max\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_fetch_max.html \"cpp/atomic/atomic fetch max\")<br>(C++26)(C++26) |\n| [atomic\\_fetch\\_minatomic\\_fetch\\_min\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_fetch_min.html \"cpp/atomic/atomic fetch min\")<br>(C++26)(C++26) |\n| [atomic\\_is\\_lock\\_free](https://en.cppreference.com/w/cpp/atomic/atomic_is_lock_free.html \"cpp/atomic/atomic is lock free\")<br>(C++11) |\n| [atomic\\_waitatomic\\_wait\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_wait.html \"cpp/atomic/atomic wait\")<br>(C++20)(C++20) |\n| [atomic\\_notify\\_one](https://en.cppreference.com/w/cpp/atomic/atomic_notify_one.html \"cpp/atomic/atomic notify one\")<br>(C++20) |\n| [atomic\\_notify\\_all](https://en.cppreference.com/w/cpp/atomic/atomic_notify_all.html \"cpp/atomic/atomic notify all\")<br>(C++20) |\n| [Free functions for atomic flags](https://en.cppreference.com/w/cpp/atomic.html#Flag_type_and_operations \"cpp/thread\") |\n| [atomic\\_flag\\_test\\_and\\_setatomic\\_flag\\_test\\_and\\_set\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_flag_test_and_set.html \"cpp/atomic/atomic flag test and set\")<br>(C++11)(C++11) |\n| [atomic\\_flag\\_clearatomic\\_flag\\_clear\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_flag_clear.html \"cpp/atomic/atomic flag clear\")<br>(C++11)(C++11) |\n| [atomic\\_flag\\_testatomic\\_flag\\_test\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_flag_test.html \"cpp/atomic/atomic flag test\")<br>(C++20)(C++20) |\n| [atomic\\_flag\\_waitatomic\\_flag\\_wait\\_explicit](https://en.cppreference.com/w/cpp/atomic/atomic_flag_wait.html \"cpp/atomic/atomic flag wait\")<br>(C++20)(C++20) |\n| [atomic\\_flag\\_notify\\_one](https://en.cppreference.com/w/cpp/atomic/atomic_flag_notify_one.html \"cpp/atomic/atomic flag notify one\")<br>(C++20) |\n| [atomic\\_flag\\_notify\\_all](https://en.cppreference.com/w/cpp/atomic/atomic_flag_notify_all.html \"cpp/atomic/atomic flag notify all\")<br>(C++20) | |\n\n[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/navbar_content&action=edit)\n\n**`std::mutex`**\n\n|     |\n| --- |\n| Member functions |\n| [mutex::mutex](https://en.cppreference.com/w/cpp/thread/mutex/mutex.html \"cpp/thread/mutex/mutex\") |\n| [mutex::~mutex](https://en.cppreference.com/w/cpp/thread/mutex/~mutex.html \"cpp/thread/mutex/~mutex\") |\n| Locking |\n| [mutex::lock](https://en.cppreference.com/w/cpp/thread/mutex/lock.html \"cpp/thread/mutex/lock\") |\n| [mutex::try\\_lock](https://en.cppreference.com/w/cpp/thread/mutex/try_lock.html \"cpp/thread/mutex/try lock\") |\n| [mutex::unlock](https://en.cppreference.com/w/cpp/thread/mutex/unlock.html \"cpp/thread/mutex/unlock\") |\n| Native handle |\n| [mutex::native\\_handle](https://en.cppreference.com/w/cpp/thread/mutex/native_handle.html \"cpp/thread/mutex/native handle\") |\n\n[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/navbar_content&action=edit)\n\n|     |     |     |\n| --- | --- | --- |\n| Defined in header `<mutex>` |  |  |\n| class mutex; |  | (since C++11) |\n|  |  |  |\n\nThe `mutex` class is a synchronization primitive that can be used to protect shared data from being simultaneously accessed by multiple threads.\n\n`mutex` offers exclusive, non-recursive ownership semantics:\n\n- A calling thread _owns_ a `mutex` from the time that it successfully calls either [`lock`](https://en.cppreference.com/w/cpp/thread/mutex/lock.html \"cpp/thread/mutex/lock\") or [`try_lock`](https://en.cppreference.com/w/cpp/thread/mutex/try_lock.html \"cpp/thread/mutex/try lock\") until it calls [`unlock`](https://en.cppreference.com/w/cpp/thread/mutex/unlock.html \"cpp/thread/mutex/unlock\").\n\n- When a thread owns a `mutex`, all other threads will block (for calls to [`lock`](https://en.cppreference.com/w/cpp/thread/mutex/lock.html \"cpp/thread/mutex/lock\")) or receive a false return value (for [`try_lock`](https://en.cppreference.com/w/cpp/thread/mutex/try_lock.html \"cpp/thread/mutex/try lock\")) if they attempt to claim ownership of the `mutex`.\n\n- A calling thread must not own the `mutex` prior to calling [`lock`](https://en.cppreference.com/w/cpp/thread/mutex/lock.html \"cpp/thread/mutex/lock\") or [`try_lock`](https://en.cppreference.com/w/cpp/thread/mutex/try_lock.html \"cpp/thread/mutex/try lock\").\n\n\nThe behavior of a program is undefined if a `mutex` is destroyed while still owned by any threads, or a thread terminates while owning a `mutex`. The `mutex` class satisfies all requirements of [Mutex](https://en.cppreference.com/w/cpp/named_req/Mutex.html \"cpp/named req/Mutex\") and [StandardLayoutType](https://en.cppreference.com/w/cpp/named_req/StandardLayoutType.html \"cpp/named req/StandardLayoutType\").\n\n`std::mutex` is neither copyable nor movable.\n\n|     |\n| --- |\n| ## Contents<br>- [1Nested types](https://en.cppreference.com/w/cpp/thread/mutex.html#Nested_types)<br>- [2Member functions](https://en.cppreference.com/w/cpp/thread/mutex.html#Member_functions)<br>  - [2.1Locking](https://en.cppreference.com/w/cpp/thread/mutex.html#Locking)<br>  - [2.2Native handle](https://en.cppreference.com/w/cpp/thread/mutex.html#Native_handle)<br>- [3Notes](https://en.cppreference.com/w/cpp/thread/mutex.html#Notes)<br>- [4Example](https://en.cppreference.com/w/cpp/thread/mutex.html#Example)<br>- [5See also](https://en.cppreference.com/w/cpp/thread/mutex.html#See_also) |\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=1 \"Edit section: Nested types\")\\]Nested types\n\n|     |     |\n| --- | --- |\n| Name | Definition |\n| `native_handle_type`(optional\\*) | implementation-defined[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_native_handle_type&action=edit) |\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=2 \"Edit section: Member functions\")\\]Member functions\n\n|     |     |\n| --- | --- |\n| [(constructor)](https://en.cppreference.com/w/cpp/thread/mutex/mutex.html \"cpp/thread/mutex/mutex\") | constructs the mutex <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_constructor&action=edit) |\n| [(destructor)](https://en.cppreference.com/w/cpp/thread/mutex/~mutex.html \"cpp/thread/mutex/~mutex\") | destroys the mutex <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_destructor&action=edit) |\n| operator=<br>\\[deleted\\] | not copy-assignable <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_operator%3D&action=edit) |\n| ##### Locking |\n| [lock](https://en.cppreference.com/w/cpp/thread/mutex/lock.html \"cpp/thread/mutex/lock\") | locks the mutex, blocks if the mutex is not available <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_lock&action=edit) |\n| [try\\_lock](https://en.cppreference.com/w/cpp/thread/mutex/try_lock.html \"cpp/thread/mutex/try lock\") | tries to lock the mutex, returns if the mutex is not available <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_try_lock&action=edit) |\n| [unlock](https://en.cppreference.com/w/cpp/thread/mutex/unlock.html \"cpp/thread/mutex/unlock\") | unlocks the mutex <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_unlock&action=edit) |\n| ##### Native handle |\n| [native\\_handle](https://en.cppreference.com/w/cpp/thread/mutex/native_handle.html \"cpp/thread/mutex/native handle\") | returns the underlying implementation-defined native handle object <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_native_handle&action=edit) |\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=3 \"Edit section: Notes\")\\]Notes\n\n`std::mutex` is usually not accessed directly: [std::unique\\_lock](https://en.cppreference.com/w/cpp/thread/unique_lock.html \"cpp/thread/unique lock\"), [std::lock\\_guard](https://en.cppreference.com/w/cpp/thread/lock_guard.html \"cpp/thread/lock guard\"), or [std::scoped\\_lock](https://en.cppreference.com/w/cpp/thread/scoped_lock.html \"cpp/thread/scoped lock\")(since C++17) manage locking in a more exception-safe manner.\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=4 \"Edit section: Example\")\\]Example\n\nThis example shows how a `mutex` can be used to protect an [std::map](https://en.cppreference.com/w/cpp/container/map.html \"cpp/container/map\") shared between two threads.\n\nRun this code\n\n```\n#include <chrono>\n#include <iostream>\n#include <map>\n#include <mutex>\n#include <string>\n#include <thread>\n\nstd::map<std::string, std::string> g_pages;\nstd::mutex g_pages_mutex;\n\nvoid save_page(const std::string& url)\n{\n    // simulate a long page fetch\n    std::this_thread::sleep_for(std::chrono::seconds(2));\n    std::string result = \"fake content\";\n\n    std::lock_guard<std::mutex> guard(g_pages_mutex);\n    g_pages[url] = result;\n}\n\nint main()\n{\n    std::thread t1(save_page, \"http://foo\");\n    std::thread t2(save_page, \"http://bar\");\n    t1.join();\n    t2.join();\n\n    // safe to access g_pages without lock now, as the threads are joined\n    for (const auto& [url, page] : g_pages)\n        std::cout << url << \" => \" << page << '\\n';\n}\n```\n\nOutput:\n\n```\nhttp://bar => fake content\nhttp://foo => fake content\n```\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=5 \"Edit section: See also\")\\]See also\n\n|     |     |\n| --- | --- |\n| [recursive\\_mutex](https://en.cppreference.com/w/cpp/thread/recursive_mutex.html \"cpp/thread/recursive mutex\")<br>(C++11) | provides mutual exclusion facility which can be locked recursively by the same thread <br>(class)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_recursive_mutex&action=edit) |\n| [lock\\_guard](https://en.cppreference.com/w/cpp/thread/lock_guard.html \"cpp/thread/lock guard\")<br>(C++11) | implements a strictly scope-based mutex ownership wrapper <br>(class template)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_lock_guard&action=edit) |\n| [unique\\_lock](https://en.cppreference.com/w/cpp/thread/unique_lock.html \"cpp/thread/unique lock\")<br>(C++11) | implements movable mutex ownership wrapper <br>(class template)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_unique_lock&action=edit) |\n| [scoped\\_lock](https://en.cppreference.com/w/cpp/thread/scoped_lock.html \"cpp/thread/scoped lock\")<br>(C++17) | deadlock-avoiding RAII wrapper for multiple mutexes <br>(class template)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_scoped_lock&action=edit) |\n| [condition\\_variable](https://en.cppreference.com/w/cpp/thread/condition_variable.html \"cpp/thread/condition variable\")<br>(C++11) | provides a condition variable associated with a [std::unique\\_lock](https://en.cppreference.com/w/cpp/thread/unique_lock.html \"cpp/thread/unique lock\")<br>(class)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_condition_variable&action=edit) |\n\nRetrieved from \" [https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&oldid=170085](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&oldid=170085)\"\n\n##### Navigation\n\n- [Support us](http://www.cppreference.com/support)\n- [Recent changes](https://en.cppreference.com/w/Special:RecentChanges \"A list of recent changes in the wiki [r]\")\n- [FAQ](https://en.cppreference.com/w/Cppreference%253AAbout.html)\n- [Offline version](https://en.cppreference.com/w/Cppreference%253AArchives.html)\n\n##### Toolbox\n\n- [What links here](https://en.cppreference.com/w/Special:WhatLinksHere/cpp/thread/mutex \"A list of all wiki pages that link here [j]\")\n- [Related changes](https://en.cppreference.com/w/Special:RecentChangesLinked/cpp/thread/mutex \"Recent changes in pages linked from this page [k]\")\n- [Upload file](http://upload.cppreference.com/w/Special:Upload \"Upload files [u]\")\n- [Special pages](https://en.cppreference.com/w/Special:SpecialPages \"A list of all special pages [q]\")\n- [Printable version](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&printable=yes \"Printable version of this page [p]\")\n- [Permanent link](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&oldid=170085 \"Permanent link to this revision of the page\")\n- [Page information](https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=info)\n\n- In other languages\n\n- [\u0627\u0644\u0639\u0631\u0628\u064a\u0629](http://ar.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\")\n- [Deutsch](http://de.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\")\n- [Espa\u00f1ol](http://es.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\")\n- [Fran\u00e7ais](http://fr.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\")\n- [Italiano](http://it.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\")\n- [\u65e5\u672c\u8a9e](http://ja.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\")\n- [\ud55c\uad6d\uc5b4](http://ko.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\")\n- [Portugu\u00eas](http://pt.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\")\n- [\u0420\u0443\u0441\u0441\u043a\u0438\u0439](http://ru.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\")\n- [\u4e2d\u6587](http://zh.cppreference.com/w/cpp/thread/mutex \"cpp/thread/mutex\")\n\n- This page was last modified on 6 March 2024, at 18:53.\n\n- [Privacy policy](https://en.cppreference.com/w/Cppreference%253APrivacy_policy.html \"Cppreference:Privacy policy\")\n- [About cppreference.com](https://en.cppreference.com/w/Cppreference%253AAbout.html \"Cppreference:About\")\n- [Disclaimers](https://en.cppreference.com/w/Cppreference%253AGeneral_disclaimer.html \"Cppreference:General disclaimer\")\n\n- [![Powered by MediaWiki](https://en.cppreference.com/mwiki/skins/common/images/poweredby_mediawiki_88x31.png)](https://www.mediawiki.org/)[![Powered by GeSHi](https://upload.cppreference.com/mwiki/images/2/2b/powered_by_geshi_88x31.png)](http://qbnz.com/highlighter/)[![Hosted by Tiger Technologies](https://upload.cppreference.com/mwiki/images/9/94/powered_by_tigertech_88x31.png)](http://www.tigertech.net/referral/cppreference.com)",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.892825+00:00"
+  },
+  "html": "<!DOCTYPE html><html lang=\"en\" dir=\"ltr\" class=\"client-nojs\">\n<body class=\"mediawiki ltr sitedir-ltr ns-0 ns-subject page-cpp_thread_mutex skin-cppreference2 action-view cpp-navbar\">\n        <!-- header -->\n        <div id=\"mw-head\" class=\"noprint\">\n            <div id=\"cpp-head-first-base\">\n                <div id=\"cpp-head-first\">\n                    <h5><a href=\"https://en.cppreference.com/index.html\">\n                        cppreference.com                        </a></h5>\n                    <div id=\"cpp-head-search\">\n                        \n<!-- 0 -->\n<div id=\"p-search\">\n<form action=\"https://duckduckgo.com/\" method=\"get\">\n  \n  <input type=\"search\" name=\"q\">\n  <input type=\"submit\" value=\"Search\">\n</form>\n</div>\n\n<!-- /0 -->\n                    </div>\n                    <div id=\"cpp-head-personal\">\n                        \n<!-- 0 -->\n<div id=\"p-personal\" class=\"\">\n<span id=\"pt-createaccount\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&amp;returnto=cpp%2Fthread%2Fmutex&amp;type=signup\">Create account</a></span>\t<div class=\"menu\">\n        <ul>\n<li id=\"pt-login\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&amp;returnto=cpp%2Fthread%2Fmutex\" title=\"You are encouraged to log in; however, it is not mandatory [o]\" accesskey=\"o\">Log in</a></li>        </ul>\n    </div>\n</div>\n\n<!-- /0 -->\n                    </div>\n\n                </div>\n            </div>\n            <div id=\"cpp-head-second-base\">\n                <div id=\"cpp-head-second\">\n                    <div id=\"cpp-head-tools-left\">\n                        \n<!-- 0 -->\n<div id=\"p-namespaces\" class=\"vectorTabs\">\n\t<h5>Namespaces</h5>\n\t<ul>\n\t\t\t\t\t<li id=\"ca-nstab-main\" class=\"selected\"><span><a href=\"https://en.cppreference.com/w/cpp/thread/mutex.html\" title=\"View the content page [c]\" accesskey=\"c\">Page</a></span></li>\n\t\t\t\t\t<li id=\"ca-talk\"><span><a href=\"https://en.cppreference.com/w/Talk%253Acpp/thread/mutex.html\" title=\"Discussion about the content page [t]\" accesskey=\"t\">Discussion</a></span></li>\n\t\t\t</ul>\n</div>\n\n<!-- /0 -->\n\n<!-- 1 -->\n<div id=\"p-variants\" class=\"vectorMenu emptyPortlet\">\n\t\t<h5><span>Variants</span><a href=\"https://en.cppreference.com/w/cpp/thread/mutex.html#\"></a></h5>\n\t<div class=\"menu\">\n\t\t<ul>\n\t\t\t\t\t</ul>\n\t</div>\n</div>\n\n<!-- /1 -->\n                    </div>\n                    <div id=\"cpp-head-tools-right\">\n                        \n<!-- 0 -->\n<div id=\"p-views\" class=\"vectorTabs\">\n\t<h5>Views</h5>\n\t<ul>\n\t\t\t\t\t<li id=\"ca-view\" class=\"selected\"><span><a href=\"https://en.cppreference.com/w/cpp/thread/mutex.html\">View</a></span></li>\n\t\t\t\t\t<li id=\"ca-edit\"><span><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&amp;action=edit\" title=\"You can edit this page. Please use the preview button before saving [e]\" accesskey=\"e\">Edit</a></span></li>\n\t\t\t\t\t<li id=\"ca-history\" class=\"collapsible\"><span><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&amp;action=history\" title=\"Past revisions of this page [h]\" accesskey=\"h\">History</a></span></li>\n\t\t\t</ul>\n</div>\n\n<!-- /0 -->\n\n<!-- 1 -->\n<div id=\"p-cactions\" class=\"vectorMenu emptyPortlet\">\n\t<h5><span>Actions</span><a href=\"https://en.cppreference.com/w/cpp/thread/mutex.html#\"></a></h5>\n\t<div class=\"menu\">\n\t\t<ul>\n\t\t\t\t\t</ul>\n\t</div>\n</div>\n\n<!-- /1 -->\n                    </div>\n                </div>\n            </div>\n        </div>\n        <!-- /header -->\n        <!-- content -->\n\n        <div id=\"cpp-content-base\">\n            <div id=\"content\">\n                <a id=\"top\"></a>\n                <div id=\"mw-js-message\" style=\"display:none;\"></div>\n                                <!-- firstHeading -->\n\n\n\n\n                <h1 id=\"firstHeading\" class=\"firstHeading\"><span style=\"font-size:0.7em; line-height:130%\">std::</span>mutex</h1>\n                <!-- /firstHeading -->\n                <!-- bodyContent -->\n                <div id=\"bodyContent\">\n                                        <!-- tagline -->\n                    <div id=\"siteSub\">From cppreference.com</div>\n                    <!-- /tagline -->\n                                        <!-- subtitle -->\n                    <div id=\"contentSub\"><span class=\"subpages\">&lt; <a href=\"https://en.cppreference.com/w/cpp.html\" title=\"cpp\">cpp</a>\u200e | <a href=\"https://en.cppreference.com/w/cpp/atomic.html\" title=\"cpp/thread\">thread</a></span></div>\n                    <!-- /subtitle -->\n                                                            <!-- bodycontent -->\n                    <div id=\"mw-content-text\" lang=\"en\" dir=\"ltr\" class=\"mw-content-ltr\"><div class=\"t-navbar\" style=\"\"><div class=\"t-navbar-sep\">&nbsp;</div><div class=\"t-navbar-head\"><a href=\"https://en.cppreference.com/w/cpp.html\" title=\"cpp\">C++</a><div class=\"t-navbar-menu\"><div><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"line-height:1.1em;\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/compiler_support.html\" title=\"cpp/compiler support\">Compiler support</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/freestanding.html\" title=\"cpp/freestanding\">Freestanding and hosted</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/language.html\" title=\"cpp/language\">Language</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/standard_library.html\" title=\"cpp/standard library\">Standard library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/headers.html\" title=\"cpp/header\">Standard library headers</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/iterator/concepts.html\" title=\"cpp/named req\">Named requirements</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/experimental/feature_test.html\" title=\"cpp/feature test\">Feature test macros</a> <span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/utility.html#Language_support\" title=\"cpp/utility\">Language support library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/concepts.html\" title=\"cpp/concepts\">Concepts library</a> <span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/error.html\" title=\"cpp/error\">Diagnostics library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory.html\" title=\"cpp/memory\">Memory management library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/meta.html\" title=\"cpp/meta\">Metaprogramming library</a> <span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/utility.html\" title=\"cpp/utility\">General utilities library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container.html\" title=\"cpp/container\">Containers library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/iterator.html\" title=\"cpp/iterator\">Iterators library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/ranges.html\" title=\"cpp/ranges\">Ranges library</a> <span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/algorithm.html\" title=\"cpp/algorithm\">Algorithms library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/string.html\" title=\"cpp/string\">Strings library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/text.html\" title=\"cpp/text\">Text processing library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/numeric.html\" title=\"cpp/numeric\">Numerics library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/chrono.html\" title=\"cpp/chrono\">Date and time library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/io.html\" title=\"cpp/io\">Input/output library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/filesystem.html\" title=\"cpp/filesystem\">Filesystem library</a> <span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html\" title=\"cpp/thread\">Concurrency support library</a> <span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/experimental/execution.html\" title=\"cpp/execution\">Execution control library</a> <span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/experimental.html\" title=\"cpp/experimental\">Technical specifications</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/symbol_index.html\" title=\"cpp/symbol index\">Symbols index</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/links/libs.html\" title=\"cpp/links/libs\">External libraries</a></td></tr>\n</tbody></table></div><div><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/navbar_content&amp;action=edit\">[edit]</a></span></div></div></div></div><div class=\"t-navbar-sep\">&nbsp;</div><div class=\"t-navbar-head\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html\" title=\"cpp/thread\">Concurrency support library</a><div class=\"t-navbar-menu\"><div><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Threads\" title=\"cpp/thread\">Threads</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/thread.html\" title=\"cpp/thread/thread\"><span class=\"t-lines\"><span>thread</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/jthread.html\" title=\"cpp/thread/jthread\"><span class=\"t-lines\"><span>jthread</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size.html\" title=\"cpp/thread/hardware destructive interference size\"><span class=\"t-lines\"><span>hardware_destructive_interference_size</span><span>hardware_constructive_interference_size</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Functions_managing_the_current_thread\" title=\"cpp/thread\"><code>this_thread</code> namespace</a></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/get_id.html\" title=\"cpp/thread/get id\"><span class=\"t-lines\"><span>get_id</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/yield.html\" title=\"cpp/thread/yield\"><span class=\"t-lines\"><span>yield</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/sleep_for.html\" title=\"cpp/thread/sleep for\"><span class=\"t-lines\"><span>sleep_for</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/sleep_until.html\" title=\"cpp/thread/sleep until\"><span class=\"t-lines\"><span>sleep_until</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Cooperative_cancellation\" title=\"cpp/thread\">Cooperative cancellation</a></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/stop_token.html\" title=\"cpp/thread/stop token\"><span class=\"t-lines\"><span>stop_token</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/inplace_stop_token&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/thread/inplace stop token (page does not exist)\"><span class=\"t-lines\"><span>inplace_stop_token</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/never_stop_token.html\" title=\"cpp/thread/never stop token\"><span class=\"t-lines\"><span>never_stop_token</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/stop_source.html\" title=\"cpp/thread/stop source\"><span class=\"t-lines\"><span>stop_source</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/inplace_stop_source&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/thread/inplace stop source (page does not exist)\"><span class=\"t-lines\"><span>inplace_stop_source</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span><code>&nbsp;&nbsp;</code></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/stop_callback.html\" title=\"cpp/thread/stop callback\"><span class=\"t-lines\"><span>stop_callback</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/inplace_stop_callback&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/thread/inplace stop callback (page does not exist)\"><span class=\"t-lines\"><span>inplace_stop_callback</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/stop_callback_for_t.html\" title=\"cpp/thread/stop callback for t\"><span class=\"t-lines\"><span>stop_callback_for_t</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/stoppable_token.html\" title=\"cpp/thread/stoppable token\"><span class=\"t-lines\"><span>stoppable_token</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/unstoppable_token.html\" title=\"cpp/thread/unstoppable token\"><span class=\"t-lines\"><span>unstoppable_token</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/stoppable_source&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/thread/stoppable source (page does not exist)\"><span class=\"t-lines\"><span><i>stoppable-source</i></span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/stoppable_callback_for&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/thread/stoppable callback for (page does not exist)\"><span class=\"t-lines\"><span><i>stoppable-callback-for</i></span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span><code>&nbsp;&nbsp;</code></span></span></div></div></td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Mutual_exclusion\" title=\"cpp/thread\">Mutual exclusion</a></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><strong class=\"selflink\"><span class=\"t-lines\"><span>mutex</span></span></strong></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/recursive_mutex.html\" title=\"cpp/thread/recursive mutex\"><span class=\"t-lines\"><span>recursive_mutex</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/shared_mutex.html\" title=\"cpp/thread/shared mutex\"><span class=\"t-lines\"><span>shared_mutex</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/timed_mutex.html\" title=\"cpp/thread/timed mutex\"><span class=\"t-lines\"><span>timed_mutex</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/recursive_timed_mutex.html\" title=\"cpp/thread/recursive timed mutex\"><span class=\"t-lines\"><span>recursive_timed_mutex</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/shared_timed_mutex.html\" title=\"cpp/thread/shared timed mutex\"><span class=\"t-lines\"><span>shared_timed_mutex</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx14\">(C++14)</span></span></span></div></div></td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Generic_mutex_management\" title=\"cpp/thread\">Generic lock management</a></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/lock.html\" title=\"cpp/thread/lock\"><span class=\"t-lines\"><span>lock</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/lock_guard.html\" title=\"cpp/thread/lock guard\"><span class=\"t-lines\"><span>lock_guard</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/scoped_lock.html\" title=\"cpp/thread/scoped lock\"><span class=\"t-lines\"><span>scoped_lock</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/unique_lock.html\" title=\"cpp/thread/unique lock\"><span class=\"t-lines\"><span>unique_lock</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/shared_lock.html\" title=\"cpp/thread/shared lock\"><span class=\"t-lines\"><span>shared_lock</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx14\">(C++14)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/once_flag.html\" title=\"cpp/thread/once flag\"><span class=\"t-lines\"><span>once_flag</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/call_once.html\" title=\"cpp/thread/call once\"><span class=\"t-lines\"><span>call_once</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/try_lock.html\" title=\"cpp/thread/try lock\"><span class=\"t-lines\"><span>try_lock</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/lock_tag_t.html\" title=\"cpp/thread/lock tag\"><span class=\"t-lines\"><span>defer_lock</span><span>try_to_lock</span><span>adopt_lock</span><span>defer_lock_t</span><span>try_to_lock_t</span><span>adopt_lock_t</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Condition_variables\" title=\"cpp/thread\">Condition variables</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/condition_variable.html\" title=\"cpp/thread/condition variable\"><span class=\"t-lines\"><span>condition_variable</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/condition_variable_any.html\" title=\"cpp/thread/condition variable any\"><span class=\"t-lines\"><span>condition_variable_any</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/notify_all_at_thread_exit.html\" title=\"cpp/thread/notify all at thread exit\"><span class=\"t-lines\"><span>notify_all_at_thread_exit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/cv_status.html\" title=\"cpp/thread/cv status\"><span class=\"t-lines\"><span>cv_status</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Semaphores\" title=\"cpp/thread\">Semaphores</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/counting_semaphore.html\" title=\"cpp/thread/counting semaphore\"><span class=\"t-lines\"><span>counting_semaphore</span><span>binary_semaphore</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Latches_and_Barriers\" title=\"cpp/thread\">Latches and Barriers</a></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/latch.html\" title=\"cpp/thread/latch\"><span class=\"t-lines\"><span>latch</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/barrier.html\" title=\"cpp/thread/barrier\"><span class=\"t-lines\"><span>barrier</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Futures\" title=\"cpp/thread\">Futures</a></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/promise.html\" title=\"cpp/thread/promise\"><span class=\"t-lines\"><span>promise</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/future.html\" title=\"cpp/thread/future\"><span class=\"t-lines\"><span>future</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/shared_future.html\" title=\"cpp/thread/shared future\"><span class=\"t-lines\"><span>shared_future</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/packaged_task.html\" title=\"cpp/thread/packaged task\"><span class=\"t-lines\"><span>packaged_task</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/async.html\" title=\"cpp/thread/async\"><span class=\"t-lines\"><span>async</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/launch.html\" title=\"cpp/thread/launch\"><span class=\"t-lines\"><span>launch</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/future_status.html\" title=\"cpp/thread/future status\"><span class=\"t-lines\"><span>future_status</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/future_error.html\" title=\"cpp/thread/future error\"><span class=\"t-lines\"><span>future_error</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/future_category.html\" title=\"cpp/thread/future category\"><span class=\"t-lines\"><span>future_category</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/future_errc.html\" title=\"cpp/thread/future errc\"><span class=\"t-lines\"><span>future_errc</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Safe_reclamation\" title=\"cpp/thread\">Safe reclamation</a></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_obj_base&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/thread/rcu obj base (page does not exist)\"><span class=\"t-lines\"><span>rcu_obj_base</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_domain&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/thread/rcu domain (page does not exist)\"><span class=\"t-lines\"><span>rcu_domain</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_default_domain&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/thread/rcu default domain (page does not exist)\"><span class=\"t-lines\"><span>rcu_default_domain</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_synchronize&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/thread/rcu synchronize (page does not exist)\"><span class=\"t-lines\"><span>rcu_synchronize</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_barrier&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/thread/rcu barrier (page does not exist)\"><span class=\"t-lines\"><span>rcu_barrier</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_retire&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/thread/rcu retire (page does not exist)\"><span class=\"t-lines\"><span>rcu_retire</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Hazard_pointers\" title=\"cpp/thread\">Hazard pointers</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/hazard_pointer_obj_base&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/thread/hazard pointer obj base (page does not exist)\"><span class=\"t-lines\"><span>hazard_pointer_obj_base</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/hazard_pointer&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/thread/hazard pointer (page does not exist)\"><span class=\"t-lines\"><span>hazard_pointer</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/make_hazard_pointer&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/thread/make hazard pointer (page does not exist)\"><span class=\"t-lines\"><span>make_hazard_pointer</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Atomic_types\" title=\"cpp/thread\">Atomic types</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic.html\" title=\"cpp/atomic/atomic\"><span class=\"t-lines\"><span>atomic</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_ref.html\" title=\"cpp/atomic/atomic ref\"><span class=\"t-lines\"><span>atomic_ref</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_flag.html\" title=\"cpp/atomic/atomic flag\"><span class=\"t-lines\"><span>atomic_flag</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Initialization\" title=\"cpp/thread\">Initialization of atomic types</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_init.html\" title=\"cpp/atomic/atomic init\"><span class=\"t-lines\"><span>atomic_init</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-deprecated-cxx20\">(deprecated in C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/ATOMIC_VAR_INIT.html\" title=\"cpp/atomic/ATOMIC VAR INIT\"><span class=\"t-lines\"><span>ATOMIC_VAR_INIT</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-deprecated-cxx20\">(deprecated in C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/ATOMIC_FLAG_INIT.html\" title=\"cpp/atomic/ATOMIC FLAG INIT\"><span class=\"t-lines\"><span>ATOMIC_FLAG_INIT</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Memory_synchronization_ordering\" title=\"cpp/thread\">Memory ordering</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/memory_order.html\" title=\"cpp/atomic/memory order\"><span class=\"t-lines\"><span>memory_order</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/kill_dependency.html\" title=\"cpp/atomic/kill dependency\"><span class=\"t-lines\"><span>kill_dependency</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-deprecated-cxx26\">(deprecated in C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence.html\" title=\"cpp/atomic/atomic thread fence\"><span class=\"t-lines\"><span>atomic_thread_fence</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_signal_fence.html\" title=\"cpp/atomic/atomic signal fence\"><span class=\"t-lines\"><span>atomic_signal_fence</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Operations_on_atomic_types\" title=\"cpp/thread\">Free functions for atomic operations</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_store.html\" title=\"cpp/atomic/atomic store\"><span class=\"t-lines\"><span>atomic_store</span><span>atomic_store_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_load.html\" title=\"cpp/atomic/atomic load\"><span class=\"t-lines\"><span>atomic_load</span><span>atomic_load_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_exchange.html\" title=\"cpp/atomic/atomic exchange\"><span class=\"t-lines\"><span>atomic_exchange</span><span>atomic_exchange_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_compare_exchange.html\" title=\"cpp/atomic/atomic compare exchange\"><span class=\"t-lines\"><span>atomic_compare_exchange_weak</span><span>atomic_compare_exchange_weak_explicit</span><span>atomic_compare_exchange_strong</span><span>atomic_compare_exchange_strong_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_fetch_add.html\" title=\"cpp/atomic/atomic fetch add\"><span class=\"t-lines\"><span>atomic_fetch_add</span><span>atomic_fetch_add_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_fetch_sub.html\" title=\"cpp/atomic/atomic fetch sub\"><span class=\"t-lines\"><span>atomic_fetch_sub</span><span>atomic_fetch_sub_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_fetch_and.html\" title=\"cpp/atomic/atomic fetch and\"><span class=\"t-lines\"><span>atomic_fetch_and</span><span>atomic_fetch_and_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_fetch_or.html\" title=\"cpp/atomic/atomic fetch or\"><span class=\"t-lines\"><span>atomic_fetch_or</span><span>atomic_fetch_or_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_fetch_xor.html\" title=\"cpp/atomic/atomic fetch xor\"><span class=\"t-lines\"><span>atomic_fetch_xor</span><span>atomic_fetch_xor_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_fetch_max.html\" title=\"cpp/atomic/atomic fetch max\"><span class=\"t-lines\"><span>atomic_fetch_max</span><span>atomic_fetch_max_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_fetch_min.html\" title=\"cpp/atomic/atomic fetch min\"><span class=\"t-lines\"><span>atomic_fetch_min</span><span>atomic_fetch_min_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_is_lock_free.html\" title=\"cpp/atomic/atomic is lock free\"><span class=\"t-lines\"><span>atomic_is_lock_free</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_wait.html\" title=\"cpp/atomic/atomic wait\"><span class=\"t-lines\"><span>atomic_wait</span><span>atomic_wait_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_notify_one.html\" title=\"cpp/atomic/atomic notify one\"><span class=\"t-lines\"><span>atomic_notify_one</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_notify_all.html\" title=\"cpp/atomic/atomic notify all\"><span class=\"t-lines\"><span>atomic_notify_all</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html#Flag_type_and_operations\" title=\"cpp/thread\">Free functions for atomic flags</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_flag_test_and_set.html\" title=\"cpp/atomic/atomic flag test and set\"><span class=\"t-lines\"><span>atomic_flag_test_and_set</span><span>atomic_flag_test_and_set_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_flag_clear.html\" title=\"cpp/atomic/atomic flag clear\"><span class=\"t-lines\"><span>atomic_flag_clear</span><span>atomic_flag_clear_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_flag_test.html\" title=\"cpp/atomic/atomic flag test\"><span class=\"t-lines\"><span>atomic_flag_test</span><span>atomic_flag_test_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_flag_wait.html\" title=\"cpp/atomic/atomic flag wait\"><span class=\"t-lines\"><span>atomic_flag_wait</span><span>atomic_flag_wait_explicit</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_flag_notify_one.html\" title=\"cpp/atomic/atomic flag notify one\"><span class=\"t-lines\"><span>atomic_flag_notify_one</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/atomic/atomic_flag_notify_all.html\" title=\"cpp/atomic/atomic flag notify all\"><span class=\"t-lines\"><span>atomic_flag_notify_all</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n</tbody></table></div></td></tr>\n</tbody></table></div><div><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/navbar_content&amp;action=edit\">[edit]</a></span></div></div></div></div><div class=\"t-navbar-sep\">&nbsp;</div><div class=\"t-navbar-head\"><strong class=\"selflink\"><tt>std::mutex</tt></strong><div class=\"t-navbar-menu\"><div><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv-h1\"><td colspan=\"5\">Member functions</td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/mutex/mutex.html\" title=\"cpp/thread/mutex/mutex\"><span class=\"t-lines\"><span>mutex::mutex</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/mutex/~mutex.html\" title=\"cpp/thread/mutex/~mutex\"><span class=\"t-lines\"><span>mutex::~mutex</span></span></a></div></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\">Locking</td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/mutex/lock.html\" title=\"cpp/thread/mutex/lock\"><span class=\"t-lines\"><span>mutex::lock</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/mutex/try_lock.html\" title=\"cpp/thread/mutex/try lock\"><span class=\"t-lines\"><span>mutex::try_lock</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/mutex/unlock.html\" title=\"cpp/thread/mutex/unlock\"><span class=\"t-lines\"><span>mutex::unlock</span></span></a></div></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\">Native handle</td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/mutex/native_handle.html\" title=\"cpp/thread/mutex/native handle\"><span class=\"t-lines\"><span>mutex::native_handle</span></span></a></div></div></td></tr>\n</tbody></table></div><div><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/navbar_content&amp;action=edit\">[edit]</a></span></div></div></div></div><div class=\"t-navbar-sep\">&nbsp;</div></div>\n<table class=\"t-dcl-begin\"><tbody>\n<tr class=\"t-dsc-header\">\n<td> <div>Defined in header <code><a href=\"https://en.cppreference.com/w/cpp/header/mutex.html\" title=\"cpp/header/mutex\">&lt;mutex&gt;</a></code>\n </div></td>\n<td></td>\n<td></td>\n</tr>\n<tr class=\"t-dcl t-since-cxx11\">\n<td> <div><span class=\"mw-geshi cpp source-cpp\"><span class=\"kw1\">class</span> mutex<span class=\"sy4\">;</span></span></div></td>\n<td class=\"t-dcl-nopad\">  </td>\n<td> <span class=\"t-mark-rev t-since-cxx11\">(since C++11)</span> </td>\n</tr>\n<tr class=\"t-dcl-sep\"><td></td><td></td><td></td></tr>\n</tbody></table>\n<p>The <code>mutex</code> class is a synchronization primitive that can be used to protect shared data from being simultaneously accessed by multiple threads.\n</p><p><code>mutex</code> offers exclusive, non-recursive ownership semantics:\n</p>\n<ul><li> A calling thread <i>owns</i> a <code>mutex</code> from the time that it successfully calls either <a href=\"https://en.cppreference.com/w/cpp/thread/mutex/lock.html\" title=\"cpp/thread/mutex/lock\"><code>lock</code></a> or <a href=\"https://en.cppreference.com/w/cpp/thread/mutex/try_lock.html\" title=\"cpp/thread/mutex/try lock\"><code>try_lock</code></a> until it calls <a href=\"https://en.cppreference.com/w/cpp/thread/mutex/unlock.html\" title=\"cpp/thread/mutex/unlock\"><code>unlock</code></a>.\n</li><li> When a thread owns a <code>mutex</code>, all other threads will block (for calls to <a href=\"https://en.cppreference.com/w/cpp/thread/mutex/lock.html\" title=\"cpp/thread/mutex/lock\"><code>lock</code></a>) or receive a <span class=\"t-c\"><span class=\"mw-geshi cpp source-cpp\"><span class=\"kw2\">false</span></span></span> return value (for <a href=\"https://en.cppreference.com/w/cpp/thread/mutex/try_lock.html\" title=\"cpp/thread/mutex/try lock\"><code>try_lock</code></a>) if they attempt to claim ownership of the <code>mutex</code>.\n</li><li> A calling thread must not own the <code>mutex</code> prior to calling <a href=\"https://en.cppreference.com/w/cpp/thread/mutex/lock.html\" title=\"cpp/thread/mutex/lock\"><code>lock</code></a> or <a href=\"https://en.cppreference.com/w/cpp/thread/mutex/try_lock.html\" title=\"cpp/thread/mutex/try lock\"><code>try_lock</code></a>.\n</li></ul>\n<p>The behavior of a program is undefined if a <code>mutex</code> is destroyed while still owned by any threads, or a thread terminates while owning a <code>mutex</code>. The <code>mutex</code> class satisfies all requirements of <a href=\"https://en.cppreference.com/w/cpp/named_req/Mutex.html\" title=\"cpp/named req/Mutex\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">Mutex</span></a> and <a href=\"https://en.cppreference.com/w/cpp/named_req/StandardLayoutType.html\" title=\"cpp/named req/StandardLayoutType\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">StandardLayoutType</span></a>.\n</p><p><code>std::mutex</code> is neither copyable nor movable.\n</p>\n<table id=\"toc\" class=\"toc\"><tbody><tr><td><div id=\"toctitle\"><h2>Contents</h2></div>\n<ul>\n<li class=\"toclevel-1 tocsection-1\"><a href=\"https://en.cppreference.com/w/cpp/thread/mutex.html#Nested_types\"><span class=\"tocnumber\">1</span> <span class=\"toctext\">Nested types</span></a></li>\n<li class=\"toclevel-1 tocsection-2\"><a href=\"https://en.cppreference.com/w/cpp/thread/mutex.html#Member_functions\"><span class=\"tocnumber\">2</span> <span class=\"toctext\">Member functions</span></a>\n<ul>\n<li class=\"toclevel-2\"><a href=\"https://en.cppreference.com/w/cpp/thread/mutex.html#Locking\"><span class=\"tocnumber\">2.1</span> <span class=\"toctext\">Locking</span></a></li>\n<li class=\"toclevel-2\"><a href=\"https://en.cppreference.com/w/cpp/thread/mutex.html#Native_handle\"><span class=\"tocnumber\">2.2</span> <span class=\"toctext\">Native handle</span></a></li>\n</ul>\n</li>\n<li class=\"toclevel-1 tocsection-3\"><a href=\"https://en.cppreference.com/w/cpp/thread/mutex.html#Notes\"><span class=\"tocnumber\">3</span> <span class=\"toctext\">Notes</span></a></li>\n<li class=\"toclevel-1 tocsection-4\"><a href=\"https://en.cppreference.com/w/cpp/thread/mutex.html#Example\"><span class=\"tocnumber\">4</span> <span class=\"toctext\">Example</span></a></li>\n<li class=\"toclevel-1 tocsection-5\"><a href=\"https://en.cppreference.com/w/cpp/thread/mutex.html#See_also\"><span class=\"tocnumber\">5</span> <span class=\"toctext\">See also</span></a></li>\n</ul>\n</td></tr></tbody></table>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&amp;action=edit&amp;section=1\" title=\"Edit section: Nested types\">edit</a>]</span> <span class=\"mw-headline\" id=\"Nested_types\">Nested types</span></h3>\n<table class=\"t-dsc-begin\">\n\n<tbody><tr class=\"t-dsc-hitem\">\n<td> Name\n</td>\n<td> Definition\n</td></tr>\n\n\n<tr class=\"t-dsc\">\n<td> <code>native_handle_type</code> <span class=\"t-mark\">(<span title=\"it is implementation-defined whether this nested type exists\">optional*</span>)</span>\n</td>\n<td> implementation-defined<span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_native_handle_type&amp;action=edit\">[edit]</a></span>\n</td></tr>\n</tbody></table>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&amp;action=edit&amp;section=2\" title=\"Edit section: Member functions\">edit</a>]</span> <span class=\"mw-headline\" id=\"Member_functions\">Member functions</span></h3>\n<table class=\"t-dsc-begin\">\n\n<tbody><tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div t-dsc-member-nobold-div\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/mutex/mutex.html\" title=\"cpp/thread/mutex/mutex\"> <span class=\"t-lines\"><span>(constructor)</span></span></a></div></div>\n</td>\n<td>  constructs the mutex <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_constructor&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div t-dsc-member-nobold-div\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/mutex/~mutex.html\" title=\"cpp/thread/mutex/~mutex\"> <span class=\"t-lines\"><span>(destructor)</span></span></a></div></div>\n</td>\n<td>  destroys the mutex <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_destructor&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><span class=\"t-lines\"><span>operator=</span></span></div><div><span class=\"t-lines\"><span><span class=\"t-cmark\">[deleted]</span></span></span></div></div>\n</td>\n<td>  not copy-assignable <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_operator%3D&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n\n<tr>\n<td colspan=\"2\"> <h5> <span class=\"mw-headline\" id=\"Locking\"> Locking </span></h5>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/mutex/lock.html\" title=\"cpp/thread/mutex/lock\"> <span class=\"t-lines\"><span>lock</span></span></a></div></div>\n</td>\n<td>  locks the mutex, blocks if the mutex is not available <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_lock&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/mutex/try_lock.html\" title=\"cpp/thread/mutex/try lock\"> <span class=\"t-lines\"><span>try_lock</span></span></a></div></div>\n</td>\n<td>  tries to lock the mutex, returns if the mutex is not available <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_try_lock&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/mutex/unlock.html\" title=\"cpp/thread/mutex/unlock\"> <span class=\"t-lines\"><span>unlock</span></span></a></div></div>\n</td>\n<td>  unlocks the mutex <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_unlock&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n\n<tr>\n<td colspan=\"2\"> <h5> <span class=\"mw-headline\" id=\"Native_handle\"> Native handle </span></h5>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/mutex/native_handle.html\" title=\"cpp/thread/mutex/native handle\"> <span class=\"t-lines\"><span>native_handle</span></span></a></div></div>\n</td>\n<td>  returns the underlying implementation-defined native handle object <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_native_handle&amp;action=edit\">[edit]</a></span>\n</td></tr>\n</tbody></table>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&amp;action=edit&amp;section=3\" title=\"Edit section: Notes\">edit</a>]</span> <span class=\"mw-headline\" id=\"Notes\">Notes</span></h3>\n<p><code>std::mutex</code> is usually not accessed directly: <span class=\"t-lc\"><a href=\"https://en.cppreference.com/w/cpp/thread/unique_lock.html\" title=\"cpp/thread/unique lock\">std::unique_lock</a></span>, <span class=\"t-lc\"><a href=\"https://en.cppreference.com/w/cpp/thread/lock_guard.html\" title=\"cpp/thread/lock guard\">std::lock_guard</a></span>, <span class=\"t-rev-inl t-since-cxx17\"><span>or <a href=\"https://en.cppreference.com/w/cpp/thread/scoped_lock.html\" title=\"cpp/thread/scoped lock\"><span class=\"t-lc\">std::scoped_lock</span></a></span><span><span class=\"t-mark-rev t-since-cxx17\">(since C++17)</span></span></span> manage locking in a more exception-safe manner.\n</p>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&amp;action=edit&amp;section=4\" title=\"Edit section: Example\">edit</a>]</span> <span class=\"mw-headline\" id=\"Example\">Example</span></h3>\n<div class=\"t-example\"><p>This example shows how a <code>mutex</code> can be used to protect an <span class=\"t-lc\"><a href=\"https://en.cppreference.com/w/cpp/container/map.html\" title=\"cpp/container/map\">std::map</a></span> shared between two threads.</p><div class=\"t-example-live-link\"><div class=\"coliru-btn coliru-btn-run-init\">Run this code</div></div>\n<div dir=\"ltr\" class=\"mw-geshi\" style=\"text-align: left;\"><div class=\"cpp source-cpp\"><pre class=\"de1\"><span class=\"co2\">#include &lt;chrono&gt;</span>\n<span class=\"co2\">#include &lt;iostream&gt;</span>\n<span class=\"co2\">#include &lt;map&gt;</span>\n<span class=\"co2\">#include &lt;mutex&gt;</span>\n<span class=\"co2\">#include &lt;string&gt;</span>\n<span class=\"co2\">#include &lt;thread&gt;</span>\n&nbsp;\n<a href=\"https://en.cppreference.com/w/cpp/container/map.html\"><span class=\"kw1290\">std::<span class=\"me2\">map</span></span></a><span class=\"sy1\">&lt;</span><a href=\"https://en.cppreference.com/w/cpp/string/basic_string.html\"><span class=\"kw1239\">std::<span class=\"me2\">string</span></span></a>, <a href=\"https://en.cppreference.com/w/cpp/string/basic_string.html\"><span class=\"kw1239\">std::<span class=\"me2\">string</span></span></a><span class=\"sy1\">&gt;</span> g_pages<span class=\"sy4\">;</span>\nstd<span class=\"sy4\">::</span><span class=\"me2\">mutex</span> g_pages_mutex<span class=\"sy4\">;</span>\n&nbsp;\n<span class=\"kw4\">void</span> save_page<span class=\"br0\">(</span><span class=\"kw4\">const</span> <a href=\"https://en.cppreference.com/w/cpp/string/basic_string.html\"><span class=\"kw1239\">std::<span class=\"me2\">string</span></span></a><span class=\"sy3\">&amp;</span> url<span class=\"br0\">)</span>\n<span class=\"br0\">{</span>\n    <span class=\"co1\">// simulate a long page fetch</span>\n    <a href=\"https://en.cppreference.com/w/cpp/thread/sleep_for.html\"><span class=\"kw2171\">std::<span class=\"me2\">this_thread</span><span class=\"sy4\">::</span><span class=\"me2\">sleep_for</span></span></a><span class=\"br0\">(</span><a href=\"https://en.cppreference.com/w/cpp/chrono/duration.html\"><span class=\"kw1002\">std::<span class=\"me2\">chrono</span><span class=\"sy4\">::</span><span class=\"me2\">seconds</span></span></a><span class=\"br0\">(</span><span class=\"nu0\">2</span><span class=\"br0\">)</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>\n    <a href=\"https://en.cppreference.com/w/cpp/string/basic_string.html\"><span class=\"kw1239\">std::<span class=\"me2\">string</span></span></a> result <span class=\"sy1\">=</span> <span class=\"st0\">\"fake content\"</span><span class=\"sy4\">;</span>\n&nbsp;\n    <a href=\"https://en.cppreference.com/w/cpp/thread/lock_guard.html\"><span class=\"kw2187\">std::<span class=\"me2\">lock_guard</span></span></a><span class=\"sy1\">&lt;</span>std<span class=\"sy4\">::</span><span class=\"me2\">mutex</span><span class=\"sy1\">&gt;</span> guard<span class=\"br0\">(</span>g_pages_mutex<span class=\"br0\">)</span><span class=\"sy4\">;</span>\n    g_pages<span class=\"br0\">[</span>url<span class=\"br0\">]</span> <span class=\"sy1\">=</span> result<span class=\"sy4\">;</span>\n<span class=\"br0\">}</span>\n&nbsp;\n<span class=\"kw4\">int</span> main<span class=\"br0\">(</span><span class=\"br0\">)</span> \n<span class=\"br0\">{</span>\n    <a href=\"https://en.cppreference.com/w/cpp/thread/thread.html\"><span class=\"kw2168\">std::<span class=\"me2\">thread</span></span></a> t1<span class=\"br0\">(</span>save_page, <span class=\"st0\">\"http://foo\"</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>\n    <a href=\"https://en.cppreference.com/w/cpp/thread/thread.html\"><span class=\"kw2168\">std::<span class=\"me2\">thread</span></span></a> t2<span class=\"br0\">(</span>save_page, <span class=\"st0\">\"http://bar\"</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>\n    t1.<span class=\"me1\">join</span><span class=\"br0\">(</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>\n    t2.<span class=\"me1\">join</span><span class=\"br0\">(</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>\n&nbsp;\n    <span class=\"co1\">// safe to access g_pages without lock now, as the threads are joined</span>\n    <span class=\"kw1\">for</span> <span class=\"br0\">(</span><span class=\"kw4\">const</span> <span class=\"kw4\">auto</span><span class=\"sy3\">&amp;</span> <span class=\"br0\">[</span>url, page<span class=\"br0\">]</span> <span class=\"sy4\">:</span> g_pages<span class=\"br0\">)</span>\n        <a href=\"https://en.cppreference.com/w/cpp/io/cout.html\"><span class=\"kw1776\">std::<span class=\"me2\">cout</span></span></a> <span class=\"sy1\">&lt;&lt;</span> url <span class=\"sy1\">&lt;&lt;</span> <span class=\"st0\">\" =&gt; \"</span> <span class=\"sy1\">&lt;&lt;</span> page <span class=\"sy1\">&lt;&lt;</span> <span class=\"st0\">'<span class=\"es1\">\\n</span>'</span><span class=\"sy4\">;</span>\n<span class=\"br0\">}</span></pre></div></div>\n<p>Output:\n</p>\n<div dir=\"ltr\" class=\"mw-geshi\" style=\"text-align: left;\"><div class=\"text source-text\"><pre class=\"de1\">http://bar =&gt; fake content\nhttp://foo =&gt; fake content</pre></div></div> \n</div>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&amp;action=edit&amp;section=5\" title=\"Edit section: See also\">edit</a>]</span> <span class=\"mw-headline\" id=\"See_also\">See also</span></h3>\n<table class=\"t-dsc-begin\">\n\n<tbody><tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/recursive_mutex.html\" title=\"cpp/thread/recursive mutex\"> <span class=\"t-lines\"><span>recursive_mutex</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div>\n</td>\n<td>  provides mutual exclusion facility which can be locked recursively by the same thread <br> <span class=\"t-mark\">(class)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_recursive_mutex&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/lock_guard.html\" title=\"cpp/thread/lock guard\"> <span class=\"t-lines\"><span>lock_guard</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div>\n</td>\n<td>  implements a strictly scope-based mutex ownership wrapper <br> <span class=\"t-mark\">(class template)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_lock_guard&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/unique_lock.html\" title=\"cpp/thread/unique lock\"> <span class=\"t-lines\"><span>unique_lock</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div>\n</td>\n<td>  implements movable mutex ownership wrapper <br> <span class=\"t-mark\">(class template)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_unique_lock&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/scoped_lock.html\" title=\"cpp/thread/scoped lock\"> <span class=\"t-lines\"><span>scoped_lock</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div>\n</td>\n<td>  deadlock-avoiding RAII wrapper for multiple mutexes <br> <span class=\"t-mark\">(class template)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_scoped_lock&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/thread/condition_variable.html\" title=\"cpp/thread/condition variable\"> <span class=\"t-lines\"><span>condition_variable</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div>\n</td>\n<td>  provides a condition variable associated with a <span class=\"t-lc\"><a href=\"https://en.cppreference.com/w/cpp/thread/unique_lock.html\" title=\"cpp/thread/unique lock\">std::unique_lock</a></span> <br> <span class=\"t-mark\">(class)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_condition_variable&amp;action=edit\">[edit]</a></span>\n</td></tr>\n</tbody></table>\n\n<!-- \nNewPP limit report\nPreprocessor visited node count: 11230/1000000\nPreprocessor generated node count: 14630/1000000\nPost\u2010expand include size: 372565/4194304 bytes\nTemplate argument size: 73191/4194304 bytes\nHighest expansion depth: 20/40\nExpensive parser function count: 0/100\n-->\n\n<!-- Saved in parser cache with key mwiki1-mwiki_en_:pcache:idhash:2291-0!*!0!!en!*!* and timestamp 20250429092942 -->\n</div>                    <!-- /bodycontent -->\n                                        <!-- printfooter -->\n                    <div class=\"printfooter\">\n                    Retrieved from \"<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&amp;oldid=170085\">https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&amp;oldid=170085</a>\"                    </div>\n                    <!-- /printfooter -->\n                                                            <!-- catlinks -->\n                    <div id=\"catlinks\" class=\"catlinks catlinks-allhidden\"></div>                    <!-- /catlinks -->\n                                                            <div class=\"visualClear\"></div>\n                    <!-- debughtml -->\n                                        <!-- /debughtml -->\n                </div>\n                <!-- /bodyContent -->\n            </div>\n        </div>\n        <!-- /content -->\n        <!-- footer -->\n        <div id=\"cpp-footer-base\" class=\"noprint\">\n            <div id=\"footer\">\n                        <div id=\"cpp-navigationn\">\n            <h5>Navigation</h5>\n            <ul>\n<li id=\"n-Support-us\"><a href=\"http://www.cppreference.com/support\" rel=\"nofollow\">Support us</a></li><li id=\"n-recentchanges\"><a href=\"https://en.cppreference.com/w/Special:RecentChanges\" title=\"A list of recent changes in the wiki [r]\" accesskey=\"r\">Recent changes</a></li><li id=\"n-FAQ\"><a href=\"https://en.cppreference.com/w/Cppreference%253AAbout.html\">FAQ</a></li><li id=\"n-Offline-version\"><a href=\"https://en.cppreference.com/w/Cppreference%253AArchives.html\">Offline version</a></li>            </ul>\n        </div>\n                        <div id=\"cpp-toolbox\">\n            <h5><span>Toolbox</span><a href=\"https://en.cppreference.com/w/cpp/thread/mutex.html#\"></a></h5>\n            <ul>\n<li id=\"t-whatlinkshere\"><a href=\"https://en.cppreference.com/w/Special:WhatLinksHere/cpp/thread/mutex\" title=\"A list of all wiki pages that link here [j]\" accesskey=\"j\">What links here</a></li><li id=\"t-recentchangeslinked\"><a href=\"https://en.cppreference.com/w/Special:RecentChangesLinked/cpp/thread/mutex\" title=\"Recent changes in pages linked from this page [k]\" accesskey=\"k\">Related changes</a></li><li id=\"t-upload\"><a href=\"http://upload.cppreference.com/w/Special:Upload\" title=\"Upload files [u]\" accesskey=\"u\">Upload file</a></li><li id=\"t-specialpages\"><a href=\"https://en.cppreference.com/w/Special:SpecialPages\" title=\"A list of all special pages [q]\" accesskey=\"q\">Special pages</a></li><li id=\"t-print\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&amp;printable=yes\" rel=\"alternate\" title=\"Printable version of this page [p]\" accesskey=\"p\">Printable version</a></li><li id=\"t-permalink\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&amp;oldid=170085\" title=\"Permanent link to this revision of the page\">Permanent link</a></li><li id=\"t-info\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&amp;action=info\">Page information</a></li>            </ul>\n        </div>\n                        <div id=\"cpp-languagess\">\n            <div><ul><li>In other languages</li></ul></div>\n            <div><ul>\n<li class=\"interwiki-ar\"><a href=\"http://ar.cppreference.com/w/cpp/thread/mutex\" title=\"cpp/thread/mutex\" lang=\"ar\" hreflang=\"ar\">\u0627\u0644\u0639\u0631\u0628\u064a\u0629</a></li><li class=\"interwiki-de\"><a href=\"http://de.cppreference.com/w/cpp/thread/mutex\" title=\"cpp/thread/mutex\" lang=\"de\" hreflang=\"de\">Deutsch</a></li><li class=\"interwiki-es\"><a href=\"http://es.cppreference.com/w/cpp/thread/mutex\" title=\"cpp/thread/mutex\" lang=\"es\" hreflang=\"es\">Espa\u00f1ol</a></li><li class=\"interwiki-fr\"><a href=\"http://fr.cppreference.com/w/cpp/thread/mutex\" title=\"cpp/thread/mutex\" lang=\"fr\" hreflang=\"fr\">Fran\u00e7ais</a></li><li class=\"interwiki-it\"><a href=\"http://it.cppreference.com/w/cpp/thread/mutex\" title=\"cpp/thread/mutex\" lang=\"it\" hreflang=\"it\">Italiano</a></li><li class=\"interwiki-ja\"><a href=\"http://ja.cppreference.com/w/cpp/thread/mutex\" title=\"cpp/thread/mutex\" lang=\"ja\" hreflang=\"ja\">\u65e5\u672c\u8a9e</a></li><li class=\"interwiki-ko\"><a href=\"http://ko.cppreference.com/w/cpp/thread/mutex\" title=\"cpp/thread/mutex\" lang=\"ko\" hreflang=\"ko\">\ud55c\uad6d\uc5b4</a></li><li class=\"interwiki-pt\"><a href=\"http://pt.cppreference.com/w/cpp/thread/mutex\" title=\"cpp/thread/mutex\" lang=\"pt\" hreflang=\"pt\">Portugu\u00eas</a></li><li class=\"interwiki-ru\"><a href=\"http://ru.cppreference.com/w/cpp/thread/mutex\" title=\"cpp/thread/mutex\" lang=\"ru\" hreflang=\"ru\">\u0420\u0443\u0441\u0441\u043a\u0438\u0439</a></li><li class=\"interwiki-zh\"><a href=\"http://zh.cppreference.com/w/cpp/thread/mutex\" title=\"cpp/thread/mutex\" lang=\"zh\" hreflang=\"zh\">\u4e2d\u6587</a></li>            </ul></div>\n        </div>\n            <ul id=\"footer-info\">\n                                    <li id=\"footer-info-lastmod\"> This page was last modified on 6 March 2024, at 18:53.</li>\n                            </ul>\n                    <ul id=\"footer-places\">\n                                    <li id=\"footer-places-privacy\"><a href=\"https://en.cppreference.com/w/Cppreference%253APrivacy_policy.html\" title=\"Cppreference:Privacy policy\">Privacy policy</a></li>\n                                    <li id=\"footer-places-about\"><a href=\"https://en.cppreference.com/w/Cppreference%253AAbout.html\" title=\"Cppreference:About\">About cppreference.com</a></li>\n                                    <li id=\"footer-places-disclaimer\"><a href=\"https://en.cppreference.com/w/Cppreference%253AGeneral_disclaimer.html\" title=\"Cppreference:General disclaimer\">Disclaimers</a></li>\n                            </ul>\n                                    <ul id=\"footer-icons\" class=\"noprint\">\n                                    <li id=\"footer-poweredbyico\">\n                                            <a href=\"https://www.mediawiki.org/\"><img src=\"https://en.cppreference.com/mwiki/skins/common/images/poweredby_mediawiki_88x31.png\" alt=\"Powered by MediaWiki\" width=\"88\" height=\"31\"></a>                                            <a href=\"http://qbnz.com/highlighter/\"><img src=\"https://upload.cppreference.com/mwiki/images/2/2b/powered_by_geshi_88x31.png\" alt=\"Powered by GeSHi\" height=\"31\" width=\"88\"></a>                                            <a href=\"http://www.tigertech.net/referral/cppreference.com\"><img src=\"https://upload.cppreference.com/mwiki/images/9/94/powered_by_tigertech_88x31.png\" alt=\"Hosted by Tiger Technologies\" height=\"31\" width=\"88\"></a>                                        </li>\n                                </ul>\n                        <div style=\"clear:both\">\n            </div>\n            </div>\n        </div>\n        <!-- /footer -->\n        \n\n\n\n<!-- Served in 1.513 secs. -->\n\t\n\n\n</body><!-- Cached 20250429092942 --></html>",
+  "links": [
+    "https://en.cppreference.com/index.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fthread%2Fmutex&type=signup",
+    "https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fthread%2Fmutex",
+    "https://en.cppreference.com/w/cpp/thread/mutex.html",
+    "https://en.cppreference.com/w/Talk%253Acpp/thread/mutex.html",
+    "https://en.cppreference.com/w/cpp/thread/mutex.html#",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=history",
+    "https://en.cppreference.com/w/cpp.html",
+    "https://en.cppreference.com/w/cpp/atomic.html",
+    "https://en.cppreference.com/w/cpp/compiler_support.html",
+    "https://en.cppreference.com/w/cpp/freestanding.html",
+    "https://en.cppreference.com/w/cpp/language.html",
+    "https://en.cppreference.com/w/cpp/standard_library.html",
+    "https://en.cppreference.com/w/cpp/headers.html",
+    "https://en.cppreference.com/w/cpp/iterator/concepts.html",
+    "https://en.cppreference.com/w/cpp/experimental/feature_test.html",
+    "https://en.cppreference.com/w/cpp/utility.html#Language_support",
+    "https://en.cppreference.com/w/cpp/concepts.html",
+    "https://en.cppreference.com/w/cpp/error.html",
+    "https://en.cppreference.com/w/cpp/memory.html",
+    "https://en.cppreference.com/w/cpp/meta.html",
+    "https://en.cppreference.com/w/cpp/utility.html",
+    "https://en.cppreference.com/w/cpp/container.html",
+    "https://en.cppreference.com/w/cpp/iterator.html",
+    "https://en.cppreference.com/w/cpp/ranges.html",
+    "https://en.cppreference.com/w/cpp/algorithm.html",
+    "https://en.cppreference.com/w/cpp/string.html",
+    "https://en.cppreference.com/w/cpp/text.html",
+    "https://en.cppreference.com/w/cpp/numeric.html",
+    "https://en.cppreference.com/w/cpp/chrono.html",
+    "https://en.cppreference.com/w/cpp/io.html",
+    "https://en.cppreference.com/w/cpp/filesystem.html",
+    "https://en.cppreference.com/w/cpp/experimental/execution.html",
+    "https://en.cppreference.com/w/cpp/experimental.html",
+    "https://en.cppreference.com/w/cpp/symbol_index.html",
+    "https://en.cppreference.com/w/cpp/links/libs.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/navbar_content&action=edit",
+    "https://en.cppreference.com/w/cpp/atomic.html#Threads",
+    "https://en.cppreference.com/w/cpp/thread/thread.html",
+    "https://en.cppreference.com/w/cpp/thread/jthread.html",
+    "https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size.html",
+    "https://en.cppreference.com/w/cpp/atomic.html#Functions_managing_the_current_thread",
+    "https://en.cppreference.com/w/cpp/thread/get_id.html",
+    "https://en.cppreference.com/w/cpp/thread/yield.html",
+    "https://en.cppreference.com/w/cpp/thread/sleep_for.html",
+    "https://en.cppreference.com/w/cpp/thread/sleep_until.html",
+    "https://en.cppreference.com/w/cpp/atomic.html#Cooperative_cancellation",
+    "https://en.cppreference.com/w/cpp/thread/stop_token.html",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/inplace_stop_token&action=edit&redlink=1",
+    "https://en.cppreference.com/w/cpp/thread/never_stop_token.html",
+    "https://en.cppreference.com/w/cpp/thread/stop_source.html",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/inplace_stop_source&action=edit&redlink=1",
+    "https://en.cppreference.com/w/cpp/thread/stop_callback.html",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/inplace_stop_callback&action=edit&redlink=1",
+    "https://en.cppreference.com/w/cpp/thread/stop_callback_for_t.html",
+    "https://en.cppreference.com/w/cpp/thread/stoppable_token.html",
+    "https://en.cppreference.com/w/cpp/thread/unstoppable_token.html",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/stoppable_source&action=edit&redlink=1",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/stoppable_callback_for&action=edit&redlink=1",
+    "https://en.cppreference.com/w/cpp/atomic.html#Mutual_exclusion",
+    "https://en.cppreference.com/w/cpp/thread/recursive_mutex.html",
+    "https://en.cppreference.com/w/cpp/thread/shared_mutex.html",
+    "https://en.cppreference.com/w/cpp/thread/timed_mutex.html",
+    "https://en.cppreference.com/w/cpp/thread/recursive_timed_mutex.html",
+    "https://en.cppreference.com/w/cpp/thread/shared_timed_mutex.html",
+    "https://en.cppreference.com/w/cpp/atomic.html#Generic_mutex_management",
+    "https://en.cppreference.com/w/cpp/thread/lock.html",
+    "https://en.cppreference.com/w/cpp/thread/lock_guard.html",
+    "https://en.cppreference.com/w/cpp/thread/scoped_lock.html",
+    "https://en.cppreference.com/w/cpp/thread/unique_lock.html",
+    "https://en.cppreference.com/w/cpp/thread/shared_lock.html",
+    "https://en.cppreference.com/w/cpp/thread/once_flag.html",
+    "https://en.cppreference.com/w/cpp/thread/call_once.html",
+    "https://en.cppreference.com/w/cpp/thread/try_lock.html",
+    "https://en.cppreference.com/w/cpp/thread/lock_tag_t.html",
+    "https://en.cppreference.com/w/cpp/atomic.html#Condition_variables",
+    "https://en.cppreference.com/w/cpp/thread/condition_variable.html",
+    "https://en.cppreference.com/w/cpp/thread/condition_variable_any.html",
+    "https://en.cppreference.com/w/cpp/thread/notify_all_at_thread_exit.html",
+    "https://en.cppreference.com/w/cpp/thread/cv_status.html",
+    "https://en.cppreference.com/w/cpp/atomic.html#Semaphores",
+    "https://en.cppreference.com/w/cpp/thread/counting_semaphore.html",
+    "https://en.cppreference.com/w/cpp/atomic.html#Latches_and_Barriers",
+    "https://en.cppreference.com/w/cpp/thread/latch.html",
+    "https://en.cppreference.com/w/cpp/thread/barrier.html",
+    "https://en.cppreference.com/w/cpp/atomic.html#Futures",
+    "https://en.cppreference.com/w/cpp/thread/promise.html",
+    "https://en.cppreference.com/w/cpp/thread/future.html",
+    "https://en.cppreference.com/w/cpp/thread/shared_future.html",
+    "https://en.cppreference.com/w/cpp/thread/packaged_task.html",
+    "https://en.cppreference.com/w/cpp/thread/async.html",
+    "https://en.cppreference.com/w/cpp/thread/launch.html",
+    "https://en.cppreference.com/w/cpp/thread/future_status.html",
+    "https://en.cppreference.com/w/cpp/thread/future_error.html",
+    "https://en.cppreference.com/w/cpp/thread/future_category.html",
+    "https://en.cppreference.com/w/cpp/thread/future_errc.html",
+    "https://en.cppreference.com/w/cpp/atomic.html#Safe_reclamation",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_obj_base&action=edit&redlink=1",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_domain&action=edit&redlink=1",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_default_domain&action=edit&redlink=1",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_synchronize&action=edit&redlink=1",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_barrier&action=edit&redlink=1",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/rcu_retire&action=edit&redlink=1",
+    "https://en.cppreference.com/w/cpp/atomic.html#Hazard_pointers",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/hazard_pointer_obj_base&action=edit&redlink=1",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/hazard_pointer&action=edit&redlink=1",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/make_hazard_pointer&action=edit&redlink=1",
+    "https://en.cppreference.com/w/cpp/atomic.html#Atomic_types",
+    "https://en.cppreference.com/w/cpp/atomic/atomic.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_ref.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_flag.html",
+    "https://en.cppreference.com/w/cpp/atomic.html#Initialization",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_init.html",
+    "https://en.cppreference.com/w/cpp/atomic/ATOMIC_VAR_INIT.html",
+    "https://en.cppreference.com/w/cpp/atomic/ATOMIC_FLAG_INIT.html",
+    "https://en.cppreference.com/w/cpp/atomic.html#Memory_synchronization_ordering",
+    "https://en.cppreference.com/w/cpp/atomic/memory_order.html",
+    "https://en.cppreference.com/w/cpp/atomic/kill_dependency.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_signal_fence.html",
+    "https://en.cppreference.com/w/cpp/atomic.html#Operations_on_atomic_types",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_store.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_load.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_exchange.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_compare_exchange.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_fetch_add.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_fetch_sub.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_fetch_and.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_fetch_or.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_fetch_xor.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_fetch_max.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_fetch_min.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_is_lock_free.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_wait.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_notify_one.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_notify_all.html",
+    "https://en.cppreference.com/w/cpp/atomic.html#Flag_type_and_operations",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_flag_test_and_set.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_flag_clear.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_flag_test.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_flag_wait.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_flag_notify_one.html",
+    "https://en.cppreference.com/w/cpp/atomic/atomic_flag_notify_all.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/navbar_content&action=edit",
+    "https://en.cppreference.com/w/cpp/thread/mutex/mutex.html",
+    "https://en.cppreference.com/w/cpp/thread/mutex/~mutex.html",
+    "https://en.cppreference.com/w/cpp/thread/mutex/lock.html",
+    "https://en.cppreference.com/w/cpp/thread/mutex/try_lock.html",
+    "https://en.cppreference.com/w/cpp/thread/mutex/unlock.html",
+    "https://en.cppreference.com/w/cpp/thread/mutex/native_handle.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/navbar_content&action=edit",
+    "https://en.cppreference.com/w/cpp/header/mutex.html",
+    "https://en.cppreference.com/w/cpp/named_req/Mutex.html",
+    "https://en.cppreference.com/w/cpp/named_req/StandardLayoutType.html",
+    "https://en.cppreference.com/w/cpp/thread/mutex.html#Nested_types",
+    "https://en.cppreference.com/w/cpp/thread/mutex.html#Member_functions",
+    "https://en.cppreference.com/w/cpp/thread/mutex.html#Locking",
+    "https://en.cppreference.com/w/cpp/thread/mutex.html#Native_handle",
+    "https://en.cppreference.com/w/cpp/thread/mutex.html#Notes",
+    "https://en.cppreference.com/w/cpp/thread/mutex.html#Example",
+    "https://en.cppreference.com/w/cpp/thread/mutex.html#See_also",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=1",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_native_handle_type&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=2",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_constructor&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_destructor&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_operator%3D&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_lock&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_try_lock&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_unlock&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/mutex/dsc_native_handle&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=3",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=4",
+    "https://en.cppreference.com/w/cpp/container/map.html",
+    "https://en.cppreference.com/w/cpp/string/basic_string.html",
+    "https://en.cppreference.com/w/cpp/chrono/duration.html",
+    "https://en.cppreference.com/w/cpp/io/cout.html",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=edit&section=5",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_recursive_mutex&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_lock_guard&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_unique_lock&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_scoped_lock&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/thread/dsc_condition_variable&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&oldid=170085",
+    "http://www.cppreference.com/support",
+    "https://en.cppreference.com/w/Special:RecentChanges",
+    "https://en.cppreference.com/w/Cppreference%253AAbout.html",
+    "https://en.cppreference.com/w/Cppreference%253AArchives.html",
+    "https://en.cppreference.com/w/Special:WhatLinksHere/cpp/thread/mutex",
+    "https://en.cppreference.com/w/Special:RecentChangesLinked/cpp/thread/mutex",
+    "http://upload.cppreference.com/w/Special:Upload",
+    "https://en.cppreference.com/w/Special:SpecialPages",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&printable=yes",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/thread/mutex&action=info",
+    "http://ar.cppreference.com/w/cpp/thread/mutex",
+    "http://de.cppreference.com/w/cpp/thread/mutex",
+    "http://es.cppreference.com/w/cpp/thread/mutex",
+    "http://fr.cppreference.com/w/cpp/thread/mutex",
+    "http://it.cppreference.com/w/cpp/thread/mutex",
+    "http://ja.cppreference.com/w/cpp/thread/mutex",
+    "http://ko.cppreference.com/w/cpp/thread/mutex",
+    "http://pt.cppreference.com/w/cpp/thread/mutex",
+    "http://ru.cppreference.com/w/cpp/thread/mutex",
+    "http://zh.cppreference.com/w/cpp/thread/mutex",
+    "https://en.cppreference.com/w/Cppreference%253APrivacy_policy.html",
+    "https://en.cppreference.com/w/Cppreference%253AGeneral_disclaimer.html",
+    "https://www.mediawiki.org/",
+    "http://qbnz.com/highlighter/",
+    "http://www.tigertech.net/referral/cppreference.com"
+  ],
+  "source_url": "https://en.cppreference.com/w/cpp/thread/mutex",
+  "source": "cppreference",
+  "harvested_at": "2026-03-29T06:03:08.155069",
+  "kb_type": "cpp"
+}

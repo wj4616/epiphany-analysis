@@ -1,0 +1,18 @@
+{
+  "id": "technical_realtime-safety_lock-free-patterns",
+  "kb": "technical",
+  "topic": "realtime-safety",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Lock-Free Patterns for Real-Time Audio",
+  "summary": "Placeholder: Lock-free data structures and patterns for safe inter-thread communication without blocking.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {
+    "type": "placeholder"
+  },
+  "concepts": [],
+  "tags": ["lock-free", "spsc-queue", "fifo", "audio-thread", "thread-safety"],
+  "related_topics": ["realtime-safety", "juce-patterns"],
+  "difficulty": "advanced",
+  "domain_relevance": 10
+}

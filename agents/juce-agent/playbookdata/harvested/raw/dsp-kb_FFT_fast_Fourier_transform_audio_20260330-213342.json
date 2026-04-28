@@ -1,0 +1,55 @@
+{
+  "harvest_metadata": {
+    "kb_type": "dsp-kb",
+    "topic": "FFT fast Fourier transform audio",
+    "harvested_at": "2026-03-30T21:33:42.643840+00:00",
+    "quality_filter": {
+      "passed": 2,
+      "rejected": 36,
+      "rejection_reasons": {
+        "not_relevant": 36
+      }
+    },
+    "thresholds": {
+      "min_content_length": 500,
+      "min_relevance_score": 0.25,
+      "max_noise_ratio": 0.5
+    }
+  },
+  "result": {
+    "data": [
+      {
+        "url": "https://www.youtube.com/watch?v=eDxMCA4IwG8",
+        "title": "Visualized Stereo Audio Using JUCE FFT Demo 6.0.7 on L4T R32.5.1",
+        "markdown": "![Thumbnail (1920x1080)](https://i.ytimg.com/vi/eDxMCA4IwG8/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-DoACuAiKAgwIABABGEEgSyhlMA8=&rs=AOn4CLDkivYuKddNGfVehCTMSbAH3N7ycg)\n# [Jetson Nano: Visualized Stereo Audio Using JUCE FFT Demo 6.0.7 on L4T R32.5.1](https://www.youtube.com/watch?v=eDxMCA4IwG8)\n\n**Visibility**: Public\n**Uploaded by**: [Alan Mikhak](http://www.youtube.com/@alanmikhak)\n**Uploaded at**: 2021-06-01T22:50:59-07:00\n**Published at**: 2021-06-01T22:50:59-07:00\n**Length**: 03:44\n**Views**: 1552\n**Likes**: 14\n**Category**: Science & Technology\n\n## Description\n\n```\nThis video shows I added visualization of stereo audio signal captured from a USB microphone along with FFT transform and spectrogram to my OpenCV time exposure application. I used the JUCE audio framework FFT Demo 6.0.7 as a template. The sample program is shown running on my Nvidia Jetson Nano DevKit Model A02. The board has 4GB of RAM and 128GB micro-SD card. It runs Nvidia Linux for Tegra (L4T) Release 32 Revision 5.1 (R32.5.1) on Linux kernel 4.9.201-tegra and Ubuntu 18.04.5 LTS (bionic) for aarch64.\n\nJUCE Framework GitHub Repo:\nhttps://github.com/juce-framework/JUCE\ngit commit hash: 99112cf71f0cc3aafa4622b62cf81f2b7df38f0b\n\nJUCE Simple FFT example:\nhttps://github.com/juce-framework/JUCE/blob/master/examples/Audio/SimpleFFTDemo.h\n\nJetson Nano: Added Audio Spectrogram Using JUCE FFT Demo 6.0.7:\nhttps://youtu.be/B4fUgP3E6a0\n\nRaspberry Pi 4: Explored JUCE FFT Demo 6.0.7 on Raspbian 10 (buster)\nhttps://youtu.be/LVFT6rOPjr8\n\nSabrent USB External Stereo Sound Adapter\nhttps://www.amazon.com/gp/product/B00IRVQ0F8\n\nVidPro XM-55 Condenser Shotgun Mic\nhttps://www.newegg.com/vidpro-xm-55-condenser-microphones/p/0UK-0054-00001\n```\n\n## Endscreen\n    \n- [Raspberry Pi 5: Compiled rpicam-apps With OpenCV Post Processing On Raspbian 12 (bookworm)](https://www.youtube.com/watch?v=tEA2go2mLHI)\n- [Raspberry Pi 5: CSI-2 Camera Names For OpenCV GStreamer Pipeline](https://www.youtube.com/watch?v=cUwRk_0zGo8)",
+        "quality_report": {
+          "url": "https://www.youtube.com/watch?v=eDxMCA4IwG8",
+          "title": "Visualized Stereo Audio Using JUCE FFT Demo 6.0.7 on L4T R32.5.1",
+          "content_length": 2004,
+          "has_code": true,
+          "code_blocks": 2,
+          "relevance_score": 0.29940119760479045,
+          "noise_ratio": 0.12195121951219512,
+          "passed": true,
+          "rejection_reason": null
+        }
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=4d6EeRJZLbo",
+        "title": "ME565 Lecture 17: Fast Fourier Transforms (FFT) and Audio",
+        "markdown": "![Thumbnail (1920x1080)](https://i.ytimg.com/vi/4d6EeRJZLbo/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGGUgTyhBMA8=&rs=AOn4CLBVQV7e41OthRteB3j70AXDoyEG3Q)\n# [ME565 Lecture 17: Fast Fourier Transforms (FFT) and Audio](https://www.youtube.com/watch?v=4d6EeRJZLbo)\n\n**Visibility**: Public\n**Uploaded by**: [Steve Brunton](http://www.youtube.com/@Eigensteve)\n**Uploaded at**: 2016-04-27T12:58:40-07:00\n**Published at**: 2016-04-27T12:58:40-07:00\n**Length**: 48:03\n**Views**: 21002\n**Likes**: 311\n**Category**: Science & Technology\n\n## Description\n\n```\nME565 Lecture 17\nEngineering Mathematics at the University of Washington\n\nFast Fourier Transforms (FFT) and Audio\n\nNotes: http://faculty.washington.edu/sbrunton/me565/pdf/L17.pdf\nMatlab code:\n  *  http://faculty.washington.edu/sbrunton/me565/matlab/EX1_FFT.m\n  *  http://faculty.washington.edu/sbrunton/me565/matlab/EX2_FFT.m\n\nCourse Website: http://faculty.washington.edu/sbrunton/me565/\nhttp://faculty.washington.edu/sbrunton/\n```\n\n",
+        "quality_report": {
+          "url": "https://www.youtube.com/watch?v=4d6EeRJZLbo",
+          "title": "ME565 Lecture 17: Fast Fourier Transforms (FFT) and Audio",
+          "content_length": 1009,
+          "has_code": true,
+          "code_blocks": 2,
+          "relevance_score": 0.9910802775024777,
+          "noise_ratio": 0.06666666666666667,
+          "passed": true,
+          "rejection_reason": null
+        }
+      }
+    ]
+  }
+}

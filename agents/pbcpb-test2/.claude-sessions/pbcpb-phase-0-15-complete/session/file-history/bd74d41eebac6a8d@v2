@@ -1,0 +1,16 @@
+{
+  "id": "commercial_pricing_bundles",
+  "kb": "commercial",
+  "topic": "pricing",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Bundle Pricing Strategies",
+  "summary": "Placeholder: Creating product bundles, upgrade paths, and cross-selling.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["pricing", "bundle", "upgrade", "cross-sell"],
+  "related_topics": ["pricing", "marketing"],
+  "difficulty": "intermediate",
+  "domain_relevance": 7
+}

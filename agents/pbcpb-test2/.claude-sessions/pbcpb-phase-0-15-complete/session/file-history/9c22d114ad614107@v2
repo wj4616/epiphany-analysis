@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_preset-methodology_preset-structure",
+  "kb": "sound-design",
+  "topic": "preset-methodology",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Preset File Structure",
+  "summary": "Placeholder: Organizing preset data, metadata, and categorization.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["preset", "structure", "metadata", "categorization"],
+  "related_topics": ["preset-methodology", "technical_juce-patterns_state-management"],
+  "difficulty": "intermediate",
+  "domain_relevance": 8
+}

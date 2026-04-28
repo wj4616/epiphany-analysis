@@ -1,0 +1,90 @@
+{
+  "title": "Vector Synthesis and Wave Sequencing",
+  "description": "Dynamic timbre control through vector mixing and wave sequencing techniques pioneered by Korg Wavestation",
+  "source": "web-research",
+  "harvested_at": "2026-03-29T08:30:00.000000",
+  "kb_type": "sound-design",
+  "audio_relevance": 8,
+  "difficulty": "intermediate",
+  "content": {
+    "overview": "Vector synthesis creates evolving sounds by dynamically mixing multiple sound sources, while wave sequencing cross-fades through series of PCM waveforms",
+    "vector_synthesis": {
+      "definition": "Dynamic timbre control by mixing 2-4 oscillators using vector joystick or automated mixing",
+      "techniques": [
+        "Manual joystick control for real-time performance",
+        "Vector envelopes for automated mixing over time",
+        "LFO modulation of vector position",
+        "MIDI controller mapping for external control"
+      ],
+      "applications": "Creates evolving pads, complex textures, and expressive instruments that change character over time"
+    },
+    "wave_sequencing": {
+      "definition": "Programs a list of PCM waveforms that play in succession with programmable crossfades",
+      "original_wavestation": {
+        "steps": "Up to 255 steps per sequence",
+        "parameters": ["Duration", "Pitch", "Level", "Crossfade amount"]
+      },
+      "wavestate_2_0": {
+        "enhancement": "Wave Sequencing 2.0 splits timing, sample sequence, and melody into independent 'Lanes'",
+        "advantages": "Much more complex and evolving sequences possible"
+      },
+      "applications": "Rhythmic patterns, evolving pads, complex textures, unique soundscapes"
+    },
+    "korg_plugins": {
+      "wavestation_v2": {
+        "type": "Software reproduction of original 1990 hardware",
+        "features": [
+          "Complete vector synthesis system",
+          "Original wave sequencing technology",
+          "1,500 preset programs",
+          "Expansion ROM card sounds",
+          "High-resolution scalable interface"
+        ],
+        "formats": "VST, AAX, AU for Mac/Windows"
+      },
+      "wavestate_native": {
+        "type": "Modern evolution of Wavestation technology",
+        "features": [
+          "Wave Sequencing 2.0 with independent Lanes",
+          "Up to 4,000 modulation destinations",
+          "Gigabytes of samples (1,000x larger)",
+          "Vector control with 4 Layers",
+          "Hardware-software patch exchange"
+        ]
+      }
+    },
+    "sound_design_techniques": {
+      "evolving_pads": [
+        "Slow vector envelope movement between waveforms",
+        "Long crossfade times for smooth transitions",
+        "LFO modulation of wave sequence position"
+      ],
+      "rhythmic_sequences": [
+        "Short step durations for rhythmic patterns",
+        "Program different pitches per step for melodies",
+        "Vary levels for dynamic patterns"
+      ],
+      "expressive_performance": [
+        "Map vector joystick to MIDI controller",
+        "Real-time timbre manipulation during performance",
+        "Combine with aftertouch for additional expression"
+      ]
+    },
+    "notable_usage": [
+      "Enigma - 'Deep Atmosphere' preset",
+      "Depeche Mode, Phil Collins, Gary Numan",
+      "X-Files soundtrack",
+      "Apple Macintosh startup sound"
+    ],
+    "modern_implementations": {
+      "software_plugins": ["Korg WAVESTATION V2", "Korg wavestate native", "Arturia Pigments (wavetable + sampling)"],
+      "hardware": ["Korg wavestate", "Korg wavestate mkII", "Korg modwave"]
+    }
+  },
+  "sources": [
+    "https://www.korg.com/us/products/software/kc_wavestation/",
+    "https://korg.com/products/software/wavestate_native",
+    "http://www.korg.com/wavestate",
+    "https://en.wikipedia.org/wiki/Korg_Wavestation"
+  ]
+}

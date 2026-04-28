@@ -1,0 +1,98 @@
+# Competitive Template Audit: VST Plugin Development Playbooks
+
+## Existing Playbook Analysis
+
+### VST Plugin Playbook v7 (Unified) — `/home/myuser/agents/juce-agent/playbooks/vst-plugin-playbook-v7-unified.json`
+
+**What it covers:**
+- 13-phase development workflow (Phase 0-12)
+- DSP implementation with sound design integration
+- Audio thread safety patterns
+- Parameter management (APVTS)
+- Testing frameworks (Catch2, pluginval)
+- CI/CD for cross-platform builds
+- Prevention rules from real failure modes
+- Knowledge base integration (Technical, Sound Design)
+
+**What it does well:**
+- Battle-tested phase structure from real projects (CogVST, Epiphany Machine)
+- Detailed prevention rules with specific failure mode IDs
+- Clear task ownership (human vs AI)
+- Phase gates with explicit PASS/FAIL conditions
+- Integration with Sound Design KB for creative-to-technical translation
+- Session boundary recommendations
+
+**What it misses:**
+- **Commercial distribution** — No coverage of licensing, marketplaces, pricing
+- **Marketing strategy** — No pre-launch, launch, post-launch activities
+- **Business planning** — No revenue model, cost analysis, break-even calculations
+- **Market research** — No competitive analysis, positioning guidance
+- **Plugin beyond development** — Ends at Phase 12 (release prep), no distribution guidance
+
+### Previous Versions (v3-v6)
+
+| Version | Key Contribution | Limitation |
+|---------|------------------|-------------|
+| v3 | References section, CI/CD workflows | No sound design integration |
+| v4 | Battle-tested phase structure | No prevention rules in phases |
+| v5 | Session-extracted data from CogVST | Gap in failure mode catalog |
+| v6 | Unified approach | Missing commercial aspects |
+
+## Competing Frameworks
+
+### Audio Plugin Coder (AI-Assisted 5-Phase Model)
+
+| Phase | Focus | Gap |
+|-------|-------|-----|
+| DREAM | Concept definition | No business model consideration |
+| PLAN | Architecture design | No marketplace strategy |
+| DESIGN | GUI mockups | No licensing integration |
+| IMPLEMENT | Code generation | No distribution pipeline |
+| SHIP | Installers | No marketing guidance |
+
+### Traditional 7-Stage Model
+
+| Stage | Coverage | Gap |
+|-------|----------|-----|
+| Setup | ✅ Covered | — |
+| Definition | ✅ Covered | No business planning |
+| Interface | ✅ Covered | — |
+| DSP | ✅ Covered | — |
+| Testing | ✅ Covered | — |
+| Packaging | Partial | No licensing flow |
+| Distribution | ❌ Missing | No marketplace, marketing |
+
+## Gap Analysis Summary
+
+| Capability | v7 Playbook | APC Model | Traditional |
+|------------|-------------|-----------|-------------|
+| DSP Development | ✅ Excellent | ✅ Good | ✅ Covered |
+| Thread Safety | ✅ Excellent | ⚠️ Basic | ⚠️ Basic |
+| Testing | ✅ Excellent | ❌ Missing | ⚠️ Basic |
+| Sound Design KB | ✅ Excellent | ❌ Missing | ❌ Missing |
+| CI/CD | ✅ Good | ❌ Missing | ❌ Missing |
+| Licensing | ❌ Missing | ❌ Missing | ❌ Missing |
+| Marketplaces | ❌ Missing | ❌ Missing | ❌ Missing |
+| Marketing | ❌ Missing | ❌ Missing | ❌ Missing |
+| Business Plan | ❌ Missing | ❌ Missing | ❌ Missing |
+| Pricing Strategy | ❌ Missing | ❌ Missing | ❌ Missing |
+
+## Recommendation
+
+The new playbook must:
+
+1. **Preserve** the v7 development workflow (Phase 0-12 equivalent)
+2. **Extend** with 4 new phases covering:
+   - Phase 13: Licensing Integration
+   - Phase 14: Marketplace Preparation
+   - Phase 15: Launch Strategy
+   - Phase 16: Post-Launch Operations
+
+3. **Add** commercial knowledge base layer:
+   - Marketplace requirements (KVR, Plugin Boutique, direct)
+   - Licensing system comparison (iLok, custom, open)
+   - Pricing strategy templates
+   - Marketing timeline templates
+
+4. **Maintain** sound design integration from v7
+5. **Keep** prevention rules and failure mode catalog

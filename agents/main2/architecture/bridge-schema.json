@@ -1,0 +1,228 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Sound Design to Technical Bridge Schema",
+  "description": "Schema for bridge entries that translate subjective sound design descriptors to DSP parameters",
+  "type": "object",
+  "required": [
+    "id",
+    "category",
+    "descriptor",
+    "parameters",
+    "source",
+    "confidence",
+    "why"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^bridge_[a-z]+_[a-z-]+$",
+      "description": "Unique identifier: bridge_{category}_{descriptor}",
+      "examples": ["bridge_warm_default", "bridge_psychedelic_delay"]
+    },
+    "category": {
+      "type": "string",
+      "enum": ["warm", "bright", "lush", "punchy", "psychedelic", "ambient", "creative", "psybient", "dark", "crisp", "deep", "aggressive", "smooth", "gritty"],
+      "description": "Descriptor category for grouping related mappings"
+    },
+    "descriptor": {
+      "type": "string",
+      "description": "The subjective sound design term being translated",
+      "examples": ["warm", "bright", "lush", "psychedelic"]
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["parameter", "value_range", "why"],
+        "properties": {
+          "parameter": {
+            "type": "string",
+            "description": "DSP parameter name (must match APVTS parameter ID)",
+            "examples": ["filter_cutoff", "filter_resonance", "saturation", "delay_feedback", "reverb_mix"]
+          },
+          "value_range": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {"type": "number", "minimum": 0, "maximum": 1},
+            "description": "[min, max] range for the parameter (normalized 0-1)",
+            "examples": [[0.2, 0.4], [0.6, 1.0]]
+          },
+          "typical_default": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Suggested default value within the range"
+          },
+          "why": {
+            "type": "string",
+            "description": "Human-readable rationale for this mapping"
+          }
+        }
+      },
+      "minItems": 1,
+      "description": "Array of parameter mappings that create this sound characteristic"
+    },
+    "intent_mappings": {
+      "type": "object",
+      "description": "Context-specific variations of the descriptor",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "context": {"type": "string"},
+          "parameters": {
+            "type": "array",
+            "items": {"type": "object"}
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "string",
+      "description": "Where this mapping came from",
+      "examples": ["Sound Design KB", "User feedback", "Expert recommendation"]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "How confident we are in this mapping (0.0 = uncertain, 1.0 = proven)"
+    },
+    "why": {
+      "type": "string",
+      "description": "Human-readable rationale for the overall mapping"
+    },
+    "anti_patterns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "avoid": {"type": "string", "description": "What NOT to do"},
+          "reason": {"type": "string", "description": "Why this doesn't work"}
+        }
+      },
+      "description": "Common mistakes when trying to achieve this sound"
+    },
+    "related_descriptors": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Other descriptors that often combine with this one"
+    },
+    "example_plugins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "how_used": {"type": "string"}
+        }
+      },
+      "description": "Real plugins that exemplify this sound"
+    },
+    "user_feedback": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {"type": "string", "format": "date"},
+          "feedback": {"type": "string"},
+          "adjustment": {"type": "string"}
+        }
+      },
+      "description": "History of user feedback refining this entry"
+    }
+  },
+  "additionalProperties": true,
+  "examples": [
+    {
+      "id": "bridge_warm_default",
+      "category": "warm",
+      "descriptor": "warm",
+      "parameters": [
+        {
+          "parameter": "filter_cutoff",
+          "value_range": [0.2, 0.4],
+          "typical_default": 0.3,
+          "why": "Reduced high frequencies (lower cutoff) creates warmth by rolling off harsh upper harmonics"
+        },
+        {
+          "parameter": "filter_resonance",
+          "value_range": [0.1, 0.2],
+          "typical_default": 0.15,
+          "why": "Subtle resonance adds character without being harsh"
+        },
+        {
+          "parameter": "saturation",
+          "value_range": [0.1, 0.3],
+          "typical_default": 0.2,
+          "why": "Soft saturation adds harmonic content that psychoacoustically reads as 'warmth'"
+        }
+      ],
+      "source": "Sound Design KB",
+      "confidence": 0.85,
+      "why": "Warmth comes from reduced high frequencies (lower cutoff), subtle resonance for character, and soft saturation that adds pleasing harmonics without harshness.",
+      "anti_patterns": [
+        {
+          "avoid": "High resonance (above 0.3) with low cutoff",
+          "reason": "Creates nasal, boxy sound rather than warmth"
+        },
+        {
+          "avoid": "Adding warmth through EQ boost instead of filter reduction",
+          "reason": "Often adds noise and unmusical resonance; subtractive approach is cleaner"
+        }
+      ],
+      "related_descriptors": ["smooth", "deep", "lush"],
+      "example_plugins": [
+        {"name": "u-he Diva", "how_used": "Low-pass filter with gentle slope + subtle drive"},
+        {"name": "Arturia Juno-6", "how_used": "Chorus + low-pass filter at 30%"}
+      ]
+    },
+    {
+      "id": "bridge_psychedelic_delay",
+      "category": "psychedelic",
+      "descriptor": "psychedelic",
+      "parameters": [
+        {
+          "parameter": "delay_time",
+          "value_range": [0.3, 0.7],
+          "typical_default": 0.5,
+          "why": "Asymmetric delay times create rhythmic complexity and movement"
+        },
+        {
+          "parameter": "delay_feedback",
+          "value_range": [0.6, 0.85],
+          "typical_default": 0.75,
+          "why": "High feedback creates evolving, self-generating textures"
+        },
+        {
+          "parameter": "delay_mod_depth",
+          "value_range": [0.3, 0.6],
+          "typical_default": 0.4,
+          "why": "Pitch modulation creates detuning and warbling"
+        },
+        {
+          "parameter": "delay_mod_rate",
+          "value_range": [0.1, 0.4],
+          "typical_default": 0.2,
+          "why": "Slow modulation creates evolving rather than static repeats"
+        },
+        {
+          "parameter": "filter_cutoff",
+          "value_range": [0.4, 0.7],
+          "typical_default": 0.55,
+          "why": "Filtered repeats create darkening echo decay"
+        }
+      ],
+      "source": "Sound Design KB",
+      "confidence": 0.75,
+      "why": "Psychedelic sound design relies on time-based effects (delay, reverb) with high feedback, pitch modulation for warbling/detuning, and filtering that darkens repeats over time.",
+      "anti_patterns": [
+        {
+          "avoid": "Ping-pong delay without feedback",
+          "reason": "Creates static stereo effect without the evolving quality"
+        }
+      ],
+      "related_descriptors": ["ambient", "creative", "lush"]
+    }
+  ]
+}

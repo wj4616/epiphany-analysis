@@ -1,0 +1,199 @@
+# Platform & Environment Concerns
+
+## Target Platform: Linux Mint
+
+### Required System Dependencies
+
+```bash
+# JUCE GUI dependencies
+sudo apt install libx11-xcb-dev libxcb-util-dev libxcb-cursor-dev \
+                 libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev \
+                 libfontconfig1-dev libcairo2-dev libgtkmm-3.0-dev
+
+# Additional dependencies
+sudo apt install libsqlite3-dev libxcb-keysyms1-dev
+
+# Build tools
+sudo apt install cmake ninja-build build-essential
+```
+
+### VST3 Installation Path
+
+- User installation: `~/.vst3/`
+- System installation: `/usr/lib/vst3/` (not recommended for development)
+
+### DAW: REAPER
+
+**Why REAPER:**
+- Native Linux support
+- Fast plugin scanning
+- Excellent VST3 compatibility
+- Free evaluation period
+- Active Linux community
+
+**Testing Workflow:**
+1. Build plugin: `cmake --build build`
+2. Plugin auto-installs to `~/.vst3/` (COPY_PLUGIN_AFTER_BUILD)
+3. REAPER: Right-click track → Insert virtual instrument
+4. Rescan plugins if needed: Options → Preferences → VST → Clear cache/re-scan
+
+## JUCE Framework (8.0.x)
+
+### FetchContent Configuration
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(JUCE
+    GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
+    GIT_TAG juce-8.0.4)
+
+FetchContent_MakeAvailable(JUCE)
+```
+
+### Required JUCE Modules
+
+| Module | Purpose |
+|--------|---------|
+| `juce_core` | Basic utilities, memory, threads |
+| `juce_audio_basics` | Audio buffer, MIDI |
+| `juce_audio_processors` | AudioProcessor base class |
+| `juce_audio_plugin_client` | Plugin format glue code |
+| `juce_gui_basics` | GUI components |
+| `juce_gui_extra` | Additional GUI utilities |
+| `juce_dsp` | DSP utilities (filters, oscillators) |
+
+### Module Dependencies
+
+```cmake
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
+        juce::juce_audio_processors
+        juce::juce_audio_plugin_client
+        juce::juce_core
+        juce::juce_gui_basics
+        juce::juce_gui_extra
+        juce::juce_dsp
+)
+```
+
+## Target Formats
+
+| Format | Priority | Notes |
+|--------|----------|-------|
+| VST3 | Required | Primary development target |
+| Standalone | Required | Testing without DAW |
+| AU | Future | macOS only |
+| AAX | Future | Requires Avid developer account |
+
+## Compiler Requirements
+
+| Compiler | Minimum Version | Notes |
+|----------|-----------------|-------|
+| GCC | 7+ | Default on modern Linux |
+| Clang | 6+ | Alternative, often stricter |
+| MSVC | 2019+ | Windows cross-compile |
+
+### C++ Standard
+
+- **Minimum:** C++17
+- **Recommended:** C++20 (if all platforms support)
+- **Required features:** `std::atomic`, structured bindings, `constexpr`
+
+## What Should NEVER Be Done
+
+### Anti-Patterns
+
+1. **Never allocate on audio thread**
+   ```cpp
+   // ❌ WRONG
+   void processBlock(...) {
+       buffer.setSize(512); // Allocation!
+   }
+
+   // ✅ CORRECT
+   void prepareToPlay(...) {
+       buffer.setSize(512); // Pre-allocate
+   }
+   ```
+
+2. **Never use mutex on audio thread**
+   ```cpp
+   // ❌ WRONG
+   std::mutex mtx;
+   void processBlock(...) {
+       mtx.lock(); // May block!
+   }
+
+   // ✅ CORRECT
+   std::atomic<float> param;
+   void processBlock(...) {
+       float value = param.load(std::memory_order_acquire);
+   }
+   ```
+
+3. **Never store static mutable state**
+   ```cpp
+   // ❌ WRONG
+   static int lastPreset; // Shared across instances!
+
+   // ✅ CORRECT
+   int lastPreset; // Per-instance member
+   ```
+
+4. **Never skip parameter smoothing**
+   ```cpp
+   // ❌ WRONG
+   float cutoff = *cutoffParam; // Clicks on automation!
+
+   // ✅ CORRECT
+   float cutoff = smoothedCutoff.getNextValue(); // Smooth
+   ```
+
+5. **Never use Projucer for version control**
+   - CMake is text-based and diff-friendly
+   - Projucer generates binary project files
+
+## Safe Modification Methods
+
+| Operation | Location | Method |
+|-----------|----------|--------|
+| Add parameter | AudioProcessorEditor | Use APVTS parameter layout |
+| Modify DSP | DSP module | Add prepare/reset/process methods |
+| Change GUI | Editor class | JUCE Component hierarchy |
+| Add test | tests/ directory | Catch2 TEST_CASE macro |
+| Update JUCE | CMakeLists.txt | Change GIT_TAG version |
+
+## Deployment Procedure
+
+### Development Build
+
+```bash
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build build
+# Plugin automatically copied to ~/.vst3/
+```
+
+### Release Build
+
+```bash
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+cmake --install build --prefix ./dist
+# Creates ./dist/bin/MyPlugin.vst3
+```
+
+### Distribution Package
+
+```bash
+cd dist
+zip -r MyPlugin-linux-v1.0.0.zip bin/MyPlugin.vst3
+```
+
+## Platform-Specific Tools
+
+| Tool | Purpose | Installation |
+|------|---------|--------------|
+| `pluginval` | Plugin validation | Download from GitHub releases |
+| `clang-tidy` | Static analysis | `sudo apt install clang-tidy` |
+| `valgrind` | Memory analysis | `sudo apt install valgrind` |
+| `rr` | Record/replay debugging | `sudo apt install rr` |

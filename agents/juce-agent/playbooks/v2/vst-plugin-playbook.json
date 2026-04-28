@@ -1,0 +1,1858 @@
+{
+  "playbook_name": "JUCE VST Audio Plugin Development Playbook",
+  "version": "1.0.0",
+  "version_name": "Comprehensive Knowledge Base Edition",
+  "generated_date": "2026-03-31",
+  "target_domain": "JUCE VST Audio Plugin Development with Sound Design Integration",
+
+  "metadata": {
+    "target_user": "Enthusiast-level developer (C++ beginner, Python/JS background)",
+    "budget_constraint": "$100-200/month maximum",
+    "target_os": "Linux Mint (primary), Windows, macOS",
+    "target_daw": "REAPER",
+    "build_system": "FetchContent (self-contained projects)",
+    "code_style": "Readability over terseness, inline C++ explanations"
+  },
+
+  "workflow_model": "human-in-the-loop",
+
+  "roles": {
+    "human": {
+      "title": "Creative Director & Sound Designer",
+      "responsibilities": [
+        "Define WHAT the plugin does and HOW it should sound",
+        "Make ALL creative decisions (preset names, sound identity, aesthetics)",
+        "Approve or reject all creative choices",
+        "Test in DAW and provide feedback"
+      ],
+      "ai_support": "AI asks questions, NEVER proposes defaults for sound/naming/aesthetics"
+    },
+    "ai": {
+      "title": "Code Architect & Implementation Engine",
+      "responsibilities": [
+        "Handle HOW to build what's defined",
+        "Write code, tests, documentation",
+        "Research technical solutions",
+        "Generate implementation plans"
+      ],
+      "constraints": [
+        "NEVER makes creative decisions autonomously",
+        "MUST ask for creative direction",
+        "NEVER proposes defaults for sound/naming/aesthetics"
+      ]
+    }
+  },
+
+  "phases": [
+    {
+      "phase_id": 0,
+      "phase_name": "Plugin Concept & Specification",
+      "skill": "brainstorming",
+      "owner": "human_only",
+      "description": "Define exactly what you're building before writing any code. AI should be ASKING YOU questions, not proposing solutions.",
+      "duration_estimate": "1-2 weeks",
+      "deliverables": [
+        "SPEC.md or design document",
+        "Parameter list with ranges",
+        "Signal flow diagram",
+        "Technical constraints document",
+        "Preset theme document"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "task": "Define plugin type and signal flow",
+          "instruction": "Plugin type (synth/effect/analyzer/hybrid), signal flow, DSP chain order, parameter count. AI NEVER proposes a signal flow unprompted.",
+          "validation": "human_approval",
+          "owner": "human_only"
+        },
+        {
+          "step": 2,
+          "task": "Define the sound identity",
+          "instruction": "Reference plugins/hardware, genre context, character words, uniqueness. Record exact words as creative north star. Never paraphrase.",
+          "validation": "human_approval",
+          "owner": "human_only"
+        },
+        {
+          "step": 3,
+          "task": "Define technical constraints",
+          "instruction": "Lock: JUCE version, formats (VST3/AU/AAX/Standalone), target OS (ALL), target DAW, sample rates (44.1k-192kHz), buffer size range, CPU budget.",
+          "validation": "Constraints documented",
+          "owner": "human"
+        },
+        {
+          "step": 4,
+          "task": "Gain staging design",
+          "instruction": "Define when hot signals are OK vs not. Audit existing gain staging before proposing changes.",
+          "validation": "human_approval",
+          "owner": "human"
+        },
+        {
+          "step": 5,
+          "task": "Preset theme and naming",
+          "instruction": "Define creative direction for presets. User approves every name individually.",
+          "validation": "human_approval",
+          "owner": "human_only"
+        },
+        {
+          "step": 6,
+          "task": "Write one-page spec",
+          "instruction": "Structured doc: architecture, DSP with code, GUI with dimensions/colors, parameters, presets, build instructions, 'what not to do' section.",
+          "validation": "Spec file created",
+          "owner": "ai"
+        },
+        {
+          "step": 7,
+          "task": "Spec self-review",
+          "instruction": "Check: placeholder values, contradictions, ambiguity, scope gaps, formula correctness. Verify formulas at boundary conditions (param=0, param=1, param=max).",
+          "validation": "No issues found",
+          "owner": "ai"
+        }
+      ],
+      "phase_gate": [
+        "Plugin type and signal flow defined",
+        "Sound identity documented in YOUR words (not paraphrased by AI)",
+        "Gain staging philosophy explicit",
+        "Technical constraints locked (JUCE version, formats, ALL target OS, DAW)",
+        "One-page spec written and self-reviewed"
+      ],
+      "resources": [
+        {
+          "name": "JUCE Plugin Types Guide",
+          "url": "https://docs.juce.com/master/tutorial_create_projucer_basic_plugin.html",
+          "type": "documentation"
+        },
+        {
+          "name": "VST3 SDK Documentation",
+          "url": "https://steinbergmedia.github.io/vst3_doc/",
+          "type": "documentation"
+        }
+      ]
+    },
+    {
+      "phase_id": 1,
+      "phase_name": "Development Environment Setup",
+      "skill": null,
+      "owner": "human",
+      "description": "Configure development environment, install SDKs, set up build system.",
+      "duration_estimate": "1-3 days",
+      "deliverables": [
+        "Configured development environment",
+        "Build system ready (CMake)",
+        "Initial project structure",
+        "Git repository initialized"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "task": "Install JUCE framework",
+          "instruction": "Use FetchContent in CMake for self-contained builds. JUCE 7.0.12+ recommended, JUCE 8.x for animation module.",
+          "validation": "JUCE compiles successfully",
+          "owner": "human"
+        },
+        {
+          "step": 2,
+          "task": "Install VST3 SDK",
+          "instruction": "VST3 SDK 3.8.x for latest features. Include in project via FetchContent.",
+          "validation": "SDK headers accessible",
+          "owner": "human"
+        },
+        {
+          "step": 3,
+          "task": "Configure IDE",
+          "instruction": "VSCode/CLion recommended for CMake workflow. Debug and Release configurations.",
+          "validation": "IDE builds project successfully",
+          "owner": "human"
+        },
+        {
+          "step": 4,
+          "task": "Set up test framework",
+          "instruction": "Catch2 for unit tests. Integrate with CMake.",
+          "validation": "Tests compile and run",
+          "owner": "ai"
+        },
+        {
+          "step": 5,
+          "task": "Initialize git repository",
+          "instruction": "Create .gitignore for build artifacts. Initial commit with project structure.",
+          "validation": "Git status clean",
+          "owner": "human"
+        }
+      ],
+      "resources": [
+        {
+          "name": "JUCE CMake API",
+          "url": "https://docs.juce.com/master/group__juce__core.html",
+          "type": "documentation"
+        },
+        {
+          "name": "Catch2 Documentation",
+          "url": "https://github.com/catchorg/Catch2/blob/devel/docs/Readme.md",
+          "type": "documentation"
+        }
+      ]
+    },
+    {
+      "phase_id": 2,
+      "phase_name": "Prototyping & Architecture",
+      "skill": "writing-plans",
+      "owner": "ai",
+      "description": "Create proof-of-concept implementation, validate DSP algorithms, plan architecture.",
+      "duration_estimate": "1-4 weeks",
+      "deliverables": [
+        "Working proof-of-concept",
+        "Validated DSP algorithms",
+        "Architecture diagram",
+        "Risk assessment report",
+        "Implementation plan"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "task": "Create architecture diagram",
+          "instruction": "Signal flow, module boundaries, data structures. Document all DSP modules.",
+          "validation": "Diagram reviewed",
+          "owner": "ai"
+        },
+        {
+          "step": 2,
+          "task": "Prototype core DSP",
+          "instruction": "Proof-of-concept for novel algorithms. Validate in isolation before integration.",
+          "validation": "Audio output matches expectation",
+          "owner": "ai"
+        },
+        {
+          "step": 3,
+          "task": "Plan module structure",
+          "instruction": "Define classes, interfaces, ownership. Consider thread safety from day one.",
+          "validation": "Plan reviewed",
+          "owner": "ai"
+        },
+        {
+          "step": 4,
+          "task": "Identify technical risks",
+          "instruction": "Document unknowns, potential blockers, performance concerns.",
+          "validation": "Risks documented",
+          "owner": "ai"
+        },
+        {
+          "step": 5,
+          "task": "Create implementation plan",
+          "instruction": "Ordered task list with dependencies. Include test milestones.",
+          "validation": "Plan approved",
+          "owner": "human"
+        }
+      ],
+      "resources": [
+        {
+          "name": "JUCE DSP Module",
+          "url": "https://docs.juce.com/master/group__juce__dsp.html",
+          "type": "documentation"
+        },
+        {
+          "name": "Audio Plugin Architecture Patterns",
+          "url": "https://www.theaudioprogrammer.com/",
+          "type": "tutorial"
+        }
+      ]
+    },
+    {
+      "phase_id": 3,
+      "phase_name": "Project Setup & Test Framework",
+      "skill": null,
+      "owner": "ai",
+      "description": "Create project structure, configure build system, set up comprehensive testing.",
+      "duration_estimate": "1-2 weeks",
+      "deliverables": [
+        "CMakeLists.txt configured",
+        "Source directory structure",
+        "Test framework integrated",
+        "CI/CD pipeline configured"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "task": "Create CMakeLists.txt",
+          "instruction": "Use FetchContent for dependencies. Configure Debug/Release builds. VST3/AU/Standalone targets.",
+          "validation": "cmake -B build succeeds",
+          "owner": "ai"
+        },
+        {
+          "step": 2,
+          "task": "Create source structure",
+          "instruction": "Source/, Tests/, Resources/ directories. PluginProcessor.h/cpp, PluginEditor.h/cpp.",
+          "validation": "Structure follows JUCE conventions",
+          "owner": "ai"
+        },
+        {
+          "step": 3,
+          "task": "Set up unit tests",
+          "instruction": "Catch2 test framework. Test DSP modules in isolation. Create test runner.",
+          "validation": "ctest --output-on-failure passes",
+          "owner": "ai"
+        },
+        {
+          "step": 4,
+          "task": "Configure CI/CD",
+          "instruction": "GitHub Actions or similar. Build on push, run tests, create artifacts.",
+          "validation": "Pipeline runs successfully",
+          "owner": "ai"
+        }
+      ]
+    },
+    {
+      "phase_id": 4,
+      "phase_name": "DSP Implementation",
+      "skill": "juce-dsp-implementation",
+      "owner": "ai",
+      "description": "Implement audio processing algorithms, oscillators, filters, effects.",
+      "duration_estimate": "4-12 weeks",
+      "deliverables": [
+        "Core DSP module implementation",
+        "Unit tests for DSP components",
+        "Performance benchmarks",
+        "Audio thread safety audit"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "task": "Implement oscillators",
+          "instruction": "Sine, saw, square, triangle. Band-limited variants. Wavetable support if needed.",
+          "validation": "Spectral analysis clean",
+          "owner": "ai"
+        },
+        {
+          "step": 2,
+          "task": "Implement filters",
+          "instruction": "Low-pass, high-pass, band-pass, notch. Biquad and SVF implementations.",
+          "validation": "Frequency response matches spec",
+          "owner": "ai"
+        },
+        {
+          "step": 3,
+          "task": "Implement envelopes",
+          "instruction": "ADSR with sample-accurate timing. Smooth parameter transitions.",
+          "validation": "Envelope curves smooth",
+          "owner": "ai"
+        },
+        {
+          "step": 4,
+          "task": "Implement modulation",
+          "instruction": "LFOs with multiple waveforms. Sample-accurate modulation routing.",
+          "validation": "Modulation depth accurate",
+          "owner": "ai"
+        },
+        {
+          "step": 5,
+          "task": "Audio thread audit",
+          "instruction": "Check for allocations, locks, blocking operations in audio thread.",
+          "validation": "No audio thread violations",
+          "owner": "ai"
+        }
+      ],
+      "prevention_rules": [
+        {
+          "id": "AT-01",
+          "lesson": "Memory allocation in audio thread causes dropouts",
+          "prevention": "Pre-allocate all buffers in prepareToPlay()"
+        },
+        {
+          "id": "AT-02",
+          "lesson": "Mutex locks in audio thread cause priority inversion",
+          "prevention": "Use lock-free queues or atomic operations for cross-thread communication"
+        },
+        {
+          "id": "EM-01",
+          "lesson": "SmoothedValue setParameterValue() called once per block instead of per-sample",
+          "prevention": "Always call setParameterValue() before getNextValue() in process loop"
+        }
+      ],
+      "resources": [
+        {
+          "name": "JUCE DSP Tutorial",
+          "url": "https://docs.juce.com/master/tutorial_dsp_introduction.html",
+          "type": "tutorial"
+        },
+        {
+          "name": "Audio Thread Safety Patterns",
+          "url": "https://www.theaudioprogrammer.com/",
+          "type": "tutorial"
+        }
+      ]
+    },
+    {
+      "phase_id": 5,
+      "phase_name": "State Management",
+      "skill": null,
+      "owner": "ai",
+      "description": "Implement parameter management, preset system, state save/restore.",
+      "duration_estimate": "2-4 weeks",
+      "deliverables": [
+        "AudioProcessorValueTreeState configured",
+        "Parameter layout with ranges",
+        "Preset save/load system",
+        "State persistence tested"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "task": "Configure APVTS",
+          "instruction": "AudioProcessorValueTreeState with all parameters. Attachments for GUI.",
+          "validation": "Parameters automatable in DAW",
+          "owner": "ai"
+        },
+        {
+          "step": 2,
+          "task": "Implement parameter layout",
+          "instruction": "Define ranges, defaults, display names. Group related parameters.",
+          "validation": "Parameters appear correctly in DAW",
+          "owner": "ai"
+        },
+        {
+          "step": 3,
+          "task": "Implement preset system",
+          "instruction": "Save/load presets as XML or JSON. Factory presets bundled with plugin.",
+          "validation": "Presets load correctly across sessions",
+          "owner": "ai"
+        },
+        {
+          "step": 4,
+          "task": "Test state persistence",
+          "instruction": "DAW session save/load. Parameter recall. Automation recording.",
+          "validation": "State restores correctly",
+          "owner": "ai"
+        }
+      ]
+    },
+    {
+      "phase_id": 6,
+      "phase_name": "Integration",
+      "skill": null,
+      "owner": "ai",
+      "description": "Integrate DSP modules with plugin architecture. Connect parameters to DSP.",
+      "duration_estimate": "2-4 weeks",
+      "deliverables": [
+        "Complete audio processor",
+        "Parameter-to-DSP connections",
+        "MIDI handling (if synth)",
+        "Buffer management validated"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "task": "Connect parameters to DSP",
+          "instruction": "APVTS parameter listeners. Thread-safe parameter updates.",
+          "validation": "Parameter changes audible in real-time",
+          "owner": "ai"
+        },
+        {
+          "step": 2,
+          "task": "Implement audio processor",
+          "instruction": "processBlock() implementation. Buffer management. Sample rate handling.",
+          "validation": "Audio flows correctly",
+          "owner": "ai"
+        },
+        {
+          "step": 3,
+          "task": "Implement MIDI handling",
+          "instruction": "Note on/off, CC, pitch bend. MPE support if specified.",
+          "validation": "MIDI input processed correctly",
+          "owner": "ai"
+        },
+        {
+          "step": 4,
+          "task": "Validate buffer handling",
+          "instruction": "Variable buffer sizes. Sample rate changes. Graceful handling of edge cases.",
+          "validation": "No crashes with odd buffer sizes",
+          "owner": "ai"
+        }
+      ]
+    },
+    {
+      "phase_id": 7,
+      "phase_name": "GUI Implementation",
+      "skill": "juce-ui-bridge",
+      "owner": "human",
+      "description": "Design and implement user interface with custom LookAndFeel.",
+      "duration_estimate": "2-6 weeks",
+      "deliverables": [
+        "Plugin editor component",
+        "Custom LookAndFeel",
+        "Control components",
+        "GUI scaling support"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "task": "Design GUI layout",
+          "instruction": "Wireframe/mockup. Control placement. Visual hierarchy.",
+          "validation": "Layout approved",
+          "owner": "human_only"
+        },
+        {
+          "step": 2,
+          "task": "Implement editor component",
+          "instruction": "AudioProcessorEditor. Resizable if needed. DPI scaling.",
+          "validation": "Editor displays correctly",
+          "owner": "ai"
+        },
+        {
+          "step": 3,
+          "task": "Create custom LookAndFeel",
+          "instruction": "Custom drawing for knobs, sliders, buttons. Consistent visual style.",
+          "validation": "LookAndFeel approved",
+          "owner": "human"
+        },
+        {
+          "step": 4,
+          "task": "Connect GUI to parameters",
+          "instruction": "Slider/Button/ComboBox attachments. Real-time updates.",
+          "validation": "Controls responsive",
+          "owner": "ai"
+        },
+        {
+          "step": 5,
+          "task": "Implement animations",
+          "instruction": "VBlankAttachment for smooth animations. Performance-conscious.",
+          "validation": "Animations smooth at 60fps",
+          "owner": "ai"
+        }
+      ]
+    },
+    {
+      "phase_id": 8,
+      "phase_name": "Testing & Validation",
+      "skill": null,
+      "owner": "ai",
+      "description": "Cross-platform testing, DAW compatibility, performance validation.",
+      "duration_estimate": "2-4 weeks",
+      "deliverables": [
+        "Test reports",
+        "Bug logs",
+        "Performance metrics",
+        "Validation certificates"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "task": "Cross-platform testing",
+          "instruction": "Windows, macOS, Linux. Test all target platforms.",
+          "validation": "Plugin loads on all platforms",
+          "owner": "human"
+        },
+        {
+          "step": 2,
+          "task": "DAW compatibility testing",
+          "instruction": "Test in Cubase, Ableton, Logic, Reaper, Pro Tools (if AAX).",
+          "validation": "Plugin works in all target DAWs",
+          "owner": "human"
+        },
+        {
+          "step": 3,
+          "task": "Performance testing",
+          "instruction": "CPU usage, memory usage, latency. Stress test with high load.",
+          "validation": "Within CPU budget",
+          "owner": "ai"
+        },
+        {
+          "step": 4,
+          "task": "Format validation",
+          "instruction": "VST3 validator, AU validator (auval), AAX validation.",
+          "validation": "No validation errors",
+          "owner": "ai"
+        },
+        {
+          "step": 5,
+          "task": "Beta testing",
+          "instruction": "External testers. Feedback collection. Bug tracking.",
+          "validation": "Beta feedback addressed",
+          "owner": "human"
+        }
+      ],
+      "resources": [
+        {
+          "name": "pluginval",
+          "url": "https://github.com/Tracktion/pluginval",
+          "type": "tool"
+        },
+        {
+          "name": "auval",
+          "url": "https://developer.apple.com/library/archive/documentation/MusicAudio/Conceptual/AudioUnitProgrammingGuide/TestingAudioUnits/TestingAudioUnits.html",
+          "type": "tool"
+        }
+      ]
+    },
+    {
+      "phase_id": 9,
+      "phase_name": "DAW Testing",
+      "skill": "juce-daw-testing",
+      "owner": "human_only",
+      "description": "Human perceptual testing in DAW. This is where audio bugs are caught.",
+      "duration_estimate": "1-2 weeks",
+      "deliverables": [
+        "Tested presets",
+        "Perceptual bug reports",
+        "Gain staging validation",
+        "Sound identity verification"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "task": "Load plugin in DAW",
+          "instruction": "Test in REAPER or primary target DAW. Verify basic functionality.",
+          "validation": "Plugin loads and produces audio",
+          "owner": "human_only"
+        },
+        {
+          "step": 2,
+          "task": "Test all presets",
+          "instruction": "Load each preset. Listen for artifacts, unexpected behavior.",
+          "validation": "All presets sound correct",
+          "owner": "human_only"
+        },
+        {
+          "step": 3,
+          "task": "Test parameter ranges",
+          "instruction": "Extreme parameter values. Check for clicks, distortion, silence.",
+          "validation": "No audio artifacts",
+          "owner": "human_only"
+        },
+        {
+          "step": 4,
+          "task": "Verify sound identity",
+          "instruction": "Compare to reference sounds. Check creative goals met.",
+          "validation": "Sound matches vision",
+          "owner": "human_only"
+        },
+        {
+          "step": 5,
+          "task": "Document issues",
+          "instruction": "Detailed bug reports with reproduction steps.",
+          "validation": "Issues logged",
+          "owner": "human_only"
+        }
+      ]
+    },
+    {
+      "phase_id": 10,
+      "phase_name": "Optimization & Polish",
+      "skill": null,
+      "owner": "ai",
+      "description": "Code optimization, factory presets, final tuning.",
+      "duration_estimate": "1-3 weeks",
+      "deliverables": [
+        "Optimized binaries",
+        "Factory presets",
+        "Performance benchmarks",
+        "Code documentation"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "task": "Profile performance",
+          "instruction": "Use profiler to identify bottlenecks. Optimize critical paths.",
+          "validation": "CPU usage within budget",
+          "owner": "ai"
+        },
+        {
+          "step": 2,
+          "task": "Create factory presets",
+          "instruction": "Showcase plugin capabilities. Follow preset theme from spec.",
+          "validation": "Presets approved",
+          "owner": "human"
+        },
+        {
+          "step": 3,
+          "task": "Memory leak check",
+          "instruction": "Valgrind or similar. Fix all leaks.",
+          "validation": "No memory leaks",
+          "owner": "ai"
+        },
+        {
+          "step": 4,
+          "task": "Final code review",
+          "instruction": "Code style consistency. Documentation. Comments.",
+          "validation": "Code review complete",
+          "owner": "ai"
+        }
+      ]
+    },
+    {
+      "phase_id": 11,
+      "phase_name": "Packaging & Distribution",
+      "skill": null,
+      "owner": "ai",
+      "description": "Code signing, installers, documentation, marketing materials.",
+      "duration_estimate": "1-2 weeks",
+      "deliverables": [
+        "Signed installers",
+        "User manual",
+        "Marketing materials",
+        "Licensing system"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "task": "Implement licensing (optional)",
+          "instruction": "Simple licensing or machine ID. Keep budget-friendly options.",
+          "validation": "Licensing works correctly",
+          "owner": "human"
+        },
+        {
+          "step": 2,
+          "task": "Code signing",
+          "instruction": "Windows code signing. macOS notarization.",
+          "validation": "Binaries signed",
+          "owner": "human"
+        },
+        {
+          "step": 3,
+          "task": "Create installers",
+          "instruction": ".pkg, .dmg for macOS. .exe installer for Windows.",
+          "validation": "Installers work correctly",
+          "owner": "ai"
+        },
+        {
+          "step": 4,
+          "task": "Write documentation",
+          "instruction": "User manual, parameter reference, troubleshooting guide.",
+          "validation": "Documentation complete",
+          "owner": "ai"
+        },
+        {
+          "step": 5,
+          "task": "Prepare marketing materials",
+          "instruction": "Screenshots, demo videos, feature list, press release.",
+          "validation": "Materials approved",
+          "owner": "human"
+        }
+      ]
+    },
+    {
+      "phase_id": 12,
+      "phase_name": "Release & Maintenance",
+      "skill": null,
+      "owner": "human",
+      "description": "Deploy to marketplaces, handle support, plan updates.",
+      "duration_estimate": "Ongoing",
+      "deliverables": [
+        "Released plugin",
+        "Support documentation",
+        "Update plan",
+        "Feedback tracking"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "task": "Deploy to marketplaces",
+          "instruction": "Plugin Boutique, KVR, Gumroad, or direct sales.",
+          "validation": "Plugin available for purchase",
+          "owner": "human"
+        },
+        {
+          "step": 2,
+          "task": "Handle support",
+          "instruction": "Email, forum, documentation. Quick response time.",
+          "validation": "Support requests handled",
+          "owner": "human"
+        },
+        {
+          "step": 3,
+          "task": "Monitor for bugs",
+          "instruction": "User reports, crash logs. Prioritize fixes.",
+          "validation": "Bugs tracked",
+          "owner": "ai"
+        },
+        {
+          "step": 4,
+          "task": "Plan updates",
+          "instruction": "Feature requests, compatibility updates, optimization.",
+          "validation": "Roadmap created",
+          "owner": "human"
+        }
+      ]
+    }
+  ],
+
+  "knowledge_bases": {
+    "sound_design": {
+      "description": "Comprehensive sound design knowledge for synthesizer development, focusing on psychedelic, ambient, pad, and creative techniques.",
+      "version": "1.0.0",
+
+      "synthesis_types": {
+        "subtractive": {
+          "description": "Start with harmonically rich waveforms and use filters to remove frequencies, shaping the tone.",
+          "signal_flow": "VCO (Oscillator) → VCF (Filter) → VCA (Amplifier) → Output",
+          "components": {
+            "VCO": {
+              "function": "Generates source waveforms rich in harmonics",
+              "parameters": ["Waveform type", "Octave", "Detune", "Pulse width"],
+              "waveforms": ["Sawtooth", "Square", "Triangle", "Pulse"]
+            },
+            "VCF": {
+              "function": "Removes/attenuates frequencies",
+              "parameters": ["Cutoff frequency", "Resonance", "Filter type"],
+              "types": ["Low-pass", "High-pass", "Band-pass", "Notch"]
+            },
+            "VCA": {
+              "function": "Controls amplitude over time",
+              "parameters": ["ADSR envelope", "Velocity sensitivity"]
+            }
+          },
+          "sound_characteristics": ["Warm", "Organic", "Smooth", "Solid"],
+          "reference_plugins": ["U-he Diva", "Arturia Mini V", "LennarDigital Sylenth1"],
+          "source": "https://en.wikipedia.org/wiki/Subtractive_synthesis"
+        },
+
+        "additive": {
+          "description": "Build sounds by combining individual sine waves at specific harmonic frequencies.",
+          "signal_flow": "Harmonic 1 + Harmonic 2 + ... + Harmonic N → Summing Mixer → Output",
+          "components": {
+            "harmonic_editor": "Draw/specify individual harmonics and their amplitudes",
+            "partial_control": "Precise control over each frequency component",
+            "frames": "Morph between different harmonic profiles (like wavetables)"
+          },
+          "sound_characteristics": ["Clear", "Bright", "Crystalline", "Glassy"],
+          "best_for": ["Bells", "Organ tones", "Glassy pads"],
+          "implementation_considerations": [
+            "Requires many oscillators (partials) for complex sounds",
+            "Each partial needs its own amplitude envelope",
+            "Inharmonic partials create bell-like and metallic timbres"
+          ],
+          "reference_plugins": ["Arturia Synclavier V", "Air Music Loom II", "Ableton Operator"],
+          "source": "https://producerhive.com/ask-the-hive/wavetable-vs-fm-vs-additive-vs-subtractive-synthesis/"
+        },
+
+        "fm_synthesis": {
+          "description": "Modulate the frequency of one oscillator (carrier) using another oscillator (modulator) to create complex timbres.",
+          "signal_flow": "Modulator → Carrier → Output (with feedback loops)",
+          "components": {
+            "operator": "Oscillator + envelope pair",
+            "carrier": "The oscillator you hear directly",
+            "modulator": "Oscillator that affects the carrier's frequency",
+            "algorithm": "Routing arrangement of how operators interact",
+            "feedback": "Operator feeding back into itself for harmonic complexity"
+          },
+          "modulation_index": {
+            "formula": "β = Modulation Amplitude / Carrier Frequency",
+            "effect": "Higher β = More complex harmonics"
+          },
+          "sound_characteristics": ["Metallic", "Harsh", "Complex", "Clean"],
+          "best_for": ["Bell sounds", "Metallic textures", "Aggressive bass lines"],
+          "algorithm_types": {
+            "parallel": "Multiple carriers modulated independently",
+            "series": "Modulators modulate other modulators in chain",
+            "feedback": "Self-modulation for chaotic, harmonically rich results"
+          },
+          "reference_plugins": ["Native Instruments FM8", "Dexed (free DX7 emulation)", "Rob Papen Blue II"],
+          "source": "https://splice.com/blog/difference-between-synthesis-types/"
+        },
+
+        "wavetable": {
+          "description": "Use collections of waveforms (wavetables) that can be morphed by changing position within the table.",
+          "signal_flow": "Wavetable [Frame 0..N] → Position Parameter → Oscillator → Filter → VCA → Output",
+          "components": {
+            "wavetables": "Collections of waveform frames (up to hundreds)",
+            "wt_position": "Selects which frame is playing",
+            "position_modulation": "Creates movement/animation by sweeping through frames",
+            "interpolation": "Smooth transitions between frames"
+          },
+          "sound_characteristics": ["Complex", "Animated", "Layered"],
+          "best_for": ["Evolving sounds", "Modern dubstep basses", "Atmospheric pads"],
+          "frame_types": ["Single-cycle waveforms", "Morphing sequences", "Spectral blends", "Drawn custom shapes"],
+          "reference_plugins": ["Xfer Serum", "Arturia Pigments", "Vital (free)", "Reveal Sound Spire"],
+          "source": "https://producerhive.com/ask-the-hive/wavetable-vs-fm-vs-additive-vs-subtractive-synthesis/"
+        },
+
+        "modular": {
+          "description": "Separate, interchangeable modules connected via patch cables, giving complete control over signal flow.",
+          "fundamental_signal_path": "VCO → VCF → VCA (with LFOs and EGs as modulators)",
+          "module_types": {
+            "sound_sources": {
+              "function": "Generate audio signals",
+              "examples": ["VCO", "Noise", "Samples"]
+            },
+            "modifiers": {
+              "function": "Process audio signals",
+              "examples": ["VCF", "VCA", "Waveshaper"]
+            },
+            "modulators": {
+              "function": "Generate control signals",
+              "examples": ["LFO", "EG", "Sequencer", "S&H"]
+            },
+            "utilities": {
+              "function": "Route and combine signals",
+              "examples": ["Mixer", "Multiple", "Attenuator", "Offset"]
+            }
+          },
+          "key_concepts": {
+            "cv": "Control Voltage - continuous voltage signals for parameter control",
+            "gate": "On/off triggers for envelope generators",
+            "volts_per_octave": "Standard pitch control (1V = 1 octave)"
+          },
+          "software_options": ["VCV Rack (free)", "Blocks Base by Native Instruments"],
+          "hardware_starters": ["Moog Mother-32", "Make Noise 0-Coast"],
+          "philosophy": "Patch anything to anywhere - experimentation is encouraged",
+          "source": "https://mastering.com/modular-synthesis/"
+        }
+      },
+
+      "pad_sound_design": {
+        "description": "Techniques for creating lush, evolving pad sounds for ambient and psybient music.",
+        "envelope_settings": {
+          "attack": "1-2 seconds (gradual fade-in)",
+          "decay": "1-3 seconds (moderate)",
+          "sustain": "70-100% (high level)",
+          "release": "3-5 seconds (smooth fade-out)"
+        },
+        "oscillator_layering": {
+          "osc1": {"waveform": "Sawtooth", "detune": "-7 cents"},
+          "osc2": {"waveform": "Sawtooth", "detune": "+7 cents"},
+          "osc3": {"waveform": "Triangle", "octave": "+1"},
+          "sub": {"waveform": "Sine", "octave": "-1"},
+          "purpose": "Layer for thickness and brightness"
+        },
+        "filter_modulation": {
+          "cutoff": "3-4 kHz for warmth",
+          "lfo_rate": "0.1-0.5 Hz (slow)",
+          "lfo_depth": "20-40%",
+          "lfo_shape": "Sine for smooth, organic movement"
+        },
+        "creating_movement": {
+          "filter_lfo": {"purpose": "Timbral evolution", "rate": "0.1-0.5 Hz", "depth": "20-40%"},
+          "pitch_drift": {"purpose": "Analog-style instability", "range": "±5-15 cents"},
+          "wavetable_position": {"purpose": "Morphing textures", "modulation": "Slow LFO or envelope"},
+          "volume_lfo": {"purpose": "Tremolo effects", "rate": "0.5-2 Hz", "depth": "10-30%"}
+        },
+        "effects_chain": [
+          {"type": "Chorus", "purpose": "Adds thickness and stereo width"},
+          {"type": "Reverb", "mix": "100% wet", "decay": "4-8 seconds"},
+          {"type": "Delay", "timing": "Quarter-note or dotted eighth", "feedback": "30-50%"},
+          {"type": "EQ", "lowcut": "80-100 Hz", "highshelf": "+1-2dB at 8 kHz"}
+        ],
+        "source": "https://www.edmprod.com/synth-pads/"
+      },
+
+      "psybient_sound_design": {
+        "description": "Psychedelic ambient sound design methods for psybient and psychedelic electronic music.",
+        "defining_characteristics": [
+          "Ethereal Soundscapes: Lush pads, reverb-drenched vocals, nature sounds",
+          "Intricate Rhythms: Complex patterns at 90-120 BPM",
+          "Cultural Sampling: Indian classical motifs, shamanic chants, ethnic instruments",
+          "Emotional Resonance: Focus on introspection and transcendence"
+        ],
+        "layered_texture_approach": {
+          "layer1": {"type": "Foundation pad", "characteristics": "Sustained, minimal movement"},
+          "layer2": {"type": "Evolving texture", "characteristics": "Granular processing, automation"},
+          "layer3": {"type": "Rhythmic element", "characteristics": "Filtered percussion, arpeggios"},
+          "layer4": {"type": "Atmospheric FX", "characteristics": "Field recordings, noise layers"}
+        },
+        "psychedelic_processing": [
+          "Heavy granular synthesis on source material",
+          "Time-stretching artifacts as creative texture",
+          "Reverse reverb for otherworldly transitions",
+          "Frequency-shifting for psychedelic detuning",
+          "Sample-rate reduction for lo-fi character"
+        ],
+        "modular_recommendations": {
+          "oscillators": ["4MS Ensemble Oscillator (lush pads)", "Plaits in chord mode", "Acid Rain Chainsaw"],
+          "filters": ["Rossum Morpheus (Z-plane filtering for 90s jungle pad sounds)"]
+        },
+        "notable_artists": ["Shpongle", "Ott", "Carbon Based Lifeforms", "Bluetech"],
+        "source": "https://psytranceinstitute.com/psychedelic-synthesis/"
+      },
+
+      "granular_synthesis": {
+        "description": "Sound design technique using tiny grains of audio (1-200ms) to create textures and atmospheres.",
+        "grain_parameters": {
+          "grain_size": {
+            "1-20ms": "Glitchy, buzzing textures",
+            "50-200ms": "Smooth, sustained tones"
+          },
+          "density": {
+            "high": "Continuous, thick sound beds",
+            "low": "Sparse, rhythmic textures"
+          },
+          "spray_randomness": "Variable for organic variation and diffused textures"
+        },
+        "best_source_materials": [
+          "Field recordings (rain, wind, nature sounds)",
+          "Sustained instrumental passages (strings, synths, pads)",
+          "Vocal samples (creates otherworldly choirs)",
+          "Found sounds and foley"
+        ],
+        "workflow": [
+          "Load source material into granular processor",
+          "Set grain size 50-100ms for pad sounds",
+          "Increase density for continuous texture",
+          "Add LFO modulation to grain position",
+          "Apply reverb and delay for space"
+        ],
+        "time_stretching_technique": {
+          "tool": "Paul's Extreme Sound Stretch",
+          "method": "Extreme time-stretching turns any sound into ambient drone pads",
+          "result": "Creates unique harmonic content and texture"
+        },
+        "source": "https://mmbunker.com/crafting-sonic-atmospheres-creating-ambiences-with-granular-synthesis/"
+      },
+
+      "spatial_audio": {
+        "description": "Creating depth and space for ambient and immersive audio.",
+        "formats": {
+          "stereo": {"description": "Traditional 2-channel", "use_case": "Standard production"},
+          "binaural": {"description": "3D audio over headphones", "use_case": "Personal listening"},
+          "ambisonics": {"description": "Full-sphere sound field", "use_case": "VR/AR applications"},
+          "dolby_atmos": {"description": "Object-based 3D", "use_case": "Cinema, streaming"}
+        },
+        "creating_depth": [
+          "Establish ambient beds as foundation",
+          "Strategic object placement in 3D space",
+          "Use height (Z-axis) for realism",
+          "Manage distance and perspective with reverb and EQ",
+          "Embrace smooth, purposeful movement"
+        ],
+        "reverb_techniques": {
+          "hall": {"characteristics": "Large, natural decay", "application": "Main ambient space"},
+          "plate": {"characteristics": "Bright, dense", "application": "Vocals, leads"},
+          "shimmer": {"characteristics": "Pitch-shifted tails", "application": "Ethereal textures"},
+          "algorithmic": {"characteristics": "CPU-efficient, flexible", "application": "Creative spaces"}
+        },
+        "distance_modeling": {
+          "close": "High-frequency presence, low reverb, focused stereo image",
+          "distant": "Reduced high frequencies, high reverb, wide stereo image",
+          "movement": "Automation of position and reverb over time"
+        },
+        "source": "https://inairspace.com/blogs/learn-with-inair/mixing-spatial-audio-the-ultimate-guide-to-immersive-3d-sound-design"
+      },
+
+      "patch_methodology": {
+        "description": "Systematic approaches to synthesizer patch creation.",
+        "five_phase_workflow": {
+          "phase1_preparation": {
+            "activities": ["Define sonic goal (category, character, context)", "Choose appropriate synth", "Load reference sounds"],
+            "duration": "5-10 minutes"
+          },
+          "phase2_foundation": {
+            "step1": "Oscillator/waveform selection",
+            "step2": "Basic envelope shapes (amp envelope)",
+            "step3": "Filter characteristics (cutoff, resonance, type)",
+            "duration": "10-20 minutes"
+          },
+          "phase3_refinement": {
+            "step4": "Add modulation (LFO destinations and rates)",
+            "step5": "Fine-tune timing and character",
+            "step6": "Add subtle variations",
+            "duration": "15-30 minutes"
+          },
+          "phase4_enhancement": {
+            "step7": "Add effects strategically",
+            "step8": "Create movement and space",
+            "step9": "Add final polish touches",
+            "duration": "10-20 minutes"
+          },
+          "phase5_validation": {
+            "activities": ["Test in context with other instruments", "Make final adjustments", "Save multiple versions"],
+            "duration": "10-15 minutes"
+          }
+        },
+        "syntorial_checklist": {
+          "waveform": "Foundation of the sound character",
+          "bright_vs_dark": "Shape tone with waveform and filter",
+          "thick_vs_thin": "Use detuning, pulse width, resonance",
+          "clean_vs_dirty": "Apply distortion, noise, oscillator modulation",
+          "hard_vs_soft": "Control attack transients and envelopes",
+          "tall_vs_short": "Stack oscillators or use sub oscillators",
+          "heavy_vs_light": "Add/remove low frequency content",
+          "long_vs_short": "Shape duration with amp envelope",
+          "movement": "Create motion through LFOs and modulation",
+          "space": "Add reverb, delay, and width controls",
+          "predictable_vs_random": "Introduce human elements",
+          "cherry_on_top": "Finishing touches"
+        },
+        "source": "https://syntorial.com/tutorials/synth-patch-checklist"
+      },
+
+      "parameter_mappings": {
+        "bass_sounds": {
+          "oscillator": "Saw/Square (rich low harmonics)",
+          "filter": "Low-pass, 12dB/oct, cutoff around 200-800 Hz",
+          "amp_attack": "0-10 ms (tight, punchy)",
+          "amp_release": "50-200 ms (controlled decay)",
+          "lfo_to_pitch": "Subtle (optional vibrato)"
+        },
+        "lead_sounds": {
+          "oscillator": "Saw/Square/PWM (harmonically rich)",
+          "filter": "Low-pass, 24dB/oct, cutoff around 1-4 kHz",
+          "amp_attack": "1-50 ms (quick but not instant)",
+          "amp_release": "100-500 ms (sustain with release)",
+          "portamento": "Variable (glide between notes)"
+        },
+        "pad_sounds": {
+          "oscillator": "Multiple, detuned (layered for thickness)",
+          "filter": "Low-pass, 12-24dB/oct, cutoff around 2-4 kHz",
+          "amp_attack": "500-2000 ms (slow fade-in)",
+          "amp_release": "2-5 seconds (long, smooth fade-out)",
+          "lfo_to_filter": "Slow rate (evolving texture)"
+        },
+        "pluck_sounds": {
+          "oscillator": "Square/Saw (bright attack)",
+          "filter": "Low-pass, 24dB/oct (fast envelope)",
+          "filter_env_amount": "High (strong pluck character)",
+          "amp_attack": "0-1 ms (instant)",
+          "amp_decay": "100-500 ms (quick decay)",
+          "amp_sustain": "0-20% (minimal sustain)"
+        },
+        "fx_atmosphere": {
+          "oscillator": "Multiple, detuned (complex layering)",
+          "filter": "Various (movement is key)",
+          "lfo_modulation": "Deep (extensive routing)",
+          "effects": "Heavy reverb/delay (spatial processing)",
+          "modulation": "Multiple sources (evolving over time)"
+        }
+      },
+
+      "academic_references": {
+        "microsound": {
+          "author": "Curtis Roads",
+          "title": "Microsound",
+          "publisher": "MIT Press",
+          "year": 2002,
+          "pages": 424,
+          "focus": "Sound particles lasting less than 1/10th of a second, granular synthesis theory",
+          "topics": ["Granular synthesis", "Time scales", "Windowing", "Phase vocoding", "Composition theory"]
+        },
+        "computer_music_tutorial": {
+          "author": "Curtis Roads",
+          "title": "The Computer Music Tutorial",
+          "publisher": "MIT Press",
+          "focus": "Comprehensive reference on digital audio, synthesis techniques, signal processing"
+        },
+        "composing_electronic_music": {
+          "author": "Curtis Roads",
+          "title": "Composing Electronic Music: A New Aesthetic",
+          "publisher": "Oxford University Press",
+          "focus": "Personal practice and aesthetic considerations for electronic composition"
+        }
+      },
+
+      "expert_resources": {
+        "david_bessell": {
+          "background": "PhD in classical composition, member of analog synth group Node",
+          "expertise": ["Physical modelling synthesis", "Modular synthesizers"],
+          "resources": "YouTube tutorials on advanced synthesis, Sound on Sound podcast"
+        },
+        "psytrance_institute_course": {
+          "name": "Psychedelic Synthesis Course",
+          "duration": "4 months",
+          "content": "30+ hours video, 50-preset soundbank using Serum",
+          "categories": ["Arps", "Leads", "FX", "Pads", "Atmospheres", "Plucks", "Bells", "Acids", "Basses"]
+        }
+      }
+    },
+
+    "dsp_algorithms": {
+      "description": "DSP algorithms commonly used in VST plugin development with practical implementation guidance.",
+      "version": "1.0.0",
+      "note": "This section will be populated by the DSP research agent",
+
+      "oscillators": {
+        "basic_waveforms": {
+          "sine": {
+            "description": "Pure tone, fundamental building block",
+            "formula": "y = sin(2π * frequency * time)",
+            "harmonics": "Fundamental only",
+            "implementation": "Standard library or lookup table"
+          },
+          "sawtooth": {
+            "description": "Bright, buzzing tone with all harmonics",
+            "formula": "y = 2 * (frequency * time % 1) - 1",
+            "harmonics": "All harmonics at 1/n amplitude",
+            "aliasing_concern": "Requires band-limiting for digital implementation",
+            "band_limited": "Use BLIT (Band-Limited Impulse Train) or polynomial approximation"
+          },
+          "square": {
+            "description": "Hollow, reedy tone with odd harmonics only",
+            "formula": "y = sign(sin(2π * frequency * time))",
+            "harmonics": "Odd harmonics only at 1/n amplitude",
+            "aliasing_concern": "Requires band-limiting"
+          },
+          "triangle": {
+            "description": "Soft, mellow tone with odd harmonics",
+            "formula": "y = 2 * abs(2 * (frequency * time % 1) - 1) - 1",
+            "harmonics": "Odd harmonics at 1/n² amplitude",
+            "aliasing_concern": "Lower aliasing due to rapid harmonic rolloff"
+          }
+        },
+        "band_limited_oscillators": {
+          "why_needed": "Naive digital waveforms cause aliasing artifacts above Nyquist frequency",
+          "techniques": {
+            "blit": "Band-Limited Impulse Train - integrate to get band-limited waveforms",
+            "polyblep": "Polynomial approximation of BLEP at waveform discontinuities",
+            "wavetable": "Pre-computed band-limited tables with interpolation",
+            "minbleps": "Minimum-phase band-limited step functions"
+          },
+          "juce_dsp_oscillator": "JUCE provides band-limited oscillators in the dsp module"
+        },
+        "wavetable_synthesis": {
+          "description": "Store pre-computed waveforms in tables and interpolate between them",
+          "advantages": ["CPU efficient", "Any arbitrary waveform", "Morphing between waveforms"],
+          "implementation_steps": [
+            "Generate or load waveform tables",
+            "Interpolate between samples for pitch shifting",
+            "Interpolate between tables for morphing",
+            "Apply anti-aliasing for high frequencies"
+          ]
+        }
+      },
+
+      "filters": {
+        "types": {
+          "lowpass": {"description": "Removes frequencies above cutoff", "use_case": "Warmth, smoothing"},
+          "highpass": {"description": "Removes frequencies below cutoff", "use_case": "Removing rumble, thinning"},
+          "bandpass": {"description": "Passes frequencies around center", "use_case": "Resonant filtering, telephone effects"},
+          "notch": {"description": "Removes frequencies around center", "use_case": "Hum removal, anti-feedback"}
+        },
+        "biquad_filter": {
+          "description": "Versatile IIR filter topology for many filter types",
+          "transfer_function": "H(z) = (b0 + b1*z^-1 + b2*z^-2) / (a0 + a1*z^-1 + a2*z^-2)",
+          "coefficients": "Calculated from cutoff, resonance, and sample rate",
+          "juce_implementation": "dsp::IIR::Filter<float> with Coefficients::makeLowPass(), makeHighPass(), etc."
+        },
+        "state_variable_filter": {
+          "description": "Simultaneous outputs for lowpass, highpass, bandpass, notch",
+          "advantages": ["Easy frequency modulation", "Stable at high resonance", "Musical character"],
+          "implementation": "Two integrators in a feedback loop",
+          "juce_implementation": "dsp::StateVariableFilter::Filter<float>"
+        },
+        "ladder_filter": {
+          "description": "Moog-style 4-pole lowpass filter",
+          "characteristics": ["Resonance up to self-oscillation", "24dB/oct slope", "Classic analog character"],
+          "implementation_notes": "Non-linearities important for authentic sound",
+          "juce_implementation": "dsp::LadderFilter<float>"
+        }
+      },
+
+      "effects": {
+        "delay": {
+          "description": "Store audio in buffer and play back after specified time",
+          "parameters": ["Delay time", "Feedback", "Mix"],
+          "implementation": "Circular buffer with read/write pointers",
+          "juce_implementation": "dsp::DelayLine<float>"
+        },
+        "reverb": {
+          "algorithmic": {
+            "description": "Network of comb and allpass filters",
+            "parameters": ["Room size", "Decay", "Damping", "Mix"],
+            "juce_implementation": "dsp::Reverb"
+          },
+          "convolution": {
+            "description": "Convolve input with impulse response",
+            "advantages": ["Realistic spaces", "Any space can be captured"],
+            "disadvantages": ["CPU intensive", "No real-time parameter changes"],
+            "juce_implementation": "dsp::Convolution"
+          }
+        },
+        "chorus": {
+          "description": "Multiple delayed copies with modulated delay time",
+          "parameters": ["Rate", "Depth", "Mix", "Voices"],
+          "implementation": "Delay line with LFO-modulated read position",
+          "juce_implementation": "dsp::Chorus<float>"
+        },
+        "flanger": {
+          "description": "Single delayed copy with modulated delay time and feedback",
+          "parameters": ["Rate", "Depth", "Feedback", "Mix"],
+          "difference_from_chorus": "Shorter delay times, more feedback, more pronounced effect"
+        },
+        "phaser": {
+          "description": "Allpass filters with modulated frequency",
+          "parameters": ["Rate", "Depth", "Stages", "Feedback", "Mix"],
+          "implementation": "Cascade of modulated allpass filters"
+        },
+        "distortion": {
+          "types": {
+            "soft_clip": "Tanh or similar saturating function",
+            "hard_clip": "Signal limited to [-1, 1]",
+            "waveshaping": "Transfer function or lookup table"
+          },
+          "juce_implementation": "dsp::WaveShaper<float>"
+        }
+      },
+
+      "modulation": {
+        "lfo": {
+          "description": "Low Frequency Oscillator for parameter modulation",
+          "waveforms": ["Sine", "Triangle", "Square", "Sawtooth", "Random (S&H)"],
+          "typical_rates": "0.1 - 20 Hz",
+          "implementation": "Oscillator running at sub-audio rate, output scaled to target parameter range"
+        },
+        "adsr_envelope": {
+          "description": "Attack, Decay, Sustain, Release envelope generator",
+          "stages": {
+            "attack": "Time from 0 to peak",
+            "decay": "Time from peak to sustain level",
+            "sustain": "Level held while note is on",
+            "release": "Time from sustain to 0 after note-off"
+          },
+          "implementation": "State machine with linear or exponential curves",
+          "sample_accurate": "Process each sample, not just per buffer"
+        },
+        "sample_accurate_modulation": {
+          "why_needed": "Per-buffer modulation causes zipper noise on fast parameter changes",
+          "solution": "Smooth every sample using SmoothedValue or linear interpolation"
+        }
+      },
+
+      "juce_dsp_module": {
+        "description": "JUCE's built-in DSP module providing optimized audio processing classes",
+        "classes": {
+          "Oscillator": "dsp::Oscillator - band-limited oscillators",
+          "Filter": "dsp::IIR::Filter, dsp::StateVariableFilter, dsp::LadderFilter",
+          "Delay": "dsp::DelayLine, dsp::DelayLineInterpolated",
+          "Reverb": "dsp::Reverb, dsp::Convolution",
+          "Effects": "dsp::Chorus, dsp::Phaser, dsp::Overdrive",
+          "Gain": "dsp::Gain, dsp::Panner",
+          "Envelope": "dsp::ADSR",
+          "SmoothedValue": "dsp::SmoothedValue - thread-safe parameter smoothing"
+        },
+        "usage_pattern": {
+          "prepare": "Call prepare() with ProcessSpec (sampleRate, blockSize, numChannels)",
+          "process": "Call process() with AudioBlock in processBlock()",
+          "reset": "Call reset() when audio stops or parameter changes significantly"
+        }
+      },
+
+      "open_source_libraries": {
+        "juce_dsp": "Built-in JUCE DSP module",
+        "faust": "Functional programming language for DSP",
+        "stk": "Synthesis ToolKit for real-time audio",
+        "klang": "C++ DSP library for embedded systems",
+        "daisySP": "DSP library from Electro-Smith for Daisy platform"
+      }
+    },
+
+    "ui_design": {
+      "description": "Modern UI/UX design for audio plugins (synthesizers, effects, tools).",
+      "version": "1.0.0",
+      "note": "This section will be populated by the UI research agent",
+
+      "interface_standards": {
+        "control_sizing": {
+          "primary_controls": {"size": "48-64px", "spacing": "8-12px"},
+          "secondary_controls": {"size": "32-48px", "spacing": "6-10px"},
+          "tertiary_controls": {"size": "24-32px", "spacing": "4-8px"}
+        },
+        "common_elements": {
+          "knobs": {
+            "advantages": "Compact, intuitive for continuous parameters",
+            "interaction": "Drag up/down or circular",
+            "visual_feedback": "Value arc, halo, or both"
+          },
+          "sliders": {
+            "advantages": "Precise for wide-range parameters",
+            "interaction": "Drag along axis",
+            "visual_feedback": "Fill level from left/bottom"
+          },
+          "buttons": {
+            "advantages": "Clear on/off state",
+            "interaction": "Click to toggle",
+            "visual_feedback": "State change animation"
+          }
+        },
+        "accessibility": {
+          "keyboard_navigation": "Tab through controls",
+          "screen_reader": "Accessible name and value",
+          "high_contrast": "Optional theme for visibility",
+          "color_blind": "Don't rely solely on color"
+        }
+      },
+
+      "design_approaches": {
+        "minimalist": {
+          "characteristics": ["Clean lines", "Plenty of whitespace", "Limited colors", "Flat design"],
+          "examples": ["Fabfilter Pro-Q 3", "iZotope Ozone"],
+          "best_for": "Effects, analyzers, utility plugins"
+        },
+        "skeuomorphic": {
+          "characteristics": ["Hardware-inspired", "Textured surfaces", "3D elements", "LEDs and displays"],
+          "examples": ["Arturia V Collection", "Native Instruments Komplete"],
+          "best_for": "Emulations, vintage-style instruments"
+        },
+        "hybrid": {
+          "characteristics": ["Clean UI with skeuomorphic controls", "Modern layout, vintage feel"],
+          "examples": ["Xfer Serum", "Vital"],
+          "best_for": "Modern synthesizers, creative effects"
+        }
+      },
+
+      "dark_theme_best_practices": {
+        "background": {"primary": "#1a1a1a to #2a2a2a", "secondary": "#333333 to #444444"},
+        "text": {"primary": "#ffffff", "secondary": "#aaaaaa", "disabled": "#666666"},
+        "accent_colors": {"primary": "One main accent (blue, orange, etc.)", "secondary": "Secondary accents for hierarchy"},
+        "contrast_ratio": "Minimum 4.5:1 for normal text, 3:1 for large text (WCAG AA)"
+      },
+
+      "professional_examples": {
+        "xfer_serum": {
+          "design_approach": "Hybrid - clean layout with detailed wavetable display",
+          "control_hierarchy": "Oscillators prominent, modulation matrix below, effects tabs",
+          "color_scheme": "Dark background, orange accent, blue for modulation"
+        },
+        "vital": {
+          "design_approach": "Modern flat with subtle gradients",
+          "control_hierarchy": "Tabbed interface for clarity",
+          "color_scheme": "Customizable themes, default is dark with accent colors"
+        }
+      },
+
+      "layout_theory": {
+        "signal_flow_visualization": {
+          "left_to_right": "Oscillators → Filters → Effects → Output",
+          "top_to_bottom": "Input → Processing → Output",
+          "grouping": "Related controls visually grouped"
+        },
+        "hierarchical_organization": {
+          "primary": "Main sound-shaping controls (oscillators, filters)",
+          "secondary": "Modulation sources (LFOs, envelopes)",
+          "tertiary": "Fine-tuning and utility (settings, presets)"
+        }
+      },
+
+      "juce_specific": {
+        "lookandfeel": {
+          "description": "JUCE's mechanism for custom drawing without subclassing components",
+          "usage": [
+            "Inherit from LookAndFeel_V4 or create custom LookAndFeel class",
+            "Override drawXXX() methods for custom control appearance",
+            "Set LookAndFeel on components with setLookAndFeel()",
+            "Use LookAndFeel_V4::getColour() for theme colors"
+          ],
+          "custom_components": [
+            "Inherit from Component for custom controls",
+            "Override paint() for drawing",
+            "Override mouseDown/mouseDrag/mouseUp for interaction",
+            "Call repaint() when state changes"
+          ]
+        },
+        "performance_considerations": {
+          "avoid_allocations": "Don't allocate in paint()",
+          "use_images": "Cache complex graphics as Images",
+          "minimal_repaints": "Only repaint changed areas",
+          "vblank_sync": "Use VBlankAttachment for animations"
+        }
+      },
+
+      "user_experience": {
+        "learnability": {
+          "progressive_disclosure": "Show basic controls first, advanced in tabs",
+          "tooltips": "Brief description on hover",
+          "defaults": "Sensible defaults that produce good sound"
+        },
+        "workflow_optimization": {
+          "common_tasks_easy": "Most-used functions require fewest clicks",
+          "consistent_layout": "Similar controls in similar positions",
+          "keyboard_shortcuts": "Power users appreciate shortcuts"
+        }
+      }
+    },
+
+    "marketing": {
+      "description": "Marketing and commercialization strategies for VST plugins targeting enthusiast-level developers.",
+      "version": "1.0.0",
+      "note": "This section will be populated by the marketing research agent",
+
+      "marketplace_landscape": {
+        "plugin_boutique": {
+          "description": "Popular marketplace for VST plugins",
+          "fee_structure": "Commission-based (varies)",
+          "audience": "Professional and hobbyist producers",
+          "pros": ["Large audience", "Established reputation", "Marketing support"],
+          "cons": ["Commission fees", "Less control over branding"]
+        },
+        "splice": {
+          "description": "Subscription-based platform with plugin marketplace",
+          "fee_structure": "Commission-based",
+          "audience": "Producers using Splice for samples",
+          "pros": ["Integration with sample library", "Rental-to-own options"],
+          "cons": ["Commission fees", "Subscription model may reduce direct sales"]
+        },
+        "gumroad": {
+          "description": "Direct sales platform",
+          "fee_structure": "10% flat fee",
+          "audience": "Direct audience",
+          "pros": ["Low fees", "Full control", "Direct customer relationship"],
+          "cons": ["No built-in audience", "You drive all traffic"]
+        },
+        "kvr_audio": {
+          "description": "Audio plugin directory and community",
+          "fee_structure": "Free listing, paid promotion available",
+          "audience": "Audio developers and enthusiasts",
+          "pros": ["Free listing", "Active community", "Database presence"],
+          "cons": ["Limited storefront features"]
+        }
+      },
+
+      "low_budget_marketing": {
+        "free_strategies": [
+          {
+            "strategy": "YouTube Tutorials",
+            "implementation": "Create tutorials showing your plugin in action",
+            "time_investment": "High",
+            "effectiveness": "Very High"
+          },
+          {
+            "strategy": "Forum Participation",
+            "implementation": "KVR, Gearslutz, Reddit r/WeAreTheMusicMakers",
+            "time_investment": "Medium",
+            "effectiveness": "Medium"
+          },
+          {
+            "strategy": "Free Version/Lite",
+            "implementation": "Feature-limited free version drives paid upgrades",
+            "time_investment": "Medium",
+            "effectiveness": "Very High"
+          },
+          {
+            "strategy": "Preset Libraries",
+            "implementation": "Create sound packs that require your plugin",
+            "time_investment": "Medium",
+            "effectiveness": "High"
+          },
+          {
+            "strategy": "Beta Testing Program",
+            "implementation": "Community involvement creates advocates",
+            "time_investment": "Low",
+            "effectiveness": "High"
+          }
+        ],
+        "paid_strategies": {
+          "budget_range": "$100-200/month",
+          "options": [
+            {
+              "strategy": "Facebook/Instagram Ads",
+              "cost": "Varies by targeting",
+              "best_for": "Broad audience reach"
+            },
+            {
+              "strategy": "YouTube Influencer Review",
+              "cost": "$50-500 per video",
+              "best_for": "Targeted audience, credibility"
+            },
+            {
+              "strategy": "Plugin Database Submission",
+              "cost": "Free-$50",
+              "best_for": "SEO and discoverability"
+            }
+          ]
+        }
+      },
+
+      "pricing_strategies": {
+        "typical_price_points": {
+          "free": "Loss leader, builds audience",
+          "budget": "$10-30 for simple effects",
+          "mid_range": "$30-100 for synthesizers and complex effects",
+          "premium": "$100-300 for professional instruments"
+        },
+        "freemium_model": {
+          "description": "Free version with paid upgrade",
+          "free_features": "Core functionality, limited presets",
+          "paid_features": "Advanced features, preset library, support",
+          "conversion_rate": "Typical 1-5% conversion"
+        },
+        "launch_strategies": {
+          "introductory_pricing": "50% off for first 2 weeks",
+          "bundle_discounts": "Multiple plugins as bundle",
+          "upgrade_path": "Discounted upgrade from free version"
+        }
+      },
+
+      "release_process": {
+        "beta_testing": {
+          "duration": "2-4 weeks",
+          "participants": "5-20 testers from your community",
+          "deliverables": ["Bug reports", "Feature requests", "Usability feedback", "Testimonials"],
+          "platforms": "Test on Windows, macOS, multiple DAWs"
+        },
+        "launch_checklist": [
+          "All format builds tested (VST3, AU, AAX, Standalone)",
+          "Code signed and notarized (macOS)",
+          "Installer tested on clean systems",
+          "Documentation complete",
+          "Demo video created",
+          "Press release written",
+          "Product page live on website",
+          "Listed on marketplaces (KVR, Plugin Boutique, etc.)",
+          "Announcement on social media and forums",
+          "Email to beta testers and early supporters"
+        ],
+        "post_release": {
+          "support": "Quick response to bugs and questions",
+          "updates": "Regular updates with fixes and minor features",
+          "roadmap": "Share future plans with users"
+        }
+      },
+
+      "legal_considerations": {
+        "licensing_basics": {
+          "copyright": "Your code and assets are automatically copyrighted",
+          "trademark": "Register plugin name if building brand",
+          "patents": "Rarely applicable, avoid patented algorithms"
+        },
+        "open_source_licensing": {
+          "gpl": "Copyleft - derivative works must be GPL",
+          "mit": "Permissive - can use in commercial software",
+          "apache": "Permissive with patent grant",
+          "cc_by": "Creative Commons - attribution required",
+          "note": "Check all library licenses before use in commercial plugin"
+        }
+      }
+    },
+
+    "cpp_documentation": {
+      "description": "Focused C++ documentation for Python/JavaScript developers transitioning to audio plugin development.",
+      "version": "1.0.0",
+
+      "key_concepts": {
+        "memory_management": {
+          "stack_vs_heap": {
+            "stack": "Automatic storage, fast, limited size (local variables)",
+            "heap": "Dynamic storage, slower, unlimited size (new/delete, smart pointers)",
+            "recommendation": "Prefer stack for small objects, use smart pointers for heap"
+          },
+          "smart_pointers": {
+            "std::unique_ptr": "Single ownership, automatically deleted",
+            "std::shared_ptr": "Shared ownership, reference counted",
+            "juce::ScopedPointer": "JUCE's pre-C++11 unique_ptr (deprecated, use unique_ptr)",
+            "rule": "Never use raw new/delete in plugin code"
+          },
+          "raii": {
+            "description": "Resource Acquisition Is Initialization",
+            "principle": "Acquire resources in constructor, release in destructor",
+            "benefit": "Automatic cleanup, exception-safe",
+            "example": "File handles, locks, audio buffers"
+          }
+        },
+
+        "threading": {
+          "audio_thread": {
+            "rules": [
+              "NO memory allocation (new, malloc, std::vector resizing)",
+              "NO locks (mutex, critical section)",
+              "NO blocking operations (file I/O, network)",
+              "NO system calls that may block",
+              "Pre-allocate everything in prepareToPlay()"
+            ],
+            "violation_symptoms": "Audio dropouts, clicks, pops, DAW freeze"
+          },
+          "gui_thread": {
+            "rules": [
+              "Update GUI from message thread only",
+              "Use MessageManager::callAsync() for cross-thread updates",
+              "Never block the message thread"
+            ]
+          },
+          "thread_safety": {
+            "atomic": "std::atomic for simple values",
+            "lock_free": "Lock-free queues for cross-thread communication",
+            "juce_atomic": "JUCE's atomic wrappers (older code)"
+          }
+        },
+
+        "audio_basics": {
+          "sample_rate": "Samples per second (44100, 48000, 96000, etc.)",
+          "buffer_size": "Number of samples processed per callback (variable)",
+          "block_processing": {
+            "description": "Process blocks of samples, not individual samples",
+            "benefit": "Better CPU cache utilization",
+            "juce_pattern": "for (int channel = 0; channel < totalNumInputChannels; ++channel)"
+          },
+          "interleaved_vs_planar": {
+            "interleaved": "LRLRLRLR... (DAWs rarely use this)",
+            "planar": "LLLL... RRRR... (JUCE and most DAWs use this)",
+            "juce": "AudioBuffer uses planar format"
+          }
+        },
+
+        "cpp_modern_features": {
+          "auto": {
+            "use": "Let compiler deduce type",
+            "example": "auto& buffer = *getBuffer();",
+            "caution": "Don't overuse where type clarity helps"
+          },
+          "range_for": {
+            "syntax": "for (const auto& item : container)",
+            "benefit": "Cleaner, less error-prone than index loops"
+          },
+          "lambda": {
+            "syntax": "[captures](params) { body }",
+            "use_cases": ["Callbacks", "Custom sorting", "JUCE listeners"],
+            "example": "button.onClick = [this]() { handleClick(); };"
+          },
+          "constexpr": {
+            "use": "Compile-time constants",
+            "benefit": "Guaranteed compile-time evaluation",
+            "example": "constexpr int kMaxVoices = 8;"
+          }
+        },
+
+        "juce_patterns": {
+          "audio_processor": {
+            "description": "Base class for all plugin processors",
+            "key_methods": [
+              "processBlock(AudioBuffer& buffer, MidiBuffer& midiMessages)",
+              "prepareToPlay(double sampleRate, int blockSize)",
+              "releaseResources()",
+              "getStateInformation(MemoryBlock& destData)",
+              "setStateInformation(const void* data, int sizeInBytes)"
+            ]
+          },
+          "apvts": {
+            "description": "AudioProcessorValueTreeState - manages parameters",
+            "setup": "createParameterLayout() in constructor",
+            "attachments": "SliderAttachment, ButtonAttachment, ComboBoxAttachment",
+            "access": "getParameterAsValue(), getRawParameterValue()"
+          },
+          "smoothed_value": {
+            "description": "Thread-safe parameter smoothing",
+            "usage": [
+              "Set value: smoothedValue.setValue(targetValue)",
+              "Reset: smoothedValue.reset(sampleRate, rampTime)",
+              "Get: smoothedValue.getNextValue() // call per sample"
+            ],
+            "common_mistake": "Calling setValue() once per block instead of per sample"
+          },
+          "component": {
+            "description": "Base class for all GUI elements",
+            "key_methods": [
+              "paint(Graphics& g) - draw here",
+              "resized() - layout components here",
+              "mouseDown/mouseDrag/mouseUp - handle input"
+            ]
+          }
+        },
+
+        "common_patterns": {
+          "parameter_listener": {
+            "description": "React to parameter changes",
+            "pattern": [
+              "Inherit from AudioProcessorValueTreeState::Listener",
+              "Override parameterChanged(const String& parameterID, float newValue)",
+              "In constructor: state.addParameterListener(\"paramId\", this)"
+            ]
+          },
+          "timer_callback": {
+            "description": "Periodic updates for GUI",
+            "pattern": [
+              "Inherit from Timer",
+              "Override timerCallback()",
+              "Start: startTimerHz(30) // 30 FPS",
+              "Stop: stopTimer()"
+            ]
+          },
+          "async_updater": {
+            "description": "Coalesce updates on message thread",
+            "pattern": [
+              "Inherit from AsyncUpdater",
+              "Call triggerAsyncUpdate() from any thread",
+              "handleAsyncUpdate() called on message thread"
+            ]
+          }
+        },
+
+        "debugging": {
+          "juce_assert": "jassert(condition) - debug-only assertion",
+          "juce_log": "DBG(\"message\") - debug-only output",
+          "breakpoint": "Set breakpoints in processBlock to debug audio",
+          "common_issues": [
+            {
+              "symptom": "Audio clicks and pops",
+              "causes": ["Parameter not smoothed", "Buffer underrun", "Denormal numbers"],
+              "solutions": ["Use SmoothedValue", "Check buffer sizes", "Add denormal killer"]
+            },
+            {
+              "symptom": "Plugin crashes DAW",
+              "causes": ["Null pointer", "Array out of bounds", "GUI thread issue"],
+              "solutions": ["Add null checks", "Use at() with bounds check", "Use MessageManager lock"]
+            },
+            {
+              "symptom": "Memory leak",
+              "causes": ["Missing delete", "Circular reference"],
+              "solutions": ["Use smart pointers", "Break circular references"]
+            }
+          ]
+        }
+      },
+
+      "best_practices": {
+        "audio_thread": [
+          "Pre-allocate all buffers in prepareToPlay()",
+          "Use atomic or lock-free structures for cross-thread communication",
+          "Never call new, malloc, or resize in processBlock",
+          "Avoid virtual function calls in inner loops",
+          "Use SIMD where appropriate (juce::dsp)"
+        ],
+        "gui_thread": [
+          "Only update GUI from message thread",
+          "Use MessageManager::callAsync() for cross-thread updates",
+          "Don't block the message thread",
+          "Use VBlankAttachment for animations"
+        ],
+        "general": [
+          "Follow RAII for all resources",
+          "Use const wherever possible",
+          "Prefer composition over inheritance",
+          "Write self-documenting code with clear names",
+          "Comment the why, not the what"
+        ]
+      },
+
+      "resources": {
+        "juce_tutorials": "https://docs.juce.com/master/",
+        "audioprogrammer": "https://www.theaudioprogrammer.com/",
+        "juce_forum": "https://forum.juce.com/",
+        "cpp_reference": "https://en.cppreference.com/"
+      }
+    }
+  },
+
+  "edge_cases": {
+    "paywalled_sources": "Prefer open-access alternatives. Note limitation when academic sources are paywalled.",
+    "specialized_hardware": {
+      "aax_pro_tools": "Requires Avid Developer Program membership ($100/year). Test with Pro Tools First (free) if budget constrained.",
+      "macos_signing": "Apple Developer account ($99/year) required for notarization. Test unsigned builds locally.",
+      "hardware_copy_protection": "iLok and similar require licensing. Consider software licensing for budget development."
+    },
+    "marketing_paid_advertising": {
+      "budget_alternative": [
+        "Content marketing (YouTube, blog)",
+        "Community engagement (forums)",
+        "Free version as marketing",
+        "Influencer reviews (often free product)"
+      ]
+    },
+    "proprietary_algorithms": {
+      "open_source_equivalents": [
+        "Analog filter emulation → Open-source SVF implementations",
+        "Proprietary reverb → Free algorithmic reverb algorithms",
+        "Patented DSP → Use expired patents or develop alternatives"
+      ]
+    }
+  },
+
+  "verification_checklist": {
+    "sound_design_topics": {
+      "psychedelic": "Covered in psybient_sound_design section",
+      "ambient": "Covered in pad_sound_design and granular_synthesis sections",
+      "pad": "Covered in pad_sound_design section",
+      "creative": "Covered in granular_synthesis and modular sections",
+      "psybient": "Covered in psybient_sound_design section"
+    },
+    "technical_versions": {
+      "juce": "JUCE 7.0.12+ (JUCE 8.x for animation module)",
+      "vst3_sdk": "VST3 SDK 3.8.x"
+    },
+    "budget_constraint": "$100-200/month respected in marketing section",
+    "enthusiast_developer": "C++ documentation focused on practical usage, not overload",
+    "multi_session": "Phases designed for session-by-session development"
+  }
+}

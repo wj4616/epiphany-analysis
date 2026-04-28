@@ -1,0 +1,134 @@
+{
+  "id": "dsp-kb_theory_dsp-latency-optimization",
+  "kb": "dsp-kb",
+  "topic": "theory",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "Real-time audio processing has strict timing requirements:\n- **Live monitoring**: <10ms total latency required\n- **Virtual instruments**: <5ms for natural feel\n- **DAW mixing**: <20ms acceptable\n- **Offline rendering**: No constraint",
+  "concepts": [
+    {
+      "name": "Live monitoring",
+      "description": "<10ms total latency required",
+      "related": []
+    },
+    {
+      "name": "Virtual instruments",
+      "description": "<5ms for natural feel",
+      "related": []
+    },
+    {
+      "name": "DAW mixing",
+      "description": "<20ms acceptable",
+      "related": []
+    },
+    {
+      "name": "Offline rendering",
+      "description": "No constraint",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "text",
+      "code": "Total Latency = Hardware I/O + Buffer Processing + Algorithm Latency + Output Buffer\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Buffer size vs. latency at 48kHz\n| Buffer Size | Latency (ms) | CPU Impact |\n|------------|--------------|------------|\n| 32 samples | 0.67ms       | Very High  |\n| 64 samples | 1.33ms       | High       |\n| 128 samples| 2.67ms       | Medium     |\n| 256 samples| 5.33ms       | Low        |\n| 512 samples| 10.67ms      | Very Low   |\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class FixedBlockProcessor\n{\npublic:\n    void prepare(double sampleRate, int maxBlockSize)\n    {\n        // Pre-allocate for internal block size\n        internalBuffer.setSize(2, internalBlockSize);\n        inputFIFO.setSize(2, maxBlockSize + internalBlockSize);\n        outputFIFO.setSize(2, maxBlockSize + internalBlockSize);\n    }\n    \n    void processBlock(AudioBuffer<float>& buffer)\n    {\n        int numSamples = buffer.getNumSamples();\n        int numChannels = buffer.getNumChannels();\n        \n        // Push input to FIFO\n        for (int c = 0; c < numChannels; ++c)\n        {\n            inputFIFO.copyFrom(c, fifoWritePos, buffer, c, 0, numSamples);\n        }\n        fifoWritePos += numSamples;\n        \n        // Process complete blocks\n        while (fifoWritePos >= internalBlockSize)\n        {\n            // Extract block\n            for (int c = 0; c < numChannels; ++c)\n            {\n                internalBuffer.copyFrom(c, 0, inputFIFO, c, 0, internalBlockSize);\n            }\n            \n            // Process\n            processInternalBlock(internalBuffer);\n            \n            // Push to output FIFO\n            for (int c = 0; c < numChannels; ++c)\n            {\n                outputFIFO.copyFrom(c, fifoReadPos, internalBuffer, c, 0, internalBlockSize);\n            }\n            fifoReadPos += internalBlockSize;\n            \n            // Shift input FIFO\n            for (int c = 0; c < numChannels; ++c)\n            {\n                inputFIFO.copyFrom(c, 0, inputFIFO, c, internalBlockSize, \n                                    fifoWritePos - internalBlockSize);\n            }\n            fifoWritePos -= internalBlockSize;\n        }\n        \n        // Pull from output FIFO\n        for (int c = 0; c < numChannels; ++c)\n        {\n            buffer.copyFrom(c, 0, outputFIFO, c, 0, numSamples);\n        }\n        \n        // Shift output FIFO\n        for (int c = 0; c < numChannels; ++c)\n        {\n            outputFIFO.copyFrom(c, 0, outputFIFO, c, numSamples, \n                                 fifoReadPos - numSamples);\n        }\n        fifoReadPos -= numSamples;\n    }\n    \n    int getLatency() const { return internalBlockSize; }\n    \nprivate:\n    void processInternalBlock(AudioBuffer<float>& buffer);\n    \n    static constexpr int internalBlockSize = 256;\n    AudioBuffer<float> internalBuffer;\n    AudioBuffer<float> inputFIFO, outputFIFO;\n    int fifoWritePos = 0, fifoReadPos = 0;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class ZeroLatencyProcessor\n{\npublic:\n    void processBlock(AudioBuffer<float>& buffer)\n    {\n        // Process sample-by-sample (no added latency)\n        for (int c = 0; c < buffer.getNumChannels(); ++c)\n        {\n            auto* channelData = buffer.getWritePointer(c);\n            for (int i = 0; i < buffer.getNumSamples(); ++i)\n            {\n                channelData[i] = processSample(channelData[i]);\n            }\n        }\n    }\n    \n    int getLatency() const { return 0; }\n    \nprivate:\n    float processSample(float input)\n    {\n        // Direct IIR filter, state variable filter, etc.\n        return filter.process(input);\n    }\n    \n    IIRFilter filter;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// FFT adds latency equal to the FFT size\nint fftLatency = fftSize;  // samples\n\n// For 1024-point FFT at 48kHz:\nint latencyMs = 1024 / 48000 * 1000;  // ~21ms\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Partitioned convolution reduces latency\n// Non-uniform partitioned convolution: direct convolution for early, FFT for late\n\nint getConvolutionLatency(int earlyPartitions)\n{\n    return earlyPartitions * partitionSize;\n}\n\n// Typical: 64-256 samples for \"zero latency\" convolution\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Lookahead adds latency equal to lookahead time\nint lookaheadLatency = static_cast<int>(lookaheadMs * sampleRate / 1000);\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Process 4 (SSE) or 8 (AVX) samples at once\n// 4x speedup for SSE, 8x for AVX\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Aligned buffers for SIMD\nalignas(32) float alignedBuffer[1024];\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Structure of Arrays (SoA) for SIMD\nstruct ProcessState {\n    float s1[MAX_CHANNELS];  // All channel s1 together\n    float s2[MAX_CHANNELS];  // All channel s2 together\n    // Better cache utilization than AoS\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Pre-allocate in prepare()\nvoid prepare(double sampleRate, int maxBlockSize)\n{\n    buffer.setSize(numChannels, maxBlockSize);\n    // No allocations in processBlock()\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Flush denormals to zero for performance\nvoid prepare()\n{\n    ScopedNoDenormals noDenormals;\n    // Denormals disabled for this scope\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class ThreadSafeProcessor\n{\npublic:\n    // Real-time thread: only reads atomic parameters\n    void processBlock(AudioBuffer<float>& buffer)\n    {\n        // Atomic load for thread-safe parameter access\n        float gain = gainParam.load(std::memory_order_relaxed);\n        \n        // No locks, allocations, or blocking operations\n        for (int i = 0; i < buffer.getNumSamples(); ++i)\n        {\n            // ...\n        }\n    }\n    \n    // Message thread: updates parameters\n    void setGain(float newGain)\n    {\n        gainParam.store(newGain, std::memory_order_relaxed);\n    }\n    \nprivate:\n    std::atomic<float> gainParam{1.0f};\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class SmoothedProcessor\n{\npublic:\n    void processBlock(AudioBuffer<float>& buffer)\n    {\n        // Smooth parameter changes\n        if (!gain.isSmoothing())\n        {\n            gain.setValue(targetGain);\n        }\n        \n        for (int i = 0; i < buffer.getNumSamples(); ++i)\n        {\n            float currentGain = gain.getNextValue();\n            // ... apply gain\n        }\n    }\n    \nprivate:\n    SmoothedValue<float> gain;\n    float targetGain;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Report latency to host for PDC\nvoid prepareToPlay(double sampleRate, int estimatedSamplesPerBlock)\n{\n    // Calculate total latency\n    int algorithmLatency = fftSize + lookaheadSamples;\n    \n    // Report to host\n    setLatencySamples(algorithmLatency);\n}\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Real-Time DSP Latency Optimization\n\n## Overview\n\nReal-time audio processing has strict timing requirements:\n- **Live monitoring**: <10ms total latency required\n- **Virtual instruments**: <5ms for natural feel\n- **DAW mixing**: <20ms acceptable\n- **Offline rendering**: No constraint\n\n## Latency Components\n\n```\nTotal Latency = Hardware I/O + Buffer Processing + Algorithm Latency + Output Buffer\n```\n\n### Component Breakdown\n\n| Component | Typical Value | Notes |\n|-----------|---------------|-------|\n| Audio Interface | 1-10ms | Depends on driver/buffer size |\n| Buffer Size | 1-20ms | Smaller = more CPU overhead |\n| Algorithm Latency | 0-50ms | FFT, lookahead, etc. |\n| Output Buffer | 1-10ms | Matched to input buffer |\n\n## Buffer Size Selection\n\n```cpp\n// Buffer size vs. latency at 48kHz\n| Buffer Size | Latency (ms) | CPU Impact |\n|------------|--------------|------------|\n| 32 samples | 0.67ms       | Very High  |\n| 64 samples | 1.33ms       | High       |\n| 128 samples| 2.67ms       | Medium     |\n| 256 samples| 5.33ms       | Low        |\n| 512 samples| 10.67ms      | Very Low   |\n```\n\n## Block Processing Patterns\n\n### Fixed Block Processing\n```cpp\nclass FixedBlockProcessor\n{\npublic:\n    void prepare(double sampleRate, int maxBlockSize)\n    {\n        // Pre-allocate for internal block size\n        internalBuffer.setSize(2, internalBlockSize);\n        inputFIFO.setSize(2, maxBlockSize + internalBlockSize);\n        outputFIFO.setSize(2, maxBlockSize + internalBlockSize);\n    }\n    \n    void processBlock(AudioBuffer<float>& buffer)\n    {\n        int numSamples = buffer.getNumSamples();\n        int numChannels = buffer.getNumChannels();\n        \n        // Push input to FIFO\n        for (int c = 0; c < numChannels; ++c)\n        {\n            inputFIFO.copyFrom(c, fifoWritePos, buffer, c, 0, numSamples);\n        }\n        fifoWritePos += numSamples;\n        \n        // Process complete blocks\n        while (fifoWritePos >= internalBlockSize)\n        {\n            // Extract block\n            for (int c = 0; c < numChannels; ++c)\n            {\n                internalBuffer.copyFrom(c, 0, inputFIFO, c, 0, internalBlockSize);\n            }\n            \n            // Process\n            processInternalBlock(internalBuffer);\n            \n            // Push to output FIFO\n            for (int c = 0; c < numChannels; ++c)\n            {\n                outputFIFO.copyFrom(c, fifoReadPos, internalBuffer, c, 0, internalBlockSize);\n            }\n            fifoReadPos += internalBlockSize;\n            \n            // Shift input FIFO\n            for (int c = 0; c < numChannels; ++c)\n            {\n                inputFIFO.copyFrom(c, 0, inputFIFO, c, internalBlockSize, \n                                    fifoWritePos - internalBlockSize);\n            }\n            fifoWritePos -= internalBlockSize;\n        }\n        \n        // Pull from output FIFO\n        for (int c = 0; c < numChannels; ++c)\n        {\n            buffer.copyFrom(c, 0, outputFIFO, c, 0, numSamples);\n        }\n        \n        // Shift output FIFO\n        for (int c = 0; c < numChannels; ++c)\n        {\n            outputFIFO.copyFrom(c, 0, outputFIFO, c, numSamples, \n                                 fifoReadPos - numSamples);\n        }\n        fifoReadPos -= numSamples;\n    }\n    \n    int getLatency() const { return internalBlockSize; }\n    \nprivate:\n    void processInternalBlock(AudioBuffer<float>& buffer);\n    \n    static constexpr int internalBlockSize = 256;\n    AudioBuffer<float> internalBuffer;\n    AudioBuffer<float> inputFIFO, outputFIFO;\n    int fifoWritePos = 0, fifoReadPos = 0;\n};\n```\n\n### Zero-Latency Processing\n```cpp\nclass ZeroLatencyProcessor\n{\npublic:\n    void processBlock(AudioBuffer<float>& buffer)\n    {\n        // Process sample-by-sample (no added latency)\n        for (int c = 0; c < buffer.getNumChannels(); ++c)\n        {\n            auto* channelData = buffer.getWritePointer(c);\n            for (int i = 0; i < buffer.getNumSamples(); ++i)\n            {\n                channelData[i] = processSample(channelData[i]);\n            }\n        }\n    }\n    \n    int getLatency() const { return 0; }\n    \nprivate:\n    float processSample(float input)\n    {\n        // Direct IIR filter, state variable filter, etc.\n        return filter.process(input);\n    }\n    \n    IIRFilter filter;\n};\n```\n\n## Algorithm-Specific Latency\n\n### FFT Processing\n```cpp\n// FFT adds latency equal to the FFT size\nint fftLatency = fftSize;  // samples\n\n// For 1024-point FFT at 48kHz:\nint latencyMs = 1024 / 48000 * 1000;  // ~21ms\n```\n\n### Convolution\n```cpp\n// Partitioned convolution reduces latency\n// Non-uniform partitioned convolution: direct convolution for early, FFT for late\n\nint getConvolutionLatency(int earlyPartitions)\n{\n    return earlyPartitions * partitionSize;\n}\n\n// Typical: 64-256 samples for \"zero latency\" convolution\n```\n\n### Lookahead Processing\n```cpp\n// Lookahead adds latency equal to lookahead time\nint lookaheadLatency = static_cast<int>(lookaheadMs * sampleRate / 1000);\n```\n\n## Optimization Techniques\n\n### 1. SIMD Processing\n```cpp\n// Process 4 (SSE) or 8 (AVX) samples at once\n// 4x speedup for SSE, 8x for AVX\n```\n\n### 2. Memory Alignment\n```cpp\n// Aligned buffers for SIMD\nalignas(32) float alignedBuffer[1024];\n```\n\n### 3. Cache-Friendly Data\n```cpp\n// Structure of Arrays (SoA) for SIMD\nstruct ProcessState {\n    float s1[MAX_CHANNELS];  // All channel s1 together\n    float s2[MAX_CHANNELS];  // All channel s2 together\n    // Better cache utilization than AoS\n};\n```\n\n### 4. Avoid Allocations\n```cpp\n// Pre-allocate in prepare()\nvoid prepare(double sampleRate, int maxBlockSize)\n{\n    buffer.setSize(numChannels, maxBlockSize);\n    // No allocations in processBlock()\n}\n```\n\n### 5. Denormal Handling\n```cpp\n// Flush denormals to zero for performance\nvoid prepare()\n{\n    ScopedNoDenormals noDenormals;\n    // Denormals disabled for this scope\n}\n```\n\n## Thread Safety\n\n```cpp\nclass ThreadSafeProcessor\n{\npublic:\n    // Real-time thread: only reads atomic parameters\n    void processBlock(AudioBuffer<float>& buffer)\n    {\n        // Atomic load for thread-safe parameter access\n        float gain = gainParam.load(std::memory_order_relaxed);\n        \n        // No locks, allocations, or blocking operations\n        for (int i = 0; i < buffer.getNumSamples(); ++i)\n        {\n            // ...\n        }\n    }\n    \n    // Message thread: updates parameters\n    void setGain(float newGain)\n    {\n        gainParam.store(newGain, std::memory_order_relaxed);\n    }\n    \nprivate:\n    std::atomic<float> gainParam{1.0f};\n};\n```\n\n## CPU Spike Prevention\n\n```cpp\nclass SmoothedProcessor\n{\npublic:\n    void processBlock(AudioBuffer<float>& buffer)\n    {\n        // Smooth parameter changes\n        if (!gain.isSmoothing())\n        {\n            gain.setValue(targetGain);\n        }\n        \n        for (int i = 0; i < buffer.getNumSamples(); ++i)\n        {\n            float currentGain = gain.getNextValue();\n            // ... apply gain\n        }\n    }\n    \nprivate:\n    SmoothedValue<float> gain;\n    float targetGain;\n};\n```\n\n## Monitoring Latency\n\n```cpp\n// Report latency to host for PDC\nvoid prepareToPlay(double sampleRate, int estimatedSamplesPerBlock)\n{\n    // Calculate total latency\n    int algorithmLatency = fftSize + lookaheadSamples;\n    \n    // Report to host\n    setLatencySamples(algorithmLatency);\n}\n```\n\n## Performance Guidelines\n\n| Rule | Reason |\n|------|--------|\n| No allocations in audio thread | Unpredictable timing |\n| No locks in audio thread | Priority inversion |\n| Pre-allocate buffers | Consistent memory access |\n| Use atomic parameters | Thread-safe without locks |\n| Batch process | Better cache utilization |\n| Profile regularly | Catch regressions early |\n\n## References\n\n- \"Planning for Success in Real-Time Acoustic Processing\" - Analog Devices\n- \"Optimizing DSP Systems for Low Latency\" - Number Analytics\n- JUCE AudioProcessor documentation",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.781891+00:00"
+  },
+  "title": "Real-Time DSP Latency Optimization",
+  "description": "Optimizing digital signal processing for low-latency real-time audio",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "dsp",
+  "audio_relevance": 10,
+  "difficulty": "advanced",
+  "implementation_examples": 3,
+  "tags": [
+    "latency",
+    "real-time",
+    "optimization",
+    "buffer",
+    "thread-safety"
+  ],
+  "related_topics": [
+    "simd",
+    "fft",
+    "convolution",
+    "performance"
+  ]
+}

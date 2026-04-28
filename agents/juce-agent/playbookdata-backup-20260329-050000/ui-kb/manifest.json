@@ -1,0 +1,12 @@
+{
+  "harvest_id": "ui-kb-001",
+  "started_at": null,
+  "completed_at": null,
+  "current_phase": 0,
+  "phases": [],
+  "failed_urls": [],
+  "resume_state": {
+    "next_url": null,
+    "queue": []
+  }
+}

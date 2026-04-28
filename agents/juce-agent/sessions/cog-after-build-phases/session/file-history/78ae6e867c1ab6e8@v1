@@ -1,0 +1,26 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+
+// SpectralDroneEngine - Generate spectral drone textures
+// TODO: Implement in future task
+
+namespace CogDSP
+{
+
+class SpectralDroneEngine
+{
+public:
+    SpectralDroneEngine() = default;
+    ~SpectralDroneEngine() = default;
+
+    void prepare(double sampleRate, int samplesPerBlock);
+    void process(float* output, int numSamples);
+    void reset();
+
+private:
+    double sampleRate = 44100.0;
+};
+
+} // namespace CogDSP

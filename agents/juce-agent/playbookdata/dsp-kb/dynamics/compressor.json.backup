@@ -1,0 +1,24 @@
+{
+  "title": "Audio Compressor Design",
+  "description": "Feedforward and feedback compression algorithms",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:47:19.717157Z",
+  "kb_type": "dsp",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "markdown": "# Audio Compressor Design\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "audio compressor design",
+    "feedforward compression",
+    "feedback compression",
+    "RMS compression",
+    "peak compression"
+  ],
+  "sources": [
+    "EarLevel blog",
+    "CCRMA DSP papers"
+  ]
+}

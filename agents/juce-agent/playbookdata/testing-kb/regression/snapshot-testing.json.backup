@@ -1,0 +1,21 @@
+{
+  "title": "Snapshot Testing for Plugins",
+  "description": "Parameter and state snapshot testing",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:45:36.191255Z",
+  "kb_type": "testing",
+  "audio_relevance": 7,
+  "difficulty": "intermediate",
+  "markdown": "# Snapshot Testing for Plugins\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "snapshot testing plugin",
+    "parameter state snapshot",
+    "UI snapshot testing"
+  ],
+  "sources": [
+    "Testing blogs"
+  ]
+}

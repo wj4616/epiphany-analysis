@@ -1,0 +1,56 @@
+{
+  "id": "bridge_filter-character",
+  "category": "filter-character",
+  "parameters": ["filter_cutoff", "filter_resonance"],
+  "intent_mappings": {
+    "warm": {
+      "parameter": "filter_cutoff",
+      "value_range": [0.2, 0.4],
+      "typical_default": 0.3,
+      "confidence": 0.75,
+      "source": "sound-design_genre-techniques_ambient",
+      "why": "Lower cutoff frequencies emphasize low-mid harmonics, reducing harsh high frequency content"
+    },
+    "bright": {
+      "parameter": "filter_cutoff",
+      "value_range": [0.6, 1.0],
+      "typical_default": 0.8,
+      "confidence": 0.85,
+      "source": "sound-design_synthesis-types_subtractive",
+      "why": "Higher cutoff allows more high frequency harmonics through for brilliance"
+    },
+    "dark": {
+      "parameter": "filter_cutoff",
+      "value_range": [0.1, 0.25],
+      "typical_default": 0.15,
+      "confidence": 0.80,
+      "source": "sound-design_genre-techniques_ambient",
+      "why": "Very low cutoff removes most high frequencies for muffled character"
+    },
+    "sharp": {
+      "parameter": "filter_resonance",
+      "value_range": [0.5, 0.8],
+      "typical_default": 0.65,
+      "confidence": 0.70,
+      "source": "sound-design_filters_resonance",
+      "why": "Higher resonance emphasizes cutoff frequency for piercing character"
+    }
+  },
+  "anti_patterns": [
+    "High resonance (>0.5) with very low cutoff (<0.15) — creates harsh whistle",
+    "Very low cutoff (<0.1) loses fundamental frequency"
+  ],
+  "combinations": [
+    {
+      "with": "bridge_saturation-character",
+      "result": "warm + gritty",
+      "parameter_adjustments": {
+        "filter_resonance": [0.1, 0.2]
+      },
+      "confidence_modifier": 0.85
+    }
+  ],
+  "status": "seeded",
+  "version": "1.0.0",
+  "created_from": "research"
+}

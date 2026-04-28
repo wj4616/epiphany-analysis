@@ -1,0 +1,28 @@
+{
+  "title": "CMake add_executable Command",
+  "description": "CMake command to add executable targets to a project, essential for building audio plugin hosts and standalone applications",
+  "source": "cmake.org",
+  "harvested_at": "2026-03-29T06:05:16.079801",
+  "kb_type": "build",
+  "audio_relevance": 8,
+  "difficulty": "beginner",
+  "markdown": "# add_executable\n\nAdd an executable to the project using the specified source files.\n\n## Normal Executables\n\n```cmake\nadd_executable(<name> [<options>...] <sources>...)\n```\n\nAdd an executable target called `<name>` to be built from the source files listed.\n\n### Options\n\n- **WIN32** - Set the WIN32_EXECUTABLE target property for Windows GUI applications\n- **MACOSX_BUNDLE** - Set the MACOSX_BUNDLE target property for macOS app bundles\n- **EXCLUDE_FROM_ALL** - Exclude from default build target\n\n## JUCE Audio Application Example\n\n```cmake\n# Standalone audio application\nadd_executable(MySynth\n    MySynth.cpp\n    MySynthEditor.cpp\n)\n\ntarget_link_libraries(MySynth\n    PRIVATE\n        juce::juce_audio_utils\n        juce::juce_audio_processors\n)\n```\n\n## Generator Expressions\n\nSource arguments may use generator expressions:\n\n```cmake\nadd_executable(MyPlugin\n    $<$<PLATFORM_ID:Windows>:PlatformSpecificWindows.cpp>\n    $<$<PLATFORM_ID:MacOS>:PlatformSpecificMac.cpp>\n)\n```\n\n## Audio Development Context\n\nFor JUCE audio plugins:\n- Use `add_executable` for standalone/plugin host applications\n- Use `add_library` (MODULE) for VST3/AU plugins\n- Configure output directories with `CMAKE_RUNTIME_OUTPUT_DIRECTORY`",
+  "implementation_examples": [
+    {
+      "title": "JUCE Standalone Application",
+      "code": "add_executable(MyAudioApp\n    Source/Main.cpp\n    Source/AudioEngine.cpp\n)\n\ntarget_link_libraries(MyAudioApp\n    PRIVATE\n        juce::juce_audio_utils\n        juce::juce_gui_basics\n)"
+    }
+  ],
+  "tags": [
+    "cmake",
+    "executable",
+    "build",
+    "target",
+    "juce"
+  ],
+  "related_topics": [
+    "add_library",
+    "target_link_libraries",
+    "target_include_directories"
+  ]
+}

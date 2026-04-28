@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0.0",
+  "last_updated": "2026-04-02",
+  "playbook": "creative-vst-plugin-development",
+  "layers": {
+    "technical-kb": {
+      "entry_count": 2,
+      "harvested_count": 2,
+      "curated_count": 0,
+      "topics": ["cpp-audio", "juce-patterns", "dsp-algorithms", "audio-thread-safety", "cmake-build", "vst3-sdk", "parameter-management", "state-persistence"],
+      "authority_score": 0.95
+    },
+    "sound-design-kb": {
+      "entry_count": 0,
+      "harvested_count": 0,
+      "curated_count": 0,
+      "topics": ["synthesis-theory", "oscillator-design", "filter-design", "modulation", "effects", "psychedelic", "ambient", "pad", "creative", "psybient", "presets"],
+      "authority_score": 0.85,
+      "bridge_count": 7
+    },
+    "ui-ux-kb": {
+      "entry_count": 0,
+      "harvested_count": 0,
+      "curated_count": 0,
+      "topics": ["visual-standards", "control-layout", "knobs", "sliders", "meters", "theming", "lookandfeel", "accessibility"],
+      "authority_score": 0.80
+    },
+    "commercial-kb": {
+      "entry_count": 3,
+      "harvested_count": 3,
+      "curated_count": 0,
+      "topics": ["marketplaces", "licensing", "pricing", "marketing", "anti-piracy", "distribution", "business-planning"],
+      "authority_score": 0.75
+    },
+    "reference-kb": {
+      "entry_count": 3,
+      "harvested_count": 3,
+      "curated_count": 0,
+      "topics": ["textbooks", "academic-papers", "official-docs", "tutorials", "videos", "community"],
+      "authority_score": 1.00
+    },
+    "failure-modes-kb": {
+      "entry_count": 2,
+      "harvested_count": 2,
+      "curated_count": 0,
+      "topics": ["audio-thread", "parameters", "signal"],
+      "authority_score": 0.90
+    }
+  },
+  "cross_layer_mappings": {
+    "bridge_entries": 7,
+    "failure_mode_references": 2
+  },
+  "status_summary": {
+    "placeholder": 0,
+    "harvested": 10,
+    "curated": 0,
+    "synced": 0
+  }
+}

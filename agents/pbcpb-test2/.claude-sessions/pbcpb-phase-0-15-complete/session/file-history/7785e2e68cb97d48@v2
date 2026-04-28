@@ -1,0 +1,8 @@
+# Artifact Manifest — update at every phase gate
+
+| File | Phase | Status | Summary |
+|------|-------|--------|---------|
+| README.md | 0 | Created | Project structure initialized |
+| decisions-ledger.md | 0 | Created | Configuration documented |
+| artifact-manifest.md | 0 | Created | Tracking file initialized |
+| metrics-tracker.md | 0 | Created | Tracking file initialized |

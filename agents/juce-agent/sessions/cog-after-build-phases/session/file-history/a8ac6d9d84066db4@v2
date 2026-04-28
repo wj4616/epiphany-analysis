@@ -1,0 +1,71 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+#include <juce_dsp/juce_dsp.h>
+
+namespace CogDSP
+{
+
+// TextureBodyDetector - Detect texture vs body content in audio
+// Routing stage: envelope followers for transient/body detection
+// Modulation source: spectral flux for tonal changes
+class TextureBodyDetector
+{
+public:
+    TextureBodyDetector() = default;
+    ~TextureBodyDetector() = default;
+
+    void prepare(double sampleRate, int samplesPerBlock);
+    void process(const float* input, int numSamples);
+    void reset();
+
+    // Get smoothed texture coefficient (0-1)
+    // 0 = body content, 1 = texture/transient content
+    float getTextureCoefficient() const { return smoothedTextureCoeff.getCurrentValue(); }
+
+    // Get current path gains for routing
+    // Both have minimum 5% bleed to prevent silent dead zones
+    float getPathAGain() const { return pathAGain; }
+    float getPathBGain() const { return pathBGain; }
+
+    // Get spectral flux for modulation system
+    float getSpectralFlux() const { return spectralFlux; }
+
+    // Set sensitivity (0-1) - controls how responsive detector is
+    void setSensitivity(float sens) { sensitivity = std::clamp(sens, 0.0f, 1.0f); }
+
+private:
+    void updateEnvelopes(const float* input, int numSamples);
+    void computeSpectralFlux(const float* input, int numSamples);
+
+    // Envelope follower state
+    float fastEnvelope = 0.0f;   // 2ms attack, 80ms release
+    float slowEnvelope = 0.0f;   // 80ms attack, 400ms release
+    float rawTextureCoeff = 0.0f;
+
+    // Smoothed values
+    juce::SmoothedValue<float> smoothedTextureCoeff;
+    float pathAGain = 0.5f;  // Texture path gain
+    float pathBGain = 0.5f;  // Body path gain
+
+    // Spectral flux for modulation
+    std::unique_ptr<juce::dsp::FFT> fft;
+    std::vector<float> previousMagnitude;
+    float spectralFlux = 0.0f;
+    int fftHopCounter = 0;
+    int fftSize = 1024;
+
+    // Parameters
+    double sampleRate = 44100.0;
+    float sensitivity = 0.5f;
+
+    // Envelope time constants (calculated in prepare)
+    float fastAttackCoeff = 0.0f;
+    float fastReleaseCoeff = 0.0f;
+    float slowAttackCoeff = 0.0f;
+    float slowReleaseCoeff = 0.0f;
+    float smoothingCoeff = 0.0f;
+};
+
+} // namespace CogDSP

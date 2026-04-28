@@ -1,0 +1,68 @@
+{
+  "id": "sound-design-kb_techniques_synth-bass-design",
+  "kb": "sound-design-kb",
+  "topic": "techniques",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "A good synth bass needs:",
+  "concepts": [
+    {
+      "name": "Attack",
+      "description": "0-5ms (instant for punch)",
+      "related": []
+    },
+    {
+      "name": "Decay",
+      "description": "100-300ms (tight decay)",
+      "related": []
+    },
+    {
+      "name": "Sustain",
+      "description": "30-50% (sustained body)",
+      "related": []
+    },
+    {
+      "name": "Release",
+      "description": "50-200ms (clean release)",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Typical bass oscillator setup\nosc1.setWaveform(Oscillator::sawWave);  // Main tone\nosc2.setWaveform(Oscillator::squareWave); // Add body\nosc2.setDetune(-7); // Slight detune for width\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "void SynthBassVoice::renderNextBlock(AudioBuffer<float>& buffer, int startSample, int numSamples)\n{\n    // Main oscillator\n    osc1.setFrequency(baseFreq);\n    float* channelData = buffer.getWritePointer(0, startSample);\n    \n    for (int i = 0; i < numSamples; ++i)\n    {\n        channelData[i] = osc1.process() + osc2.process();\n        channelData[i] *= adsr.getNextSample();\n    }\n}\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Synth Bass Sound Design\n\n## Core Elements\n\nA good synth bass needs:\n\n1. **Strong fundamental** - Use saw or square waves for rich harmonics\n2. **Tight envelope** - Short decay on filter for punch\n3. **Mono compatibility** - Always check in mono\n\n## Oscillator Configuration\n\n```cpp\n// Typical bass oscillator setup\nosc1.setWaveform(Oscillator::sawWave);  // Main tone\nosc2.setWaveform(Oscillator::squareWave); // Add body\nosc2.setDetune(-7); // Slight detune for width\n```\n\n## Filter Envelope\n\n- **Attack**: 0-5ms (instant for punch)\n- **Decay**: 100-300ms (tight decay)\n- **Sustain**: 30-50% (sustained body)\n- **Release**: 50-200ms (clean release)\n\n## Common Bass Types\n\n### Sub Bass\n- Single sine or triangle wave\n- Minimal filtering\n- Focus on fundamental\n- Use sparingly (can muddy mix)\n\n### Reese Bass\n- Multiple detuned saw waves\n- Low-pass filter with resonance\n- LFO on filter cutoff\n- Mono for power, stereo for width\n\n### 808-style Bass\n- Sine wave with pitch envelope\n- Long sustain\n- Distortion for harmonics\n- Key to trap and hip-hop\n\n## Mixing Tips\n\n1. High-pass everything else above 80-100Hz\n2. Compress with fast attack (1-5ms)\n3. Sidechain to kick drum\n4. Check in mono - bass should be centered\n\n## JUCE Implementation\n\n```cpp\nvoid SynthBassVoice::renderNextBlock(AudioBuffer<float>& buffer, int startSample, int numSamples)\n{\n    // Main oscillator\n    osc1.setFrequency(baseFreq);\n    float* channelData = buffer.getWritePointer(0, startSample);\n    \n    for (int i = 0; i < numSamples; ++i)\n    {\n        channelData[i] = osc1.process() + osc2.process();\n        channelData[i] *= adsr.getNextSample();\n    }\n}\n```",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.820900+00:00"
+  },
+  "title": "Synth Bass Sound Design",
+  "description": "Techniques for creating bass sounds in synthesizers",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "sound-design",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "implementation_examples": 1,
+  "tags": [
+    "bass",
+    "synthesis",
+    "oscillator",
+    "filter",
+    "envelope"
+  ],
+  "related_topics": [
+    "parameters",
+    "dsp",
+    "audio_processing"
+  ]
+}

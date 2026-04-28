@@ -1,0 +1,201 @@
+{
+  "id": "sound-design-kb_techniques_fm-synthesis-sound-design",
+  "kb": "sound-design-kb",
+  "topic": "techniques",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "FM (Frequency Modulation) synthesis creates complex harmonic content by using one oscillator to modulate the frequency of another. Developed by John Chowning at Stanford in the 1960s, it powers classic synthesizers like the Yamaha DX7.",
+  "concepts": [
+    {
+      "name": "Carrier",
+      "description": "The oscillator that produces the audible output",
+      "related": []
+    },
+    {
+      "name": "Modulator",
+      "description": "The oscillator that modulates the carrier's frequency",
+      "related": []
+    },
+    {
+      "name": "Algorithm",
+      "description": "The routing configuration between operators",
+      "related": []
+    },
+    {
+      "name": "Low (<1)",
+      "description": "Subtle vibrato",
+      "related": []
+    },
+    {
+      "name": "Medium (1-5)",
+      "description": "Rich harmonics, bell-like",
+      "related": []
+    },
+    {
+      "name": "High (>5)",
+      "description": "Noise-like, inharmonic",
+      "related": []
+    },
+    {
+      "name": "Aliasing",
+      "description": "High modulation indices can cause aliasing. Use oversampling or limit modulation.",
+      "related": []
+    },
+    {
+      "name": "CPU Cost",
+      "description": "FM is efficient, but many operators add up. Start simple.",
+      "related": []
+    },
+    {
+      "name": "Tuning",
+      "description": "Non-integer ratios can sound out of tune. Use harmonic ratios for melodic sounds.",
+      "related": []
+    },
+    {
+      "name": "Envelopes",
+      "description": "FM needs envelope control on modulators too, not just carriers.",
+      "related": []
+    },
+    {
+      "name": "1:1",
+      "description": "- Harmonic series (saw-like)",
+      "related": []
+    },
+    {
+      "name": "2:1",
+      "description": "- Octave harmonics",
+      "related": []
+    },
+    {
+      "name": "3:1",
+      "description": "- Fifth harmonics",
+      "related": []
+    },
+    {
+      "name": "Non-integer",
+      "description": "- Inharmonic (bells, metallic)",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "class FMSynth\n{\npublic:\n    FMSynth()\n    {\n        carrier.setFrequency(440.0f);\n        modulator.setFrequency(440.0f);  // Often same or ratio\n        modulationIndex = 1.0f;\n        \n        // Envelopes\n        carrierEnv.setAttack(10);   // 10ms\n        carrierEnv.setDecay(100);\n        carrierEnv.setSustain(0.7f);\n        carrierEnv.setRelease(200);\n        \n        modulatorEnv.setAttack(5);\n        modulatorEnv.setDecay(50);\n        modulatorEnv.setSustain(0.5f);\n        modulatorEnv.setRelease(100);\n    }\n    \n    void noteOn(int midiNote, float velocity)\n    {\n        float freq = MidiMessage::getMidiNoteInHertz(midiNote);\n        carrier.setFrequency(freq);\n        modulator.setFrequency(freq * modulatorRatio);\n        \n        carrierEnv.noteOn();\n        modulatorEnv.noteOn();\n        \n        currentVelocity = velocity;\n    }\n    \n    float process()\n    {\n        // Modulator output\n        float modSig = modulator.process() * modulatorEnv.getNextSample();\n        \n        // Apply FM: carrier freq is modulated by modulator\n        carrier.setFrequency(baseFreq + modSig * modulationIndex);\n        \n        // Carrier output\n        return carrier.process() * carrierEnv.getNextSample() * currentVelocity;\n    }\n    \nprivate:\n    Oscillator carrier;\n    Oscillator modulator;\n    ADSR carrierEnv;\n    ADSR modulatorEnv;\n    float modulationIndex = 1.0f;\n    float modulatorRatio = 1.0f;\n    float baseFreq = 440.0f;\n    float currentVelocity = 1.0f;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Algorithm: Modulator \u2192 Carrier\nmodulatorRatio = 14.0f;      // Slightly detuned from carrier\nmodulationIndex = 1.5f;      // Moderate brightness\ncarrierEnv.setAttack(1);     // Instant\ncarrierEnv.setDecay(100);    // Medium decay\nmodulatorEnv.setDecay(200);  // Longer than carrier\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Non-integer ratio for inharmonic spectrum\nmodulatorRatio = 1.4f;       // Creates metallic character\nmodulationIndex = 3.0f;     // Bright\nmodulatorEnv.setDecay(2000); // Long decay\ncarrierEnv.setDecay(3000);   // Very long\nmodulatorEnv.setSustain(0);  // No sustain\ncarrierEnv.setSustain(0);    // Pure decay\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Suboctave modulator for strong fundamental\nmodulatorRatio = 0.5f;      // Suboctave\nmodulationIndex = 5.0f;     // Strong\nmodulatorEnv.setDecay(100); // Tight\ncarrierEnv.setDecay(150);\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Bright and expressive\nmodulatorRatio = 1.0f;      // Same frequency\nmodulationIndex = 2.0f;     // Moderate brightness\nmodulatorEnv.setAttack(50); // Slight attack for expression\ncarrierEnv.setAttack(20);\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Layered FM for richness\n// Stack multiple carrier-modulator pairs\n// Use slow envelopes\nmodulatorRatio = 1.0f;\nmodulationIndex = 1.0f;\ncarrierEnv.setAttack(500);   // Slow\nmodulatorEnv.setAttack(300);\ncarrierEnv.setRelease(2000);\n",
+      "preserved": true
+    },
+    {
+      "language": "text",
+      "code": "Modulator \u2192 Carrier \u2192 Output\n",
+      "preserved": true
+    },
+    {
+      "language": "text",
+      "code": "Modulator \u2192 Carrier 1 \u2192 Output\n          \u2198 Carrier 2 \u2192 Output\n",
+      "preserved": true
+    },
+    {
+      "language": "text",
+      "code": "Mod2 \u2192 Mod1 \u2192 Carrier \u2192 Output\n",
+      "preserved": true
+    },
+    {
+      "language": "text",
+      "code": "Modulator \u2190 (feedback) \u2510\n    \u2193                  \u2502\nCarrier \u2192 Output \u2500\u2500\u2500\u2500\u2500\u2500\u2518\n",
+      "preserved": true
+    },
+    {
+      "language": "text",
+      "code": "Mod1 \u2192 Carrier 1 \u2192 Output\nMod2 \u2192 Carrier 2 \u2192 Output\n    \u2198 Carrier 3 \u2192 Output\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Self-modulation creates noise and harmonics\nfloat feedback = 0.5f;  // 0-1 range\nmodulator.setFeedback(feedback);\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Phase modulation (used in many synths)\ncarrier.phase += modulator.process() * pmIndex;\n// FM\ncarrier.setFrequency(baseFreq + modulator.process() * fmIndex);\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Map velocity to modulation index\nmodulationIndex = baseModIndex * (0.5f + velocity * 0.5f);\n// Higher velocity = brighter sound\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Change algorithm based on velocity or controller\nvoid setAlgorithm(int algorithm) {\n    switch (algorithm) {\n        case 0: // Simple FM\n            routing = {{mod, carrier}};\n            break;\n        case 1: // Parallel\n            routing = {{mod, carrier1}, {mod, carrier2}};\n            break;\n    }\n}\n",
+      "preserved": true
+    }
+  ],
+  "references": [
+    {
+      "title": "EDMProd FM Synthesis Guide",
+      "url": "https://www.edmprod.com/fm-synthesis/",
+      "domain": "www.edmprod.com"
+    },
+    {
+      "title": "Practical Music Production FM Guide",
+      "url": "https://www.practical-music-production.com/fm-synthesis-guide/",
+      "domain": "www.practical-music-production.com"
+    },
+    {
+      "title": "iZotope Simple FM Synthesis",
+      "url": "https://www.izotope.com/en/learn/simple-fm-synthesis-sine-waves-and-processors.html",
+      "domain": "www.izotope.com"
+    }
+  ],
+  "original_markdown": "# FM Synthesis Sound Design\n\n## Overview\n\nFM (Frequency Modulation) synthesis creates complex harmonic content by using one oscillator to modulate the frequency of another. Developed by John Chowning at Stanford in the 1960s, it powers classic synthesizers like the Yamaha DX7.\n\n## Core Concepts\n\n### Operators\n- **Carrier**: The oscillator that produces the audible output\n- **Modulator**: The oscillator that modulates the carrier's frequency\n- **Algorithm**: The routing configuration between operators\n\n### Harmonic Ratios\nThe frequency relationship between modulator and carrier determines the harmonic spectrum:\n- **1:1** - Harmonic series (saw-like)\n- **2:1** - Octave harmonics\n- **3:1** - Fifth harmonics\n- **Non-integer** - Inharmonic (bells, metallic)\n\n### Modulation Index\nControls the amount of frequency modulation (modulator amplitude \u00d7 modulator frequency):\n- **Low (<1)**: Subtle vibrato\n- **Medium (1-5)**: Rich harmonics, bell-like\n- **High (>5)**: Noise-like, inharmonic\n\n## Basic FM Implementation\n\n```cpp\nclass FMSynth\n{\npublic:\n    FMSynth()\n    {\n        carrier.setFrequency(440.0f);\n        modulator.setFrequency(440.0f);  // Often same or ratio\n        modulationIndex = 1.0f;\n        \n        // Envelopes\n        carrierEnv.setAttack(10);   // 10ms\n        carrierEnv.setDecay(100);\n        carrierEnv.setSustain(0.7f);\n        carrierEnv.setRelease(200);\n        \n        modulatorEnv.setAttack(5);\n        modulatorEnv.setDecay(50);\n        modulatorEnv.setSustain(0.5f);\n        modulatorEnv.setRelease(100);\n    }\n    \n    void noteOn(int midiNote, float velocity)\n    {\n        float freq = MidiMessage::getMidiNoteInHertz(midiNote);\n        carrier.setFrequency(freq);\n        modulator.setFrequency(freq * modulatorRatio);\n        \n        carrierEnv.noteOn();\n        modulatorEnv.noteOn();\n        \n        currentVelocity = velocity;\n    }\n    \n    float process()\n    {\n        // Modulator output\n        float modSig = modulator.process() * modulatorEnv.getNextSample();\n        \n        // Apply FM: carrier freq is modulated by modulator\n        carrier.setFrequency(baseFreq + modSig * modulationIndex);\n        \n        // Carrier output\n        return carrier.process() * carrierEnv.getNextSample() * currentVelocity;\n    }\n    \nprivate:\n    Oscillator carrier;\n    Oscillator modulator;\n    ADSR carrierEnv;\n    ADSR modulatorEnv;\n    float modulationIndex = 1.0f;\n    float modulatorRatio = 1.0f;\n    float baseFreq = 440.0f;\n    float currentVelocity = 1.0f;\n};\n```\n\n## Sound Design Recipes\n\n### Electric Piano (DX7-style)\n```cpp\n// Algorithm: Modulator \u2192 Carrier\nmodulatorRatio = 14.0f;      // Slightly detuned from carrier\nmodulationIndex = 1.5f;      // Moderate brightness\ncarrierEnv.setAttack(1);     // Instant\ncarrierEnv.setDecay(100);    // Medium decay\nmodulatorEnv.setDecay(200);  // Longer than carrier\n```\n\n### Bell\n```cpp\n// Non-integer ratio for inharmonic spectrum\nmodulatorRatio = 1.4f;       // Creates metallic character\nmodulationIndex = 3.0f;     // Bright\nmodulatorEnv.setDecay(2000); // Long decay\ncarrierEnv.setDecay(3000);   // Very long\nmodulatorEnv.setSustain(0);  // No sustain\ncarrierEnv.setSustain(0);    // Pure decay\n```\n\n### Bass\n```cpp\n// Suboctave modulator for strong fundamental\nmodulatorRatio = 0.5f;      // Suboctave\nmodulationIndex = 5.0f;     // Strong\nmodulatorEnv.setDecay(100); // Tight\ncarrierEnv.setDecay(150);\n```\n\n### Lead\n```cpp\n// Bright and expressive\nmodulatorRatio = 1.0f;      // Same frequency\nmodulationIndex = 2.0f;     // Moderate brightness\nmodulatorEnv.setAttack(50); // Slight attack for expression\ncarrierEnv.setAttack(20);\n```\n\n### Pad\n```cpp\n// Layered FM for richness\n// Stack multiple carrier-modulator pairs\n// Use slow envelopes\nmodulatorRatio = 1.0f;\nmodulationIndex = 1.0f;\ncarrierEnv.setAttack(500);   // Slow\nmodulatorEnv.setAttack(300);\ncarrierEnv.setRelease(2000);\n```\n\n## Multi-Operator Algorithms\n\n### Algorithm 1: Simple FM\n```\nModulator \u2192 Carrier \u2192 Output\n```\n\n### Algorithm 2: Parallel Carriers\n```\nModulator \u2192 Carrier 1 \u2192 Output\n          \u2198 Carrier 2 \u2192 Output\n```\n\n### Algorithm 3: Series FM\n```\nMod2 \u2192 Mod1 \u2192 Carrier \u2192 Output\n```\n\n### Algorithm 4: Feedback FM\n```\nModulator \u2190 (feedback) \u2510\n    \u2193                  \u2502\nCarrier \u2192 Output \u2500\u2500\u2500\u2500\u2500\u2500\u2518\n```\n\n### Algorithm 5: Complex\n```\nMod1 \u2192 Carrier 1 \u2192 Output\nMod2 \u2192 Carrier 2 \u2192 Output\n    \u2198 Carrier 3 \u2192 Output\n```\n\n## FM in Popular Synths\n\n| Synth | FM Implementation |\n|-------|-------------------|\n| Yamaha DX7 | 6 operators, 32 algorithms |\n| Native Instruments FM8 | 8 operators, flexible routing |\n| Ableton Operator | 4 operators, algorithm editor |\n| Vital/Phase Plant | FM from oscillator menu |\n| Serum | Warp menu \u2192 FM (from B) |\n\n## Advanced Techniques\n\n### Feedback\n```cpp\n// Self-modulation creates noise and harmonics\nfloat feedback = 0.5f;  // 0-1 range\nmodulator.setFeedback(feedback);\n```\n\n### Phase Modulation vs FM\n```cpp\n// Phase modulation (used in many synths)\ncarrier.phase += modulator.process() * pmIndex;\n// FM\ncarrier.setFrequency(baseFreq + modulator.process() * fmIndex);\n```\n\n### Velocity Mapping\n```cpp\n// Map velocity to modulation index\nmodulationIndex = baseModIndex * (0.5f + velocity * 0.5f);\n// Higher velocity = brighter sound\n```\n\n### Dynamic Algorithms\n```cpp\n// Change algorithm based on velocity or controller\nvoid setAlgorithm(int algorithm) {\n    switch (algorithm) {\n        case 0: // Simple FM\n            routing = {{mod, carrier}};\n            break;\n        case 1: // Parallel\n            routing = {{mod, carrier1}, {mod, carrier2}};\n            break;\n    }\n}\n```\n\n## Common Pitfalls\n\n1. **Aliasing**: High modulation indices can cause aliasing. Use oversampling or limit modulation.\n2. **CPU Cost**: FM is efficient, but many operators add up. Start simple.\n3. **Tuning**: Non-integer ratios can sound out of tune. Use harmonic ratios for melodic sounds.\n4. **Envelopes**: FM needs envelope control on modulators too, not just carriers.\n\n## References\n\n- [EDMProd FM Synthesis Guide](https://www.edmprod.com/fm-synthesis/)\n- [Practical Music Production FM Guide](https://www.practical-music-production.com/fm-synthesis-guide/)\n- [iZotope Simple FM Synthesis](https://www.izotope.com/en/learn/simple-fm-synthesis-sine-waves-and-processors.html)",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.823937+00:00"
+  },
+  "title": "FM Synthesis Sound Design",
+  "description": "Frequency modulation synthesis techniques for complex harmonic sounds",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "sound-design",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "implementation_examples": 5,
+  "tags": [
+    "fm",
+    "synthesis",
+    "operator",
+    "carrier",
+    "modulator",
+    "algorithm"
+  ],
+  "related_topics": [
+    "oscillator",
+    "envelope",
+    "filter",
+    "dsp"
+  ]
+}

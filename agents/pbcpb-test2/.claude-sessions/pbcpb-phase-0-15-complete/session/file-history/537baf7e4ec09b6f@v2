@@ -1,0 +1,16 @@
+{
+  "id": "technical_testing_pluginval-validation",
+  "kb": "technical",
+  "topic": "testing",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Plugin Validation with pluginval",
+  "summary": "Placeholder: Using pluginval to verify plugin compliance and thread safety.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["testing", "pluginval", "validation", "compliance"],
+  "related_topics": ["testing", "realtime-safety"],
+  "difficulty": "beginner",
+  "domain_relevance": 9
+}

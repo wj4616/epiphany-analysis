@@ -1,0 +1,207 @@
+# JUCE VST Business Playbook
+
+**Version:** 1.0.0
+**Created:** 2026-04-02
+**Status:** Approved for Pilot Testing
+
+---
+
+## Overview
+
+This playbook provides a comprehensive 17-phase workflow for developing VST3 audio plugins using JUCE and distributing them commercially. It integrates with the superpowers skills system for structured execution.
+
+## Purpose
+
+To guide single developers working with AI assistants through the complete process of:
+- Designing and building VST3 audio plugins
+- Creating knowledge bases for sound design translation
+- Preparing plugins for commercial distribution
+- Managing licensing, marketplace listings, and marketing
+
+## Problem Being Solved
+
+The VST plugin marketplace in 2026 is saturated with uninspired, overpriced products that lack creative ambition. Most plugins copy existing designs rather than exploring novel sonic territory. Meanwhile, the tools to build creative alternatives (JUCE, C++, AI coding assistants) have become accessible to solo developers. This playbook enables an enthusiast developer to create genuinely creative, high-quality plugins and bring them to market at consumer-friendly price points — competing on imagination rather than budget.
+
+## Target User
+
+| Skill Area | Level |
+|------------|-------|
+| Python/JavaScript | Strong |
+| General programming | Strong |
+| VST usage (musician) | Strong |
+| C++ theory | Basic (knows concepts, not fluent) |
+| Sound design fundamentals | Basic |
+| JUCE framework | None |
+| DSP algorithm implementation | None |
+| Commercial plugin distribution | None |
+
+**AI Tooling:** Claude Code ($200/month plan maximum), multiple sessions per feature
+
+**Platform:** Linux Mint, REAPER for DAW testing
+
+## Workflow Model
+
+**Human-in-the-Loop:**
+- Human makes creative decisions
+- Human provides perceptual testing (DAW testing, sound quality)
+- Human approves all gates
+- AI implements, researches, and synthesizes
+
+## Roles
+
+| Role | Description | Appears In |
+|------|-------------|------------|
+| Human | Creative director, final decision-maker, perceptual tester | Phases 0, 1, 7, 9, 10, 11, 12, 13 |
+| Coordinator | Process manager, gate verification, status tracking | All phases |
+| Builder | Code implementation, testing, building | Phases 3, 4, 5, 6, 7, 8, 10, 13 |
+| Architect | Design, planning, architecture | Phases 2, 4, 5, 6 |
+
+## Phases
+
+| Phase | Name | Skill | Description |
+|-------|------|-------|-------------|
+| 0 | Commission & Scoping | brainstorming | Define purpose, scope, constraints |
+| 1 | Domain Research | brainstorming | Research domain, best practices |
+| 2 | KB Architecture | writing-plans | Design knowledge base structure |
+| 3 | KB Bootstrapping | execute-plans | Create KB entries and schemas |
+| 4 | Process Architecture | writing-plans | Design phase structure, tasks, gates |
+| 5 | Role Engineering | execute-plans | Define roles, handoffs, escalation |
+| 6 | Task Engineering | execute-plans | Write detailed task descriptions |
+| 7 | Output Configuration | execute-plans | Define workflow, usage, compilation |
+| 8 | Metrics & KPI | execute-plans | Define process and quality metrics |
+| 9 | JSON Assembly | execute-plans | Assemble complete playbook JSON |
+| 10 | JSON Validation | execute-plans | Validate JSON syntax and schema |
+| 11 | Quality Audit | execute-plans | Gap analysis and completeness |
+| 12 | Stress Testing | execute-plans | Test edge cases and error recovery |
+| 13 | Stakeholder Review | none | Human approval |
+| 14 | Documentation | execute-plans | Create README, tag version |
+| 15 | Continuous Improvement | brainstorming | Review and improve after runs |
+
+## Knowledge Base Architecture
+
+### Layers
+
+| Layer | Authority | Description |
+|-------|-----------|-------------|
+| technical | 0.95 | Factual, verifiable technical knowledge |
+| sound-design | 0.70 | Sound design with subjective elements |
+| ui-ux | 0.75 | UI/UX combining standards and taste |
+| commercial | 0.60 | Market-dependent commercial knowledge |
+| reference | 0.90 | External authority references |
+
+### Bridge Layer
+
+The bridge layer translates creative language to technical parameters:
+- Authority: 0.50 (requires validation)
+- Categories: filter-character, oscillator-character, envelope-shape, space-depth, saturation-character
+
+## Skills Integration
+
+| Skill | Phases | Purpose |
+|-------|--------|---------|
+| brainstorming | 0, 1, 15 | Creative thinking, specification development |
+| writing-plans | 2 | Create implementation plan from specification |
+| execute-plans | 3-14, 16 | Execute plan with single agent (preferred) |
+| sub-agent-driven-development | optional | Complex multi-agent execution (use sparingly) |
+
+## Cross-Cutting Concerns
+
+1. Real-Time Safety (Phases 4, 5, 8)
+2. Gain Staging (Phases 4, 6, 8)
+3. Parameter Safety (Phases 4, 5, 7)
+4. Preset Integrity (Phases 5, 8, 9)
+5. GUI Responsiveness (Phases 7, 8)
+6. Cross-Platform (Phases 3, 6, 8)
+7. DAW Compatibility (Phases 6, 8, 9)
+8. Performance Profiling (Phases 8, 14)
+9. Security (Phases 10, 11)
+10. Reproducibility (Phases 3, 14)
+
+## Session Strategy
+
+| Session | Phases | Focus |
+|---------|--------|-------|
+| 1 | 0-1 | Commission, Scoping, Research |
+| 2 | 2-3 | KB Architecture, Bootstrapping |
+| 3 | 4-5 | Process Architecture, Role Engineering |
+| 4 | 6-7 | Task Engineering, Output Configuration |
+| 5 | 8-9 | Metrics & KPI, JSON Assembly |
+| 6 | 10-11 | Validation, Quality Audit |
+| 7 | 12-13 | Stress Testing, Stakeholder Review |
+| 8 | 14-15 | Documentation, Continuous Improvement |
+
+## Metrics & KPIs
+
+### Primary KPIs (Must Meet)
+- Gate pass rate (first attempt): ≥85%
+- Build success rate: 100%
+- Test pass rate: 100%
+- Audio thread safety: 100%
+- Human approval: 100%
+
+### Secondary KPIs (Should Meet)
+- Phase duration accuracy: ±25%
+- KB entry compliance: 100%
+- Bridge mapping accuracy: 100%
+
+## File Structure
+
+```
+juce-vst-business-trial2/
+├── README.md                    # This file
+├── playbook.json                # Complete playbook JSON
+├── scope.md                     # Scope definition
+├── constraints.md               # Constraints
+├── success-criteria.md          # Success criteria
+├── decisions-ledger.md          # Decision log
+├── artifact-manifest.md         # File tracking
+├── metrics-tracker.md           # Metrics tracking
+├── output-config.md             # Workflow configuration
+├── metrics-and-kpi.md           # Metrics definitions
+├── research/                    # Domain research
+├── architecture/                # Architecture documents
+├── kb/                          # Knowledge base
+├── drafts/                      # Draft documents
+├── phases/                      # Phase execution guides
+├── validation/                  # Validation reports
+├── audits/                      # Audit reports
+└── approvals/                   # Approval documents
+```
+
+## Getting Started
+
+1. Load this playbook when starting a new VST plugin project
+2. Provide commission brief to Phase 0
+3. Follow phases sequentially
+4. Update decisions-ledger.md at each gate
+5. Update artifact-manifest.md at each gate
+
+## Usage
+
+```
+# Start a new plugin project
+"I want to build a [synthesizer/effect]. Use the JUCE VST Business Playbook."
+
+# Continue from previous session
+"Continue with the JUCE VST Business Playbook from Phase N."
+
+# Resume after interruption
+"Load decisions-ledger.md and continue from last completed phase."
+```
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0.0 | 2026-04-02 | Initial release |
+
+## Notes for Expansion
+
+The following will be expanded during playbook runs:
+- KB layer topics (currently placeholder entries)
+- Bridge layer topics (currently seeded entries)
+- Metrics targets (refined after pilot runs)
+
+## License
+
+This playbook is part of the Playbook Creator Playbook system.

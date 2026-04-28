@@ -1,0 +1,106 @@
+{
+  "id": "juce-kb_patterns_juce-patterns-best-practices",
+  "kb": "juce-kb",
+  "topic": "patterns",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "This reference captures patterns the agent should follow when writing JUCE plugin code. Organized by domain.",
+  "concepts": [
+    {
+      "name": "Hidden allocation:",
+      "description": "`std::unordered_map::find()` can allocate internally via `std::string` key construction \u2014 use `std::vector<std::pair<>>` or flat arrays for audio-thread lookups",
+      "related": []
+    },
+    {
+      "name": "Ramp times:",
+      "description": "A ramp times: concept",
+      "related": []
+    },
+    {
+      "name": "Continuous float params:",
+      "description": "Linear interpolation between preset A and B values",
+      "related": []
+    },
+    {
+      "name": "Frequency params:",
+      "description": "Log-space interpolation (`exp(lerp(log(a), log(b), t))`) \u2014 perceptually even",
+      "related": []
+    },
+    {
+      "name": "Mix/dry-wet params:",
+      "description": "Cosine (equal-power) interpolation",
+      "related": []
+    },
+    {
+      "name": "Choice params (AudioParameterChoice):",
+      "description": "Snap at 50% crossover point \u2014 no intermediate states",
+      "related": []
+    },
+    {
+      "name": "Bool params:",
+      "description": "Not morphed \u2014 hold source value",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "text",
+      "code": "// In processBlock \u2014 read once per block, not per sample\nauto decay = apvts.getRawParameterValue(\"decay\")->load();\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "void getStateInformation(juce::MemoryBlock& destData) override\n{\n    auto state = apvts.copyState();\n    std::unique_ptr<juce::XmlElement> xml(state.createXml());\n    copyXmlToBinary(*xml, destData);\n}\n\nvoid setStateInformation(const void* data, int sizeInBytes) override\n{\n    std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));\n    if (xml != nullptr && xml->hasTagName(apvts.state.getType()))\n        apvts.replaceState(juce::ValueTree::fromXml(*xml));\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "bool isBusesLayoutSupported(const BusesLayout& layouts) const override\n{\n    auto output = layouts.getMainOutputChannelSet();\n    if (output != juce::AudioChannelSet::stereo()) return false;\n    auto input = layouts.getMainInputChannelSet();\n    return input == juce::AudioChannelSet::stereo()\n        || input == juce::AudioChannelSet::mono();\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cmake",
+      "code": "cmake_minimum_required(VERSION 3.22)\nproject(PluginName VERSION 1.0.0)\n\n# Fetch JUCE\ninclude(FetchContent)\nFetchContent_Declare(JUCE\n    GIT_REPOSITORY https://github.com/juce-framework/JUCE.git\n    GIT_TAG 7.0.12)\nFetchContent_MakeAvailable(JUCE)\n\n# Plugin target\njuce_add_plugin(PluginName\n    COMPANY_NAME \"YourCompany\"\n    PLUGIN_MANUFACTURER_CODE Xxxx\n    PLUGIN_CODE Yyyy\n    FORMATS VST3 AU Standalone\n    PRODUCT_NAME \"Plugin Name\"\n    COPY_PLUGIN_AFTER_BUILD TRUE)\n\n# Source files (glob with CONFIGURE_DEPENDS)\nfile(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS\n    \"${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp\"\n    \"${CMAKE_CURRENT_SOURCE_DIR}/src/*.h\")\ntarget_sources(PluginName PRIVATE ${SourceFiles})\n\n# Link JUCE modules\ntarget_link_libraries(PluginName\n    PRIVATE juce::juce_audio_utils juce::juce_dsp\n    PUBLIC juce::juce_recommended_config_flags\n           juce::juce_recommended_lto_flags\n           juce::juce_recommended_warning_flags)\n\n# Compile definitions\ntarget_compile_definitions(PluginName PUBLIC\n    JUCE_VST3_CAN_REPLACE_VST2=0\n    JUCE_WEB_BROWSER=0)\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# JUCE Patterns & Best Practices Reference\n## Compiled from: melatonin.dev, JUCE tutorials, awesome-juce, JUCE docs\n\nThis reference captures patterns the agent should follow when writing JUCE plugin code. Organized by domain.\n\n---\n\n## 1. Audio Thread Safety (CRITICAL)\n\nThese rules are non-negotiable. Violating them causes audio dropouts, crashes, or undefined behavior.\n\n### No heap allocation in processBlock\n- No `new`, `delete`, `malloc`, `std::vector::push_back`, `std::string` construction\n- No `juce::String` construction or manipulation\n- No `DBG()` macro (it allocates)\n- **Hidden allocation:** `std::unordered_map::find()` can allocate internally via `std::string` key construction \u2014 use `std::vector<std::pair<>>` or flat arrays for audio-thread lookups\n- Pre-allocate all buffers in `prepareToPlay()`\n\n### No locks on audio thread\n- No `std::mutex`, `juce::CriticalSection`, `juce::SpinLock` in processBlock\n- Use `std::atomic` for flag communication between threads\n- Use `juce::AbstractFifo` or lock-free queues for data transfer\n\n### No blocking operations\n- No file I/O, network calls, or system calls\n- No `sleep`, `wait`, or condition variable waits\n\n### Denormal protection\n- Always use `juce::ScopedNoDenormals` at the top of processBlock\n- Alternative: `juce::dsp::util::snapToZero()` on individual values\n- Denormals cause 10-100x CPU spikes on x86 processors\n\n### Parameter reading pattern\n```\n// In processBlock \u2014 read once per block, not per sample\nauto decay = apvts.getRawParameterValue(\"decay\")->load();\n```\n\n### SmoothedValue pattern\n- Use `juce::SmoothedValue` for all automatable parameters\n- Reset in `prepareToPlay()`: `smoothed.reset(sampleRate, rampTimeSeconds)`\n- Advance per sample: `smoothed.getNextValue()` \u2014 MUST call every sample\n- Set target from parameter: `smoothed.setTargetValue(newValue)`\n- **Ramp times:**\n  - ~20ms (0.02s) for continuous parameters (gain, frequency, mix) \u2014 prevents zipper noise\n  - ~42ms (0.042s / ~512 samples at 48kHz) for bypass/mode transitions \u2014 prevents click/pop\n  - Snap immediately with `setCurrentAndTargetValue()` only in `prepareToPlay()` or when loading state\n\n---\n\n## 2. Parameter Management (APVTS)\n\n### AudioProcessorValueTreeState setup\n- Define all parameters in `createParameterLayout()` static method\n- Use helper lambdas for repetitive parameter creation\n- Always provide `NormalisableRange` with step size and optional skew\n- Skew < 1.0 gives more resolution at low end (good for frequencies)\n- Skew > 1.0 gives more resolution at high end (rare)\n\n### Parameter callbacks\n- `parameterChanged()` and `parameterValueChanged()` can execute on ANY thread including audio\n- NEVER call `repaint()` from parameter callbacks\n- NEVER use `AsyncUpdater` (not lock-free)\n- Pattern: set an `std::atomic<bool>` flag, check it in a `juce::Timer` callback on the message thread\n- JUCE 7.0.6+: use `juce::VBlankAttachment` instead of Timer for frame-synced repaints\n\n### Parameter ranges for common types\n| Type | Typical range | Skew | Notes |\n|---|---|---|---|\n| Frequency (Hz) | 20\u201320000 | 0.2\u20130.3 | Log-space perception |\n| Gain (dB) | -60 to +24 | 1.0 | Linear in dB is already log-perception |\n| Time (seconds) | 0.001\u201320 | 0.3\u20130.5 | Log-space for musical feel |\n| Resonance (Q) | 0.1\u201340 | 0.3 | Log-space; >30 self-oscillates |\n| Mix (dry/wet) | 0.0\u20131.0 | 1.0 | Use equal-power cosine |\n| Feedback | 0.0\u20130.95 | 0.5 | NEVER allow 1.0; log-space |\n| Semitones | -24 to +24 | 1.0 | Linear |\n| LFO rate | 0.01\u201320 | 0.3 | Log-space |\n| Attack/Release | 0.001\u20132.0 | 0.3 | Log-space; seconds |\n\n---\n\n## 3. State Save/Restore (MANDATORY)\n\nEvery plugin MUST implement `getStateInformation` and `setStateInformation`. Empty stubs mean no DAW session persistence.\n\n### Standard APVTS pattern\n```cpp\nvoid getStateInformation(juce::MemoryBlock& destData) override\n{\n    auto state = apvts.copyState();\n    std::unique_ptr<juce::XmlElement> xml(state.createXml());\n    copyXmlToBinary(*xml, destData);\n}\n\nvoid setStateInformation(const void* data, int sizeInBytes) override\n{\n    std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));\n    if (xml != nullptr && xml->hasTagName(apvts.state.getType()))\n        apvts.replaceState(juce::ValueTree::fromXml(*xml));\n}\n```\n\n### Validation\n- Round-trip test: save state, load state, verify all parameters match\n- Test with DAW save/reopen cycle\n- pluginval tests this automatically\n\n### Preset morphing / interpolation\n- **Continuous float params:** Linear interpolation between preset A and B values\n- **Frequency params:** Log-space interpolation (`exp(lerp(log(a), log(b), t))`) \u2014 perceptually even\n- **Mix/dry-wet params:** Cosine (equal-power) interpolation\n- **Choice params (AudioParameterChoice):** Snap at 50% crossover point \u2014 no intermediate states\n- **Bool params:** Not morphed \u2014 hold source value\n\n---\n\n## 4. Plugin Lifecycle\n\n### prepareToPlay(sampleRate, samplesPerBlock)\n- Allocate all working buffers here\n- Initialize SmoothedValues with `reset(sampleRate, rampTime)`\n- Recalculate all sample-rate-dependent coefficients\n- Call `prepare()` on all DSP modules\n- May be called multiple times (sample rate change, buffer size change)\n\n### processBlock(buffer, midiMessages)\n- `juce::ScopedNoDenormals` first line\n- Handle mono input: copy channel 0 to channel 1\n- Read parameters once per block (or use SmoothedValue per sample)\n- Process audio\n- Never assume buffer size equals samplesPerBlock \u2014 it can vary\n\n### releaseResources()\n- Called when audio stops\n- Free any resources not needed when idle\n- Rarely needs implementation beyond clearing buffers\n\n### getTailLengthSeconds()\n- Must return the maximum tail length (e.g., max decay parameter value for reverbs)\n- DAWs use this to know how long audio persists after input stops\n- If too short: reverb tail cut off when track is muted or bounced\n\n### suspendProcessing(bool)\n- Call `suspendProcessing(true)` before loading heavy resources (IRs, wavetables, large preset data)\n- Call `suspendProcessing(false)` when done\n- Prevents audio thread from calling processBlock during the load\n- The DAW will output silence during suspension\n\n### Custom DSP module lifecycle pattern\n- Define all DSP modules with consistent interface: `prepare(sampleRate, blockSize)`, `reset()`, `process(buffer)`\n- `prepare()`: allocate buffers, compute sample-rate-dependent coefficients\n- `reset()`: zero all delay/filter state (called on transport reset)\n- `process()`: in-place stereo processing, no allocations, no I/O\n\n### Bus layouts\n```cpp\nbool isBusesLayoutSupported(const BusesLayout& layouts) const override\n{\n    auto output = layouts.getMainOutputChannelSet();\n    if (output != juce::AudioChannelSet::stereo()) return false;\n    auto input = layouts.getMainInputChannelSet();\n    return input == juce::AudioChannelSet::stereo()\n        || input == juce::AudioChannelSet::mono();\n}\n```\n\n---\n\n## 5. GUI Patterns\n\n### Component lifecycle\n- Call `setSize(w, h)` LAST in editor constructor, after all children are added\n- Use `addAndMakeVisible()` for all child components\n- Override `resized()` to position children (called when size changes)\n- Override `paint(Graphics& g)` for custom drawing\n\n### Member ordering matters\n- Destructors run in reverse declaration order\n- LookAndFeel objects must be declared BEFORE components that use them\n- Slider attachments must be declared AFTER the slider\n\n### Performance-conscious painting\n- Treat `paint()` like audio thread: minimize allocations\n- Pre-allocate `juce::Path`, `juce::Image`, `juce::ColourGradient` as member variables\n- Use `setBufferedToImage(true)` for expensive static visuals (leaf components only)\n- Use `setOpaque(true)` when component fills its bounds completely (prevents parent repaint)\n- Use `JUCE_ENABLE_REPAINT_DEBUGGING=1` to diagnose unnecessary repaints\n\n### Repaint system\n- `repaint()` doesn't paint immediately \u2014 it flags bounds as dirty\n- OS coalesces dirty regions and triggers actual painting later\n- Calling `repaint()` in a tight loop doesn't cause multiple paints\n- `isShowing()` checks actual visibility; `isVisible()` is just a flag\n\n### Custom LookAndFeel\n- Subclass `juce::LookAndFeel_V4`\n- Override specific draw methods (drawRotarySlider, drawButtonBackground, etc.)\n- For fully custom widgets: paint directly, don't create LookAndFeel classes\n- Don't reinvent `TextEditor` \u2014 it's complex and handles text layout\n\n### Slider configuration\n- `setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag)` for knobs\n- `setTextBoxStyle(juce::Slider::NoTextBox, ...)` to hide text box\n- Use `juce::SliderParameterAttachment` (JUCE 7+) or `juce::AudioProcessorValueTreeState::SliderAttachment`\n\n### JUCE_LIVE_CONSTANT\n- Use `JUCE_LIVE_CONSTANT(value)` for runtime tuning during development\n- Provides a slider UI to adjust values without recompiling\n- Good for: shadow blur, spacing, opacity, color values\n\n---\n\n## 6. CMake Configuration\n\n### Recommended CMakeLists.txt structure\n```cmake\ncmake_minimum_required(VERSION 3.22)\nproject(PluginName VERSION 1.0.0)\n\n# Fetch JUCE\ninclude(FetchContent)\nFetchContent_Declare(JUCE\n    GIT_REPOSITORY https://github.com/juce-framework/JUCE.git\n    GIT_TAG 7.0.12)\nFetchContent_MakeAvailable(JUCE)\n\n# Plugin target\njuce_add_plugin(PluginName\n    COMPANY_NAME \"YourCompany\"\n    PLUGIN_MANUFACTURER_CODE Xxxx\n    PLUGIN_CODE Yyyy\n    FORMATS VST3 AU Standalone\n    PRODUCT_NAME \"Plugin Name\"\n    COPY_PLUGIN_AFTER_BUILD TRUE)\n\n# Source files (glob with CONFIGURE_DEPENDS)\nfile(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS\n    \"${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp\"\n    \"${CMAKE_CURRENT_SOURCE_DIR}/src/*.h\")\ntarget_sources(PluginName PRIVATE ${SourceFiles})\n\n# Link JUCE modules\ntarget_link_libraries(PluginName\n    PRIVATE juce::juce_audio_utils juce::juce_dsp\n    PUBLIC juce::juce_recommended_config_flags\n           juce::juce_recommended_lto_flags\n           juce::juce_recommended_warning_flags)\n\n# Compile definitions\ntarget_compile_definitions(PluginName PUBLIC\n    JUCE_VST3_CAN_REPLACE_VST2=0\n    JUCE_WEB_BROWSER=0)\n```\n\n### Key settings\n- `COPY_PLUGIN_AFTER_BUILD TRUE` \u2014 auto-copies to system plugin directory\n- `juce::juce_recommended_lto_flags` \u2014 enables link-time optimization in Release\n- Use Ninja generator for fastest builds: `cmake -B build -G Ninja`\n- Windows: statically link MSVC runtime to avoid DLL dependency issues\n\n### File globbing\n- Use `CONFIGURE_DEPENDS` \u2014 re-scans when files change\n- Globe `*.cpp` and `*.h` together\n- Acceptable in modern CMake despite historical advice against it\n\n---\n\n## 7. Cross-Platform Considerations\n\n### macOS\n- AU plugins must be in `/Library/Audio/Plug-Ins/Components/` or `~/Library/...`\n- Reset AU cache: `killall -9 AudioComponentRegistrar`\n- Code signing required for distribution (notarization for macOS 10.15+)\n- Apple Silicon: universal binary via `CMAKE_OSX_ARCHITECTURES \"arm64;x86_64\"`\n\n### Windows\n- Statically link MSVC runtime to avoid redistribution issues\n- Code signing required for SmartScreen bypass\n- VST3 path: `C:\\Program Files\\Common Files\\VST3\\`\n\n### Linux\n- VST3 path: `~/.vst3/`\n- May need to install ALSA, JACK, or X11 dev packages\n- Build deps: `sudo apt install libasound2-dev libjack-jackd2-dev libfreetype-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev`\n\n---\n\n## 8. Useful JUCE Utility Classes\n\n| Class | Module | Purpose |\n|---|---|---|\n| `AudioBuffer<float>` | audio_basics | Main audio buffer type |\n| `MidiBuffer` | audio_basics | MIDI event container |\n| `SmoothedValue<float>` | audio_basics | Click-free parameter ramping |\n| `ADSR` | audio_basics | Attack-Decay-Sustain-Release envelope |\n| `AudioProcessorValueTreeState` | audio_processors | Parameter management system |\n| `ValueTree` | data_structures | Hierarchical data storage |\n| `UndoManager` | data_structures | Undo/redo for ValueTree |\n| `File` | core | Cross-platform file access |\n| `Timer` | events | Periodic callback on message thread |\n| `AsyncUpdater` | events | Trigger message-thread callback (NOT lock-free) |\n| `Component` | gui_basics | Base UI element |\n| `Slider` | gui_basics | Rotary/linear knob |\n| `TextButton` | gui_basics | Clickable button |\n| `Label` | gui_basics | Text display |\n| `ComboBox` | gui_basics | Dropdown selector |\n| `LookAndFeel_V4` | gui_basics | UI theme system |\n| `FlexBox` / `Grid` | gui_basics | Responsive layout |\n| `Colour` | graphics | Color representation |\n| `Path` | graphics | Vector graphics path |\n| `Graphics` | graphics | Drawing context |\n\n---\n\n## Sources\n- melatonin.dev/blog/big-list-of-juce-tips-and-tricks/\n- melatonin.dev/blog/how-juce-components-work/\n- melatonin.dev/blog/dealing-with-jank-in-juce/\n- melatonin.dev/blog/how-to-use-cmake-with-juce/\n- juce.com/learn/tutorials/\n- docs.juce.com/master/\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:39.974641+00:00"
+  },
+  "title": "JUCE Patterns & Best Practices Reference",
+  "description": "Comprehensive patterns and best practices for JUCE plugin development including audio thread safety, parameter management, state persistence, and GUI patterns",
+  "source": "harvested",
+  "source_urls": [
+    "melatonin.dev/blog/big-list-of-juce-tips-and-tricks/",
+    "melatonin.dev/blog/how-juce-components-work/",
+    "melatonin.dev/blog/dealing-with-jank-in-juce/",
+    "melatonin.dev/blog/how-to-use-cmake-with-juce/",
+    "juce.com/learn/tutorials/",
+    "docs.juce.com/master/"
+  ],
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "juce",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "implementation_examples": 12,
+  "tags": [
+    "juce",
+    "patterns",
+    "best-practices",
+    "audio-thread",
+    "apvts",
+    "parameters",
+    "gui",
+    "cmake",
+    "cross-platform"
+  ],
+  "related_topics": [
+    "dsp",
+    "audio-processor",
+    "state-management",
+    "thread-safety"
+  ]
+}

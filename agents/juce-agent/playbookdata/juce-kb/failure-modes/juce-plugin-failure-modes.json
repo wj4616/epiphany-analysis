@@ -1,0 +1,81 @@
+{
+  "id": "juce-kb_failure-modes_juce-plugin-failure-modes",
+  "kb": "juce-kb",
+  "topic": "failure-modes",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "Comprehensive database of known failure modes for JUCE VST plugin development. Organized by severity and phase.",
+  "concepts": [
+    {
+      "name": "Symptom:",
+      "description": "Audio dropouts, glitches, occasional crashes",
+      "related": []
+    },
+    {
+      "name": "Cause:",
+      "description": "`new`, `delete`, `std::vector::push_back`, `juce::String`, `DBG()` in processBlock",
+      "related": []
+    },
+    {
+      "name": "Fix:",
+      "description": "Pre-allocate all buffers in `prepareToPlay()`. Use `juce::SmoothedValue` instead of creating objects per sample.",
+      "related": []
+    },
+    {
+      "name": "Prevention:",
+      "description": "Code review checklist item. Run pluginval (tests for this). Consider using `juce::ScopedNoDenormals` as a reminder anchor.",
+      "related": []
+    },
+    {
+      "name": "Detection:",
+      "description": "pluginval strictness level 5+; Perfetto profiling shows allocation stalls",
+      "related": []
+    },
+    {
+      "name": "Epiphany Machine v3:",
+      "description": "FDN delay line buffer was fixed at 16384 samples \u2014 safe up to 96kHz but could overflow at 192kHz with long delays",
+      "related": []
+    },
+    {
+      "name": "Common causes:",
+      "description": "Listener leaks, assertion failures, state round-trip failures, excessive CPU in processBlock",
+      "related": []
+    }
+  ],
+  "code_blocks": [],
+  "references": [],
+  "original_markdown": "# JUCE Plugin Failure Modes & Prevention\n## Compiled from: melatonin.dev, pluginval, awesome-juce, Epiphany Machine v3 session\n\nComprehensive database of known failure modes for JUCE VST plugin development. Organized by severity and phase.\n\n---\n\n## Critical (Crashes, Data Loss, Audio Corruption)\n\n### FM-01: Heap allocation on audio thread\n- **Symptom:** Audio dropouts, glitches, occasional crashes\n- **Cause:** `new`, `delete`, `std::vector::push_back`, `juce::String`, `DBG()` in processBlock\n- **Fix:** Pre-allocate all buffers in `prepareToPlay()`. Use `juce::SmoothedValue` instead of creating objects per sample.\n- **Prevention:** Code review checklist item. Run pluginval (tests for this). Consider using `juce::ScopedNoDenormals` as a reminder anchor.\n- **Detection:** pluginval strictness level 5+; Perfetto profiling shows allocation stalls\n\n### FM-02: Buffer overflow at high sample rates\n- **Symptom:** Crash or memory corruption at 96kHz or 192kHz\n- **Cause:** Fixed-size buffers calculated for 48kHz; delay lines too short for higher rates\n- **Fix:** Scale all buffer sizes by `sampleRate / 48000.0` or use maximum expected rate\n- **Prevention:** Test at 44.1k, 48k, 96k, 192k. Calculate buffer sizes in `prepareToPlay()` from actual sample rate.\n- **Epiphany Machine v3:** FDN delay line buffer was fixed at 16384 samples \u2014 safe up to 96kHz but could overflow at 192kHz with long delays\n\n### FM-03: Empty getStateInformation / setStateInformation\n- **Symptom:** All parameters reset to defaults when DAW session is reopened\n- **Cause:** Forgetting to implement state save/restore (left as stubs)\n- **Fix:** Implement APVTS state serialization (see patterns reference)\n- **Prevention:** Plugin brief template requires state persistence decision. pluginval tests round-trip.\n\n### FM-04: Denormal CPU explosion\n- **Symptom:** CPU spikes to 100% when processing silence or very quiet signals\n- **Cause:** Subnormal floating-point values in feedback loops or filters\n- **Fix:** `juce::ScopedNoDenormals` at top of processBlock. DC offset in FDN feedback path.\n- **Prevention:** Always include `ScopedNoDenormals`. Test by processing 60 seconds of silence and monitoring CPU.\n\n### FM-05: Feedback loop instability\n- **Symptom:** Audio grows to infinity, NaN/Inf in output, loud noise\n- **Cause:** Feedback gain >= 1.0, or accumulation of gain through loop components\n- **Fix:** Clamp feedback to 0.95 max. Add soft clip (`x / (1 + |x|)`) in feedback path. Apply `tanh()` at output.\n- **Prevention:** Never allow feedback parameter to reach 1.0. Always have output limiter.\n\n### FM-06: Dangling listener on editor re-open\n- **Symptom:** Crash when plugin editor is closed and re-opened in DAW\n- **Cause:** `addListener()` called without corresponding `removeListener()` in destructor\n- **Fix:** Every `addListener` / `addChangeListener` must have a matching `remove*` in the destructor\n- **Prevention:** pluginval tests editor open/close cycles. Search for addListener without matching remove.\n- **Detection:** pluginval catches this reliably\n\n### FM-07: Thread safety violation in parameter callback\n- **Symptom:** Intermittent crashes, data races, UI freezes\n- **Cause:** Calling `repaint()`, heavy computation, or non-atomic operations from `parameterChanged()` (which can run on audio thread)\n- **Fix:** Set `std::atomic<bool>` flag in callback, check in `Timer` or `VBlankAttachment`\n- **Prevention:** Never do anything non-trivial in parameter callbacks\n\n---\n\n## Serious (Incorrect Audio, Plugin Rejection)\n\n### FM-08: Missing mono-to-stereo handling\n- **Symptom:** Silent right channel when plugin receives mono input\n- **Cause:** Not copying channel 0 to channel 1 for mono inputs\n- **Fix:** Check `buffer.getNumChannels()` and copy if mono: `buffer.copyFrom(1, 0, buffer, 0, 0, numSamples)`\n- **Prevention:** Always handle mono input in processBlock. Test with mono tracks.\n\n### FM-09: SmoothedValue not advanced per sample\n- **Symptom:** Parameters don't smooth (zipper noise on automation)\n- **Cause:** Calling `getCurrentValue()` instead of `getNextValue()` per sample, or not calling it every sample\n- **Fix:** Call `getNextValue()` exactly once per sample in the processing loop\n- **Prevention:** Code review. Never use `getCurrentValue()` in processBlock.\n\n### FM-10: Coefficients not recalculated on sample rate change\n- **Symptom:** Filters sound wrong after sample rate changes, wrong decay times at different rates\n- **Cause:** Calculating filter coefficients once and not updating in `prepareToPlay()`\n- **Fix:** Recalculate all sample-rate-dependent values in `prepareToPlay()`, which is called on rate changes\n- **Prevention:** All DSP module `prepare()` methods should accept sample rate and recalculate\n\n### FM-11: Click/pop on bypass toggle\n- **Symptom:** Audible click when toggling bypass or switching processing modes\n- **Cause:** Discontinuity in output level at the switch point\n- **Fix:** Smooth bypass transitions using `SmoothedValue` over ~42ms (0.042s / ~512 samples at 48kHz). Use ~20ms for continuous parameter smoothing; the longer 42ms is specifically for mode/bypass transitions where the discontinuity is larger.\n- **Prevention:** Never hard-switch between dry and wet. Always crossfade.\n\n### FM-12: Wrong block size assumption\n- **Symptom:** Buffer overrun or underrun, intermittent crashes\n- **Cause:** Assuming processBlock always receives exactly `samplesPerBlock` samples\n- **Fix:** Always use `buffer.getNumSamples()` for the actual count, not the prepared block size\n- **Prevention:** `samplesPerBlock` in `prepareToPlay()` is a hint, not a guarantee\n\n### FM-13: Aliasing in nonlinear processing\n- **Symptom:** Harsh, metallic artifacts from distortion or waveshaping\n- **Cause:** Waveshaping without oversampling creates harmonic foldback\n- **Fix:** Use `dsp::Oversampling` (2x or 4x) around waveshaping stages, or use ADAA techniques\n- **Prevention:** Always oversample when applying nonlinear transfer functions, especially with high-frequency content\n\n### FM-14: Equal-power mix not used\n- **Symptom:** Volume dip at 50% wet/dry mix\n- **Cause:** Linear crossfade: `dry*(1-mix) + wet*mix` loses 3dB at center\n- **Fix:** Equal-power: `dryGain = cos(mix * PI/2); wetGain = sin(mix * PI/2)`\n- **Prevention:** Always use equal-power for dry/wet mixing\n\n---\n\n## Moderate (DAW Compatibility, User Experience)\n\n### FM-15: AU plugin not discovered on macOS\n- **Symptom:** Plugin doesn't appear in DAW's plugin list (macOS AU format)\n- **Cause:** Plugin not in correct location; AU cache not refreshed\n- **Fix:** Copy to `~/Library/Audio/Plug-Ins/Components/`. Run `killall -9 AudioComponentRegistrar`.\n- **Prevention:** Set `COPY_PLUGIN_AFTER_BUILD TRUE` in CMake. Test in fresh DAW session.\n\n### FM-16: VST3 parameter ID mismatch after refactoring\n- **Symptom:** Automation data breaks when loading old sessions after parameter changes\n- **Cause:** VST3 uses hashed parameter IDs; changing ID strings breaks backward compatibility\n- **Fix:** Never change parameter ID strings after release. Add new parameters, deprecate old ones.\n- **Prevention:** Lock parameter IDs in the plugin brief before v1.0 release\n\n### FM-17: LookAndFeel destruction order crash\n- **Symptom:** Crash on plugin close, especially on Windows\n- **Cause:** LookAndFeel destroyed before components that reference it\n- **Fix:** Declare LookAndFeel members BEFORE component members in class (destructors run in reverse order)\n- **Prevention:** Member ordering convention: LookAndFeel first, then components, then attachments\n\n### FM-18: Static/singleton state shared across instances\n- **Symptom:** Multiple plugin instances interfere with each other\n- **Cause:** Using `static` variables or singletons (DAWs may run multiple instances in one process)\n- **Fix:** Store all state as instance members, pass through component hierarchy\n- **Prevention:** Never use `static` for mutable state. Never use singletons in plugins.\n\n### FM-19: UI jank from excessive repainting\n- **Symptom:** Jerky, flickering UI, high CPU from GUI thread\n- **Cause:** Calling `repaint()` too frequently or on too-large regions; transparent components triggering parent repaints\n- **Fix:** Use `setOpaque(true)` where possible. Use `setBufferedToImage(true)` for expensive static visuals. Repaint only the dirty region.\n- **Prevention:** Enable `JUCE_ENABLE_REPAINT_DEBUGGING=1` during development. Use Perfetto for UI profiling.\n\n### FM-20: MSVC runtime linking issues on Windows\n- **Symptom:** Plugin fails to load on some Windows systems\n- **Cause:** Dynamically linked MSVC runtime not present on target machine\n- **Fix:** Statically link runtime: `set(CMAKE_MSVC_RUNTIME_LIBRARY \"MultiThreaded$<$<CONFIG:Debug>:Debug>\")`\n- **Prevention:** Always statically link on Windows. Verify with `dumpbin /dependents`.\n\n---\n\n## Build & CI Specific\n\n### FM-21: Build cache corruption after toolchain update\n- **Symptom:** Mysterious build failures, missing headers (e.g., TargetConditionals.h on macOS)\n- **Cause:** Stale CMake cache after Xcode/compiler update\n- **Fix:** `rm -rf build/` and reconfigure\n- **Prevention:** CI should always build from clean state\n\n### FM-22: Plugin reports wrong version in DAW\n- **Symptom:** User can't verify they have the latest version\n- **Cause:** Version not propagated from CMake to plugin binary\n- **Fix:** Use `project(PluginName VERSION x.y.z)` in CMake, reference `PROJECT_VERSION` in code\n- **Prevention:** Embed build timestamp/type in UI: `__DATE__`, `__TIME__`, `CMAKE_BUILD_TYPE`\n\n### FM-23: pluginval failures in CI\n- **Symptom:** CI pipeline fails on pluginval step\n- **Common causes:** Listener leaks, assertion failures, state round-trip failures, excessive CPU in processBlock\n- **Fix:** Run pluginval locally with debugger attached. Use random seed from CI output to reproduce.\n- **Prevention:** Run pluginval locally before pushing. Include in CI pipeline from day one.\n\n---\n\n## Prevention Checklist (Pre-Release)\n\nRun before every release:\n\n- [ ] pluginval at strictness 5+ passes on all target formats\n- [ ] State save/restore round-trips correctly (save, quit, reopen, verify)\n- [ ] Tested at 44.1k, 48k, 96k sample rates\n- [ ] Tested at buffer sizes: 64, 128, 256, 512, 1024, 2048\n- [ ] Process 60 seconds of silence \u2014 CPU stays low (denormal check)\n- [ ] Process full-scale noise \u2014 no NaN/Inf in output\n- [ ] Multiple instances simultaneously don't crash or interfere\n- [ ] Editor open/close 10 times rapidly without crash\n- [ ] Automation record/playback works for all parameters\n- [ ] DAW bypass produces clean dry signal\n- [ ] No `DBG()` calls in Release build\n- [ ] No `static` mutable state\n- [ ] All `addListener` calls have matching `removeListener` in destructors\n- [ ] Output never exceeds 0dBFS (limiter/tanh present)\n\n---\n\n## Numbering Systems\n\nThis file uses **FM-xx** (FM-01 through FM-23) for **generic JUCE failure modes** \u2014 common across all plugin projects.\n\nThe playbook (juce-vst-dev-playbook-v2.json) uses a separate **EM-xx** namespace for **session-specific bugs** found during the Epiphany Machine v3 build. These are real bugs from a real session, and many map to generic failure modes:\n\n| Session Bug | Description | Maps to Generic |\n|---|---|---|\n| EM-01 | Cache keyed on names not IDs \u2014 still O(N) | FM-01 (audio thread perf) |\n| EM-02 | Implementer modified out-of-scope files | (process issue) |\n| EM-03 | FHT at output only, not in feedback path | (algorithm correctness) |\n| EM-04 | Buffer overflow at >48kHz | FM-02 |\n| EM-05 | Reverse playback off-by-one | (algorithm correctness) |\n| EM-06 | writeHead unbounded overflow | (algorithm correctness) |\n| EM-07 | Drift on reverse grains \u2014 out-of-window reads | (algorithm correctness) |\n| EM-08 | Q constant wrong \u2014 24.5 gives Q=25 not Q=50 | (formula verification) |\n| EM-09 | Wavefolder multiplier 3x instead of 4x | (formula verification) |\n| EM-10 | Missing feedback soft-clip | FM-05 |\n| EM-11 | getTailLengthSeconds() too short | (DAW compatibility) |\n| EM-12 | GUI component overflows parent panel | (GUI bounds) |\n| EM-13 | SmoothedValue getNextValue() never called | FM-09 |\n| EM-14 | Linear mix blend \u2014 only first 30% effective | FM-14 |\n| EM-15 | Default decay too long \u2014 masks parameter changes | (UX) |\n| EM-16 | Git push rejected \u2014 remote diverged | (release process) |\n\n**Key insight:** EM-13, EM-14, EM-15 were caught by the **user in DAW testing**, not by automated review. Two-stage code review catches implementation bugs but cannot catch perceptual/UX issues.\n\n---\n\n## Sources\n- melatonin.dev/blog/pluginval-is-a-plugin-devs-best-friend/\n- melatonin.dev/blog/big-list-of-juce-tips-and-tricks/\n- melatonin.dev/blog/how-juce-components-work/\n- Epiphany Machine v3 build session (16 bugs found and fixed)\n- github.com/Tracktion/pluginval\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:39.973176+00:00"
+  },
+  "title": "JUCE Plugin Failure Modes & Prevention",
+  "description": "Comprehensive database of known failure modes for JUCE VST plugin development organized by severity and phase, with fixes and prevention strategies",
+  "source": "harvested",
+  "source_urls": [
+    "melatonin.dev/blog/pluginval-is-a-plugin-devs-best-friend/",
+    "melatonin.dev/blog/big-list-of-juce-tips-and-tricks/",
+    "melatonin.dev/blog/how-juce-components-work/",
+    "github.com/Tracktion/pluginval"
+  ],
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "juce",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "implementation_examples": 8,
+  "tags": [
+    "juce",
+    "failure-modes",
+    "debugging",
+    "audio-thread",
+    "pluginval",
+    "crashes",
+    "cross-platform"
+  ],
+  "related_topics": [
+    "patterns",
+    "testing",
+    "ci-cd",
+    "thread-safety"
+  ]
+}

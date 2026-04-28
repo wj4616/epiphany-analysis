@@ -1,0 +1,18 @@
+{
+  "kb_type": "dsp-kb",
+  "topic": "dynamics",
+  "filename": "limiter-design.json",
+  "title": "Limiter Design",
+  "seed_terms": [
+    "brickwall limiter",
+    "lookahead limiter",
+    "true peak limiter",
+    "limiter algorithms"
+  ],
+  "discovered_terms": [],
+  "total_results": 0,
+  "total_urls_crawled": 0,
+  "credits_used": 0,
+  "checkpoint": "/home/myuser/agents/juce-agent/playbookdata/harvested/checkpoints/dsp-kb_dynamics_limiter-design.json.json",
+  "results": []
+}

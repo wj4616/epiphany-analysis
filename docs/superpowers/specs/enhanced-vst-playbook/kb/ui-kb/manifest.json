@@ -1,0 +1,30 @@
+{
+  "kb_name": "ui-kb",
+  "version": "1.0.0",
+  "description": "User interface design for audio plugins",
+  "created": "2026-04-02",
+  "updated": "2026-04-02",
+  "entry_count": 0,
+  "categories": {
+    "layouts": {
+      "description": "UI layout patterns",
+      "count": 0,
+      "entries": []
+    },
+    "aesthetics": {
+      "description": "Visual aesthetics and theming",
+      "count": 0,
+      "entries": []
+    },
+    "components": {
+      "description": "UI component implementations",
+      "count": 0,
+      "entries": []
+    },
+    "accessibility": {
+      "description": "Accessibility considerations",
+      "count": 0,
+      "entries": []
+    }
+  }
+}

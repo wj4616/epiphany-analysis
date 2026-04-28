@@ -1,0 +1,26 @@
+{
+  "kb": "reference",
+  "version": "1.0.0",
+  "topics": {
+    "textbooks": {
+      "entries": ["pirkle-dsp", "zolzer-dafx", "smith-audio"],
+      "last_updated": "2026-04-02"
+    },
+    "documentation": {
+      "entries": ["juce-docs", "vst3-sdk"],
+      "last_updated": "2026-04-02"
+    },
+    "talks": {
+      "entries": ["adc-presentations"],
+      "last_updated": "2026-04-02"
+    },
+    "papers": {
+      "entries": ["dsp-research"],
+      "last_updated": "2026-04-02"
+    },
+    "tutorials": {
+      "entries": ["community-tutorials"],
+      "last_updated": "2026-04-02"
+    }
+  }
+}

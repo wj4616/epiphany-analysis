@@ -1,0 +1,16 @@
+Claude Code Session Summary
+==========================
+
+Session ID: bd6fde9f-b99c-49aa-b379-8c6b43ee111c
+Export Time: 2026-04-02 21:41:54
+Project Directory: /home/myuser/agents/pbcpb-test3
+Duration: 2026-04-03T03:51:06.169Z to 2026-04-03T04:41:54.147Z
+
+Statistics:
+- Total Messages: 791
+- User Messages: 236
+- Assistant Messages: 446
+- Tool Uses: 222
+- Models: glm-5
+
+Exported to: /home/myuser/claude_sessions/exports/2026-04-02_21-41-54_bd6fde9f

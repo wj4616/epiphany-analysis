@@ -1,0 +1,55 @@
+{
+  "harvest_metadata": {
+    "kb_type": "dsp-kb",
+    "topic": "JUCE DSP module tutorial",
+    "harvested_at": "2026-03-30T23:17:03.910309+00:00",
+    "quality_filter": {
+      "passed": 2,
+      "rejected": 26,
+      "rejection_reasons": {
+        "not_relevant": 26
+      }
+    },
+    "thresholds": {
+      "min_content_length": 500,
+      "min_relevance_score": 0.2,
+      "max_noise_ratio": 0.5
+    }
+  },
+  "result": {
+    "data": [
+      {
+        "url": "https://m.youtube.com/watch?v=h1q5bBPZXLk",
+        "title": "Creating Audio Plug-ins with JUCE Workshop - 23 Feb || 11am GMT",
+        "markdown": "![Thumbnail (1920x1080)](https://i.ytimg.com/vi/h1q5bBPZXLk/maxresdefault.jpg?v=65d86de3)\n# [Creating Audio Plug-ins with JUCE Workshop - 23 Feb || 11am GMT](https://www.youtube.com/watch?v=h1q5bBPZXLk)\n\n**Visibility**: Public\n**Uploaded by**: [The Audio Programmer](http://www.youtube.com/@TheAudioProgrammer)\n**Uploaded at**: 2024-02-23T07:37:48-08:00\n**Published at**: 2024-02-23T07:37:48-08:00\n**Length**: 04:22:01\n**Views**: 1734\n**Likes**: 55\n**Category**: Science & Technology\n\n## Description\n\n```\nFind our book \"Creating Synthesizer Plug-Ins with C++ and JUCE here: https://theaudioprogrammer.com/synth-plugin-book\n\n\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\u2014\n\nJoin the Audio Programmer community: https://theaudioprogrammer.com/community\n\nContact us here for our services: https://theaudioprogrammer.com/development\n\nSupport the channel: https://www.patreon.com/theaudioprogrammer\n\nWebsite: https://www.theaudioprogrammer.com\nInstagram: https://www.instagram.com/theaudioprogrammer\nFacebook: https://www.facebook.com/theaudioprogrammer\nTwitter: https://www.twitter.com/audioprogrammer\n```\n\n",
+        "quality_report": {
+          "url": "https://m.youtube.com/watch?v=h1q5bBPZXLk",
+          "title": "Creating Audio Plug-ins with JUCE Workshop - 23 Feb || 11am GMT",
+          "content_length": 1088,
+          "has_code": true,
+          "code_blocks": 2,
+          "relevance_score": 0.5514705882352942,
+          "noise_ratio": 0.0625,
+          "passed": true,
+          "rejection_reason": null
+        }
+      },
+      {
+        "url": "https://forum.juce.com/t/how-to-create-own-dsp-modules/64334",
+        "title": "How to create own dsp modules? - Audio Plugins - JUCE Forum",
+        "markdown": "[![JUCE Logo](https://juce.com/wp-content/uploads/2022/07/JUCE-logo-horiz-ondark.png)](https://juce.com/)\n\n- [Discover](https://juce.com/juce/whats-new/)\n  - [What's New](https://juce.com/juce/whats-new/)\n  - [Features](https://juce.com/juce/features/)\n- [Learn](https://juce.com/learn/documentation/)\n  - [Documentation](https://juce.com/learn/documentation/)\n  - [Course](https://juce.com/learn/course/)\n  - [Tutorials](https://juce.com/learn/tutorials/)\n  - [Made with JUCE](https://juce.com/stories/)\n  - [Resources](https://juce.com/resources/)\n- [Newsletter](https://juce.com/newsletter/)\n- [Marketplace](https://marketplace.juce.com/)\n- [Forum](https://forum.juce.com/)\n\n[Get JUCE](https://juce.com/get-juce/)\n\nuser-circle\n\n[Skip to main content](https://forum.juce.com/t/how-to-create-own-dsp-modules/64334#main-container)\n\n[![JUCE](https://us1.discourse-cdn.com/flex026/uploads/juce/original/3X/f/f/ffe6e1d1505ac692ae110fc678fcabde952f3a98.svg)](https://forum.juce.com/)\n\nLog In\n\n- \u200b\n\n\n- [Latest topics](https://forum.juce.com/latest \"All topics\")\n- [Code of conduct](https://forum.juce.com/guidelines)\n- More\n\n\nCategories\n\n\n- [News and Announcements](https://forum.juce.com/c/news-and-announcements/9 \"JUCE news and announcements - releases, meetups, new team members etc.\")\n- [General JUCE discussion](https://forum.juce.com/c/general-juce-discussion/10 \"Discussion and support for general JUCE issues\")\n- [JUCE Jobs](https://forum.juce.com/c/juce-jobs/14 \"A place to advertise JUCE jobs!\")\n- [Feature Requests](https://forum.juce.com/c/feature-requests/29 \"This category contains a list of feature requests that all forum users can contribute to and vote on.\")\n- [All categories](https://forum.juce.com/categories)\n\n\u200b\n\n\n# [How to create own dsp modules?](https://forum.juce.com/t/how-to-create-own-dsp-modules/64334)\n\n[Audio Plugins](https://forum.juce.com/c/audio-plugins/11)\n\nYou have selected **0** posts.\n\n[select all](https://forum.juce.com/t/how-to-create-own-dsp-modules/64334)\n\n[cancel selecting](https://forum.juce.com/t/how-to-create-own-dsp-modules/64334)\n\n249\nviews\n2\nlinks\n\n\n[![](https://avatars.discourse-cdn.com/v4/letter/a/c37758/48.png)2](https://forum.juce.com/u/arcathrax \"arcathrax\")\n\n[![](https://sea2.discourse-cdn.com/flex026/user_avatar/forum.juce.com/xenakios/48/4047_2.png)](https://forum.juce.com/u/xenakios \"xenakios\")\n\n[![](https://avatars.discourse-cdn.com/v4/letter/b/bc8723/48.png)](https://forum.juce.com/u/bencekovacs \"bencekovacs\")\n\n[Nov 2024](https://forum.juce.com/t/how-to-create-own-dsp-modules/64334/1 \"Jump to the first post\")\n\n2 / 4\n\n\nNov 2024\n\n\n[Nov 2024](https://forum.juce.com/t/how-to-create-own-dsp-modules/64334/4)\n\n## post by arcathrax on Nov 21, 2024\n\n[![](https://avatars.discourse-cdn.com/v4/letter/a/c37758/48.png)](https://forum.juce.com/u/arcathrax)\n\n[arcathrax](https://forum.juce.com/u/arcathrax)\n\n[Nov 2024](https://forum.juce.com/t/how-to-create-own-dsp-modules/64334 \"Post date\")\n\nHi,\n\nstill kinda new to juce.\n\nI created my own algoritm and I would like to use it in a ProcessorChain. However there has to be some functions to get it done. Is there any best practice on how to implement them? What arguments do they need to work properly? Is there any class I can inherit from to make the implementation more easy? If not are the following functions all i need?\n\n```cpp\nvoid prepare();\nvoid process();\nvoid reset\n```\n\n\u200b\n\n\n\u200b\n\n\n249\nviews\n2\nlinks\n\n\n[![](https://avatars.discourse-cdn.com/v4/letter/a/c37758/48.png)2](https://forum.juce.com/u/arcathrax \"arcathrax\")\n\n[![](https://sea2.discourse-cdn.com/flex026/user_avatar/forum.juce.com/xenakios/48/4047_2.png)](https://forum.juce.com/u/xenakios \"xenakios\")\n\n[![](https://avatars.discourse-cdn.com/v4/letter/b/bc8723/48.png)](https://forum.juce.com/u/bencekovacs \"bencekovacs\")\n\n## post by xenakios on Nov 21, 2024\n\n[![](https://sea2.discourse-cdn.com/flex026/user_avatar/forum.juce.com/xenakios/48/4047_2.png)](https://forum.juce.com/u/xenakios)\n\n[xenakios](https://forum.juce.com/u/xenakios)\n\n2\n\n[Nov 2024](https://forum.juce.com/t/how-to-create-own-dsp-modules/64334/2 \"Post date\")\n\nThis is a class skeleton that will compile when used with ProcessorChain :\n\n```cpp\ntemplate <typename SampleType> class MyProcessor\n{\n  public:\n    MyProcessor() {}\n    void prepare(const juce::dsp::ProcessSpec &spec) noexcept\n    {\n        // prepare impl here...\n    }\n    void reset()\n    {\n        // reset impl here...\n    }\n    template <typename ProcessContext> void process(const ProcessContext &context)\n    {\n        // process impl here...\n    }\n};\n```\n\nHowever, I\u2019d suggest reconsidering if you really want to be using ProcessorChain to begin with. It doesn\u2019t really do anything magical and is not particularly flexible. You can\u2019t for example reorder the processors in the chain or add/remove processors at run time, it\u2019s all compile time. (I know there\u2019s the argument that because of the heavy use of templates, the compiler could potentially figure out some additional optimizations, but I am highly skeptical about that without seeing any concrete benchmark results.)\n\n\u200b\n\n\n\u200b\n\n\n## post by arcathrax on Nov 22, 2024\n\n[![](https://avatars.discourse-cdn.com/v4/letter/a/c37758/48.png)](https://forum.juce.com/u/arcathrax)\n\n[arcathrax](https://forum.juce.com/u/arcathrax)\n\n[Nov 2024](https://forum.juce.com/t/how-to-create-own-dsp-modules/64334/3 \"Post date\")\n\nHmm okay thank you. What would you suggest me to use instead of the ProcessorChain to add/remove/reorder Processors withn the runtime?\n\n\u200b\n\n\n\u200b\n\n\n## post by bencekovacs on Nov 22, 2024\n\n[![](https://avatars.discourse-cdn.com/v4/letter/b/bc8723/48.png)](https://forum.juce.com/u/bencekovacs)\n\n[bencekovacs](https://forum.juce.com/u/bencekovacs)\n\n[Nov 2024](https://forum.juce.com/t/how-to-create-own-dsp-modules/64334/4 \"Post date\")\n\nThe AudioProcessorGraph can do all of that:\n\n[https://docs.juce.com/master/classAudioProcessorGraph.html](https://docs.juce.com/master/classAudioProcessorGraph.html)\n\n[https://docs.juce.com/master/tutorial\\_audio\\_processor\\_graph.html](https://docs.juce.com/master/tutorial_audio_processor_graph.html)\n\n\u200b\n\n\n\u200b\n\n\nReply\n\n### Purchase\n\n[Get JUCE](https://juce.com/get-juce/)\n\n### Discover\n\n[What's New in JUCE](https://juce.com/juce/whats-new/) [Features](https://juce.com/juce/features/) [Made with JUCE](https://juce.com/stories/) [Blog](https://juce.com/blog/)\n\n### Learn\n\n[Documentation](https://juce.com/learn/documentation/) [Tutorials](https://juce.com/learn/tutorials/) [Resources](https://juce.com/resources/)\n\n### Support\n\n[JUCE Forum](https://forum.juce.com/) [Newsletter](https://juce.com/newsletter)\n\n### About\n\n[Contact Us](https://juce.com/contact-us/) [Releases](https://juce.com/releases/) [JUCE Legal](https://juce.com/juce-legal/) [JUCE Licensing FAQ](https://juce.com/get-juce)\n\n### Events\n\n[Audio Developer Conference](https://audio.dev/)\n\n[Visit our Facebook](https://www.facebook.com/jucelibrary) [Visit our Twitter](https://twitter.com/jucelibrary) [Visit our LinkedIn](https://www.linkedin.com/company/juce-c-/) [Visit our YouTube channel](https://www.youtube.com/c/JUCElibrary)\n\n[![JUCE Logo](https://juce.com/wp-content/uploads/2022/07/JUCE-logo-horiz-ondark.png)](https://juce.com/)\n\n\u00a9 Raw Material Software Limited\n\nlinkedinfacebookpinterestyoutubersstwitterinstagramfacebook-blankrss-blanklinkedin-blankpinterestyoutubetwitterinstagram\n\nInvalid date\n\nInvalid date",
+        "quality_report": {
+          "url": "https://forum.juce.com/t/how-to-create-own-dsp-modules/64334",
+          "title": "How to create own dsp modules? - Audio Plugins - JUCE Forum",
+          "content_length": 7398,
+          "has_code": true,
+          "code_blocks": 4,
+          "relevance_score": 0.2811570694782374,
+          "noise_ratio": 0.039473684210526314,
+          "passed": true,
+          "rejection_reason": null
+        }
+      }
+    ]
+  }
+}

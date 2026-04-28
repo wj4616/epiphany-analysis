@@ -1,0 +1,24 @@
+{
+  "title": "Catch2 Testing for JUCE",
+  "description": "Unit testing JUCE audio plugins with Catch2 framework",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:45:29.716721Z",
+  "kb_type": "testing",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "markdown": "# Catch2 Testing for JUCE\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "Catch2 JUCE",
+    "unit test audio plugin",
+    "JUCE testing",
+    "Catch2 C++"
+  ],
+  "sources": [
+    "Catch2 docs",
+    "JUCE forum",
+    "melatonin.dev"
+  ]
+}

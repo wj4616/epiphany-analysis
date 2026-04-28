@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_modulation_routing",
+  "kb": "sound-design",
+  "topic": "modulation",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Modulation Routing Strategies",
+  "summary": "Placeholder: Matrix routing, destinations, and modulation depth control.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["modulation", "routing", "matrix", "destination"],
+  "related_topics": ["modulation", "oscillators", "filters"],
+  "difficulty": "intermediate",
+  "domain_relevance": 9
+}

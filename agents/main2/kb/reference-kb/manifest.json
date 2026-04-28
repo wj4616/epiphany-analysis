@@ -1,0 +1,30 @@
+{
+  "kb_name": "reference-kb",
+  "schema_version": "1.0.0",
+  "last_updated": "2026-04-02",
+  "authority_score": 1.00,
+  "topics": {
+    "textbooks": {
+      "entry_count": 3,
+      "entries": [
+        {"id": "reference-kb_textbooks_pirkle", "status": "harvested", "version": "1.0.0"},
+        {"id": "reference-kb_textbooks_zolzer", "status": "harvested", "version": "1.0.0"},
+        {"id": "reference-kb_textbooks_smith", "status": "harvested", "version": "1.0.0"}
+      ]
+    },
+    "academic-papers": {"entry_count": 0, "entries": []},
+    "official-docs": {"entry_count": 0, "entries": []},
+    "tutorials": {"entry_count": 0, "entries": []},
+    "videos": {"entry_count": 0, "entries": []},
+    "community": {"entry_count": 0, "entries": []}
+  },
+  "status_counts": {
+    "placeholder": 0,
+    "harvested": 3,
+    "curated": 0,
+    "synced": 0
+  },
+  "sync_history": [
+    {"date": "2026-04-02", "action": "initial_population", "entries_added": 3}
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "kb_name": "dsp-kb",
+  "version": "1.0.0",
+  "description": "Digital Signal Processing algorithms and theory",
+  "created": "2026-04-02",
+  "updated": "2026-04-02",
+  "entry_count": 2,
+  "categories": {
+    "filters": {
+      "description": "Filter algorithms and implementations",
+      "count": 1,
+      "entries": ["placeholder-dsp-lowpass"]
+    },
+    "oscillators": {
+      "description": "Oscillator algorithms and waveforms",
+      "count": 1,
+      "entries": ["placeholder-dsp-oscillator"]
+    },
+    "effects": {
+      "description": "Audio effects processors",
+      "subcategories": {
+        "delay": {"count": 0, "entries": []},
+        "reverb": {"count": 0, "entries": []},
+        "modulation": {"count": 0, "entries": []},
+        "distortion": {"count": 0, "entries": []}
+      }
+    },
+    "dynamics": {
+      "description": "Dynamic processors",
+      "count": 0,
+      "entries": []
+    },
+    "modulation": {
+      "description": "Modulation sources and routing",
+      "count": 0,
+      "entries": []
+    },
+    "synthesis": {
+      "description": "Synthesis methods",
+      "count": 0,
+      "entries": []
+    }
+  }
+}

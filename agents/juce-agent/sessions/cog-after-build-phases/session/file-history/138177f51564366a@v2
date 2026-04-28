@@ -1,0 +1,73 @@
+# Cog VST
+
+Interdimensional Sound Design Module
+
+## Overview
+
+Cog VST is an audio effect plugin that creates evolving, textured soundscapes through
+parallel processing paths: a texture/waveshaper path and a spectral/drone path.
+
+## Parameters
+
+### Input Section
+- **Sensitivity**: Input detection sensitivity (0-1)
+- **Path Balance**: Crossfade between Path A and Path B (0-1)
+
+### Path A - Texture/Waveshaper
+- **Texture Drive**: Waveshaper drive amount (0-1)
+
+### Path B - Spectral/Drone
+- **Drone Density**: Spectral density (0-1)
+- **Spectral Drift**: Frequency drift amount (-1 to +1)
+- **Thickness**: Chorus/ensemble thickness (0-1)
+
+### Filters
+- **Filter Routing**: Parallel or Series (choice)
+- **Filter A Cutoff/Reso/Type**: First filter settings
+- **Filter B Cutoff/Reso/Type**: Second filter settings
+
+### Drive Circuit
+- **Drive**: Saturation amount (0-1)
+- **Tone**: Tone tilt from dark to bright (0-1)
+
+### Feedback/Output
+- **Feedback**: Feedback amount (0-0.95)
+- **Width**: Stereo width (0-1)
+- **Evolution**: Modulation evolution speed (0-1)
+- **Complexity**: Modulation complexity (0-1)
+- **Reactivity**: Audio reactivity amount (0-1)
+- **Output Gain**: Output level (-12 to +12 dB)
+- **Mix**: Dry/wet mix (0-1)
+
+### Controls
+- **Bypass**: Enable/disable processing
+- **Freeze**: Freeze spectral content
+
+## Signal Flow
+
+```
+Input → Texture/Body Detector → Path Split
+                                    ├─→ Path A: Waveshaper
+                                    └─→ Path B: Spectral Engine → Chorus
+                                    ↓
+                                Path Merge → Filters → Drive Circuit
+                                    ↓
+                                Feedback Loop (with DC blocking)
+                                    ↓
+                                Stereo Widener → Output
+```
+
+## Building
+
+Requires JUCE 7.0.x and CMake 3.22+.
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+```
+
+The VST3 plugin will be installed to `~/.vst3/`.
+
+## License
+
+Copyright © 2024 CogAudio

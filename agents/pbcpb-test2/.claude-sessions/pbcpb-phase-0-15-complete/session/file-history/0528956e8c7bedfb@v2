@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_synthesis-types_wavetable",
+  "kb": "sound-design",
+  "topic": "synthesis-types",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Wavetable Synthesis Fundamentals",
+  "summary": "Placeholder: Scanning and morphing between stored waveforms.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["synthesis", "wavetable", "morph", "scan"],
+  "related_topics": ["oscillators", "modulation"],
+  "difficulty": "intermediate",
+  "domain_relevance": 9
+}

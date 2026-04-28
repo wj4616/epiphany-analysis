@@ -1,0 +1,47 @@
+{
+  "kb_name": "ui-ux-kb",
+  "schema_version": "1.0.0",
+  "last_updated": "2026-04-02",
+  "authority_score": 0.80,
+  "topics": {
+    "visual-standards": {
+      "entry_count": 0,
+      "entries": []
+    },
+    "control-layout": {
+      "entry_count": 0,
+      "entries": []
+    },
+    "knobs": {
+      "entry_count": 0,
+      "entries": []
+    },
+    "sliders": {
+      "entry_count": 0,
+      "entries": []
+    },
+    "meters": {
+      "entry_count": 0,
+      "entries": []
+    },
+    "theming": {
+      "entry_count": 0,
+      "entries": []
+    },
+    "lookandfeel": {
+      "entry_count": 0,
+      "entries": []
+    },
+    "accessibility": {
+      "entry_count": 0,
+      "entries": []
+    }
+  },
+  "status_counts": {
+    "placeholder": 0,
+    "harvested": 0,
+    "curated": 0,
+    "synced": 0
+  },
+  "sync_history": []
+}

@@ -1,0 +1,45 @@
+{
+  "session_id": "20260415-input",
+  "created_utc": "2026-04-15T00:00:00Z",
+  "node_a": {
+    "source_kind": "file",
+    "source_path": "/home/myuser/docs/epiphany/genius/20260415-vst-playbook-phase0-commission-brief/input.md",
+    "content_hash": "6078ee8ebd261d5ff53f891519cace1e0eb740a004a1212e0b29de3b2d1ec20b"
+  },
+  "node_b": {
+    "source_kind": "file",
+    "source_path": "/home/myuser/docs/epiphany/genius/20260415-vst-playbook-phase0-commission-brief/report.md",
+    "content_hash": "6c61b7ba8b1cef8476769f7c5525110bf541e903fd4f3c411cf152efe1d6d724",
+    "genius_detection": "genius-current",
+    "matched_sections": [
+      "Headline Insight",
+      "Theory Collisions",
+      "Discovery vs. Proof",
+      "Independence-Verified Bridges",
+      "Alternative Hypotheses",
+      "Density-Checked Falsification",
+      "Scope Limits",
+      "Coherence Signals",
+      "Generalization Checks",
+      "Open Questions & Next Probes"
+    ],
+    "drift_notes": ""
+  },
+  "modules": {
+    "m-intake":    { "status": "complete", "start_utc": "2026-04-15T00:00:00Z", "end_utc": "2026-04-15T00:00:01Z", "notes": "" },
+    "m-analyze":   { "status": "complete", "a1_complete": true, "b1_complete": true, "start_utc": "2026-04-15T00:00:01Z", "end_utc": "2026-04-15T00:01:00Z" },
+    "m-ideate":    { "status": "complete", "passes_run": 3, "ideas_total": 39, "stop_reason": "pass-cap" },
+    "m-filter":    { "status": "complete", "ideas_in": 39, "accepted_out": 34 },
+    "m-engineer":  { "status": "complete", "d_entries_processed": 34, "e_entries_produced": 34, "double_fail_count": 0 },
+    "m-integrate": { "status": "complete", "refinement_cycles": 0, "audit_verdict": "PASS" }
+  },
+  "caps_applied": {
+    "ideation_passes": 3,
+    "ideation_total": 50,
+    "drafts_per_d": 2,
+    "refinement_cycles": 1,
+    "global_wall_clock_sec": 900
+  },
+  "stop_reasons": [],
+  "argv_flags": { "start_at": null, "stop_at": null }
+}

@@ -1,0 +1,25 @@
+{
+  "kb_name": "cpp-kb",
+  "version": "1.0.0",
+  "description": "C++ patterns for real-time audio programming",
+  "created": "2026-04-02",
+  "updated": "2026-04-02",
+  "entry_count": 1,
+  "categories": {
+    "realtime-safety": {
+      "description": "Real-time safety patterns",
+      "count": 1,
+      "entries": ["cpp-atomic-operations"]
+    },
+    "patterns": {
+      "description": "Common C++ patterns",
+      "count": 0,
+      "entries": []
+    },
+    "modern-cpp": {
+      "description": "Modern C++ features for audio",
+      "count": 0,
+      "entries": []
+    }
+  }
+}

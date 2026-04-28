@@ -1,0 +1,11 @@
+{
+  "category": "realtime-safety",
+  "description": "Real-time safety patterns for audio",
+  "entries": [
+    {
+      "id": "cpp-atomic-operations",
+      "title": "Atomic Operations for Real-Time Safety",
+      "confidence": 1.0
+    }
+  ]
+}

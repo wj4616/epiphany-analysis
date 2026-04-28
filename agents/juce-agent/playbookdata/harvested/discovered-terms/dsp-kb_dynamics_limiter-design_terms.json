@@ -1,0 +1,13 @@
+{
+  "source_file": "/home/myuser/agents/juce-agent/playbookdata/dsp-kb/dynamics/limiter-design.json",
+  "seed_terms": [
+    "brickwall limiter",
+    "lookahead limiter",
+    "true peak limiter",
+    "limiter algorithms"
+  ],
+  "discovered_terms": [],
+  "crawled_urls": [],
+  "credits_used": 0,
+  "timestamp": "2026-03-30T13:08:25.046263+00:00"
+}

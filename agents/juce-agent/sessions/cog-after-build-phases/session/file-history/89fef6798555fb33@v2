@@ -1,0 +1,144 @@
+#include "StereoWidener.h"
+#include <cmath>
+
+namespace CogDSP
+{
+
+void StereoWidener::prepare(double sr)
+{
+    sampleRate = sr;
+
+    // Design LR2 crossover at 250Hz
+    // LR2 = two Butterworth 2nd-order stages in cascade
+    // Cutoff frequency for LR2: fc = 250Hz
+
+    constexpr float crossoverFreq = 250.0f;
+
+    // Butterworth 2nd-order coefficients
+    // For LPF: wc = 2*PI*fc/fs
+    // b0 = wc²/(1 + sqrt(2)*wc + wc²)
+    // b1 = 2*b0
+    // b2 = b0
+    // a1 = 2*(wc² - 1)/(1 + sqrt(2)*wc + wc²)
+    // a2 = (1 - sqrt(2)*wc + wc²)/(1 + sqrt(2)*wc + wc²)
+
+    // For HPF: substitute wc → 1/wc (pre-wrapped)
+
+    const float wc = Constants::PI * crossoverFreq / static_cast<float>(sampleRate);
+    const float wc2 = wc * wc;
+    const float sqrt2 = 1.41421356f;
+
+    // LPF coefficients
+    const float denom = 1.0f + sqrt2 * wc + wc2;
+    lp1.b0 = wc2 / denom;
+    lp1.b1 = 2.0f * lp1.b0;
+    lp1.b2 = lp1.b0;
+    lp1.a1 = 2.0f * (wc2 - 1.0f) / denom;
+    lp1.a2 = (1.0f - sqrt2 * wc + wc2) / denom;
+
+    // Copy for second stage
+    lp2.b0 = lp1.b0;
+    lp2.b1 = lp1.b1;
+    lp2.b2 = lp1.b2;
+    lp2.a1 = lp1.a1;
+    lp2.a2 = lp1.a2;
+
+    // HPF coefficients (pre-warped)
+    // For HPF at same frequency: use the reciprocal transformation
+    const float wcHP = wc;  // Already computed above
+    const float wcHP2 = wcHP * wcHP;
+
+    // High-pass Butterworth
+    // b0 = 1 / denom
+    // b1 = -2 / denom
+    // b2 = 1 / denom
+    // a1 = 2*(wc² - 1) / denom (same as LPF)
+    // a2 = (1 - sqrt(2)*wc + wc²) / denom (same as LPF)
+
+    const float denomHP = denom;  // Same denominator
+    hp1.b0 = 1.0f / denomHP;
+    hp1.b1 = -2.0f / denomHP;
+    hp1.b2 = 1.0f / denomHP;
+    hp1.a1 = lp1.a1;
+    hp1.a2 = lp1.a2;
+
+    // Copy for second stage
+    hp2.b0 = hp1.b0;
+    hp2.b1 = hp1.b1;
+    hp2.b2 = hp1.b2;
+    hp2.a1 = hp1.a1;
+    hp2.a2 = hp1.a2;
+
+    // Initialize smoothed width
+    smoothedWidth.reset(sampleRate, 0.02);
+    smoothedWidth.setCurrentAndTargetValue(width);
+
+    reset();
+}
+
+void StereoWidener::process(float* left, float* right, int numSamples)
+{
+    // Update smoothed width
+    smoothedWidth.setTargetValue(width);
+    smoothedWidth.skip(numSamples);
+    const float currentWidth = smoothedWidth.getCurrentValue();
+
+    // Check for bypass
+    if (currentWidth < 0.001f)
+    {
+        // Transparent - no processing
+        return;
+    }
+
+    for (int i = 0; i < numSamples; ++i)
+    {
+        float L = left[i];
+        float R = right[i];
+
+        // Split into low and high bands using LR2 crossover
+        float lowL = L, lowR = R;
+        float highL = L, highR = R;
+
+        // LP path (two stages for LR2)
+        lp1.processLP(lowL, lowR);
+        lp2.processLP(lowL, lowR);
+
+        // HP path (two stages for LR2)
+        hp1.processHP(highL, highR);
+        hp2.processHP(highL, highR);
+
+        // Below 250Hz: mono sum to both channels
+        const float lowMono = (lowL + lowR) * 0.5f;
+
+        // Above 250Hz: M/S widening
+        // Width = 0: no change (width * 2 + 1 = 1)
+        // Width = 1: side tripled (width * 2 + 1 = 3)
+        // mid = (L + R) / 2
+        // side = (L - R) / 2
+        // side *= (1 + width * 2)
+        // L = mid + side, R = mid - side
+
+        const float mid = (highL + highR) * 0.5f;
+        const float side = (highL - highR) * 0.5f;
+        const float widthMultiplier = 1.0f + currentWidth * 2.0f;
+        const float widenedSide = side * widthMultiplier;
+
+        const float highOutL = mid + widenedSide;
+        const float highOutR = mid - widenedSide;
+
+        // Recombine
+        left[i] = lowMono + highOutL;
+        right[i] = lowMono + highOutR;
+    }
+}
+
+void StereoWidener::reset()
+{
+    lp1.reset();
+    lp2.reset();
+    hp1.reset();
+    hp2.reset();
+    smoothedWidth.setCurrentAndTargetValue(width);
+}
+
+} // namespace CogDSP

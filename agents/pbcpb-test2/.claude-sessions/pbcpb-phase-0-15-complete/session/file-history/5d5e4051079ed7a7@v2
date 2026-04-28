@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_genre-techniques_pad",
+  "kb": "sound-design",
+  "topic": "genre-techniques",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Pad Sound Design Techniques",
+  "summary": "Placeholder: Creating lush, sustained sounds with slow envelopes.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["genre", "pad", "lush", "sustained", "slow"],
+  "related_topics": ["genre-techniques", "oscillators", "modulation"],
+  "difficulty": "intermediate",
+  "domain_relevance": 10
+}

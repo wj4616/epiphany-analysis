@@ -1,0 +1,43 @@
+{
+  "id": "testing-kb_unit-testing_catch2-juce",
+  "kb": "testing-kb",
+  "topic": "unit-testing",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Content to be harvested]",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Example code placeholder\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Catch2 Testing for JUCE\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.985656+00:00"
+  },
+  "title": "Catch2 Testing for JUCE",
+  "description": "Unit testing JUCE audio plugins with Catch2 framework",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:45:29.716721Z",
+  "kb_type": "testing",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "Catch2 JUCE",
+    "unit test audio plugin",
+    "JUCE testing",
+    "Catch2 C++"
+  ],
+  "sources": [
+    "Catch2 docs",
+    "JUCE forum",
+    "melatonin.dev"
+  ]
+}

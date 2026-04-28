@@ -1,0 +1,16 @@
+{
+  "id": "reference_textbooks_pirkle-dsp",
+  "kb": "reference",
+  "topic": "textbooks",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Designing Audio Effect Plugins in C++ by Will Pirkle",
+  "summary": "Placeholder: Key reference for DSP algorithm implementation.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "textbook", "author": "Will Pirkle"},
+  "concepts": [],
+  "tags": ["textbook", "dsp", "pirkle", "audio", "effects"],
+  "related_topics": ["dsp-algorithms", "filters"],
+  "difficulty": "intermediate",
+  "domain_relevance": 10
+}

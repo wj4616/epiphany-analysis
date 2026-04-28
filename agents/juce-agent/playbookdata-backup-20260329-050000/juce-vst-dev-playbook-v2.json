@@ -1,0 +1,965 @@
+{
+    "title": "JUCE VST Plugin Development Playbook",
+    "version": 3,
+    "description": "End-to-end development playbook for building creative unique VST audio plugins with JUCE and AI assistance. Covers the full plugin lifecycle from concept through release: spec development, DSP architecture, implementation, GUI, testing, DAW validation, optimization, and release. Designed for a single developer retaining full creative control with AI handling code generation, review, and validation. Each phase is gated — nothing advances until acceptance criteria are met.",
+    "extracted_from": "conversation_full.md — single 24,292-line session building Epiphany Machine VST v3, plus user gap-analysis answers and v2 spec template, plus deep crawl of melatonin.dev, awesome-juce, JUCE docs, Pamplejuce, SimpleCompressor",
+    "changelog_v2": "Added: references section with JUCE/DSP/community links, cross-platform build targets (all OS), automated test framework, Reaper DAW testing procedures, state save/restore as required phase, optimization/hardening phase (filled from best practices), retrospective phase (filled), 14 missing validation steps promoted to checklist items, prevention rules wired as pre-flight checks, v2 spec as template reference, distribution workflow",
+    "changelog_v3": "Fixed: failure mode numbering (session bugs now EM-xx, generic FM-xx), wavefolder formula consistency, smoothing time distinction (20ms params / 42ms bypass). Added: community libraries (chowdsp_utils detailed, Gin, sst-filters, signalsmith-stretch, ff_meters), tooling details (pluginval strictness, Perfetto, melatonin_inspector), GUI performance patterns (VBlankAttachment, setOpaque, setBufferedToImage, JUCE_LIVE_CONSTANT), cross-platform specifics (MSVC static linking, AU cache reset), CI matrix details from Pamplejuce (sccache, universal binary, Inno Setup, notarytool), AsyncUpdater NOT lock-free warning, hidden allocation warning (unordered_map::find), two-stage review methodology, boundary condition verification process",
+
+    "workflow_model": "human-in-the-loop",
+    "roles": {
+        "you": "Creative director, sound designer, final decision-maker on all audio/UX choices. You define WHAT the plugin does and HOW it should sound. Every creative decision is human_only — AI asks, never assumes.",
+        "ai": "Code architect, implementation engine, reviewer, test generator. AI handles HOW to build what you've defined. Never makes creative decisions autonomously. Must ask for creative direction, never propose defaults for sound/naming/aesthetics."
+    },
+
+    "references": {
+        "description": "Documentation, guides, and community resources. Feed relevant links as context per phase.",
+        "project": {
+            "github_repo": "https://github.com/wj4616/EpiphanyMachineVST",
+            "website": "https://epiphanymachineart.com",
+            "v2_spec_template": "claude-code-prompt-epiphany-machine-v2-FINAL.md — use as structural template for future plugin specs. Contains: architecture overview, DSP implementation details, GUI design spec, parameter list, preset system, build instructions, test checklist."
+        },
+        "juce_official": {
+            "api_modules": {
+                "url": "https://docs.juce.com/master/index.html",
+                "description": "JUCE module documentation index. Key modules: juce_audio_processors, juce_dsp, juce_gui_basics, juce_audio_basics, juce_audio_plugin_client",
+                "when_to_use": "Phase 2 (architecture), Phase 4 (DSP), Phase 7 (GUI)"
+            },
+            "api_classes": {
+                "url": "https://docs.juce.com/master/classes.html",
+                "description": "Alphabetical JUCE class reference. Key classes: AudioProcessor, AudioProcessorValueTreeState, AudioProcessorEditor, SmoothedValue, AudioBuffer, Component, LookAndFeel_V4, Timer, NormalisableRange",
+                "when_to_use": "Any implementation phase — look up specific class APIs"
+            },
+            "tutorials": {
+                "url": "https://juce.com/learn/tutorials/",
+                "description": "Official JUCE tutorials. Key tutorials: 'Create a basic Audio/MIDI plugin', 'DSP module', 'Customise the look and feel', 'Slider values'",
+                "when_to_use": "Phase 0 (if learning), Phase 2 (architecture patterns)"
+            }
+        },
+        "community": {
+            "awesome_juce": {
+                "url": "https://github.com/sudara/awesome-juce",
+                "description": "Comprehensive curated list of JUCE resources: open-source plugins, libraries, templates, tutorials, tools. Deep-crawl this for reference implementations, testing frameworks, CI templates, and DSP libraries.",
+                "when_to_use": "Phase 2 (find reference implementations), Phase 3 (CI templates), Phase 11 (optimization techniques)"
+            },
+            "melatonin_blog": {
+                "url": "https://melatonin.dev/blog/",
+                "description": "Expert JUCE blog by Sudara. Covers: testing with Catch2, CI/CD for JUCE, audio thread debugging, LookAndFeel patterns, JUCE best practices. Highly relevant to automated testing and optimization phases.",
+                "key_articles": [
+                    "How to add Catch2 testing to a JUCE project",
+                    "Setting up GitHub Actions for JUCE",
+                    "Debugging audio thread issues",
+                    "Custom LookAndFeel deep dive"
+                ],
+                "when_to_use": "Phase 3 (test framework setup), Phase 8 (build/CI), Phase 11 (optimization)"
+            }
+        },
+        "dsp_education": {
+            "stanford_320c": {
+                "url": "https://ccrma.stanford.edu/courses/320c/",
+                "description": "Stanford CCRMA — Audio DSP Projects in Faust and C++. Covers: FDN reverbs, filters, delay effects, granular synthesis, spectral processing.",
+                "when_to_use": "Phase 4 (DSP implementation) — reference for algorithm correctness"
+            },
+            "key_authors": [
+                "Julius O. Smith III — Physical Audio Signal Processing (FDN reverbs, delay networks) — https://ccrma.stanford.edu/~jos/",
+                "Vadim Zavalishin — The Art of VA Filter Design (Cytomic TPT SVF, all filter topologies) — free PDF",
+                "Andy Simper (Cytomic) — original TPT SVF papers — https://cytomic.com/files/dsp/",
+                "Will Pirkle — Designing Audio Effect Plugins in C++ (practical JUCE-adjacent DSP)"
+            ]
+        },
+        "community_libraries": {
+            "chowdsp_utils": {
+                "url": "https://github.com/Chowdhury-DSP/chowdsp_utils",
+                "description": "30+ modules of production-quality DSP and plugin utilities. Key modules: chowdsp_filters (Butterworth, Chebyshev, Elliptic, SVF), chowdsp_waveshapers (ADAA hard/soft clip, tanh, wavefolding), chowdsp_reverb (FDN templates), chowdsp_sources (anti-aliased oscillators), chowdsp_plugin_state (faster APVTS replacement), chowdsp_presets (preset management).",
+                "when_to_use": "Phase 4 — before implementing custom DSP, check if chowdsp has it already. Especially for ADAA waveshaping (avoids oversampling cost) and anti-aliased oscillators."
+            },
+            "notable": [
+                "Gin (FigBug) — large utility collection, StackBlur, websockets — github.com/FigBug/Gin",
+                "sst-filters — Surge synthesizer filters as standalone library — github.com/surge-synthesizer/sst-filters",
+                "sst-waveshapers — Surge waveshapers as standalone — github.com/surge-synthesizer/sst-waveshapers",
+                "signalsmith-stretch — Polyphonic pitch/time stretching — github.com/Signalsmith-Audio/signalsmith-stretch",
+                "ff_meters — LED-style level meters — github.com/ffAudio/ff_meters"
+            ]
+        },
+        "tooling_details": {
+            "pluginval": {
+                "url": "https://github.com/Tracktion/pluginval",
+                "description": "Cross-platform plugin validator. Strictness levels 1 (basic) to 10 (comprehensive). Level 5+ recommended for release.",
+                "tests": "Editor open/close cycles, state save/restore round-trip, parameter randomization, audio processing stress, listener cleanup, CPU measurement",
+                "debugging": "Run pluginval from IDE with debugger. Note random seed from CI output to reproduce intermittent issues.",
+                "when_to_use": "Phase 8 (build verification) and CI pipeline"
+            },
+            "perfetto": {
+                "url": "https://github.com/sudara/melatonin_perfetto",
+                "description": "Cross-platform performance tracer. Shows every callback in sequence (not aggregated). Critical for audio thread where worst-case matters.",
+                "setup": "Add melatonin_perfetto module. Annotate with TRACE_DSP, TRACE_COMPONENT macros. Output .pftrace → ui.perfetto.dev",
+                "when_to_use": "Phase 11 (optimization). Always profile Release builds."
+            },
+            "melatonin_inspector": {
+                "url": "https://github.com/sudara/melatonin_inspector",
+                "description": "Web-inspector-style tool for JUCE component debugging. Inspect hierarchy, bounds, visibility, repaint regions.",
+                "when_to_use": "Phase 7 (GUI) for debugging layout and repaint issues"
+            }
+        },
+        "build_and_test": {
+            "reaper_vst_testing": {
+                "description": "Reaper DAW testing workflow: Options → Preferences → Plug-ins → VST → Add path to ~/.vst3 → Rescan. Load plugin on track, verify GUI, automate parameters, save/reopen session.",
+                "daw": "Reaper",
+                "platform": "Linux (primary), macOS, Windows (cross-platform targets)"
+            },
+            "cmake_build": {
+                "commands": "cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release -- -j$(nproc)",
+                "ci_commands": {
+                    "configure": "cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache",
+                    "build": "cmake --build build --config Release",
+                    "test": "ctest --verbose --output-on-failure",
+                    "validate": "pluginval --strictness-level 10 --verbose --validate [VST3_PATH]"
+                },
+                "ci_matrix": {
+                    "linux": "ubuntu-22.04, Clang, Ninja, Xvfb",
+                    "macos": "macos-14, Ninja, universal binary (arm64;x86_64)",
+                    "windows": "windows-latest, MSVC, Ninja"
+                },
+                "ci_packaging": {
+                    "macos": "pkgbuild + productbuild → .pkg, codesign + notarytool",
+                    "windows": "Inno Setup → .exe, Azure Trusted Signing",
+                    "linux": ".zip archive"
+                },
+                "vst3_path_linux": "~/.vst3/",
+                "vst3_path_macos": "/Library/Audio/Plug-Ins/VST3/",
+                "vst3_path_windows": "C:\\Program Files\\Common Files\\VST3\\"
+            }
+        }
+    },
+
+    "integration_notes": {
+        "superpowers_mapping": {
+            "brainstorming": "Use in Phase 0 to develop the plugin concept and spec. AI asks multi-choice questions, user picks options.",
+            "writing_plans": "Use in Phase 2 to produce the architecture doc and task breakdown.",
+            "subagent_driven_development": "Preferred for implementation phases. Fresh subagent per task with two-stage review (spec compliance then code quality). Caught critical bugs implementers missed.",
+            "security_review": "Use to review any new skills or external code before integrating."
+        },
+        "spec_template": "Use the v2 spec (claude-code-prompt-epiphany-machine-v2-FINAL.md) as a structural template for new plugin specs. It covers: architecture overview with signal flow diagram, DSP implementation with exact algorithms, GUI design with pixel dimensions and color palette, complete parameter list, preset system, build instructions, and a final test checklist.",
+        "session_history": "After each completed phase, extract the working conversation into a phase summary. This becomes the context seed for the next phase — prevents token waste from carrying full history."
+    },
+
+    "checklists": [
+        {
+            "title": "Phase 0: Plugin Concept & Spec",
+            "purpose": "Define exactly what you're building before writing any code. The AI should be ASKING YOU questions here, not proposing solutions.",
+            "items": [
+                {
+                    "title": "Define plugin type and signal flow",
+                    "owner": "human_only",
+                    "ai_role": "interviewer — ask multi-choice questions for each decision",
+                    "description": "AI prompts for: plugin type (synth/effect/analyzer/hybrid), signal flow (mono/stereo, sidechain?), DSP chain (processing blocks and order), parameter count estimate. User answers each. AI NEVER proposes a signal flow unprompted.",
+                    "reference": "v2 spec template: ARCHITECTURE OVERVIEW section shows the signal flow format"
+                },
+                {
+                    "title": "Define the sound identity",
+                    "owner": "human_only",
+                    "ai_role": "none — this is purely creative",
+                    "description": "What should this plugin SOUND like? User provides: reference plugins/hardware, genre context, character words, what makes it different. AI records these exact words as the creative north star. AI never paraphrases or reinterprets.",
+                    "prevention_rule": "EM-session1: AI proposed generic preset names and user rejected them. ALWAYS use user's exact creative language."
+                },
+                {
+                    "title": "Define technical constraints",
+                    "owner": "human",
+                    "ai_role": "advisor — flag JUCE compatibility issues",
+                    "description": "Lock down: JUCE version, target formats (VST3/AU/AAX/Standalone), target OS (ALL: Linux, macOS, Windows), target DAW (Reaper), sample rates (44.1k-192kHz), buffer size range, CPU budget. AI flags issues with choices.",
+                    "reference": "JUCE CMake API: https://docs.juce.com/master/index.html"
+                },
+                {
+                    "title": "Gain staging design",
+                    "owner": "human",
+                    "ai_role": "advisor — identify existing gain staging issues",
+                    "description": "Define when hot signals are OK vs not OK. From Epiphany Machine session: 'don't make it run too hot, but we want the effect to be intense. without drive the effect shouldn't be overly hot though.' AI should audit existing gain staging before proposing changes.",
+                    "prevention_rule": "EM-session1: 6 layers of conservative gain staging identified as root cause of 'effect not noticeable enough'. Always audit existing gain staging early."
+                },
+                {
+                    "title": "Preset theme and naming",
+                    "owner": "human_only",
+                    "ai_role": "drafter — but user has FINAL say on every name",
+                    "description": "AI will suggest generic names. REJECT THEM. User defines creative direction and approves every name individually.",
+                    "prevention_rule": "EM-session1: AI proposed 'Superposition, Entanglement, Dark Matter' — user rejected as too generic. Always ask user for creative naming direction first."
+                },
+                {
+                    "title": "Write the one-page spec",
+                    "owner": "ai",
+                    "ai_role": "writer — user approves",
+                    "description": "AI compiles everything into a structured spec doc following the v2 spec template format: architecture overview with signal flow diagram, DSP algorithms with code snippets, GUI design with dimensions and colors, parameter list with ranges and defaults, preset system, build instructions, test checklist, 'what not to do' section.",
+                    "output": "docs/superpowers/specs/{date}-{plugin-name}-design.md",
+                    "reference": "Template: claude-code-prompt-epiphany-machine-v2-FINAL.md"
+                },
+                {
+                    "title": "Spec self-review",
+                    "owner": "ai",
+                    "ai_role": "reviewer",
+                    "description": "Before user reviews, AI checks for: placeholder values, contradictions, ambiguity, scope gaps, formula correctness. From session: caught wavefolder bypass bug, MORPH label ambiguity, parameter count error in self-review.",
+                    "prevention_rule": "EM-session2: Wavefolder formula sin(x*PI)/1.0 amplifies by PI at drive=0. Always verify formulas at boundary conditions (param=0, param=1, param=max)."
+                },
+                {
+                    "title": "PHASE GATE: Spec approved",
+                    "gate_conditions": [
+                        "Plugin type and signal flow defined",
+                        "Sound identity documented in YOUR words (not paraphrased by AI)",
+                        "Gain staging philosophy explicit",
+                        "Technical constraints locked (JUCE version, formats, ALL target OS, Reaper DAW)",
+                        "One-page spec written and self-reviewed",
+                        "Spec approved by you",
+                        "Out-of-scope list exists",
+                        "Preset theme chosen with creative names you approve"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 1: Performance Audit (if upgrading existing code)",
+            "purpose": "Before ANY new features, audit the existing codebase for memory/CPU/thread-safety issues. Skip this phase for brand-new plugins.",
+            "items": [
+                {
+                    "title": "Thread safety audit",
+                    "owner": "ai",
+                    "ai_role": "auditor",
+                    "description": "Scan for non-atomic shared state between audio and GUI threads. Use std::atomic<bool> for all flags shared between threads.",
+                    "prevention_rule": "EM-01: PresetManager had plain bool shared between threads. Always use std::atomic for cross-thread state."
+                },
+                {
+                    "title": "Instance isolation audit",
+                    "owner": "ai",
+                    "ai_role": "auditor",
+                    "description": "Check for static variables shared across plugin instances. All state must be per-instance members.",
+                    "prevention_rule": "EM-session3: static int lastPreset was shared across all instances."
+                },
+                {
+                    "title": "Audio thread allocation audit",
+                    "owner": "ai",
+                    "ai_role": "auditor",
+                    "description": "Search for heap allocations, large memsets, or std::string construction on the audio thread.",
+                    "prevention_rule": "EM-session3: GlitchEngine cleared 1MB buffer on audio thread. Also: std::unordered_map.find() can allocate via std::string construction — use std::vector<std::pair<>> for audio-thread lookups."
+                },
+                {
+                    "title": "Parameter lookup optimization",
+                    "owner": "ai",
+                    "ai_role": "auditor",
+                    "description": "Check for O(N) parameter lookups on the audio thread. Cache parameter indices at init time.",
+                    "prevention_rule": "EM-01: First cache attempt keyed on names (still O(N) to compute key). Verify ENTIRE call chain is O(1)."
+                },
+                {
+                    "title": "PHASE GATE: Performance audit complete",
+                    "gate_conditions": [
+                        "No non-atomic shared state between audio/GUI threads",
+                        "No static variables shared across instances",
+                        "No heap allocations in processBlock path",
+                        "Parameter lookups are O(1) on audio thread",
+                        "Build succeeds with all fixes",
+                        "Sound unchanged"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 2: Architecture & Task Breakdown",
+            "purpose": "Turn the spec into a buildable plan with complete code.",
+            "items": [
+                {
+                    "title": "Read all existing source files",
+                    "owner": "ai",
+                    "ai_role": "architect",
+                    "description": "AI must read EVERY source file before planning. No planning from memory.",
+                    "reference": "JUCE API modules: https://docs.juce.com/master/index.html"
+                },
+                {
+                    "title": "Design class architecture",
+                    "owner": "ai",
+                    "ai_role": "architect",
+                    "description": "Produce class diagram: processor, editor, DSP modules, parameter layout, state management. Rules: APVTS for all parameters, processBlock thread-safe, Editor talks to Processor ONLY through APVTS, DSP modules are self-contained with prepare()/reset()/process() lifecycle.",
+                    "reference": "JUCE classes: https://docs.juce.com/master/classes.html — AudioProcessor, AudioProcessorValueTreeState, AudioProcessorEditor"
+                },
+                {
+                    "title": "Specify DSP algorithms with math",
+                    "owner": "ai",
+                    "ai_role": "engineer",
+                    "description": "For each DSP block: algorithm choice, mathematical description, JUCE implementation path, CPU cost, known gotchas. VERIFY all formulas at boundary conditions.",
+                    "prevention_rule": "EM-08: Plan specified Q constant 24.5f when correct value was 49.5f. Always compute formula output at param=0 and param=1 to verify range.",
+                    "reference": "Stanford 320c: https://ccrma.stanford.edu/courses/320c/ — Cytomic TPT SVF papers: https://cytomic.com/files/dsp/"
+                },
+                {
+                    "title": "Break into ordered task list with code",
+                    "owner": "ai",
+                    "ai_role": "planner",
+                    "description": "Each task: ONE thing, files to modify, JUCE classes used, ACTUAL CODE for every step, build command, commit message. Ordered by dependency.",
+                    "prevention_rule": "EM-session2: Plan was 1577 lines — too large for single response. Write in chunks using Write + Edit. Use unique anchor strings to avoid multi-match errors."
+                },
+                {
+                    "title": "Plan self-review",
+                    "owner": "ai",
+                    "ai_role": "reviewer",
+                    "description": "Check: scope completeness, dependency order, type consistency across tasks, formula correctness at boundary values, buffer sizes at max sample rate.",
+                    "prevention_rule": "EM-03/04/08: Plan self-review MISSED FHT placement, buffer overflow, and Q constant errors. Self-review is necessary but NOT sufficient — two-stage review during implementation catches what self-review misses."
+                },
+                {
+                    "title": "PHASE GATE: Plan approved",
+                    "gate_conditions": [
+                        "Every spec requirement has a corresponding task",
+                        "Tasks ordered by dependency",
+                        "Each task has complete code and build step",
+                        "Plan self-review completed",
+                        "All DSP formulas verified at boundary conditions",
+                        "Buffer sizes computed for max supported sample rate (192kHz)"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 3: Project Setup & Test Framework",
+            "purpose": "Set up build system, test framework, and CI before writing DSP code.",
+            "items": [
+                {
+                    "title": "Update CMakeLists.txt",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Version, source files, JUCE modules, target formats (VST3 + Standalone at minimum), C++17, COPY_PLUGIN_AFTER_BUILD.",
+                    "reference": "JUCE CMake API: https://docs.juce.com/master/index.html — see also awesome-juce for CMake templates: https://github.com/sudara/awesome-juce"
+                },
+                {
+                    "title": "Set up automated test framework",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Add Catch2 or GoogleTest to the project. At minimum: compilation test, parameter range tests, processBlock smoke test (no crash with silence, noise, extreme parameters). Reference melatonin blog for JUCE testing setup.",
+                    "reference": "Melatonin blog — testing with Catch2: https://melatonin.dev/blog/ — awesome-juce testing section: https://github.com/sudara/awesome-juce",
+                    "tests_to_implement": [
+                        "Plugin instantiation — constructor doesn't crash",
+                        "Parameter range validation — all params within declared range",
+                        "processBlock smoke test — 1 second of silence, no NaN/inf in output",
+                        "processBlock noise test — 1 second of white noise, no NaN/inf",
+                        "processBlock extreme params — all params at min, all at max, no crash",
+                        "State save/restore round-trip — save state, restore, all params match",
+                        "Multi-instance — 4 instances simultaneously, no cross-talk"
+                    ]
+                },
+                {
+                    "title": "Set up CI (optional but recommended)",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "GitHub Actions workflow: build on Linux (required), macOS (recommended), Windows (recommended). Run automated tests after build.",
+                    "reference": "Melatonin blog — GitHub Actions for JUCE: https://melatonin.dev/blog/ — awesome-juce CI section: https://github.com/sudara/awesome-juce"
+                },
+                {
+                    "title": "PHASE GATE: Project setup complete",
+                    "gate_conditions": [
+                        "CMakeLists.txt configured for all target formats",
+                        "Build succeeds on primary platform (Linux)",
+                        "Test framework integrated and basic tests pass",
+                        "CI pipeline runs (if set up)"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 4: Core DSP Implementation",
+            "purpose": "Build the audio engine module by module with two-stage review after each.",
+            "pre_flight_checks": [
+                "EM-03: In any FDN implementation, verify mixing matrix is in FEEDBACK path, not just output",
+                "EM-04: Compute max delay length at 192kHz: max_base * (192000/48000). Buffer must be >= this.",
+                "EM-05: Reverse playback uses (start+length-1), not (start+length)",
+                "EM-06: All circular buffer indices use & mask wrapping",
+                "EM-08: Verify filter Q mapping at reso=0 and reso=1"
+            ],
+            "items": [
+                {
+                    "title": "Implement DSP modules with two-stage review",
+                    "owner": "ai",
+                    "ai_role": "implementer + reviewer",
+                    "description": "For EACH module: (1) dispatch implementer, (2) spec compliance review, (3) code quality review, (4) if issues: fix + re-review BOTH stages. Code quality reviewer catches what spec reviewer misses — do NOT skip it.",
+                    "prevention_rule": "EM-03: Code quality reviewer caught FHT not in feedback path (critical). EM-04: Caught buffer overflow. EM-05/06/07: Caught 3 GlitchEngine bugs. Spec reviewer alone would have missed all of these.",
+                    "reference": "DSP algorithms: https://ccrma.stanford.edu/courses/320c/ — Cytomic SVF: https://cytomic.com/files/dsp/"
+                },
+                {
+                    "title": "Run automated tests after each module",
+                    "owner": "ai",
+                    "ai_role": "tester",
+                    "description": "After each DSP module implementation, run the test suite. At minimum: compilation succeeds, processBlock smoke test passes.",
+                    "validation": "All tests green before proceeding to next module"
+                },
+                {
+                    "title": "PHASE GATE: All DSP modules implemented and reviewed",
+                    "gate_conditions": [
+                        "Each module passed two-stage review (spec + code quality)",
+                        "All critical and important issues resolved",
+                        "Fix subagents re-reviewed",
+                        "Automated tests pass",
+                        "Build succeeds"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 5: Preset Data & State Management",
+            "purpose": "Implement presets AND state save/restore. State persistence is NOT optional.",
+            "items": [
+                {
+                    "title": "Implement state save/restore",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "CRITICAL: getStateInformation and setStateInformation must be implemented, not empty stubs. All parameters serialize and deserialize via APVTS. Test: save project in Reaper, close, reopen — all parameters restored.",
+                    "prevention_rule": "Gap analysis: Epiphany Machine v3 shipped with empty stubs. Broken state save = lost presets = angry users.",
+                    "reference": "JUCE tutorial: https://juce.com/learn/tutorials/ — 'Saving and loading your plug-in state'"
+                },
+                {
+                    "title": "Update PresetData with preset values",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Add new fields to preset struct, populate preset values from spec. Preset VALUES are AI-generated from spec descriptions but must be auditioned by user in Phase 9."
+                },
+                {
+                    "title": "Update PresetManager",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Add new params to capture/apply. Use log-space interpolation for frequency params, cosine for mix. Choice params snap at 50%. Bools not morphed.",
+                    "prevention_rule": "EM-14: Use equal-power (cosine) mixing for dry/wet, not linear. Linear concentrates audible change in low end."
+                },
+                {
+                    "title": "PHASE GATE: Presets and state management complete",
+                    "gate_conditions": [
+                        "State save/restore round-trip test passes",
+                        "Preset count consistent across PresetData, APVTS, PresetManager",
+                        "Morph interpolation uses log-space for frequencies, cosine for mix",
+                        "Automated state save/restore test passes"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 6: Processor Integration",
+            "purpose": "Wire DSP modules together in processBlock.",
+            "pre_flight_checks": [
+                "EM-13: EVERY SmoothedValue must have getNextValue() called per-sample. Audit ALL SmoothedValue declarations.",
+                "EM-09: Copy formula constants from spec exactly — no rounding",
+                "EM-10: Every feedback loop must have a safety limiter (soft-clip or hard-clip)",
+                "EM-11: getTailLengthSeconds() must return max decay parameter value",
+                "EM-14: Use equal-power (cosine) dry/wet mixing",
+                "EM-15: Default decay should be ≤2.0s so parameter changes are audible quickly"
+            ],
+            "items": [
+                {
+                    "title": "Update parameter layout",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "All parameters with correct ranges, defaults, skew values. Frequency params: skew 0.3. Decay/feedback: skew 0.5."
+                },
+                {
+                    "title": "Implement processBlock",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Full signal flow per spec. CRITICAL: after writing processBlock, audit every SmoothedValue — grep for getNextValue() in per-sample loops. Any missing = dead parameter.",
+                    "prevention_rule": "EM-13: driveSmoothed.getNextValue() was never called — drive was permanently zero. NOT caught by any reviewer, only by user in DAW testing."
+                },
+                {
+                    "title": "SmoothedValue audit",
+                    "owner": "ai",
+                    "ai_role": "reviewer",
+                    "description": "After processBlock is written, list every SmoothedValue in the header. For each one, verify getNextValue() is called in a per-sample loop. If ANY is missing, it's a critical silent bug.",
+                    "checklist": "For each SmoothedValue:\n□ Declared in header\n□ Initialized in prepareToPlay with setCurrentAndTargetValue()\n□ setTargetValue() called once per block\n□ getNextValue() called per-sample in a loop\n□ Value used downstream (getCurrentValue() or the return from getNextValue())"
+                },
+                {
+                    "title": "PHASE GATE: Processor integration complete",
+                    "gate_conditions": [
+                        "All parameters match spec ranges",
+                        "SmoothedValue audit: every SmoothedValue has getNextValue() per-sample",
+                        "Feedback loop has safety limiter",
+                        "getTailLengthSeconds() matches max decay",
+                        "Equal-power dry/wet mixing",
+                        "Default decay ≤ 2.0s",
+                        "Build succeeds with zero errors",
+                        "Automated tests pass"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 7: GUI / Editor Implementation",
+            "purpose": "Build the visual interface. You direct look and feel, AI implements.",
+            "items": [
+                {
+                    "title": "Define GUI layout and visual identity",
+                    "owner": "human_only",
+                    "ai_role": "interviewer — ask about preferences, then implement",
+                    "description": "YOU define: dimensions, layout, visual style, colors, typography, metering. AI implements. Reference: v2 spec template has a complete GUI design section with ASCII layout, color palette, and component specs.",
+                    "reference": "JUCE GUI: https://docs.juce.com/master/classes.html — Component, LookAndFeel_V4, Slider, Label, TextButton"
+                },
+                {
+                    "title": "Implement custom LookAndFeel",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Subclass LookAndFeel_V4. Apply to top-level editor. Use juce::Colour for theming.",
+                    "reference": "Melatonin blog — LookAndFeel: https://melatonin.dev/blog/"
+                },
+                {
+                    "title": "Build component hierarchy",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Every parameter control uses APVTS Attachment. Timer-based updates for value labels. setBounds layout with verified arithmetic.",
+                    "prevention_rule": "EM-12: Verify ALL component bounds fit within parent panels. Walk the arithmetic: panel starts at panelY, component bottom = componentY + componentHeight, verify componentBottom - panelY ≤ panelHeight."
+                },
+                {
+                    "title": "Visual polish iteration",
+                    "owner": "human_only",
+                    "ai_role": "implementer — you direct, AI makes changes",
+                    "description": "Load plugin, look at it, describe changes. Timebox: 2 sessions max. Ship what you have."
+                },
+                {
+                    "title": "PHASE GATE: GUI complete",
+                    "gate_conditions": [
+                        "All parameters have GUI controls with APVTS attachments",
+                        "Custom LookAndFeel applied",
+                        "All controls visible and within bounds",
+                        "Version label visible",
+                        "YOU have approved the visual design",
+                        "Build succeeds"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 8: Build Verification & Cross-Platform",
+            "purpose": "Verify the plugin builds and works across all target platforms and configurations.",
+            "items": [
+                {
+                    "title": "Linux build and test",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Clean build, run automated tests, verify .vst3 binary exists at expected path and size.",
+                    "validation": "cmake --build build --clean-first -- -j$(nproc) succeeds with zero errors"
+                },
+                {
+                    "title": "Cross-platform builds (macOS, Windows)",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Build on macOS and Windows via CI or cross-compilation. Verify builds succeed. If no CI yet, at minimum verify the CMakeLists.txt is configured correctly for all platforms.",
+                    "reference": "awesome-juce CI templates: https://github.com/sudara/awesome-juce"
+                },
+                {
+                    "title": "Sample rate stress test",
+                    "owner": "ai",
+                    "ai_role": "tester",
+                    "description": "Test at 44.1kHz, 48kHz, 96kHz, and 192kHz. Verify no buffer overflows, no NaN, no audio corruption.",
+                    "prevention_rule": "EM-04: DiffusionNetwork kBufSize=4096 overflowed at 96kHz+. Always test at max supported sample rate."
+                },
+                {
+                    "title": "Buffer size stress test",
+                    "owner": "ai",
+                    "ai_role": "tester",
+                    "description": "Test with buffer sizes 64, 128, 256, 512, 1024, 2048. No crashes, no glitches lasting more than one buffer."
+                },
+                {
+                    "title": "Extreme parameter test",
+                    "owner": "ai",
+                    "ai_role": "tester",
+                    "description": "Set all parameters to minimum, process audio. Set all to maximum, process audio. No crashes, no NaN, no inf."
+                },
+                {
+                    "title": "Multi-instance test",
+                    "owner": "ai",
+                    "ai_role": "tester",
+                    "description": "Instantiate 4+ instances simultaneously. No cross-talk, no shared state corruption.",
+                    "prevention_rule": "EM-session3: static int lastPreset was shared across instances."
+                },
+                {
+                    "title": "State save/restore in DAW",
+                    "owner": "ai",
+                    "ai_role": "tester",
+                    "description": "Save Reaper project with plugin loaded, close, reopen. All parameters match saved state."
+                },
+                {
+                    "title": "Git tag release",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Tag with version number: git tag vX.Y.Z"
+                },
+                {
+                    "title": "PHASE GATE: Build verified",
+                    "gate_conditions": [
+                        "Linux build succeeds with zero errors",
+                        "Cross-platform builds succeed (or CMakeLists verified)",
+                        "Sample rate tests pass (44.1k through 192k)",
+                        "Buffer size tests pass (64 through 2048)",
+                        "Extreme parameter test passes",
+                        "Multi-instance test passes",
+                        "State save/restore works in Reaper",
+                        "All automated tests pass",
+                        "Git tagged"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 9: DAW Testing & Sound Approval",
+            "purpose": "Load in Reaper, LISTEN, and fix what you find. This is where real bugs surface and YOU approve the sound.",
+            "items": [
+                {
+                    "title": "Load in Reaper and play audio",
+                    "owner": "human_only",
+                    "ai_role": "none",
+                    "description": "Load plugin on a track in Reaper, play audio through it, describe what you hear. This is YOUR moment — AI cannot evaluate sound."
+                },
+                {
+                    "title": "Control responsiveness check",
+                    "owner": "human_only",
+                    "ai_role": "debugger if issues found",
+                    "description": "Move every knob while audio plays. Does each one produce an audible/visible change? Report any that seem dead or delayed.",
+                    "prevention_rule": "EM-13: DRIVE knob was dead because SmoothedValue never advanced. EM-15: Controls seemed delayed because 4.0s default decay masked changes."
+                },
+                {
+                    "title": "Mix range check",
+                    "owner": "human_only",
+                    "ai_role": "debugger if issues found",
+                    "description": "Sweep mix 0→1. Is the change evenly distributed, or bunched at one end?",
+                    "prevention_rule": "EM-14: Linear mix blend concentrated change in first 30% of range. Equal-power cosine mixing fixes this."
+                },
+                {
+                    "title": "Preset audition",
+                    "owner": "human_only",
+                    "ai_role": "implementer for adjustments",
+                    "description": "Load EVERY preset. For each one: does it sound good? Does it showcase the plugin's range? Is it usable? Mark any that need tuning. AI adjusts values per your direction.",
+                    "prevention_rule": "Gap analysis: Presets were AI-generated but never auditioned. Some may be unusable."
+                },
+                {
+                    "title": "Automation test",
+                    "owner": "human",
+                    "ai_role": "debugger if issues found",
+                    "description": "In Reaper: record automation on 2-3 parameters, play back. Verify: no clicks, no zippers, smooth transitions."
+                },
+                {
+                    "title": "Bypass and freeze test",
+                    "owner": "human",
+                    "ai_role": "debugger if issues found",
+                    "description": "Toggle bypass — clean click-free transition? Toggle freeze — infinite sustain without explosion? Freeze + high drift + high feedback — does safety limiter work?"
+                },
+                {
+                    "title": "Diagnose and fix reported issues",
+                    "owner": "ai",
+                    "ai_role": "debugger",
+                    "description": "For each issue user reports: read processBlock, trace signal flow, identify root cause, implement fix, rebuild, user re-tests."
+                },
+                {
+                    "title": "PHASE GATE: DAW-validated and sound-approved",
+                    "gate_conditions": [
+                        "Plugin loads in Reaper without crashing",
+                        "EVERY control produces audible/visible change when moved",
+                        "Mix knob effective across full range",
+                        "Parameter changes audible within ~2 seconds",
+                        "ALL presets auditioned — usable ones approved, broken ones fixed or removed",
+                        "Automation recording/playback works",
+                        "Bypass and freeze work correctly",
+                        "No audio glitches, clicks, or dropouts",
+                        "YOU have approved the sound"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 10: Release & Distribution",
+            "purpose": "Package, copy binary, push to repo.",
+            "items": [
+                {
+                    "title": "Copy binary to project root",
+                    "owner": "ai",
+                    "ai_role": "utility",
+                    "description": "cp the compiled .so/.vst3 to project root for easy GitHub download. Commit it.",
+                    "reference": "Memory: project_release_workflow.md — after every build, copy .so to root"
+                },
+                {
+                    "title": "Update documentation",
+                    "owner": "ai",
+                    "ai_role": "writer — user edits",
+                    "description": "At minimum: what the plugin does, system requirements, install instructions per OS, parameter reference, quick start guide. If a manual exists from previous version, update it.",
+                    "reference": "Gap analysis: v2 manual may need updating for v3 changes"
+                },
+                {
+                    "title": "Push to GitHub",
+                    "owner": "human",
+                    "ai_role": "helper",
+                    "description": "Push all commits + tag. If remote has diverged, pull first, resolve conflicts, then push.",
+                    "prevention_rule": "EM-16: Always git pull before pushing a large batch. For binary merge conflicts, use git checkout --ours or --theirs explicitly."
+                },
+                {
+                    "title": "PHASE GATE: Release published",
+                    "gate_conditions": [
+                        "Binary at project root (Linux .so at minimum)",
+                        "Documentation updated",
+                        "All commits and tag pushed",
+                        "README reflects current version"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 11: Optimization & Hardening",
+            "purpose": "Make it fast and stable. Profile before optimizing.",
+            "items": [
+                {
+                    "title": "CPU profiling",
+                    "owner": "ai",
+                    "ai_role": "optimizer",
+                    "description": "Profile processBlock with perf (Linux), Instruments (macOS), or VTune. Identify top 3 hotspots. Do NOT optimize without profiling first.",
+                    "targets": [
+                        "Per-sample transcendental functions (pow, sin, tan, exp) — pre-compute per block where possible",
+                        "Per-sample divisions — pre-compute reciprocals",
+                        "Cache-unfriendly access patterns in delay line arrays",
+                        "Unnecessary computations when parameters haven't changed"
+                    ],
+                    "reference": "JUCE performance: https://docs.juce.com/master/index.html — juce_dsp SIMD section"
+                },
+                {
+                    "title": "Memory audit",
+                    "owner": "ai",
+                    "ai_role": "reviewer",
+                    "description": "Verify: no heap allocations in processBlock (use RAII/smart pointers), no memory leaks, all buffers pre-allocated in prepareToPlay.",
+                    "reference": "Melatonin blog — audio thread debugging: https://melatonin.dev/blog/"
+                },
+                {
+                    "title": "Denormal stress test",
+                    "owner": "ai",
+                    "ai_role": "tester",
+                    "description": "Process 60 seconds of silence. CPU should remain near-zero. If it spikes, denormal protection is insufficient. Use BOTH ScopedNoDenormals AND 1e-18 offset in feedback paths."
+                },
+                {
+                    "title": "Sound verification after optimization",
+                    "owner": "human_only",
+                    "ai_role": "none",
+                    "description": "LISTEN after every optimization. Confirm sound hasn't changed. Never sacrifice sound quality for CPU."
+                },
+                {
+                    "title": "PHASE GATE: Optimized and hardened",
+                    "gate_conditions": [
+                        "CPU profiled — top hotspots addressed",
+                        "No heap allocations in processBlock",
+                        "Denormal stress test passes (60s silence, CPU stable)",
+                        "Sound verified unchanged after optimization",
+                        "All automated tests still pass"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 12: Retrospective & Reusable Components",
+            "purpose": "What worked, what didn't, extract templates for next plugin.",
+            "items": [
+                {
+                    "title": "Process retrospective",
+                    "owner": "human",
+                    "ai_role": "facilitator",
+                    "description": "Review: which phases took longest and why, where did AI produce best code on first try, where did most iteration cycles burn, what to add to this playbook."
+                },
+                {
+                    "title": "Extract reusable components",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Identify code worth keeping: custom DSP blocks, LookAndFeel, APVTS boilerplate, build config, test framework setup. Save as template project or personal JUCE module."
+                },
+                {
+                    "title": "Update this playbook",
+                    "owner": "ai",
+                    "ai_role": "writer",
+                    "description": "Add lessons learned, new failure modes, updated prevention rules. Each plugin build should improve the playbook."
+                },
+                {
+                    "title": "Define v2 scope (optional)",
+                    "owner": "human_only",
+                    "ai_role": "note-taker",
+                    "description": "Features cut from v1, user feedback, new ideas, deferred improvements. This becomes Phase 0 input for next run."
+                },
+                {
+                    "title": "PHASE GATE: Retrospective complete",
+                    "gate_conditions": [
+                        "Process retrospective documented",
+                        "Reusable components extracted",
+                        "Playbook updated with lessons learned",
+                        "v2 scope captured (if applicable)"
+                    ]
+                }
+            ]
+        }
+    ],
+
+    "juce_patterns": {
+        "description": "Reusable JUCE API patterns. Reference: https://docs.juce.com/master/classes.html",
+        "parameter_management": {
+            "apvts_setup": {
+                "pattern": "AudioProcessorValueTreeState with lambda-based parameter creation",
+                "classes": ["juce::AudioProcessorValueTreeState", "juce::AudioParameterFloat", "juce::AudioParameterChoice", "juce::AudioParameterBool", "juce::NormalisableRange"],
+                "gotchas": [
+                    "NormalisableRange skew: 0.5 for decay/feedback-like, 0.3 for cutoff frequencies",
+                    "AudioParameterChoice stores 0-based index integers, not strings",
+                    "Parameter ranges must be consistent between APVTS, PresetData, and DSP code"
+                ],
+                "reference": "https://docs.juce.com/master/classAudioProcessorValueTreeState.html"
+            },
+            "smoothed_values": {
+                "pattern": "SmoothedValue for per-sample parameter interpolation",
+                "classes": ["juce::SmoothedValue<float>"],
+                "critical_rule": "EVERY SmoothedValue MUST have getNextValue() called per-sample in processBlock. getCurrentValue() alone does NOT advance the smoother.",
+                "code_pattern": "prepareToPlay: sm.reset(sr, 0.02); sm.setCurrentAndTargetValue(init);\nprocessBlock: sm.setTargetValue(val); // once per block\nloop: const float v = sm.getNextValue(); // per sample\nRamp times: 0.02s (20ms) for continuous params (gain, freq, mix). 0.042s (42ms) for bypass/mode transitions. Snap with setCurrentAndTargetValue() only in prepareToPlay or state load.",
+                "prevention_rule": "EM-13: driveSmoothed stuck at 0.0 forever because getNextValue() was never called. Silent bug — no crash, no error, just a dead control.",
+                "reference": "https://docs.juce.com/master/classSmoothedValue.html"
+            },
+            "slider_attachment": {
+                "pattern": "APVTS Attachment for GUI↔parameter binding",
+                "classes": ["juce::AudioProcessorValueTreeState::SliderAttachment", "juce::AudioProcessorValueTreeState::ButtonAttachment"],
+                "gotchas": ["Store as unique_ptr member — if it goes out of scope, the connection breaks"],
+                "reference": "https://docs.juce.com/master/classAudioProcessorValueTreeState_1_1SliderAttachment.html"
+            }
+        },
+        "dsp_module_lifecycle": {
+            "pattern": "prepare/reset/process lifecycle",
+            "interface": "void prepare(double sampleRate, int samplesPerBlock);\nvoid reset();\nvoid process(juce::AudioBuffer<float>& buffer);",
+            "rules": [
+                "prepare(): allocate buffers, compute coefficients from sample rate",
+                "reset(): zero all state",
+                "process(): in-place stereo, no allocations, no I/O"
+            ]
+        },
+        "audio_thread_safety": {
+            "rules": [
+                "No heap allocations (new, malloc, vector resize, string construction)",
+                "No locks (mutex, critical section)",
+                "No I/O, no exceptions",
+                "juce::ScopedNoDenormals at top of processBlock",
+                "std::atomic<bool> for cross-thread flags",
+                "Pre-allocate all buffers in prepareToPlay",
+                "SmoothedValue for all parameter reads",
+                "std::unordered_map::find() can allocate via std::string key construction — use flat arrays for audio-thread lookups",
+                "NEVER use juce::AsyncUpdater from audio thread — it is NOT lock-free. Use std::atomic<bool> + Timer or VBlankAttachment instead"
+            ],
+            "reference": "Melatonin blog — audio thread: https://melatonin.dev/blog/"
+        },
+        "gui_performance": {
+            "rules": [
+                "setOpaque(true) when component fills its bounds completely — prevents parent repaint cascade",
+                "setBufferedToImage(true) for expensive static visuals (leaf components only)",
+                "Use JUCE_ENABLE_REPAINT_DEBUGGING=1 during development to visualize repaints",
+                "JUCE 7.0.6+: Use juce::VBlankAttachment instead of Timer for frame-synced UI updates",
+                "JUCE_LIVE_CONSTANT(value) provides runtime slider UI to adjust values without recompiling — use for shadow blur, spacing, opacity, color tuning during development",
+                "Treat paint() like audio thread — minimize allocations, pre-allocate Path/Image/ColourGradient as members"
+            ]
+        },
+        "cross_platform": {
+            "macos": "AU cache reset: killall -9 AudioComponentRegistrar. Notarization required for macOS 10.15+. Universal binary: CMAKE_OSX_ARCHITECTURES 'arm64;x86_64'",
+            "windows": "Statically link MSVC runtime: set(CMAKE_MSVC_RUNTIME_LIBRARY 'MultiThreaded$<$<CONFIG:Debug>:Debug>'). Required to avoid DLL dependency issues on end-user machines.",
+            "linux": "VST3 path: ~/.vst3/. Build deps: libasound2-dev libjack-jackd2-dev libfreetype-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev"
+        },
+        "mixing": {
+            "equal_power": {
+                "formula": "dryGain = cos(mix * PI/2); wetGain = sin(mix * PI/2);",
+                "why": "Linear blend concentrates change in low end. Equal-power keeps perceived level constant.",
+                "prevention_rule": "EM-14: ALWAYS use equal-power, not linear."
+            }
+        },
+        "state_persistence": {
+            "pattern": "APVTS-based state save/restore",
+            "code_pattern": "void getStateInformation(juce::MemoryBlock& dest) override {\n    auto state = apvts.copyState();\n    auto xml = state.createXml();\n    copyXmlToBinary(*xml, dest);\n}\nvoid setStateInformation(const void* data, int size) override {\n    auto xml = getXmlFromBinary(data, size);\n    if (xml && xml->hasTagName(apvts.state.getType()))\n        apvts.replaceState(juce::ValueTree::fromXml(*xml));\n}",
+            "reference": "https://docs.juce.com/master/classAudioProcessor.html#a3984a3556d80e4e10c7dbb0b8a8a6e5c"
+        }
+    },
+
+    "dsp_catalog": [
+        {
+            "name": "DiffusionNetwork (FDN Reverb)",
+            "algorithm": "8-line FDN with Fast Hadamard Transform in feedback path, RT60 decay, per-line stereo panning with LFOs",
+            "key_formula": "RT60 gain = pow(10, -3 * delayLength / (decaySeconds * sampleRate))",
+            "prevention_rules": ["EM-03: FHT must be in feedback path", "EM-04: Buffer size for 192kHz"],
+            "reference": "Julius O. Smith — Physical Audio Signal Processing: https://ccrma.stanford.edu/~jos/"
+        },
+        {
+            "name": "Cytomic TPT State Variable Filter",
+            "algorithm": "Trapezoidal SVF (Andy Simper). g=tan(pi*fc/sr), stable at all frequencies, no modulation clicks.",
+            "critical_note": "DO NOT use Chamberlin SVF (f=2*sin(...)). It is unstable at high frequencies and clicks during modulation.",
+            "reference": "Cytomic papers: https://cytomic.com/files/dsp/ — Vadim Zavalishin: The Art of VA Filter Design"
+        },
+        {
+            "name": "Granular Engine",
+            "algorithm": "Circular-buffer grain playback with adaptive envelopes (Hann >50ms, Tukey 10-50ms, Trapezoid <10ms)",
+            "prevention_rules": ["EM-05: Reverse uses (start+length-1)", "EM-06: & mask for all indices", "EM-07: No drift on reverse grains"]
+        },
+        {
+            "name": "Wavefolder",
+            "algorithm": "output = input + drive * (sin(input * foldAmt * PI) / foldAmt - input). True bypass at drive=0.",
+            "prevention_rules": ["EM-09: Copy constants exactly from spec", "EM-10: Feedback loop needs safety limiter after wavefolder"]
+        }
+    ],
+
+    "failure_modes": {
+        "description": "16 bugs from Epiphany Machine v3 development. Uses EM-xx namespace (Epiphany Machine session bugs) to distinguish from FM-xx (generic JUCE failure modes in juce-failure-modes.md). Each has a prevention rule that appears as a pre-flight check or checklist item in the relevant phase. See juce-failure-modes.md 'Numbering Systems' section for cross-reference mapping.",
+        "summary_table": [
+            {"id": "EM-01", "phase": 1, "short": "Cache keyed on names not IDs — still O(N)", "caught_by": "Spec reviewer", "maps_to": "FM-01"},
+            {"id": "EM-02", "phase": 3, "short": "Implementer modified out-of-scope files", "caught_by": "Spec reviewer", "maps_to": null},
+            {"id": "EM-03", "phase": 4, "short": "FHT at output only, not in feedback — not a real FDN", "caught_by": "Code quality reviewer", "maps_to": null},
+            {"id": "EM-04", "phase": 4, "short": "Buffer overflow at >48kHz — kBufSize too small", "caught_by": "Code quality reviewer", "maps_to": "FM-02"},
+            {"id": "EM-05", "phase": 4, "short": "Reverse playback off-by-one", "caught_by": "Code quality reviewer", "maps_to": null},
+            {"id": "EM-06", "phase": 4, "short": "writeHead unbounded overflow", "caught_by": "Code quality reviewer", "maps_to": null},
+            {"id": "EM-07", "phase": 4, "short": "Drift on reverse grains — out-of-window reads", "caught_by": "Code quality reviewer", "maps_to": null},
+            {"id": "EM-08", "phase": 4, "short": "Q constant wrong — 24.5 gives Q=25 not Q=50", "caught_by": "Code quality reviewer", "maps_to": null},
+            {"id": "EM-09", "phase": 6, "short": "Wavefolder multiplier 3x instead of 4x", "caught_by": "Code quality reviewer", "maps_to": null},
+            {"id": "EM-10", "phase": 6, "short": "Missing feedback soft-clip", "caught_by": "Code quality reviewer", "maps_to": "FM-05"},
+            {"id": "EM-11", "phase": 6, "short": "getTailLengthSeconds() too short", "caught_by": "Code quality reviewer", "maps_to": null},
+            {"id": "EM-12", "phase": 7, "short": "GUI component overflows parent panel", "caught_by": "Code quality reviewer", "maps_to": null},
+            {"id": "EM-13", "phase": 9, "short": "SmoothedValue getNextValue() never called — dead parameter", "caught_by": "USER (DAW testing)", "maps_to": "FM-09"},
+            {"id": "EM-14", "phase": 9, "short": "Linear mix blend — only first 30% effective", "caught_by": "USER (DAW testing)", "maps_to": "FM-14"},
+            {"id": "EM-15", "phase": 9, "short": "Default decay too long — masks parameter changes", "caught_by": "USER (DAW testing)", "maps_to": null},
+            {"id": "EM-16", "phase": 10, "short": "Git push rejected — remote diverged", "caught_by": "git", "maps_to": null}
+        ],
+        "key_insight": "EM-13, EM-14, EM-15 were caught by USER in DAW testing, not by any automated review. Two-stage review catches implementation bugs but cannot catch perceptual/UX issues. DAW testing by the human is irreplaceable."
+    },
+
+    "session_management": {
+        "when_to_start_fresh": [
+            "After completing a phase gate",
+            "After 3-4 implementation tasks (subagent transcripts fill context)",
+            "When API errors (529) indicate context too large",
+            "When switching from implementation to DAW testing",
+            "After 2+ hours"
+        ],
+        "what_to_carry_forward": [
+            "Spec file path + key decisions",
+            "Plan file path + task progress",
+            "Commit hashes for completed work",
+            "Specific pending issues with symptoms and fixes"
+        ],
+        "what_to_drop": [
+            "Full source file contents (AI re-reads them)",
+            "Subagent transcripts (decisions are in commits)",
+            "API error retry conversations",
+            "Rejected design options"
+        ]
+    },
+
+    "cost_optimization": {
+        "model_selection": {
+            "opus": "Brainstorming (Phase 0) and complex architectural decisions",
+            "sonnet": "Plan writing and implementation execution — reliable and sufficient for all implementation",
+            "haiku": "AVOID for scoped implementation tasks — prone to scope creep (modified out-of-scope files in session)"
+        },
+        "token_saving": [
+            "One task per subagent — clean context",
+            "Spec + current task section as context — not the whole plan",
+            "Let AI re-read files instead of pasting",
+            "/compact when context fills",
+            "Switch to Sonnet for implementation"
+        ]
+    },
+
+    "usage_instructions": {
+        "how_to_run_this": [
+            "1. New session (Opus). Paste Phase 0 + brainstorming skill. AI asks questions, you answer. Output: spec doc.",
+            "2. New session (Sonnet). Paste spec + Phase 2 + writing-plans skill. Output: task-level plan.",
+            "3. If upgrading: run Phase 1 (perf audit). If new plugin: skip to Phase 3.",
+            "4. Phase 3: Set up build, tests, CI.",
+            "5. Phases 4-7: one session per 3-4 tasks. Use subagent-driven-development.",
+            "6. Phase 8: Build verification and stress tests.",
+            "7. Phase 9: Load in Reaper and LISTEN. Fix what you find.",
+            "8. Phase 10: Release to GitHub.",
+            "9. Phase 11-12: Optimize, retrospect, extract templates."
+        ]
+    }
+}

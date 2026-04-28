@@ -1,0 +1,591 @@
+# JUCE VST Business Playbook - Task List v0.1
+
+## Overview
+
+This document contains all tasks for the JUCE VST Business Playbook, organized by phase.
+
+**Total Phases:** 17 (Phase 0-16)
+**Estimated Tasks:** 120-150 (Complex process range)
+**Workflow Model:** role-based-single-agent
+
+---
+
+## Phase 0: Commission & Scoping
+
+### Compilation Block
+
+```json
+{
+  "context_load": [
+    "commission brief from user"
+  ],
+  "role_mindset": "Stakeholder — this phase is about decisions, not research or building",
+  "objective": "Lock purpose, scope, constraints, and success criteria so every subsequent phase has a fixed target",
+  "pre_check": [
+    "User has provided a commission brief or verbal description of the plugin they want",
+    "Model check: defaults.model=opus or equivalent capability"
+  ],
+  "failure_modes_relevant": ["FM-015", "FM-026"],
+  "agent_config": {},
+  "context_budget": {
+    "max_tokens": 64000,
+    "priority": {"commission brief": 1}
+  }
+}
+```
+
+### Tasks
+
+**[Coordinator] — Establish configuration**
+
+Description: Ask the user to establish runtime configuration before any other work begins:
+
+1. OUTPUT LOCATION: Default is `~/playbooks/<plugin-name>/`. Confirm or specify different path.
+2. EXTERNAL DATA SOURCES: List available sources (Knowledge bases, References, other playbooks). Ask which to include.
+
+Output: `scope.md` (configuration section)
+
+---
+
+**[Coordinator] — Create project knowledge base folder**
+
+Description: Create folder structure: README.md, research/, architecture/, drafts/, audits/, testing/, final/
+
+Initialize tracking files:
+- `decisions-ledger.md` — header: "# Decisions Ledger — append at every phase gate"
+- `artifact-manifest.md` — header with columns: File | Phase | Status | Summary
+- `metrics-tracker.md` — header with columns: Metric | Phase | Value | Target | Date
+
+Output: Project folder structure, tracking files
+
+---
+
+**[Human] — Define plugin type and signal flow**
+
+Description: Answer precisely:
+- What type of plugin? (synthesizer, effect, analyzer, module, tool)
+- What is the signal flow? (input → processing chain → output)
+- What parameters does it have? (list with ranges if known)
+
+IMPORTANT: AI must NOT propose a signal flow unprompted. The human must describe or draw it.
+
+Output: SPEC.md (plugin type, signal flow section)
+
+---
+
+**[Human] — Define sound identity**
+
+Description: Describe the plugin's sonic character in YOUR exact words:
+- Reference plugins/hardware (if any)
+- Genre context
+- Character words (e.g., "warm", "bright", "lush", "aggressive")
+- What makes it unique?
+
+IMPORTANT: AI must use YOUR exact words, never paraphrase. These are the creative north star.
+
+Output: SPEC.md (sound identity section)
+
+---
+
+**[Human] — Define technical constraints**
+
+Description: Lock technical parameters:
+- JUCE version (default: 8.0.x)
+- Plugin formats (VST3 required, AU/AAX optional)
+- Target platforms (Linux required, macOS/Windows optional)
+- Target DAW (REAPER required for testing)
+- Sample rate range (44.1kHz - 192kHz)
+- Buffer size range (64 - 2048 samples)
+- CPU budget target (percentage)
+
+Output: SPEC.md (technical constraints section)
+
+---
+
+**[Human] — Define gain staging philosophy**
+
+Description: Document when hot signals are acceptable vs when they must be conservative:
+- Where in the signal chain can signals be hot?
+- Where must gain be conservative?
+- How should levels be managed between modules?
+
+Output: SPEC.md (gain staging section)
+
+---
+
+**[Human] — Define preset theme and naming**
+
+Description: Define creative direction for presets:
+- What style/genre are the presets targeting?
+- Preset naming convention?
+- User must approve every preset name individually
+
+Output: SPEC.md (preset section)
+
+---
+
+**[Builder] — Write one-page specification**
+
+Description: Create structured SPEC.md with sections:
+1. Architecture overview
+2. DSP modules with code snippets
+3. GUI layout with dimensions/colors
+4. Parameter list with ranges
+5. Preset list with creative names
+6. Build instructions
+7. "What not to do" section (anti-patterns)
+
+Verify: All formulas at boundary conditions (param=0, param=1).
+
+Output: SPEC.md
+
+---
+
+**[Builder] — Self-review specification**
+
+Description: Check specification for:
+- Placeholder values (TBD, TODO, etc.) — replace or remove
+- Contradictions between sections — resolve
+- Ambiguous descriptions — clarify
+- Scope gaps — fill or document as out-of-scope
+- Formula correctness at boundaries — verify math
+
+Output: Updated SPEC.md with self-review notes
+
+---
+
+**[Coordinator] — Phase gate: Specification locked**
+
+Gate Conditions:
+- [ ] Plugin type and signal flow defined in SPEC.md
+- [ ] Sound identity documented in user's exact words (no AI paraphrasing)
+- [ ] Technical constraints locked (JUCE version, formats, platforms)
+- [ ] Gain staging philosophy explicit in SPEC.md
+- [ ] One-page spec written and self-reviewed
+- [ ] Human approved SPEC.md
+- [ ] Out-of-scope list exists
+- [ ] Preset theme chosen with creative names human approves
+
+Blocker Examples:
+- AI proposed signal flow unprompted → Human must describe or draw signal flow
+- Sound identity paraphrased by AI → Use user's exact words
+- TBD in gain staging → Document explicit philosophy
+
+### Handoff Block
+
+```json
+{
+  "output_artifacts": [
+    "SPEC.md",
+    "scope.md",
+    "constraints.md",
+    "decisions-ledger.md",
+    "artifact-manifest.md"
+  ],
+  "next_phase_context": [
+    "SPEC.md (full)",
+    "scope.md",
+    "constraints.md"
+  ],
+  "excluded_files": [
+    "Exploratory discussions",
+    "Rejected approaches",
+    "Why-not decisions"
+  ]
+}
+```
+
+---
+
+## Phase 1: Performance Audit (if upgrading existing code)
+
+### Compilation Block
+
+```json
+{
+  "context_load": [
+    "SPEC.md",
+    "constraints.md"
+  ],
+  "role_mindset": "Builder — executing the audit with mechanical precision",
+  "objective": "Before ANY new features, audit existing codebase for memory/CPU/thread-safety issues",
+  "pre_check": [
+    "SPEC.md exists",
+    "constraints documented",
+    "Existing codebase present (skip if brand-new plugin)"
+  ],
+  "failure_modes_relevant": ["FM-01", "FM-03"],
+  "agent_config": {}
+}
+```
+
+### Tasks
+
+**[Builder] — Thread safety audit**
+
+Description: Scan existing code for:
+- Non-atomic shared state between audio/GUI threads
+- Static variables shared across instances
+- Unprotected access to mutable global state
+
+Check: Use std::atomic<bool> for all cross-thread flags. Verify all shared state uses atomics or lock-free structures.
+
+Output: Audit report in `audits/thread-safety-audit.md`
+
+---
+
+**[Builder] — Instance isolation audit**
+
+Description: Check for static variables shared across plugin instances:
+- Search for `static` keyword in implementation files
+- Verify all state is per-instance member variables
+- Document any shared state and justification
+
+Output: Audit report in `audits/instance-isolation-audit.md`
+
+---
+
+**[Builder] — Audio thread allocation audit**
+
+Description: Search for heap allocations in processBlock:
+- `new`/`delete` in processBlock
+- `malloc`/`free` in processBlock
+- `std::vector`/`std::string` operations that may allocate
+- Large `memset` operations in processBlock
+
+All allocations must happen in `prepareToPlay()`, not `processBlock()`.
+
+Output: Audit report in `audits/audio-thread-allocation-audit.md`
+
+---
+
+**[Builder] — Parameter lookup optimization audit**
+
+Description: Check for O(N) parameter lookups on audio thread:
+- `AudioProcessorValueTreeState::getRawParameterValue()` calls in processBlock
+- String-based parameter lookups
+
+Solution: Cache atomic parameter pointers at initialization time.
+
+Output: Audit report in `audits/parameter-lookup-audit.md`
+
+---
+
+**[Builder] — Gain staging audit**
+
+Description: Verify existing gain staging:
+- Trace signal levels through entire chain
+- Identify where levels are attenuated
+- Document all gain stages
+
+Check: Effect should be audible at all parameter ranges. If "effect not noticeable", audit gain staging first.
+
+Output: Audit report in `audits/gain-staging-audit.md`
+
+---
+
+**[Coordinator] — Phase gate: Existing code audited**
+
+Gate Conditions:
+- [ ] No non-atomic shared state between audio/GUI threads
+- [ ] No static variables shared across instances
+- [ ] No heap allocations in processBlock
+- [ ] Parameter lookups are O(1) on audio thread
+- [ ] Build succeeds with all fixes
+- [ ] Sound unchanged from before audit
+
+Blocker Examples:
+- Allocation found in processBlock → Move to prepareToPlay()
+- Static state found → Convert to per-instance members
+- Effect not noticeable → Audit gain staging
+
+### Handoff Block
+
+```json
+{
+  "output_artifacts": [
+    "audits/thread-safety-audit.md",
+    "audits/instance-isolation-audit.md",
+    "audits/audio-thread-allocation-audit.md",
+    "audits/parameter-lookup-audit.md",
+    "audits/gain-staging-audit.md"
+  ],
+  "next_phase_context": [
+    "SPEC.md",
+    "audits/*.md (any issues found)"
+  ]
+}
+```
+
+---
+
+## Phase 2: Architecture & Task Breakdown
+
+### Compilation Block
+
+```json
+{
+  "context_load": [
+    "SPEC.md",
+    "constraints.md",
+    "audits/*.md (if existing code)"
+  ],
+  "role_mindset": "Architect — designing structure, not implementing",
+  "objective": "Turn the spec into a buildable plan with complete code",
+  "pre_check": [
+    "SPEC.md complete with all sections",
+    "Technical constraints locked",
+    "Audit complete (if existing code)"
+  ],
+  "failure_modes_relevant": ["FM-02", "FM-04"],
+  "agent_config": {}
+}
+```
+
+### Tasks
+
+**[Architect] — Read all existing source files**
+
+Description: AI must read EVERY source file before planning. No planning from memory.
+
+For each file: note its purpose, classes, dependencies, and current state.
+
+Output: Document file inventory in `architecture/file-inventory.md`
+
+---
+
+**[Architect] — Design class architecture**
+
+Description: Create class diagram with:
+- Processor class
+- Editor class
+- DSP module classes
+- Parameter layout (APVTS)
+- State management
+
+Design principles:
+- APVTS for all parameters
+- processBlock is thread-safe
+- Editor talks to Processor ONLY through APVTS
+- DSP modules are self-contained: prepare(), reset(), process()
+
+Output: `architecture/class-diagram.md`
+
+---
+
+**[Architect] — Specify DSP algorithms with math**
+
+Description: For each DSP block:
+- Algorithm choice and justification
+- Mathematical formula
+- JUCE implementation approach
+- CPU cost estimate
+- Known gotchas
+
+Verify: All formulas at boundary conditions (param=0, param=1, param=0.5).
+
+Output: `architecture/dsp-algorithms.md`
+
+---
+
+**[Architect] — Break into ordered task list**
+
+Description: Create task list where:
+- Each task does ONE thing
+- Each task has files to modify
+- Each task has JUCE classes used
+- Each task has actual code snippet
+- Each task has build command
+- Each task has commit message
+- Tasks ordered by dependency
+
+Output: `drafts/task-list-v0.1.md`
+
+---
+
+**[Architect] — Plan self-review**
+
+Description: Review architecture plan for:
+- Scope completeness (every spec requirement has task)
+- Dependency order (no task depends on later task)
+- Type consistency (types match across files)
+- Formula correctness at boundaries
+- Buffer sizes computed for max sample rate (192kHz)
+
+Output: Self-review notes in `architecture/self-review.md`
+
+---
+
+**[Human] — Approve architecture**
+
+Description: Review and approve:
+- Class diagram
+- DSP algorithms
+- Task list
+- Self-review
+
+Human must explicitly approve before proceeding to implementation.
+
+Output: Approval documented in `decisions-ledger.md`
+
+---
+
+**[Coordinator] — Phase gate: Architecture approved**
+
+Gate Conditions:
+- [ ] Every spec requirement has corresponding task
+- [ ] Tasks ordered by dependency
+- [ ] Each task has code and build step
+- [ ] Self-review completed
+- [ ] All DSP formulas verified at boundaries
+- [ ] Buffer sizes computed for 192kHz
+- [ ] Human approved architecture
+
+Blocker Examples:
+- Task missing for spec requirement → Add task
+- Formula produces wrong value at boundary → Fix formula
+- Self-review found issues → Resolve before proceeding
+
+### Handoff Block
+
+```json
+{
+  "output_artifacts": [
+    "architecture/class-diagram.md",
+    "architecture/dsp-algorithms.md",
+    "drafts/task-list-v0.1.md",
+    "architecture/self-review.md"
+  ],
+  "next_phase_context": [
+    "architecture/class-diagram.md",
+    "architecture/dsp-algorithms.md",
+    "drafts/task-list-v0.1.md"
+  ]
+}
+```
+
+---
+
+## Phase 3: Project Setup & Test Framework
+
+### Compilation Block
+
+```json
+{
+  "context_load": [
+    "architecture/class-diagram.md",
+    "architecture/dsp-algorithms.md",
+    "drafts/task-list-v0.1.md",
+    "constraints.md"
+  ],
+  "role_mindset": "Builder — setting up build infrastructure",
+  "objective": "Set up build system, test framework, and CI before writing DSP code",
+  "pre_check": [
+    "Class architecture documented",
+    "Task list exists",
+    "Technical constraints locked"
+  ],
+  "failure_modes_relevant": ["FM-05"],
+  "agent_config": {}
+}
+```
+
+### Tasks
+
+**[Builder] — Configure CMakeLists.txt**
+
+Description: Create or update CMakeLists.txt with:
+- Project name and version
+- C++17 standard
+- JUCE modules needed (juce_core, juce_audio_basics, juce_audio_processors, juce_audio_plugin_client, juce_gui_basics, juce_gui_extra, juce_dsp)
+- FetchContent for JUCE
+- VST3 and Standalone targets
+- COPY_PLUGIN_AFTER_BUILD for development
+- Catch2 for testing (optional)
+
+Build command: `cmake -B build -G Ninja && cmake --build build`
+
+Output: `CMakeLists.txt`
+
+---
+
+**[Builder] — Set up test framework**
+
+Description: Configure Catch2 for unit testing:
+- Add Catch2 as dependency (FetchContent or system)
+- Create test target separate from plugin
+- Write minimum tests:
+  - Plugin instantiation test
+  - Parameter range validation test
+  - processBlock smoke test (silence input)
+  - State round-trip test
+  - Multi-instance test
+
+Run tests: `cd build && ctest --output-on-failure`
+
+Output: `tests/CMakeLists.txt`, `tests/MainTests.cpp`
+
+---
+
+**[Builder] — Configure CI (optional but recommended)**
+
+Description: Set up GitHub Actions for multi-platform builds:
+- Linux build (required)
+- macOS build (recommended)
+- Windows build (recommended)
+- Run tests after build
+
+Output: `.github/workflows/build.yml`
+
+---
+
+**[Builder] — Verify build**
+
+Description: Execute build commands:
+```bash
+cmake -B build -G Ninja
+cmake --build build
+cd build && ctest --output-on-failure
+```
+
+Verify: Build succeeds, tests pass, plugin loads in REAPER.
+
+Output: Build output verification in `decisions-ledger.md`
+
+---
+
+**[Coordinator] — Phase gate: Build system ready**
+
+Gate Conditions:
+- [ ] CMakeLists.txt configured for VST3 and Standalone
+- [ ] Build succeeds on primary platform
+- [ ] Test framework integrated
+- [ ] Basic tests pass
+- [ ] CI pipeline configured (if set up)
+- [ ] Plugin loads in REAPER
+
+Blocker Examples:
+- CMake fails → Fix configuration
+- Tests fail → Debug and fix
+- Plugin doesn't load → Fix build configuration
+
+### Handoff Block
+
+```json
+{
+  "output_artifacts": [
+    "CMakeLists.txt",
+    "tests/CMakeLists.txt",
+    "tests/MainTests.cpp",
+    ".github/workflows/build.yml (if created)"
+  ],
+  "next_phase_context": [
+    "CMakeLists.txt",
+    "tests/MainTests.cpp"
+  ]
+}
+```
+
+---
+
+*(Continuing with Phases 4-16... document continues)*

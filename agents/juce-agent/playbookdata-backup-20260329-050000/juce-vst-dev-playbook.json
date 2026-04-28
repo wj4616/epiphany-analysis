@@ -1,0 +1,1033 @@
+{
+    "title": "JUCE VST Plugin Development Playbook",
+    "version": 1,
+    "description": "End-to-end development playbook for building creative unique VST audio plugins with JUCE and AI assistance. Covers the full plugin lifecycle from concept through release: spec development, DSP architecture, implementation, GUI, testing, DAW validation, optimization, and release. Designed for a single developer retaining full creative control with AI handling code generation, review, and validation. Each phase is gated — nothing advances until acceptance criteria are met.",
+    "extracted_from": "conversation_full.md — single 24,292-line session (2026-03-27 to 2026-03-28) building Epiphany Machine VST v3",
+
+    "workflow_model": "human-in-the-loop",
+    "roles": {
+        "you": "Creative director, sound designer, final decision-maker on all audio/UX choices. You define WHAT the plugin does and HOW it should sound.",
+        "ai": "Code architect, implementation engine, reviewer, test generator. AI handles HOW to build what you've defined. Never makes creative decisions autonomously."
+    },
+
+    "integration_notes": {
+        "superpowers_mapping": {
+            "brainstorming": "Use in Phase 0 to develop the plugin concept and spec. Session 1 used this: AI asked multi-choice questions, user picked options, iterated until design was locked.",
+            "writing_plans": "Use in Phase 2 to produce the architecture doc and task breakdown. Session 2 used this to generate a 1577-line implementation plan.",
+            "executing_plans": "Use in Phases 3-7 to implement each task from the plan. Session 3-5 used subagent-driven-development (fresh agent per task + two-stage review).",
+            "subagent_driven_development": "Preferred over executing-plans for implementation. Dispatches one fresh subagent per task with two-stage review (spec compliance then code quality). Caught critical bugs the implementer missed."
+        },
+        "juce_docs": "Feed JUCE module docs as context for the relevant phase (juce_dsp for DSP phase, juce_gui_basics for GUI phase, juce_audio_processors for integration phase)",
+        "session_history": "After each completed phase, extract the working conversation into a phase summary. This becomes the context seed for the next phase — prevents token waste from carrying full history."
+    },
+
+    "checklists": [
+        {
+            "title": "Phase 0: Plugin Concept & Spec",
+            "purpose": "Define exactly what you're building before writing any code. The AI should be ASKING YOU questions here, not proposing solutions. This phase produces the spec that drives everything else.",
+            "session_source": "Session 1 (lines 1-2406, ~07:00-07:35 on 2026-03-27)",
+            "actual_workflow_observed": "User provided v2 spec + problem statement ('effect not noticeable enough'). AI used brainstorming skill to ask multiple-choice questions about each design dimension. User picked options (a/b/c/d) for each. 12 design questions answered interactively. Design took ~35 minutes.",
+            "items": [
+                {
+                    "title": "Define plugin type and signal flow",
+                    "owner": "human_only",
+                    "ai_role": "interviewer",
+                    "description": "AI should prompt you for each decision:\n- Plugin type: Synthesizer, effect, analyzer, or hybrid?\n- Signal flow: mono/stereo in, mono/stereo out? Sidechain input?\n- DSP chain: what processing blocks exist and in what order?\n- Parameter count estimate: how many knobs/sliders/switches?\n\nFrom session: User defined signal flow as Input → TextureBodyDetector → GlitchEngine → MORPH blend → FDN → Feedback loop (PitchDrifter → DualFilter → Wavefolder → soft clip) → DualFilter → MIX → tanh() → Output",
+                    "session_evidence": "Session 1: User answered 12 multi-choice questions to define signal flow, chose 8-line FDN, wavefolder+filter-in-feedback, adaptive grain envelopes, per-line pan replacing StereoWidener"
+                },
+                {
+                    "title": "Define the sound identity",
+                    "owner": "human_only",
+                    "ai_role": "none — this is purely creative",
+                    "description": "What should this plugin SOUND like? Reference existing plugins, genre context, character words.\n\nFrom session: User said 'make it very intense', 'capable of producing wild harsh sounds if desired', 'more abstract ambient psychedelic sound', 'weird and interesting but tolerable by human listeners'. These exact words drove every DSP decision.",
+                    "session_evidence": "Session 1: 'the effect is not nearly noticeable enough. it should be capable of producing wild harsh sounds if desired... more abstract ambient psychedelic sound capabilities'"
+                },
+                {
+                    "title": "Define technical constraints",
+                    "owner": "human",
+                    "ai_role": "advisor",
+                    "description": "Lock down: JUCE version, target formats, target OS, DAWs for validation, sample rates, buffer sizes, CPU budget.\n\nFrom session: JUCE 7.0.12, C++17, VST3, CMake build, Linux, support 44.1k-192kHz",
+                    "session_evidence": "Session 1-2: JUCE 7.0.12 identified from build deps, C++17 standard, CMake build system, Linux target"
+                },
+                {
+                    "title": "Gain staging design",
+                    "owner": "human",
+                    "ai_role": "advisor",
+                    "description": "CRITICAL — from session: User said 'don't make it run too hot, but we want the effect to be intense. without drive the effect shouldn't be overly hot though.' This became the design principle: drive is opt-in intensity, wavefolder output normalized by /foldAmount to add complexity without volume.\n\nAI should identify existing gain staging issues before proposing solutions. In session: 6 layers of conservative gain staging were identified as the root cause of 'not noticeable enough'.",
+                    "session_evidence": "Session 1: Identified -6dB FDN output cut, 0.95 decay multiplier, StereoWidener soft clip, 8kHz feedback LPF, double freeze soft clip, tame Q ranges — all compounding to make effect barely audible"
+                },
+                {
+                    "title": "Preset theme and naming",
+                    "owner": "human_only",
+                    "ai_role": "drafter (user has final say on names)",
+                    "description": "AI will suggest generic names. REJECT THEM. User must define the creative direction.\n\nFrom session: AI proposed 'Superposition, Entanglement, Dark Matter' — user rejected: 'make all the names more creative, dont use your default assumptions, because there are other effects with these names as i told you to do this already.' AI revised to more unique names.",
+                    "session_evidence": "Session 1: User corrected preset names from generic to creative quantum physics theme with unique names like 'Both States Neither State', 'Spooky Geometry', 'The Invisible 96%'"
+                },
+                {
+                    "title": "Write the one-page spec",
+                    "owner": "ai",
+                    "ai_role": "writer",
+                    "description": "AI compiles everything into a structured spec doc. User reviews and redlines.\n\nFrom session: Spec written to docs/superpowers/specs/ — included signal flow diagram, parameter list with ranges, gain staging removals, new values, preset list. Three self-review issues found and fixed before user approval.",
+                    "output": "docs/superpowers/specs/{date}-{plugin-name}-design.md",
+                    "session_evidence": "Session 1-2: Spec written to docs/superpowers/specs/2026-03-27-epiphany-machine-v3-design.md, self-review caught wavefolder bypass bug, MORPH label ambiguity, parameter count error"
+                },
+                {
+                    "title": "PHASE GATE: Spec approved",
+                    "gate_conditions": [
+                        "Plugin type and signal flow defined",
+                        "Sound identity documented in YOUR words (not paraphrased by AI)",
+                        "Gain staging philosophy explicit (when is hot OK vs not OK)",
+                        "Technical constraints locked (JUCE version, formats, target DAWs)",
+                        "One-page spec written and approved by you",
+                        "Out-of-scope list exists",
+                        "Preset theme chosen with creative names you approve"
+                    ],
+                    "blocker_examples": [
+                        "Session 1: User was still deciding between synth vs effect — resolved through multi-choice questions before proceeding",
+                        "Session 1: Generic preset names rejected — user required creative naming before approval",
+                        "Session 1-2: Spec had wavefolder bypass formula bug (sin(x*PI)/1.0 amplifies by PI at drive=0) — caught in self-review, fixed with crossfade formula"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 1: Performance Audit (pre-implementation)",
+            "purpose": "Before ANY new features, audit the existing codebase for memory/CPU/thread-safety issues. User explicitly requested this: 'before building this we will need to have you analyze the project fully for memory and cpu use improvements to make sure it runs lean but do not impact sound or design'.",
+            "session_source": "Session 3 (lines 7372-13071, ~21:00 on 2026-03-27)",
+            "actual_workflow_observed": "Task 0 in the plan. Implemented via subagent-driven-development. Caught a critical cache bug through two-stage review. Required fix subagent + re-review cycle.",
+            "items": [
+                {
+                    "title": "Thread safety audit",
+                    "owner": "ai",
+                    "ai_role": "auditor",
+                    "description": "Scan for non-atomic shared state between audio and GUI threads.\n\nFrom session: Found `bool systemChanging` in PresetManager — non-atomic bool shared between threads. Fixed to `std::atomic<bool> systemChanging{false}`.",
+                    "session_evidence": "Session 3, Task 0 Fix 1: PresetManager.h systemChanging changed to std::atomic<bool>",
+                    "validation": "Build succeeds, no thread sanitizer warnings"
+                },
+                {
+                    "title": "Instance isolation audit",
+                    "owner": "ai",
+                    "ai_role": "auditor",
+                    "description": "Check for static variables shared across plugin instances.\n\nFrom session: Found `static int lastPreset` in PluginProcessor.cpp — shared across all instances. Fixed to instance member `int lastPresetIdx = 0`.",
+                    "session_evidence": "Session 3, Task 0 Fix 2: Moved from static to member variable in PluginProcessor.h",
+                    "validation": "Multiple instances don't interfere with each other's preset state"
+                },
+                {
+                    "title": "Audio thread allocation audit",
+                    "owner": "ai",
+                    "ai_role": "auditor",
+                    "description": "Search for heap allocations or large memsets on the audio thread.\n\nFrom session: GlitchEngine had silence gate that cleared 1MB buffer (131072 * 2 channels * 4 bytes) on audio thread when signal dropped below -80dBFS. Fix: remove silence gate entirely.",
+                    "session_evidence": "Session 3, Task 0 Fix 3: Removed kSilenceThreshold, inputPeak, silenceCount, isSilent from GlitchEngine",
+                    "validation": "No large memory operations in processBlock path"
+                },
+                {
+                    "title": "Parameter lookup optimization",
+                    "owner": "ai",
+                    "ai_role": "auditor",
+                    "description": "Check for O(N) parameter lookups on the audio thread.\n\nFrom session: PresetManager.applyInterpolated() did per-block linear search through all parameters for each parameter write. Fixed with O(1) cache using vector-of-pairs keyed on parameter ID strings.\n\nCRITICAL LESSON: First fix attempt keyed cache on parameter NAMES (via getName(256)) but idx() lambda still called getParameter(id) — an O(N) scan — before hitting the cache. Spec reviewer caught this. Second fix keyed on parameter ID strings directly with no intermediary getParameter() call.",
+                    "session_evidence": "Session 3, Task 0 Fix 4: Two rounds — first commit keyed on names (still O(N)), spec reviewer caught it, fix subagent re-keyed on IDs (true O(1)). Commits 392e2d8 then 52cf7d7.",
+                    "validation": "paramIndexCache.find(std::string(id)) with no getParameter() call in hot path"
+                },
+                {
+                    "title": "PHASE GATE: Performance audit complete",
+                    "gate_conditions": [
+                        "No non-atomic shared state between audio/GUI threads",
+                        "No static variables shared across instances",
+                        "No heap allocations in processBlock path",
+                        "Parameter lookups are O(1) on audio thread",
+                        "Build succeeds with all fixes",
+                        "Sound unchanged (audit fixes must not affect audio output)"
+                    ],
+                    "blocker_examples": [
+                        "Session 3: Cache keyed on parameter names instead of IDs — spec reviewer caught that the 'optimization' was still O(N). Required fix + re-review cycle.",
+                        "Session 3: First implementer (haiku model) added commented-out StereoWidener references in out-of-scope files — spec reviewer caught scope creep"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 2: Architecture & Task Breakdown",
+            "purpose": "Turn the spec into a buildable plan. Use the writing-plans skill.",
+            "session_source": "Session 2-3 (lines 2407-13071, ~07:38-21:20 on 2026-03-27)",
+            "actual_workflow_observed": "Writing-plans skill read all 25 source files (3536 total lines), then produced a 1577-line implementation plan. Plan was too large for one response — written via Write + multiple Edit operations. Hit API 529 errors and context limits during writing. Switched model from Opus to Sonnet to work around 529 errors.",
+            "items": [
+                {
+                    "title": "Read all existing source files",
+                    "owner": "ai",
+                    "ai_role": "architect",
+                    "description": "AI must read every source file before planning. No planning from memory.\n\nFrom session: AI read all 25 source files totaling 3536 lines before writing the plan. This caught issues like the 4-line FDN being presented as 'using all 4 lines per channel' when it was actually only using 2.",
+                    "session_evidence": "Session 2: writing-plans skill read PluginProcessor.h/cpp, all DSP/*.h/*.cpp, GUI/*.h/*.cpp, Presets/*.h/*.cpp, CMakeLists.txt"
+                },
+                {
+                    "title": "Design class architecture",
+                    "owner": "ai",
+                    "ai_role": "architect",
+                    "description": "Produce class diagram showing processor, editor, DSP modules, parameter layout, state management.\n\nRules from session:\n- Use APVTS for all parameters\n- Keep processBlock thread-safe (no GUI objects, no allocations)\n- Editor talks to Processor ONLY through APVTS attachments\n- DSP modules are self-contained units with prepare()/reset()/process() lifecycle",
+                    "session_evidence": "Session 2-3: Architecture section of plan defined DiffusionNetwork, GlitchEngine, DualFilter as self-contained units; PluginProcessor wires them together"
+                },
+                {
+                    "title": "Specify DSP algorithms with math",
+                    "owner": "ai",
+                    "ai_role": "engineer",
+                    "description": "For each DSP block: algorithm, math, JUCE implementation path, CPU cost, gotchas.\n\nFrom session: Plan specified RT60 formula, FHT butterfly structure, Cytomic TPT filter math, adaptive grain envelope thresholds, wavefolder formula with bypass. Some of these had errors caught in review.",
+                    "session_evidence": "Session 2-3: Plan specified 8-line FDN with FHT, RT60 decay formula, wavefolder sin() formula, Cytomic TPT Q mapping, adaptive grain envelopes"
+                },
+                {
+                    "title": "Break into ordered task list with code",
+                    "owner": "ai",
+                    "ai_role": "planner",
+                    "description": "Each task: ONE thing, files to create/modify, JUCE classes used, ACTUAL CODE for every step, build command, commit message.\n\nFrom session: 12 tasks (0-11), each with complete code snippets, build verification step, and commit message. Tasks ordered by dependency: perf audit → build config → DSP modules → presets → processor → editor → integration test.",
+                    "session_evidence": "Session 2-3: Plan file was 1577 lines with 12 tasks, each containing checkbox steps with full code"
+                },
+                {
+                    "title": "Plan self-review",
+                    "owner": "ai",
+                    "ai_role": "reviewer",
+                    "description": "Before executing, AI reviews its own plan for:\n1. Scope completeness — does every spec requirement have a task?\n2. Dependency order — can each task build on its own?\n3. Type consistency — do function signatures match across tasks?\n4. Code correctness — are the algorithms right?\n\nFrom session: Plan self-review table checked all 12 tasks. MISSED several algorithmic errors that were caught later during code quality review (FHT placement, buffer sizing, Q constant).",
+                    "session_evidence": "Session 2-3: Self-review table at end of plan. Later caught: FHT not in feedback path (Task 2), buffer overflow at >48kHz (Task 2), Q constant wrong (Task 4)"
+                },
+                {
+                    "title": "PHASE GATE: Plan approved, tasks ordered",
+                    "gate_conditions": [
+                        "Every spec requirement has a corresponding task",
+                        "Tasks ordered by dependency (DSP before GUI, modules before integration)",
+                        "Each task names specific files and has complete code",
+                        "Build verification step in each task",
+                        "Plan self-review completed",
+                        "Performance audit is Task 0 (before any feature work)"
+                    ],
+                    "blocker_examples": [
+                        "Session 2: API 529 overloaded errors during plan writing — switched model from Opus to Sonnet",
+                        "Session 2: Context limit hit mid-plan — plan written in chunks via Write + Edit operations",
+                        "Session 2-3: Plan was too large for single response (1577 lines) — required multiple Edit appends with unique anchor strings to avoid multi-match errors"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 3: Build Config & Scaffolding",
+            "purpose": "Update build system before writing DSP code.",
+            "session_source": "Session 4 (lines 13072-17458, ~21:21 on 2026-03-27 to ~05:13 on 2026-03-28)",
+            "items": [
+                {
+                    "title": "Update CMakeLists.txt",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Version bump, add/remove source files.\n\nFrom session: VERSION 3.0.0, removed StereoWidener.cpp from sources.",
+                    "session_evidence": "Session 4, Task 1: CMakeLists.txt updated, commit via subagent",
+                    "validation": "cmake --build build succeeds (may have expected errors for not-yet-updated files)"
+                },
+                {
+                    "title": "PHASE GATE: Build config updated",
+                    "gate_conditions": [
+                        "CMakeLists.txt version bumped",
+                        "Removed source files no longer listed",
+                        "New source files added if any",
+                        "cmake configure succeeds"
+                    ],
+                    "blocker_examples": [
+                        "Session 4: Task 1 implementer (haiku) went out of scope — modified PluginProcessor.h/cpp to add commented-out StereoWidener references. Spec reviewer caught it, fix subagent removed the changes."
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 4: Core DSP Implementation",
+            "purpose": "Build the audio engine module by module. Two-stage review after each. You compile and LISTEN after each significant block.",
+            "session_source": "Session 4 (lines 13072-17458)",
+            "actual_workflow_observed": "Each DSP task: dispatch implementer subagent → dispatch spec reviewer → dispatch code quality reviewer → if issues found: dispatch fix subagent → re-review → commit. Critical bugs caught by code quality reviewer that implementer AND spec reviewer missed.",
+            "items": [
+                {
+                    "title": "Implement DSP modules (iterate per task list)",
+                    "owner": "ai",
+                    "ai_role": "implementer + reviewer",
+                    "description": "For EACH DSP module:\n1. Dispatch implementer subagent with task spec + relevant source files\n2. Dispatch spec compliance reviewer (does it match the plan?)\n3. Dispatch code quality reviewer (is it correct DSP? thread-safe? performant?)\n4. If issues found: dispatch fix subagent, then re-review BOTH stages\n5. Build and verify compilation\n\nCRITICAL: The code quality reviewer catches things the spec reviewer misses. Do NOT skip it.\n\nFrom session: Code quality reviewer caught 3 critical bugs the implementer missed:\n- DiffusionNetwork: Hadamard not in feedback path (8 independent combs, not FDN)\n- DiffusionNetwork: Buffer overflow at >48kHz (kBufSize=4096 too small for 192kHz)\n- GlitchEngine: Reverse playback formula off-by-one + no grainSpeed in reverse\n\nAnd the plan itself had an error:\n- DualFilter: Q constant 24.5f gives Q_max=25, not 50 as spec requires. Corrected to 49.5f.",
+                    "session_evidence": "Session 4: Tasks 2-5. DiffusionNetwork rewrite (commits 5c83bfc, f82d47a, c9c38d9), GlitchEngine rewrite, DualFilter fix, StereoWidener deletion",
+                    "validation_per_module": "Compiles (may have expected errors for not-yet-updated processor), no obvious algorithmic errors in review"
+                },
+                {
+                    "title": "Delete deprecated modules",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Remove files for modules being replaced.\n\nFrom session: StereoWidener.h and StereoWidener.cpp deleted — functionality replaced by per-line FDN panning in DiffusionNetwork.",
+                    "session_evidence": "Session 4, Task 5: Both files deleted, commit f174066"
+                },
+                {
+                    "title": "PHASE GATE: All DSP modules implemented and reviewed",
+                    "gate_conditions": [
+                        "Each module passed two-stage review (spec + code quality)",
+                        "All critical and important issues from reviews resolved",
+                        "All fix subagents re-reviewed (don't skip re-review)",
+                        "Build succeeds (processor integration errors expected — that's next phase)",
+                        "Deprecated modules deleted"
+                    ],
+                    "blocker_examples": [
+                        "Session 4: DiffusionNetwork had Hadamard only at output, not in feedback path — 8 independent parallel combs instead of true FDN. Code quality reviewer caught it (critical). Required 3-pass restructure of process().",
+                        "Session 4: DiffusionNetwork kBufSize=4096 overflows at 96kHz+ (longest delay 3511 * 2 = 7022 samples). Fixed to kBufSize=16384.",
+                        "Session 4: GlitchEngine reverse playback: (grainStart+grainLength-consumed) reads past grain end on first sample. Fixed to (grainStart+grainLength-1) - consumed*grainSpeed.",
+                        "Session 4: GlitchEngine writeHead unbounded overflow — fixed with & kBufMask.",
+                        "Session 4: GlitchEngine drift on reverse grains causes out-of-window reads — fixed with if (drift > 0 && !grainReverse).",
+                        "Session 4: DualFilter Q constant 24.5f gives Q_max=25, plan had math error. Corrected to 49.5f for Q_max=50."
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 5: Preset Data & Manager",
+            "purpose": "Update presets and the preset management system before processor integration.",
+            "session_source": "Session 4 (Tasks 6-7)",
+            "items": [
+                {
+                    "title": "Update PresetData with new presets",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Add new fields to preset struct, replace preset values.\n\nFrom session: Added float drive field, replaced 34 presets with 18 quantum physics presets, kNumPresets=18.",
+                    "session_evidence": "Session 4, Task 6: PresetData.h rewritten, commit a6fe25c"
+                },
+                {
+                    "title": "Update PresetManager",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Add new parameters to capture/apply, update preset count.\n\nFrom session: Added drive to captureCurrentValues() and applyInterpolated(), updated kNumPresets references.",
+                    "session_evidence": "Session 4, Task 7: PresetManager updated, commit 8714a0c"
+                },
+                {
+                    "title": "PHASE GATE: Presets updated",
+                    "gate_conditions": [
+                        "Preset struct includes all new parameter fields",
+                        "Preset count matches between PresetData, APVTS, and PresetManager",
+                        "PresetManager captures and applies all parameters including new ones",
+                        "Build succeeds"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 6: Processor Integration",
+            "purpose": "Wire DSP modules together in PluginProcessor. This is where the full signal flow comes alive.",
+            "session_source": "Session 4-5 (Tasks 8-9, lines 13072-20534)",
+            "actual_workflow_observed": "Largest and most error-prone tasks. Processor header (Task 8) and implementation (Task 9) done separately. Task 9 had the most review issues — wavefolder multiplier wrong, missing feedback soft-clip, tail length mismatch. Required multiple fix rounds.",
+            "items": [
+                {
+                    "title": "Update PluginProcessor header",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Remove old includes/members, add new buffers and SmoothedValues.\n\nFrom session: Removed StereoWidener include+member, removed scalar feedback vars (feedbackL, feedbackR, fbLpfStateL, fbLpfStateR, fbLpfCoeff, fbBuf), added feedbackBuffer + driveSmoothed.",
+                    "session_evidence": "Session 4, Task 8: PluginProcessor.h updated, commit 68dd8a9"
+                },
+                {
+                    "title": "Rewrite processBlock and parameter layout",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "New parameter ranges, full-buffer feedback path, wavefolder inline, tanh output limiting.\n\nCRITICAL LESSONS from session:\n1. EVERY SmoothedValue must have getNextValue() called per-sample in the audio path. Missing this makes the parameter permanently stuck at its initial value.\n2. The wavefolder formula multiplier must match the spec exactly (1+drive*4 not 1+drive*3).\n3. Feedback soft-clip x/(1+|x|) must be present at end of feedback chain.\n4. getTailLengthSeconds() must match the max decay parameter value.",
+                    "session_evidence": "Session 4-5, Task 9: Multiple commits — 8eaee5d (initial), 32476ef (fix wavefolder + soft-clip), 644ab3c (tail length + comments)"
+                },
+                {
+                    "title": "PHASE GATE: Processor integration complete",
+                    "gate_conditions": [
+                        "All parameter ranges match spec",
+                        "All SmoothedValues have getNextValue() called per-sample",
+                        "Full signal flow works: input → detection → glitch → morph → FDN → feedback loop → filter → mix → tanh → output",
+                        "Feedback path: PitchDrifter → DualFilter (if feedback mode) → Wavefolder → soft-clip → back to FDN",
+                        "Build succeeds with zero errors",
+                        "State save/restore works (getStateInformation / setStateInformation)"
+                    ],
+                    "blocker_examples": [
+                        "Session 4-5: Wavefolder foldAmt used 3.0 multiplier instead of spec's 4.0 — code quality reviewer caught it",
+                        "Session 4-5: Missing feedback soft-clip x/(1+|x|) after wavefolder — code quality reviewer caught it",
+                        "Session 4-5: getTailLengthSeconds() returned 8.0 but decay parameter goes to 20s — DAWs would truncate tail",
+                        "Session 4-5: Spec reviewer gave FALSE POSITIVE on preset names — reviewer prompt contained wrong expected names. Cross-check plan file directly when spec reviewer flags something unexpected."
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 7: GUI / Editor Implementation",
+            "purpose": "Add new controls and update visual elements. DSP is done — now wire the interface.",
+            "session_source": "Session 5 (Task 10, lines 17459-20534)",
+            "items": [
+                {
+                    "title": "Add new GUI controls",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Add controls for new parameters, update button arrays, add version label.\n\nFrom session: Added DRIVE KnobGroup in col 3, expanded filterPosBtns[3] to filterPosBtns[4] with 'OFF/WET/FINAL/FB' labels, added 'v3' text in paint() with gold 50% opacity.",
+                    "session_evidence": "Session 5, Task 10: PluginEditor updated, commit af8bd31"
+                },
+                {
+                    "title": "Layout arithmetic verification",
+                    "owner": "ai",
+                    "ai_role": "reviewer",
+                    "description": "Verify all component bounds fit within their parent panels.\n\nFrom session: drive value label rendered 9px below feedback panel border. Plan's fbPanelH=160 didn't account for 12px offset between fbPanelY and fbTop. Fixed by increasing to 170.",
+                    "session_evidence": "Session 5: fbPanelH changed from 160 → 170, commit b19fd36"
+                },
+                {
+                    "title": "PHASE GATE: GUI complete and connected",
+                    "gate_conditions": [
+                        "All new parameters have GUI controls with APVTS attachments",
+                        "All controls visible and within their parent bounds",
+                        "Version label visible",
+                        "Build succeeds"
+                    ],
+                    "blocker_examples": [
+                        "Session 5: drive valueLabel clips below feedback panel border — plan arithmetic missed the 12px fbPanelY offset. Fixed fbPanelH from 160 to 170."
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 8: Build Verification & Integration Test",
+            "purpose": "Full build, install, and automated verification.",
+            "session_source": "Session 5 (Task 11, lines 17459-20534)",
+            "items": [
+                {
+                    "title": "Clean build from scratch",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "cmake --build build --clean-first -- -j$(nproc)\n\nExpected: [100%] Linking CXX shared library ... EpiphanyMachine.vst3 with no errors.",
+                    "session_evidence": "Session 5, Task 11: Build succeeded 100% with zero errors",
+                    "validation": "Build output shows no errors or warnings"
+                },
+                {
+                    "title": "Install and verify file exists",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Install to VST3 path, verify binary exists and has reasonable size.\n\nFrom session: Installed to ~/.vst3/Epiphany Machine.vst3/Contents/x86_64-linux/Epiphany Machine.so (3.6MB)",
+                    "session_evidence": "Session 5: Binary confirmed at expected path, 3.6MB"
+                },
+                {
+                    "title": "Cross-module integration review",
+                    "owner": "ai",
+                    "ai_role": "reviewer",
+                    "description": "Verify all cross-module contracts: preset count consistent, no dead references, feedback read/write ordering correct.\n\nFrom session: Final integration review confirmed all contracts satisfied, no dead StereoWidener references, correct feedback ordering, consistent preset count (18) across PresetData/APVTS/PresetManager.",
+                    "session_evidence": "Session 5: Integration review verdict 'Ready to merge — no critical issues'"
+                },
+                {
+                    "title": "Git tag release",
+                    "owner": "ai",
+                    "ai_role": "implementer",
+                    "description": "Tag with version number after all tests pass.\n\nFrom session: git tag v3.0.0 at commit 178631f",
+                    "session_evidence": "Session 5: Tagged v3.0.0"
+                },
+                {
+                    "title": "PHASE GATE: Build verified",
+                    "gate_conditions": [
+                        "Build succeeds with zero errors",
+                        "Binary installed to correct path",
+                        "Integration review passed",
+                        "Git tagged with version"
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 9: DAW Testing & Bug Fixes",
+            "purpose": "Load plugin in DAW, LISTEN, and fix what you find. This is where the real bugs surface.",
+            "session_source": "Session 6 (lines 20535-24292, ~05:45-08:04 on 2026-03-28)",
+            "actual_workflow_observed": "User loaded plugin in DAW and immediately reported 3 issues. Two were real bugs (drive inert, mix range), one was architectural (FDN tail masking). All fixed in single commit 8326bc3.",
+            "items": [
+                {
+                    "title": "Load in target DAW and play audio",
+                    "owner": "human_only",
+                    "ai_role": "none",
+                    "description": "This is YOUR moment. Load the plugin, play audio through it, and describe what you hear.\n\nFrom session: User reported 'controls being delayed... doesn't sound like anything changes... mix knob works but only the first part of the range has an effect'",
+                    "session_evidence": "Session 6: User's first DAW test revealed 3 issues"
+                },
+                {
+                    "title": "Diagnose and fix reported issues",
+                    "owner": "ai",
+                    "ai_role": "debugger",
+                    "description": "Read processBlock, trace the signal flow, identify root causes.\n\nFrom session, three bugs found and fixed:\n\n1. DRIVE KNOB INERT (critical): driveSmoothed.getNextValue() was never called in the per-sample loop. Without getNextValue(), SmoothedValue never advances from initial value (0.0). Wavefolder was permanently bypassed (drive > 0.001f check always false). Fix: add driveSmoothed.getNextValue() in Step 4's per-sample loop.\n\nPREVENTION RULE: After implementing processBlock, audit EVERY SmoothedValue — verify each one has getNextValue() called per-sample in the normal audio path. getCurrentValue() alone does NOT advance the smoother.\n\n2. MIX RANGE COMPRESSED: Linear blend dry*(1-mix) + wet*mix concentrates audible change in low end. FDN output louder than dry signal compounds this. Fix: switch to equal-power mixing using cos(mix * PI/2) for dry and sin(mix * PI/2) for wet.\n\nPREVENTION RULE: Always use equal-power (cosine) dry/wet mixing, not linear.\n\n3. CONTROLS PERCEIVED DELAYED: Changing density/chaos/morph only affects new FDN input; existing reverb tail persists at old character for full decay duration. With 4.0s default decay, user waits ~4 seconds to hear changes. Fix: lower default decay from 4.0s to 2.0s.\n\nPREVENTION RULE: Default decay parameter should be short enough that parameter changes are audible within ~2 seconds. User can always increase it.",
+                    "session_evidence": "Session 6: All three fixes in commit 8326bc3"
+                },
+                {
+                    "title": "PHASE GATE: DAW-validated",
+                    "gate_conditions": [
+                        "Plugin loads in target DAW without crashing",
+                        "EVERY control produces an audible/visible change when moved",
+                        "Mix knob effective across full range (equal-power mixing)",
+                        "Parameter changes audible within reasonable time",
+                        "Preset switching works (morph between presets)",
+                        "Bypass works",
+                        "Freeze works (frozen tail sustained cleanly)",
+                        "No audio glitches, clicks, or dropouts"
+                    ],
+                    "blocker_examples": [
+                        "Session 6: DRIVE knob had zero effect — SmoothedValue never advanced. Root cause: getNextValue() not called per-sample.",
+                        "Session 6: Mix knob only effective 0-30% of range — linear blending + hot FDN output.",
+                        "Session 6: 'Controls delayed' — 4.0s default decay masks all upstream parameter changes."
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Phase 10: Release & Distribution",
+            "purpose": "Copy binary, push to repo, update documentation.",
+            "session_source": "Session 6 (lines 20535-24292)",
+            "items": [
+                {
+                    "title": "Copy binary to project root",
+                    "owner": "ai",
+                    "ai_role": "utility",
+                    "description": "From session: User wants .so at project root for easy GitHub download.\n\ncp 'build/EpiphanyMachine_artefacts/Release/VST3/Epiphany Machine.vst3/Contents/x86_64-linux/Epiphany Machine.so' 'Epiphany Machine.so'\ngit add 'Epiphany Machine.so'\ngit commit -m 'chore: update root-level plugin binary to vX.Y.Z'",
+                    "session_evidence": "Session 6: Root-level .so updated, commit b940360"
+                },
+                {
+                    "title": "Push to GitHub",
+                    "owner": "human",
+                    "ai_role": "helper",
+                    "description": "Push all commits.\n\nFrom session: Push was rejected due to remote divergence (remote had 4 commits not present locally). Required pull → resolve merge conflicts → push. Two merge conflict rounds on Epiphany Machine.so (remote had deleted it, local had v3 version). Resolved by keeping local version both times.",
+                    "session_evidence": "Session 6: Multiple merge conflicts on .so file, SSH permission denied (no key), switched to HTTPS, eventually pushed 26+ commits"
+                },
+                {
+                    "title": "PHASE GATE: Release published",
+                    "gate_conditions": [
+                        "Binary at project root",
+                        "All commits pushed to remote",
+                        "Git tag pushed",
+                        "No merge conflicts remaining"
+                    ],
+                    "blocker_examples": [
+                        "Session 6: SSH push failed — no SSH key configured. Switched to HTTPS.",
+                        "Session 6: Push rejected — remote had diverged. Required pull + merge.",
+                        "Session 6: Merge conflict on .so binary file — resolved with git checkout --ours to keep local v3 version."
+                    ]
+                }
+            ]
+        }
+    ],
+
+    "juce_patterns": {
+        "description": "Every reusable JUCE API pattern extracted from the session history.",
+        "parameter_management": {
+            "apvts_setup": {
+                "pattern": "AudioProcessorValueTreeState with lambda-based parameter creation",
+                "classes": ["juce::AudioProcessorValueTreeState", "juce::AudioParameterFloat", "juce::AudioParameterChoice", "juce::AudioParameterBool", "juce::NormalisableRange"],
+                "code_reference": "PluginProcessor.cpp createParameterLayout() — addFloat/addChoice/addBool lambdas",
+                "gotchas": [
+                    "NormalisableRange skew parameter: 0.5 for frequency-like params (decay, feedback), 0.3 for cutoff frequencies",
+                    "AudioParameterChoice stores values as 0-based index integers, not strings",
+                    "Parameter ranges must be consistent between APVTS definition, PresetData values, and DSP code"
+                ],
+                "session_source": "Session 4-5: createParameterLayout() at PluginProcessor.cpp:6-60"
+            },
+            "smoothed_values": {
+                "pattern": "SmoothedValue for per-sample parameter interpolation",
+                "classes": ["juce::SmoothedValue<float>"],
+                "critical_rule": "EVERY SmoothedValue MUST have getNextValue() called per-sample in processBlock. getCurrentValue() alone does NOT advance the smoother — the value stays stuck at initial.",
+                "code_pattern": "prepareToPlay: sm.reset(sampleRate, 0.02); sm.setCurrentAndTargetValue(initial);\nprocessBlock top: sm.setTargetValue(getV('param'));\nper-sample loop: const float val = sm.getNextValue();",
+                "gotchas": [
+                    "If you only call getCurrentValue() without getNextValue(), the smoother never advances from its initial value. This was a CRITICAL BUG in session — driveSmoothed was stuck at 0.0 forever.",
+                    "Call setTargetValue() once per block (before the sample loop), getNextValue() per sample (inside the loop)",
+                    "For parameters read later in the block (not in the main per-sample loop), you can advance with getNextValue() in one loop and read with getCurrentValue() later — but the advance MUST happen"
+                ],
+                "session_source": "Session 6: driveSmoothed bug — getNextValue() never called, drive permanently zero. Commit 8326bc3"
+            },
+            "slider_attachment": {
+                "pattern": "APVTS SliderAttachment for GUI↔parameter binding",
+                "classes": ["juce::AudioProcessorValueTreeState::SliderAttachment", "juce::AudioProcessorValueTreeState::ButtonAttachment"],
+                "code_pattern": "attach = std::make_unique<SliderAttachment>(apvts, paramId, slider);",
+                "gotchas": [
+                    "Attachment must be stored as unique_ptr member — if it goes out of scope, the connection breaks",
+                    "Never manually sync slider values to parameters — the attachment handles everything"
+                ],
+                "session_source": "Session 4-5: KnobGroup::setup() in PluginEditor.cpp"
+            }
+        },
+        "dsp_module_lifecycle": {
+            "pattern": "Standard prepare/reset/process lifecycle for DSP modules",
+            "interface": "void prepare(double sampleRate, int samplesPerBlock);\nvoid reset();\nvoid process(juce::AudioBuffer<float>& buffer);",
+            "rules": [
+                "prepare(): allocate buffers, compute coefficients, set sample rate",
+                "reset(): zero all state (delay lines, LPF states, LFO phases)",
+                "process(): in-place stereo processing, no allocations",
+                "All modules must handle sample rate changes correctly in prepare()"
+            ],
+            "session_source": "Session 3-5: All DSP modules (DiffusionNetwork, GlitchEngine, DualFilter, PitchDrifter, TextureBodyDetector) follow this pattern"
+        },
+        "gui_patterns": {
+            "knob_group": {
+                "pattern": "Reusable KnobGroup struct wrapping slider + label + value label + attachment",
+                "classes": ["juce::Slider", "juce::Label", "juce::AudioProcessorValueTreeState::SliderAttachment"],
+                "code_pattern": "struct KnobGroup { Slider slider; Label label; Label valueLabel; unique_ptr<SliderAttachment> attach; void setup(...); void place(x,y,sz,...); }",
+                "session_source": "Session 4-5: PluginEditor.h KnobGroup struct"
+            },
+            "look_and_feel": {
+                "pattern": "Custom LookAndFeel_V4 subclass for consistent visual style",
+                "classes": ["juce::LookAndFeel_V4"],
+                "rules": [
+                    "Subclass LookAndFeel_V4 (not V1/V2/V3)",
+                    "Apply to top-level editor — cascades to children",
+                    "Use juce::Colour, not hardcoded hex"
+                ],
+                "session_source": "Session 4-5: CustomLookAndFeel class in GUI/"
+            },
+            "timer_updates": {
+                "pattern": "Timer-based GUI updates for meters/value labels",
+                "classes": ["juce::Timer"],
+                "code_pattern": "class Editor : public AudioProcessorEditor, private Timer { void timerCallback() override { updateValueLabels(); } };",
+                "session_source": "Session 4-5: PluginEditor inherits juce::Timer for value label updates"
+            },
+            "layout": {
+                "pattern": "Column-based layout with setBounds()",
+                "gotchas": [
+                    "Verify arithmetic: account for ALL offsets between parent container Y and component Y",
+                    "From session: fbPanelH=160 didn't account for 12px offset between fbPanelY and fbTop, causing drive label to overflow"
+                ],
+                "session_source": "Session 5: Layout overflow bug, fbPanelH 160→170"
+            }
+        },
+        "audio_thread_safety": {
+            "pattern": "Rules for processBlock thread safety",
+            "rules": [
+                "No heap allocations (new, malloc, std::vector resize)",
+                "No locks (mutex, critical section)",
+                "No I/O (file, network, console)",
+                "No exceptions",
+                "Use juce::ScopedNoDenormals at top of processBlock",
+                "Use std::atomic<bool> for flags shared between threads (not plain bool)",
+                "Pre-allocate all buffers in prepareToPlay, not in processBlock",
+                "Use juce::SmoothedValue for parameter changes (no raw parameter reads that cause zipper noise)"
+            ],
+            "gotchas": [
+                "From session: std::unordered_map.find() can allocate due to std::string construction. Use std::vector<std::pair<>> for audio-thread lookups.",
+                "From session: GlitchEngine silence gate cleared 1MB buffer on audio thread. Large memsets are allocations in disguise."
+            ],
+            "session_source": "Session 3: Task 0 performance audit identified multiple audio-thread safety violations"
+        },
+        "mixing": {
+            "equal_power_mix": {
+                "pattern": "Equal-power dry/wet mixing",
+                "formula": "dryGain = cos(mix * PI/2); wetGain = sin(mix * PI/2);",
+                "why": "Linear blend (dry*(1-mix) + wet*mix) concentrates audible change in low end of range. Equal-power keeps perceived level constant across full sweep.",
+                "session_source": "Session 6: Mix knob bug — linear blend only effective in first 30% of range. Fixed with cosine mixing."
+            }
+        }
+    },
+
+    "dsp_catalog": [
+        {
+            "name": "DiffusionNetwork",
+            "type": "Feedback Delay Network (FDN) Reverb",
+            "algorithm": "8-line FDN with Fast Hadamard Transform (FHT) mixing in feedback path",
+            "parameters": {
+                "decaySeconds": {"range": "0.0-20.0s", "default": 2.0, "note": "RT60 time. Originally defaulted to 4.0 but lowered to 2.0 because long tail masked parameter changes"},
+                "damping": {"range": "0.0-1.0", "default": 0.5, "note": "One-pole LPF on feedback, multiplied by (1 - dampMute) during freeze"},
+                "width": {"range": "0.0-1.0", "default": 0.6, "note": "Scales per-line pan positions"},
+                "freeze": {"type": "bool", "note": "Smoothly gates input, boosts feedback to 0.999, mutes damping"}
+            },
+            "implementation": {
+                "delay_lengths": [1087, 1283, 1637, 1933, 2311, 2719, 3109, 3511],
+                "buffer_size": 16384,
+                "buffer_size_note": "Originally 4096, overflowed at 96kHz+. Longest delay at 192kHz = 14044 samples.",
+                "pan_lfo_rates_hz": [0.07, 0.11, 0.15, 0.19, 0.23, 0.29, 0.31, 0.37],
+                "base_pan_positions": [-0.8, 0.8, -0.4, 0.4, -0.6, 0.6, -0.2, 0.2],
+                "fht_normalization": "0.3536f (1/sqrt(8))",
+                "rt60_formula": "gain = pow(10, -3 * delayLength / (decaySeconds * sampleRate))",
+                "process_structure": "3-pass per sample: (1) read+fbGain+LPF, (2) hadamardMix in feedback, (3) write mixed+input. Output uses post-FHT taps with panning."
+            },
+            "sample_rate_handling": "delayLengths[i] = (int)(kBaseLengths[i] * (sr / 48000.0)) in prepare()",
+            "cpu_cost": "Moderate — 8 delay reads/writes + 3-stage FHT per sample. RT60 gains pre-computed per block (was per-sample, fixed).",
+            "known_issues": [
+                "CRITICAL (fixed): FHT was originally at output only, not in feedback path — produced 8 independent combs, not FDN",
+                "CRITICAL (fixed): kBufSize=4096 overflowed at >48kHz",
+                "IMPORTANT (fixed): pow(10,...) computed per-line per-sample — moved to per-block pre-computation",
+                "MINOR (fixed): isFrozen member was dead state — removed"
+            ],
+            "session_source": "Session 4: Tasks 2, commits 5c83bfc + f82d47a + c9c38d9"
+        },
+        {
+            "name": "GlitchEngine",
+            "type": "Granular Stutter/Repeat Effect",
+            "algorithm": "Circular-buffer grain playback with chaos-driven selection, adaptive envelopes, and pitch drift",
+            "parameters": {
+                "density": {"range": "0.0-1.0", "default": 0.3, "note": "Controls grain length: density=0 → 500-1000ms, density=1 → 1-50ms"},
+                "chaos": {"range": "0.0-1.0", "default": 0.2, "note": "At 1.0: 60% reverse, 40% half-speed, 20% double-speed"},
+                "drift": {"range": "0.0-24.0 semitones", "default": 0.0, "note": "Random ±drift semitones per grain via pow(2, randomSt/12)"}
+            },
+            "implementation": {
+                "buffer_size": 131072,
+                "buffer_mask": "kBufMask for & wrap",
+                "adaptive_envelopes": {
+                    ">50ms": "Hann window",
+                    "10-50ms": "Tukey window (alpha=0.3)",
+                    "<10ms": "Trapezoid (0.5ms attack/release ramps)"
+                },
+                "grain_playback": "Float readPos with linear interpolation, grainSpeed for pitch",
+                "reverse_formula": "(grainStart+grainLength-1) - consumed*grainSpeed",
+                "drift_guard": "if (drift > 0.0f && !grainReverse) — drift disabled on reverse grains to prevent out-of-window reads"
+            },
+            "sample_rate_handling": "prepare(sr, spb) stores sample rate for grain length calculations",
+            "cpu_cost": "Low-moderate — one grain active at a time, linear interpolation per sample",
+            "known_issues": [
+                "CRITICAL (fixed): Reverse playback formula off-by-one — (grainStart+grainLength-consumed) reads past grain end on first sample",
+                "CRITICAL (fixed): writeHead unbounded overflow — needed & kBufMask",
+                "IMPORTANT (fixed): Drift applied to reverse grains caused out-of-window reads",
+                "REMOVED: Silence gate (-80dBFS) cleared 1MB buffer on audio thread"
+            ],
+            "session_source": "Session 4: Task 3"
+        },
+        {
+            "name": "DualFilter",
+            "type": "Dual Cytomic TPT State Variable Filter",
+            "algorithm": "Two independent Cytomic SVFs (texture + body paths) with LFO modulation",
+            "parameters": {
+                "texFilterCutoff": {"range": "20-20000 Hz", "default": 2000},
+                "texFilterReso": {"range": "0.0-1.0", "default": 0.3, "note": "Maps to Q 0.5-50. Self-oscillating above ~40."},
+                "texLfoRate": {"range": "0.01-10 Hz", "default": 0.5},
+                "texLfoDepth": {"range": "0.0-1.0", "default": 0.0, "note": "±3 octaves at max"},
+                "texFilterType": {"options": ["LP", "HP", "BP"], "default": "LP"},
+                "bodyFilterCutoff": {"range": "20-20000 Hz", "default": 1200},
+                "bodyFilterReso": {"range": "0.0-1.0", "default": 0.2}
+            },
+            "implementation": {
+                "q_mapping": "K = 1.0f / (0.5f + reso * 49.5f) — gives Q range 0.5 to 50",
+                "q_mapping_note": "Originally 24.5f (Q max=25). Plan had math error. Corrected to 49.5f for Q max=50.",
+                "lfo_depth": "modCut = texCutoff * pow(2, lfoVal * lfoDepth * 3.0f) — ±3 octaves",
+                "lfo_depth_note": "v2 was ±2 octaves (2.0f multiplier)"
+            },
+            "cpu_cost": "Low — two SVF updates per sample",
+            "known_issues": [
+                "IMPORTANT (fixed): Q constant 24.5f gives Q_max=25, not 50. Plan had math error. Corrected to 49.5f."
+            ],
+            "session_source": "Session 4: Task 4"
+        },
+        {
+            "name": "PitchDrifter",
+            "type": "Dual-Head Granular Pitch Shifter",
+            "algorithm": "Two overlapping grains with Hann windows, playback rate from pitch ratio",
+            "parameters": {
+                "drift": {"range": "0-24 semitones", "note": "Mapped from DRIFT parameter, applied in feedback loop only"}
+            },
+            "implementation": {
+                "buffer_size": 4096,
+                "grain_size": 2048,
+                "pitch_ratio": "pow(2, drift/12.0f)"
+            },
+            "cpu_cost": "Low — two grain reads per sample with interpolation",
+            "known_issues": [],
+            "session_source": "Session 2: Spec defined, minimal changes in v3"
+        },
+        {
+            "name": "TextureBodyDetector",
+            "type": "Dual Envelope Follower",
+            "algorithm": "Splits signal into texture (transients) and body (sustained) components",
+            "parameters": {
+                "sensitivity": {"range": "0.0-1.0", "default": 0.5, "note": "sensitivityGain = 1.0f + sensitivity * 7.0f (1x-8x), clamped to [0,1]"},
+                "glitchFocus": {"range": "0.0-1.0", "default": 0.5, "note": "Routes more texture vs body to glitch engine"}
+            },
+            "cpu_cost": "Negligible — envelope following per sample",
+            "known_issues": [],
+            "session_source": "Session 2: Spec defined, no changes in v3"
+        },
+        {
+            "name": "Wavefolder",
+            "type": "Sin-based wavefolder in feedback loop",
+            "algorithm": "output = input + drive * (sin(input * foldAmt * PI) / foldAmt - input)",
+            "parameters": {
+                "drive": {"range": "0.0-1.0", "default": 0.0, "note": "True bypass at drive=0 due to crossfade formula"}
+            },
+            "implementation": {
+                "fold_amount": "foldAmt = 1.0f + drive * 4.0f",
+                "fold_amount_note": "Originally 3.0f (implementer error). Spec says 4.0f. Corrected.",
+                "inline": "Implemented inline in processBlock, not a separate class"
+            },
+            "cpu_cost": "Low — one sin() per sample when drive > 0",
+            "known_issues": [
+                "IMPORTANT (fixed): foldAmt multiplier was 3.0 instead of spec's 4.0",
+                "DESIGN: Original spec formula sin(x*PI)/1.0 at drive=0 amplifies by PI. Fixed with crossfade: output = input + drive * (folded - input)"
+            ],
+            "session_source": "Session 4-5: Task 9 processBlock, commits 8eaee5d + 32476ef"
+        }
+    ],
+
+    "failure_modes": {
+        "description": "Every bug hit during development, indexed by phase, with prevention rules that become checklist items.",
+        "bugs": [
+            {
+                "id": "FM-01",
+                "phase": "Phase 1: Performance Audit",
+                "symptom": "O(1) cache optimization still had O(N) parameter lookup",
+                "root_cause": "Cache keyed on parameter names (via getName(256)) but idx() lambda still called getParameter(id) — itself O(N) — before hitting cache",
+                "fix": "Re-key cache on parameter ID strings; idx() uses pure paramIndexCache.find(std::string(id)) with no getParameter() call",
+                "prevention_rule": "When optimizing lookups, verify the ENTIRE call chain is O(1). A cache that requires O(N) to compute its key is not a cache.",
+                "caught_by": "Spec compliance reviewer (two-stage review process)",
+                "session_source": "Session 3, Task 0 Fix 4: Commits 392e2d8 → 52cf7d7"
+            },
+            {
+                "id": "FM-02",
+                "phase": "Phase 3: Build Config",
+                "symptom": "Implementer modified out-of-scope files",
+                "root_cause": "Haiku model over-eagerly added commented-out StereoWidener references in PluginProcessor files that were Task 8-9 scope",
+                "fix": "Fix subagent removed commented-out lines",
+                "prevention_rule": "In subagent prompts, explicitly list which files are in-scope AND state 'Do not modify any other files'. Lower-capability models (haiku) are more prone to scope creep.",
+                "caught_by": "Spec compliance reviewer",
+                "session_source": "Session 4, Task 1"
+            },
+            {
+                "id": "FM-03",
+                "phase": "Phase 4: DSP Implementation",
+                "symptom": "FDN produces slapback echo character instead of diffuse reverb",
+                "root_cause": "Hadamard Transform applied only to output summation, not in feedback path. Delay lines have no cross-coupling in feedback — they're 8 independent recirculating delays.",
+                "fix": "Restructured process() into 3 passes: read+fbGain+LPF → hadamardMix(feedback) → write mixed+input back to delay lines",
+                "prevention_rule": "In any FDN implementation, verify the mixing matrix is in the FEEDBACK path. If it's only at the output, the delay lines are independent combs, not an FDN. This is the most common FDN implementation error.",
+                "caught_by": "Code quality reviewer",
+                "session_source": "Session 4, Task 2: Commits 5c83bfc → f82d47a"
+            },
+            {
+                "id": "FM-04",
+                "phase": "Phase 4: DSP Implementation",
+                "symptom": "Audio corruption at sample rates above 48kHz",
+                "root_cause": "kBufSize=4096 too small. Longest delay (base 3511) at 96kHz = 7022 samples, at 192kHz = 14044. The & kBufMask wrap silently reads/writes wrong positions.",
+                "fix": "Changed kBufSize from 4096 to 16384",
+                "prevention_rule": "Always compute maximum delay length at highest supported sample rate: max_delay = max_base_length * (max_sr / base_sr). Buffer must be at least this large. Use power-of-2 for & mask optimization.",
+                "caught_by": "Code quality reviewer",
+                "session_source": "Session 4, Task 2: Commit f82d47a"
+            },
+            {
+                "id": "FM-05",
+                "phase": "Phase 4: DSP Implementation",
+                "symptom": "Reverse grain playback reads past grain boundary on first sample",
+                "root_cause": "Original formula (grainStart+grainLength-consumed) at consumed=0 gives grainStart+grainLength, which is ONE PAST the end of the grain buffer",
+                "fix": "Changed to (grainStart+grainLength-1) - consumed*grainSpeed",
+                "prevention_rule": "Reverse playback formulas must use (start + length - 1) as the starting position, not (start + length). Always verify the first and last sample positions are within bounds.",
+                "caught_by": "Code quality reviewer",
+                "session_source": "Session 4, Task 3"
+            },
+            {
+                "id": "FM-06",
+                "phase": "Phase 4: DSP Implementation",
+                "symptom": "writeHead eventually overflows integer range",
+                "root_cause": "writeHead incremented without wrapping",
+                "fix": "writeHead = (writeHead + 1) & kBufMask",
+                "prevention_rule": "All circular buffer indices must use & mask or % modulo wrapping.",
+                "caught_by": "Code quality reviewer",
+                "session_source": "Session 4, Task 3"
+            },
+            {
+                "id": "FM-07",
+                "phase": "Phase 4: DSP Implementation",
+                "symptom": "Drift on reverse grains reads outside grain window",
+                "root_cause": "Grain speed modification changes playback rate, but reverse grains count DOWN through the buffer. Modified speed causes read position to land outside the grain's buffer region.",
+                "fix": "Guard: if (drift > 0.0f && !grainReverse) — only apply drift to forward grains",
+                "prevention_rule": "When modifying grain playback speed, verify bounds for both forward and reverse playback modes separately.",
+                "caught_by": "Code quality reviewer",
+                "session_source": "Session 4, Task 3"
+            },
+            {
+                "id": "FM-08",
+                "phase": "Phase 4: DSP Implementation",
+                "symptom": "Filter Q range only reaches 25 instead of spec's 50",
+                "root_cause": "Plan specified K = 1/(0.5 + reso*24.5f). At reso=1: K=1/25=0.04, Q=1/(2*K)=12.5. The plan's math was wrong — need K=1/(0.5+reso*49.5f) to get Q=50.",
+                "fix": "Changed 24.5f to 49.5f",
+                "prevention_rule": "Verify filter Q mapping math: for Cytomic SVF, Q = 1/(2*K). If target Q_max is X, then K_min = 1/(2*X), so constant = (1/K_min - 0.5). Always compute K at reso=1.0 and verify Q matches spec.",
+                "caught_by": "Code quality reviewer (caught that 24.5f gives Q=25, not 50)",
+                "session_source": "Session 4, Task 4"
+            },
+            {
+                "id": "FM-09",
+                "phase": "Phase 6: Processor Integration",
+                "symptom": "Wavefolder intensity lower than designed",
+                "root_cause": "Code used 1.0f + drive * 3.0f for foldAmt, spec says 1.0f + drive * 4.0f (foldAmt=5 at drive=1)",
+                "fix": "Changed 3.0f to 4.0f",
+                "prevention_rule": "When implementing formulas from spec, copy constants exactly. Don't round or approximate.",
+                "caught_by": "Code quality reviewer",
+                "session_source": "Session 4-5, Task 9: Commit 32476ef"
+            },
+            {
+                "id": "FM-10",
+                "phase": "Phase 6: Processor Integration",
+                "symptom": "Feedback path can go unstable without protection",
+                "root_cause": "Spec calls for x/(1+|x|) soft-clip at end of feedback chain. Implementer omitted it.",
+                "fix": "Added soft-clip loop after wavefolder: fbL[i] = fbL[i] / (1.0f + std::abs(fbL[i]))",
+                "prevention_rule": "Every feedback loop MUST have a safety limiter. Check: does the feedback path have a final soft-clip or hard-clip before feeding back?",
+                "caught_by": "Code quality reviewer",
+                "session_source": "Session 4-5, Task 9: Commit 32476ef"
+            },
+            {
+                "id": "FM-11",
+                "phase": "Phase 6: Processor Integration",
+                "symptom": "DAW truncates reverb tail prematurely",
+                "root_cause": "getTailLengthSeconds() returned 8.0 but decay parameter goes up to 20.0 seconds",
+                "fix": "Changed to return 20.0",
+                "prevention_rule": "getTailLengthSeconds() must return the MAXIMUM possible tail length, which is the max value of the decay parameter.",
+                "caught_by": "Code quality reviewer",
+                "session_source": "Session 4-5, Task 9: Commit 644ab3c"
+            },
+            {
+                "id": "FM-12",
+                "phase": "Phase 7: GUI Implementation",
+                "symptom": "Drive value label renders below feedback panel border",
+                "root_cause": "Plan computed fbPanelH=160 but didn't account for 12px offset between fbPanelY (col2.getY()+158) and fbTop (col2.getY()+170). Drive label at fbTop+ks+28+12 = fbPanelY+170-158+ks+40 > 160.",
+                "fix": "Changed fbPanelH from 160 to 170",
+                "prevention_rule": "When computing panel heights, account for ALL Y-offsets between the panel origin and the component origin. Walk the arithmetic: panel starts at panelY, component starts at componentY, component bottom = componentY + componentHeight. Verify componentBottom - panelY <= panelHeight.",
+                "caught_by": "Code quality reviewer / visual inspection",
+                "session_source": "Session 5, Task 10: Commit b19fd36"
+            },
+            {
+                "id": "FM-13",
+                "phase": "Phase 9: DAW Testing",
+                "symptom": "DRIVE knob has absolutely zero effect on audio",
+                "root_cause": "driveSmoothed initialized with setCurrentAndTargetValue(0.0). Each processBlock calls setTargetValue(getV('drive')). But getNextValue() was never called in the per-sample loop — only getCurrentValue() in Step 10. Without getNextValue(), SmoothedValue never advances from 0.0. The wavefolder check (drive > 0.001f) was always false.",
+                "fix": "Added driveSmoothed.getNextValue() in Step 4's per-sample loop (consistent with how feedbackSmoothed is advanced there)",
+                "prevention_rule": "AFTER IMPLEMENTING PROCESSBLOCK: Audit every SmoothedValue declaration. For each one, grep for getNextValue() in the per-sample loop. If missing, the parameter is DEAD. This is a silent bug — no crash, no error, just a permanently inert control.",
+                "caught_by": "User (DAW testing) — NOT caught by ANY reviewer",
+                "session_source": "Session 6: Commit 8326bc3"
+            },
+            {
+                "id": "FM-14",
+                "phase": "Phase 9: DAW Testing",
+                "symptom": "Mix knob only effective in first ~30% of range",
+                "root_cause": "Linear blend dry*(1-mix) + wet*mix concentrates audible change in low end. FDN output louder than dry signal compounds this — even small mix values sound very wet.",
+                "fix": "Switched to equal-power mixing: dryGain = cos(mix * PI/2), wetGain = sin(mix * PI/2)",
+                "prevention_rule": "ALWAYS use equal-power (cosine) dry/wet mixing, not linear. Linear is perceptually wrong for audio mixing.",
+                "caught_by": "User (DAW testing)",
+                "session_source": "Session 6: Commit 8326bc3"
+            },
+            {
+                "id": "FM-15",
+                "phase": "Phase 9: DAW Testing",
+                "symptom": "Parameter changes feel delayed — no immediate audible response",
+                "root_cause": "Changing density/chaos/morph only affects NEW input to FDN. Existing reverb tail persists at old character for full decay duration. With default decay at 4.0s, user waits ~4 seconds to hear any change.",
+                "fix": "Lowered default decay from 4.0s to 2.0s",
+                "prevention_rule": "Default decay/tail parameter should be 2s or less so parameter changes are audible quickly. Long decay is available but shouldn't be the default for first impressions.",
+                "caught_by": "User (DAW testing)",
+                "session_source": "Session 6: Commit 8326bc3"
+            },
+            {
+                "id": "FM-16",
+                "phase": "Phase 10: Release",
+                "symptom": "git push rejected — remote diverged",
+                "root_cause": "Remote had 4 commits not present locally",
+                "fix": "git pull → resolve merge conflicts on .so binary → push",
+                "prevention_rule": "Before pushing a large batch of local commits, always git pull first. For binary files in merge conflicts, use 'git checkout --ours' or '--theirs' explicitly.",
+                "caught_by": "git",
+                "session_source": "Session 6"
+            }
+        ]
+    },
+
+    "session_management": {
+        "description": "When to start fresh sessions, what context to carry forward, and what to drop. Extracted from 6 session boundaries observed.",
+        "session_boundaries_observed": [
+            {
+                "boundary": "Session 1 → Session 2",
+                "trigger": "Context limit (brainstorming complete, spec writing started)",
+                "context_carried": "Full design decisions, signal flow, parameter list, preset names, gain staging philosophy, spec file path",
+                "context_dropped": "Multi-choice discussion transcript, intermediate design options that were rejected"
+            },
+            {
+                "boundary": "Session 2 → Session 3",
+                "trigger": "Context limit + API 529 errors during plan writing",
+                "context_carried": "Spec file path, plan file path, all 25 source file contents (summarized), task list",
+                "context_dropped": "Full source file contents (too large), API error retry transcript"
+            },
+            {
+                "boundary": "Session 3 → Session 4",
+                "trigger": "Context limit during task execution",
+                "context_carried": "Plan file path, task progress (Task 0 complete), commit hashes, pending tasks list, all file modifications and review results",
+                "context_dropped": "Subagent dispatch/review transcript details"
+            },
+            {
+                "boundary": "Session 4 → Session 5",
+                "trigger": "Context limit during task execution",
+                "context_carried": "All completed task commits, pending Task 9 fixes (specific issues), remaining tasks (10, 11)",
+                "context_dropped": "Completed task review transcripts"
+            },
+            {
+                "boundary": "Session 5 → Session 6",
+                "trigger": "All implementation complete, user testing begins",
+                "context_carried": "Final git log with all commits, v3.0.0 tag, install path, manual smoke test checklist",
+                "context_dropped": "All implementation details — code is committed, review is done"
+            }
+        ],
+        "rules": {
+            "when_to_start_fresh": [
+                "After completing a phase gate (spec approved, plan approved, DSP done, etc.)",
+                "When context limit is approaching (Claude starts losing earlier decisions)",
+                "After implementing 3-4 tasks — context accumulates fast with subagent transcripts",
+                "When switching from implementation to user testing (different workflow entirely)",
+                "When API errors (529) indicate context is too large"
+            ],
+            "what_to_carry_forward": [
+                "Spec file path and key decisions",
+                "Plan file path and task progress (which tasks are done, which are pending)",
+                "Commit hashes for completed work",
+                "Specific pending issues with exact symptoms and proposed fixes",
+                "File paths that were modified"
+            ],
+            "what_to_drop": [
+                "Full source file contents (AI can re-read them)",
+                "Subagent dispatch/review transcripts (decisions are in commits)",
+                "API error retry conversations",
+                "Intermediate design options that were rejected",
+                "Multi-choice discussion transcripts (decisions are in spec)"
+            ],
+            "compaction_strategy": "Use /compact when context is filling up. The auto-generated summary captures: primary request, key technical concepts, files modified, errors and fixes, pending tasks, current work. This is sufficient to continue seamlessly."
+        }
+    },
+
+    "cost_optimization": {
+        "description": "Context window budget allocation based on observed token usage patterns.",
+        "model_selection": {
+            "opus": "Use for brainstorming (Phase 0) and complex architectural decisions. Session 1 used Opus.",
+            "sonnet": "Use for plan writing and implementation execution. Sessions 2-6 switched to Sonnet after API 529 errors on Opus. Sonnet was reliable and sufficient for all implementation tasks.",
+            "haiku": "Use ONLY for simple, well-constrained tasks. Session 4 used Haiku for Task 1 (CMakeLists update) — it went out of scope and modified files it shouldn't have. Higher-capability models are more reliable for scoped work."
+        },
+        "context_budget": {
+            "spec_as_context": "~2000 tokens. Keep it concise. The spec is the authoritative reference — paste it at session start.",
+            "plan_as_context": "~5000 tokens for the full plan. For task-level work, paste only the current task's section (~300-500 tokens).",
+            "source_files": "Let AI read them fresh each session rather than carrying file contents in context. Saves ~3000-5000 tokens per session.",
+            "subagent_transcripts": "These consume the most context. Each implement+review cycle adds ~3000-5000 tokens. After 3-4 tasks, start a fresh session.",
+            "compaction_summaries": "~1000-2000 tokens each. These are efficient — carry full state in compressed form."
+        },
+        "patterns_that_waste_tokens": [
+            "Carrying full source files in context instead of letting AI re-read them",
+            "Retrying after API 529 errors in the same session — start fresh instead",
+            "Asking AI 'what should we do next?' when the plan already exists — just paste the next task",
+            "Full conversation history across sessions — use compaction summaries"
+        ],
+        "patterns_that_save_tokens": [
+            "One task per subagent dispatch — clean context, focused work",
+            "Spec + current task section as context — AI doesn't need the whole plan",
+            "Let AI re-read files instead of pasting them — files may have changed",
+            "Use /compact when context fills — auto-generated summary is efficient",
+            "Switch to Sonnet for implementation — reliable and lower cost than Opus"
+        ]
+    },
+
+    "usage_instructions": {
+        "how_to_run_this": [
+            "1. Start a new session with Opus. Paste Phase 0 + brainstorming skill. AI asks questions, you answer. Output: spec doc.",
+            "2. New session with Sonnet. Paste spec + Phase 2 + writing-plans skill. Output: task-level plan with code.",
+            "3. New session. Run Phase 1 (perf audit) if upgrading existing code. Paste plan Task 0.",
+            "4. For Phases 3-7: one session per 3-4 tasks. Use subagent-driven-development. Paste: spec + current task section from plan.",
+            "5. At each phase gate, review all conditions. If a condition isn't met, fix before advancing.",
+            "6. Phase 9: Load in DAW and LISTEN. Report what you hear. AI diagnoses and fixes.",
+            "7. After each session, save key output. Compaction summaries carry state automatically."
+        ],
+        "when_to_break_sessions": [
+            "After completing a phase gate",
+            "After 3-4 implementation tasks (subagent transcripts fill context)",
+            "When API 529 errors occur (context too large for model)",
+            "When switching from implementation to DAW testing",
+            "When you've been going 2+ hours"
+        ]
+    },
+
+    "juce_reference_context": {
+        "description": "Feed these JUCE module docs as context to the AI for the relevant phase.",
+        "phase_mapping": {
+            "phase_0_concept": [],
+            "phase_1_perf_audit": ["juce_core (threading, atomics, memory)"],
+            "phase_2_planning": ["juce_audio_processors overview", "juce_dsp module list"],
+            "phase_3_build_config": ["JUCE CMake API docs"],
+            "phase_4_dsp": ["juce_dsp (full)", "juce_audio_basics", "juce_audio_processors (AudioProcessor, APVTS)"],
+            "phase_5_presets": ["juce_audio_processors (APVTS, parameter types)"],
+            "phase_6_processor": ["juce_audio_processors (full)", "juce_dsp"],
+            "phase_7_gui": ["juce_gui_basics (Component, LookAndFeel, Slider, Label)", "juce_gui_extra (if needed)"],
+            "phase_8_build": ["JUCE CMake packaging docs"],
+            "phase_9_daw_test": [],
+            "phase_10_release": []
+        }
+    }
+}

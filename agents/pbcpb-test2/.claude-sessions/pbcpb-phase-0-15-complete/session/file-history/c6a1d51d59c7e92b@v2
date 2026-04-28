@@ -1,0 +1,16 @@
+{
+  "id": "ui-ux_accessibility_screen-readers",
+  "kb": "ui-ux",
+  "topic": "accessibility",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Screen Reader Support for Plugins",
+  "summary": "Placeholder: ARIA labels, accessible names, and screen reader compatibility.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["ui", "accessibility", "screen-reader", "aria", "labels"],
+  "related_topics": ["accessibility", "control-types"],
+  "difficulty": "intermediate",
+  "domain_relevance": 7
+}

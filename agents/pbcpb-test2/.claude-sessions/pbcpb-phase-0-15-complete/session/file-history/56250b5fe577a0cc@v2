@@ -1,0 +1,16 @@
+{
+  "id": "commercial_marketing_content-strategy",
+  "kb": "commercial",
+  "topic": "marketing",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Content Marketing for Plugin Developers",
+  "summary": "Placeholder: Blog posts, videos, tutorials, and community building.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["marketing", "content", "blog", "video", "tutorial"],
+  "related_topics": ["marketing", "community-building"],
+  "difficulty": "beginner",
+  "domain_relevance": 9
+}

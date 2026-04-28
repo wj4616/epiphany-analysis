@@ -1,0 +1,28 @@
+#pragma once
+
+#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
+
+// StereoWidener - Stereo width enhancement
+// TODO: Implement in future task
+
+namespace CogDSP
+{
+
+class StereoWidener
+{
+public:
+    StereoWidener() = default;
+    ~StereoWidener() = default;
+
+    void prepare(double sampleRate);
+    void process(float* left, float* right, int numSamples);
+    void setWidth(float width);
+    void reset();
+
+private:
+    float width = 1.0f;
+    double sampleRate = 44100.0;
+};
+
+} // namespace CogDSP

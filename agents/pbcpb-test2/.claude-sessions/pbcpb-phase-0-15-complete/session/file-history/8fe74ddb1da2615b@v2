@@ -1,0 +1,16 @@
+{
+  "id": "ui-ux_layout-patterns_grouping",
+  "kb": "ui-ux",
+  "topic": "layout-patterns",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Control Grouping for Audio Plugin UI",
+  "summary": "Placeholder: Organizing related controls into logical groups.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["ui", "layout", "grouping", "organization"],
+  "related_topics": ["layout-patterns", "hierarchy"],
+  "difficulty": "beginner",
+  "domain_relevance": 9
+}

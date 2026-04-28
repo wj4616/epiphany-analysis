@@ -1,0 +1,38 @@
+# Strategic Constraints
+
+## Budget Constraints
+- **Claude AI:** $200/month maximum (currently $100, may upgrade)
+- **External tooling:** Prefer freely available libraries and tools unless planning phase identifies a paid tool as essential — in which case, document cost and justification
+- **No significant capital investment assumed** — all recommendations must be viable for a solo enthusiast developer
+
+## Technical Stack
+
+| Component | Version |
+|-----------|---------|
+| C++ | C++17 |
+| CMake | 3.22+ |
+| Compiler | GCC 7+ or Clang 6+ |
+| JUCE | 8.0.x |
+| VST3 SDK | 3.8.x |
+| AAX SDK | Latest compatible |
+| Platform | Linux Mint |
+| DAW | REAPER |
+| Build method | FetchContent |
+
+## Required Linux Dependencies
+
+```
+libx11-xcb-dev libxcb-util-dev libxcb-cursor-dev libxcb-xkb-dev
+libxkbcommon-dev libxkbcommon-x11-dev libfontconfig1-dev libcairo2-dev
+libgtkmm-3.0-dev libsqlite3-dev libxcb-keysyms1-dev
+```
+
+## Process Constraints
+- Single developer + AI assistant workflow (role-based-single-agent)
+- Multiple Claude Code sessions expected per major feature — playbook must define session boundaries that respect token budget
+- Human makes all creative decisions (sound identity, aesthetic direction, signal flow, target genre)
+- AI handles DSP implementation, code generation, research synthesis — human reviews and directs
+- C++ KB content must be curated for audio relevance, not exhaustive
+
+## Workflow Model
+role-based-single-agent

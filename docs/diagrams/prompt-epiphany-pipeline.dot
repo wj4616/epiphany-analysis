@@ -1,0 +1,161 @@
+digraph prompt_epiphany_pipeline {
+    rankdir=TB;
+    fontname="Helvetica";
+    fontsize=12;
+    nodesep=0.4;
+    ranksep=0.6;
+    node [fontname="Helvetica", fontsize=10, shape=box, style="filled,rounded", margin="0.2,0.1"];
+    edge [fontname="Helvetica", fontsize=9];
+
+    // ── ENTRY ──────────────────────────────────────────────────────────────────
+    trigger [label="Trigger\n/prompt-epiphany\nor explicit name mention",
+             fillcolor="#D5D8DC", shape=oval, style=filled];
+
+    step1 [label="Step 1: Gather + Mode Detection\nDetect flags at first/last token\n--minimal | --verbose | --quiet\n--specification | --plan\nStrip flags from input body",
+           fillcolor="#AEB6BF"];
+
+    mode_router [label="Mode Router", shape=diamond,
+                 fillcolor="#85929E", fontcolor="white", style=filled];
+
+    trigger -> step1 -> mode_router;
+
+    // ── NORMAL MODE ────────────────────────────────────────────────────────────
+    subgraph cluster_normal {
+        label="NORMAL MODE (default)";
+        style="filled,rounded";
+        fillcolor="#EBF5FB";
+        color="#1A5276";
+        fontcolor="#1A5276";
+        fontsize=11;
+        fontname="Helvetica-Bold";
+
+        n2  [label="Step 2: Sufficiency Check\n[HARD GATE]",                   fillcolor="#AED6F1"];
+        n3  [label="Step 3: Analysis (internal)\n• Intent Extraction\n• Structural Analysis\n• Constraint Audit\n• Technique Gap Analysis\n• Weakness Identification\n• Domain/Technical Inventory",  fillcolor="#AED6F1"];
+        n4  [label="Step 4: Ideation (internal)\nEnhancement design\nTechnique application\nValidation tests",  fillcolor="#AED6F1"];
+        n5  [label="Step 5: Synthesis\nPreservation-First Protocol\nApply T1–T13 (as identified)\nPlace INVENTORY items first",  fillcolor="#AED6F1"];
+        n6  [label="Step 6: Verification\n12 checks: 6a–6l\nPreservation • Fidelity • Integrity\nEnhancement • Fabrication • Value", fillcolor="#AED6F1"];
+        nOUT [label="OUTPUT\nEnhanced prompt\nPreservation summary\nFile save offer",
+              fillcolor="#5DADE2", fontcolor="white", shape=parallelogram, style=filled];
+
+        n2 -> n3 -> n4 -> n5 -> n6;
+        n6 -> nOUT [label="PASS"];
+        n6 -> n5 [label="FAIL\nre-examine", style=dashed, color="red", fontcolor="red"];
+    }
+
+    // ── MINIMAL MODE ───────────────────────────────────────────────────────────
+    subgraph cluster_minimal {
+        label="MINIMAL MODE (--minimal)";
+        style="filled,rounded";
+        fillcolor="#EAFAF1";
+        color="#1E8449";
+        fontcolor="#1E8449";
+        fontsize=11;
+        fontname="Helvetica-Bold";
+
+        m2  [label="Step 2: Sufficiency Check\n[HARD GATE]",                  fillcolor="#A9DFBF"];
+        m3m [label="Step 3m: Quick Analysis (internal)\n• Intent\n• Inventory (all 11 categories)\n[Structure/Constraints/Weaknesses skipped]", fillcolor="#A9DFBF"];
+        m4m [label="Step 4m: Direct Synthesis\nT1, T2, T3, T5, T7 only\nCompact output\nPreservation-First Protocol",  fillcolor="#A9DFBF"];
+        m5m [label="Step 5m: Verification\n12 checks: 6a–6l\n(same checks, minimal context)", fillcolor="#A9DFBF"];
+        mOUT [label="OUTPUT\nCompact enhanced prompt\nPreservation summary\nFile save offer",
+               fillcolor="#27AE60", fontcolor="white", shape=parallelogram, style=filled];
+
+        m2 -> m3m -> m4m -> m5m;
+        m5m -> mOUT [label="PASS"];
+        m5m -> m4m [label="FAIL\nfix", style=dashed, color="red", fontcolor="red"];
+    }
+
+    // ── VERBOSE MODE ───────────────────────────────────────────────────────────
+    subgraph cluster_verbose {
+        label="VERBOSE MODE (--verbose)";
+        style="filled,rounded";
+        fillcolor="#F5EEF8";
+        color="#6C3483";
+        fontcolor="#6C3483";
+        fontsize=11;
+        fontname="Helvetica-Bold";
+
+        v_norm  [label="Normal Pipeline (Steps 2–6)\n[intermediate — not shown to user]",  fillcolor="#D7BDE2"];
+        v7  [label="Step 7v: Gap Scan (internal)\nIdentify thin spots:\n• Sparse context\n• Bare constraints\n• Missing edge cases\n• No examples\n• Weak CoT guidance\n• Missing audience calibration",  fillcolor="#D7BDE2"];
+        v8  [label="Step 8v: Expansion Ideation (internal)\nDesign targeted expansions\nFlag inferred content",       fillcolor="#D7BDE2"];
+        v9  [label="Step 9v: Expansion Synthesis\nAdd why explanations\nAdd examples / CoT / edge cases\nDo NOT displace INVENTORY items",  fillcolor="#D7BDE2"];
+        v10 [label="Step 10v: Expansion Verification\n12 checks: 6a–6l\n(verify expansions didn't\ndisplace preservation items)",  fillcolor="#D7BDE2"];
+        vOUT [label="OUTPUT\nExpanded enhanced prompt\nPreservation summary\nInferred expansions flagged\nFile save offer",
+               fillcolor="#8E44AD", fontcolor="white", shape=parallelogram, style=filled];
+
+        v_norm -> v7 -> v8 -> v9 -> v10;
+        v10 -> vOUT [label="PASS"];
+        v10 -> v9 [label="FAIL\nre-examine", style=dashed, color="red", fontcolor="red"];
+    }
+
+    // ── SPECIFICATION MODE ─────────────────────────────────────────────────────
+    subgraph cluster_spec {
+        label="SPECIFICATION MODE (--specification)";
+        style="filled,rounded";
+        fillcolor="#FEF9E7";
+        color="#784212";
+        fontcolor="#784212";
+        fontsize=11;
+        fontname="Helvetica-Bold";
+
+        s1  [label="Step S1: Sufficiency Check\n[HARD GATE]\n+ Spec Type Detection:\n  Workflow/Process Spec\n  Requirements Spec\n  Concept/Idea\n  Already Complete",  fillcolor="#FAD7A0"];
+        s2  [label="Step S2: Domain Analysis (internal)\nField • Stakeholders • Scope\nConstraints • Success criteria",  fillcolor="#FAD7A0"];
+        s3  [label="Step S3: Concept Decomposition (internal)\nFR / NFR / Interface / Data\nEdge cases • Technical Details\nPhase structure • Tier definitions\nConditional logic • Iteration rules",  fillcolor="#FAD7A0"];
+        s4  [label="Step S4: Requirement Extraction (internal)\nIEEE 29148 quality criteria\nSHALL / SHOULD / MAY\nDomain gap detection",  fillcolor="#FAD7A0"];
+        s5  [label="Step S5: Specification Synthesis (internal)\nMode A: Workflow Spec (preserve structure)\nMode B: Requirements Spec\nMode C: Concept → Full spec",  fillcolor="#FAD7A0"];
+        s6  [label="Step S6: Completeness Audit (internal)\nTrace every decomposition item\nto requirement or Open Question",  fillcolor="#FAD7A0"];
+        s7  [label="Step S7: Spec Verification\n11 checks: S7a–S7k\nDecomposition coverage\nRequirement quality • TBD check\nConsistency • Scope clarity\nTech detail preservation\nPlan-readiness • Structural preservation",  fillcolor="#FAD7A0"];
+        sOUT [label="OUTPUT\nSpecification document\nCoverage summary\nOpen Questions interview\nFile save offer",
+               fillcolor="#E67E22", fontcolor="white", shape=parallelogram, style=filled];
+
+        s1 -> s2 -> s3 -> s4 -> s5 -> s6 -> s7;
+        s7 -> sOUT [label="PASS"];
+        s7 -> s5 [label="FAIL\nre-examine", style=dashed, color="red", fontcolor="red"];
+    }
+
+    // ── PLAN MODE ──────────────────────────────────────────────────────────────
+    subgraph cluster_plan {
+        label="PLAN MODE (--plan)";
+        style="filled,rounded";
+        fillcolor="#FDEDEC";
+        color="#922B21";
+        fontcolor="#922B21";
+        fontsize=11;
+        fontname="Helvetica-Bold";
+
+        p1  [label="Step P1: Sufficiency Check\n[HARD GATE]\nGoal must be specific enough\nfor atomic steps",  fillcolor="#F1948A"];
+        p2  [label="Step P2: Goal Analysis (internal)\nEnd state • Sub-goals • Prerequisites\nConstraints • Resources • Risks\nTechnical Details inventory",  fillcolor="#F1948A"];
+        p3  [label="Step P3: Action Decomposition (internal)\nAtomic, verifiable actions\nPhased structure with checkpoints\nCompleteness checklist",  fillcolor="#F1948A"];
+        p4  [label="Step P4: Dependency Mapping (internal)\nHard / Soft dependencies\nParallelizable actions\nCritical path",  fillcolor="#F1948A"];
+        p5  [label="Step P5: Safeguard Design (internal)\nVerification tests per step\nFailure recovery + Rollback\nEscalation triggers",  fillcolor="#F1948A"];
+        p6  [label="Step P6: Plan Synthesis (internal)\nGoal → Prerequisites → Phases\nVerify: lines on every step\nRecovery: lines on risky steps",  fillcolor="#F1948A"];
+        p7  [label="Step P7: Execution Simulation (internal)\nWalk through plan step-by-step\nDetect missing prerequisites\nResolve gaps",  fillcolor="#F1948A"];
+        p8  [label="Step P8: Gap Audit (internal)\nTrace every action to plan step\nVerify checkpoints + safeguards\nReorder if dependency violated",  fillcolor="#F1948A"];
+        p9  [label="Step P9: Plan Verification\n9 checks: P9a–P9i\nAtomicity • Verifiability\nDependency compliance\nSafeguard coverage\nCompletion criteria\nTech detail preservation",  fillcolor="#F1948A"];
+        pOUT [label="OUTPUT\nStep-by-step plan\nPlan coverage summary\nSpec Gaps feedback (if any)\nFile save offer",
+               fillcolor="#C0392B", fontcolor="white", shape=parallelogram, style=filled];
+
+        p1 -> p2 -> p3 -> p4 -> p5 -> p6 -> p7 -> p8 -> p9;
+        p9 -> pOUT [label="PASS"];
+        p9 -> p6 [label="FAIL\nre-examine", style=dashed, color="red", fontcolor="red"];
+    }
+
+    // ── MODE ROUTER EDGES ──────────────────────────────────────────────────────
+    mode_router -> n2     [label="(default)"];
+    mode_router -> m2     [label="--minimal"];
+    mode_router -> v_norm [label="--verbose"];
+    mode_router -> s1     [label="--specification"];
+    mode_router -> p1     [label="--plan"];
+
+    // ── PIPELINE CHAIN (spec → plan) ───────────────────────────────────────────
+    sOUT -> p1 [label="  Chain:\n  --specification --plan\n  (spec output as plan input)",
+                style=dashed, color="#7F8C8D", fontcolor="#7F8C8D", constraint=false];
+
+    // ── QUIET FLAG NOTE ────────────────────────────────────────────────────────
+    quiet [label="--quiet flag (orthogonal)\nSkip terminal display\nSave directly to file\nApplies to any mode",
+           fillcolor="#D5D8DC", shape=note, style=filled, fontsize=9];
+    step1 -> quiet [style=dotted, arrowhead=none, color="#7F8C8D"];
+
+    // ── TECHNIQUE REFERENCE BOX ────────────────────────────────────────────────
+    techniques [label="Techniques T1–T13 (Normal/Verbose)\nT1 XML structuring • T2 Decomposition\nT3 Constraints • T4 Role/Persona\nT5 Output format • T6 CoT injection\nT7 Priority hierarchy • T8 Edge cases\nT9 Few-shot examples • T10 Self-critique\nT11 Context anchoring • T12 Audience\nT13 Escape hatch\nApplication order: T2→T1→T4→T3→T7→T6→T5→T8→T12→T9→T11→T10→T13",
+                fillcolor="#FDFEFE", shape=box, style="filled,dashed", fontsize=9, color="#BDC3C7"];
+}

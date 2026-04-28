@@ -1,0 +1,193 @@
+# KB Architecture: Multi-Layer with Bridge
+
+## Complexity Decision
+
+**Decision: STRUCTURED MULTI-LAYER KB WITH BRIDGE**
+
+### Rationale
+
+**Question 1:** Do users of this playbook describe goals in language that differs from implementation language?
+
+**Answer: YES**
+
+- Users describe: "warm", "lush", "psychedelic", "ambient pad", "punchy bass"
+- Implementation needs: filter cutoff range, saturation amount, LFO rate, reverb decay
+- Translation required: Creative descriptors → Technical parameters
+
+**Question 2:** Does this domain have enough distinct knowledge types to justify separate layers?
+
+**Answer: YES**
+
+From Phase 1 research, 5 distinct knowledge types identified:
+
+| Knowledge Type | Domain | Authority Level |
+|----------------|--------|-----------------|
+| Technical | C++, JUCE, DSP, audio thread safety | High (factual) |
+| Sound Design | Synthesis theory, creative techniques | Medium (some subjectivity) |
+| UI/UX | Interface standards, visual design | Medium (standards + taste) |
+| Commercial | Marketplaces, licensing, pricing, marketing | Medium (market-dependent) |
+| Reference | Academic papers, textbooks, tutorials | High (authoritative) |
+
+**Separation Principle:** These knowledge types change independently:
+- Technical: JUCE version updates, C++ standard changes
+- Sound Design: New synthesis techniques, genre evolution
+- UI/UX: Platform standards, design trends
+- Commercial: Marketplace rules, pricing strategies
+- Reference: New publications, updated tutorials
+
+---
+
+## Knowledge Layer Definitions
+
+### Layer 1: Technical KB
+
+**Name:** `technical`
+
+**Domain Boundary:** Implementation knowledge — code, frameworks, algorithms, patterns. What belongs: C++ patterns, JUCE API usage, DSP algorithms, audio thread safety, build systems. What doesn't belong: Sound design theory (→ Sound Design KB), GUI aesthetics (→ UI/UX KB), marketplace rules (→ Commercial KB).
+
+**Authority Score:** 0.95 (Factual, verifiable, version-dependent)
+
+**Separation Rule:** Technical knowledge changes with framework versions and language standards. It is distinct from creative knowledge and can be verified objectively through compilation and testing.
+
+**Topics:**
+- `realtime-safety` — Audio thread safety, lock-free patterns, allocation avoidance
+- `juce-patterns` — JUCE idioms, APVTS, state management, parameter handling
+- `dsp-algorithms` — Filter implementations, oscillators, effects
+- `build-systems` — CMake, FetchContent, CI/CD
+- `testing` — Catch2, pluginval, validation
+
+### Layer 2: Sound Design KB
+
+**Name:** `sound-design`
+
+**Domain Boundary:** Creative sound knowledge — synthesis theory, patch creation, genre-specific techniques. What belongs: Oscillator types, filter theory, modulation routing, genre techniques, preset methodology. What doesn't belong: C++ implementation (→ Technical KB), GUI layout (→ UI/UX KB).
+
+**Authority Score:** 0.70 (Subjective elements, genre-dependent)
+
+**Separation Rule:** Sound design knowledge combines theory (factual) with aesthetic judgment (subjective). It is distinct from implementation and requires translation to technical parameters.
+
+**Topics:**
+- `synthesis-types` — Subtractive, FM, wavetable, granular, additive
+- `oscillators` — Waveform types, phase, detune, sync
+- `filters` — Filter types, resonance, modulation
+- `modulation` — LFO, envelopes, routing
+- `effects` — Reverb, delay, distortion, modulation effects
+- `genre-techniques` — Psychedelic, ambient, pad, bass design
+- `preset-methodology` — How to create presets, naming conventions
+
+### Layer 3: UI/UX KB
+
+**Name:** `ui-ux`
+
+**Domain Boundary:** Interface knowledge — control design, layout standards, visual feedback. What belongs: Knob/slider design, meter implementation, layout patterns, accessibility. What doesn't belong: DSP implementation (→ Technical KB), aesthetic decisions (human-only).
+
+**Authority Score:** 0.75 (Standards exist, but taste varies)
+
+**Separation Rule:** UI/UX knowledge has established standards (accessibility, control types) but aesthetic direction remains human-only. Technical implementation of UI belongs in Technical KB.
+
+**Topics:**
+- `control-types` — Knobs, sliders, buttons, meters
+- `layout-patterns` — Grouping, hierarchy, spacing
+- `accessibility` — Keyboard support, screen readers, contrast
+- `feedback` — Visual feedback, animation, tooltips
+- `platform-standards` — DAW conventions, OS guidelines
+
+### Layer 4: Commercial KB
+
+**Name:** `commercial`
+
+**Domain Boundary:** Business knowledge — marketplaces, licensing, pricing, marketing. What belongs: KVR requirements, Plugin Boutique process, licensing systems, pricing strategies, marketing timelines. What doesn't belong: Technical implementation (→ Technical KB), product decisions (human-only).
+
+**Authority Score:** 0.60 (Market-dependent, time-sensitive)
+
+**Separation Rule:** Commercial knowledge changes with market conditions and platform policies. It requires regular updates and has lower authority than technical knowledge.
+
+**Topics:**
+- `marketplaces` — KVR, Plugin Boutique, direct sales
+- `licensing` — iLok, custom solutions, anti-piracy
+- `pricing` — Strategy, positioning, bundles
+- `marketing` — Launch timelines, content strategy, community building
+- `distribution` — Installers, updates, support
+
+### Layer 5: Reference KB
+
+**Name:** `reference`
+
+**Domain Boundary:** External sources — academic papers, textbooks, tutorials, documentation. What belongs: Pirkle DSP textbook references, Zölzer DAFX, JUCE documentation links, ADC talks. What doesn't belong: Our synthesis of content (→ appropriate KB).
+
+**Authority Score:** 0.90 (External authority, but may be outdated)
+
+**Separation Rule:** Reference knowledge points to external sources. It does not contain our synthesis — that belongs in the appropriate domain KB.
+
+**Topics:**
+- `textbooks` — Pirkle, Zölzer, Smith
+- `documentation` — JUCE docs, VST3 SDK
+- `talks` — ADC presentations, JUCE tutorials
+- `papers` — DSP research papers
+- `tutorials` — Community tutorials, blog posts
+
+---
+
+## Bridge Layer
+
+**Purpose:** Translate subjective creative language to technical parameters.
+
+**Trigger:** When user provides descriptors like "warm", "lush", "psychedelic", the bridge maps these to specific parameter ranges in the Technical KB.
+
+**Authority Score:** 0.50 (Requires validation, feedback-enriched)
+
+**Mechanism:**
+1. **Pre-seeded:** Common mappings from sound design research
+2. **Auto-generated:** When agent encounters unmapped concepts
+3. **Feedback-enriched:** When user evaluation refines entries
+
+**Example Bridge Entry:**
+```json
+{
+  "category": "filter-character",
+  "descriptor": "warm",
+  "mappings": [
+    {
+      "parameter": "filter_cutoff",
+      "value_range": [0.2, 0.4],
+      "typical_default": 0.3,
+      "confidence": 0.75,
+      "source": "sound-design-kb/warm-filter",
+      "why": "Lower cutoff frequencies emphasize low-mid harmonics, reducing harsh high frequency content"
+    },
+    {
+      "parameter": "filter_resonance",
+      "value_range": [0.1, 0.25],
+      "typical_default": 0.15,
+      "confidence": 0.70,
+      "source": "sound-design-kb/warm-filter",
+      "why": "Subtle resonance adds character without harsh self-oscillation"
+    }
+  ],
+  "anti_patterns": [
+    "High resonance (>0.5) with low cutoff — creates harsh whistle"
+  ],
+  "combinations": [
+    {
+      "with": "saturation",
+      "result": "warm + gritty",
+      "parameter_adjustments": {
+        "saturation_amount": [0.3, 0.6]
+      }
+    }
+  ]
+}
+```
+
+---
+
+## Layer Summary
+
+| Layer | Name | Authority | Topics | Bridge Required |
+|-------|------|-----------|--------|-----------------|
+| 1 | technical | 0.95 | 5 | No |
+| 2 | sound-design | 0.70 | 7 | Yes (→ technical) |
+| 3 | ui-ux | 0.75 | 5 | No |
+| 4 | commercial | 0.60 | 5 | No |
+| 5 | reference | 0.90 | 5 | No |
+| Bridge | — | 0.50 | — | Maps sound-design → technical |

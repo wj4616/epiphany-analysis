@@ -1,0 +1,61 @@
+{
+  "id": "bridge_saturation-character",
+  "category": "saturation-character",
+  "parameters": ["saturation_drive", "saturation_mix"],
+  "intent_mappings": {
+    "gritty": {
+      "parameter": "saturation_drive",
+      "value_range": [0.5, 1.0],
+      "typical_default": 0.7,
+      "confidence": 0.80,
+      "source": "sound-design_effects_distortion",
+      "why": "Higher drive creates harmonic distortion for grit"
+    },
+    "subtle": {
+      "parameter": "saturation_drive",
+      "value_range": [0.1, 0.3],
+      "typical_default": 0.2,
+      "confidence": 0.75,
+      "source": "sound-design_effects_distortion",
+      "why": "Low drive adds warmth without obvious distortion"
+    },
+    "driven": {
+      "parameter": "saturation_mix",
+      "value_range": [0.4, 0.7],
+      "typical_default": 0.5,
+      "confidence": 0.70,
+      "source": "sound-design_effects_distortion",
+      "why": "Mix balances dry and saturated for controlled drive"
+    },
+    "clean": {
+      "parameter": "saturation_mix",
+      "value_range": [0.0, 0.1],
+      "typical_default": 0.0,
+      "confidence": 0.95,
+      "source": "sound-design_effects_distortion",
+      "why": "No saturation keeps signal clean and uncolored"
+    }
+  },
+  "anti_patterns": [
+    "Very high drive (>0.9) can create harsh aliasing in digital",
+    "Clean setting with warm filter achieves warmth without saturation"
+  ],
+  "combinations": [
+    {
+      "with": "bridge_filter-character",
+      "result": "gritty + dark",
+      "parameter_adjustments": {
+        "filter_cutoff": [0.15, 0.3]
+      },
+      "confidence_modifier": 0.75
+    },
+    {
+      "with": "bridge_oscillator-character",
+      "result": "rich + gritty",
+      "confidence_modifier": 0.80
+    }
+  ],
+  "status": "seeded",
+  "version": "1.0.0",
+  "created_from": "research"
+}

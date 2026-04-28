@@ -1,0 +1,23 @@
+{
+  "title": "Audio Output Comparison Testing",
+  "description": "Regression testing by comparing audio output",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:45:35.612660Z",
+  "kb_type": "testing",
+  "audio_relevance": 8,
+  "difficulty": "intermediate",
+  "markdown": "# Audio Output Comparison Testing\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "audio output comparison",
+    "regression testing audio",
+    "audio snapshot",
+    "WAV comparison"
+  ],
+  "sources": [
+    "Testing blogs",
+    "JUCE forum"
+  ]
+}

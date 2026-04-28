@@ -1,0 +1,31 @@
+#include "ResonantFilter.h"
+
+namespace CogDSP
+{
+
+void ResonantFilter::prepare(double sr)
+{
+    sampleRate = sr;
+}
+
+void ResonantFilter::process(float* samples, int numSamples)
+{
+    // TODO: Implement resonant filter
+    juce::ignoreUnused(samples, numSamples);
+}
+
+void ResonantFilter::setCutoff(float freqHz)
+{
+    cutoff = freqHz;
+}
+
+void ResonantFilter::setResonance(float res)
+{
+    resonance = res;
+}
+
+void ResonantFilter::reset()
+{
+}
+
+} // namespace CogDSP

@@ -1,0 +1,41 @@
+{
+  "id": "bridge-warm",
+  "title": "Warm Sound Translation",
+  "category": "bridges",
+  "sonic_description": "Warm, full-bodied sound with softened highs and pleasant midrange emphasis",
+  "sonic_keywords": ["warm", "full", "soft", "mellow", "round"],
+  "translation": {
+    "filter": {
+      "type": "lowpass",
+      "cutoff_range": [0.2, 0.4],
+      "resonance_range": [0.1, 0.2],
+      "slope": 12
+    },
+    "amplitude": {
+      "attack_range": [0.01, 0.1],
+      "decay_range": [0.1, 0.3],
+      "sustain_range": [0.6, 0.8],
+      "release_range": [0.3, 0.6]
+    },
+    "oscillator": [{
+      "waveforms": ["sawtooth", "triangle"],
+      "detune_range": [0.0, 0.05]
+    }],
+    "effects": [{
+      "type": "distortion",
+      "mix_range": [0.0, 0.2],
+      "parameters": {
+        "drive": [0.1, 0.3]
+      }
+    }]
+  },
+  "why": "Low-pass filter in mid-range softens harsh highs. Soft attack envelope creates gentle onset. Light detune adds thickness without harshness. Subtle soft-clip adds warmth without obvious distortion.",
+  "how_to_apply": "Use for pads, basses, and lead sounds where brightness is not desired. Start with filter cutoff at 0.3 and adjust based on source material.",
+  "confidence": 0.85,
+  "source": {
+    "type": "expert_interview",
+    "reference": "Synthesizer sound design consensus"
+  },
+  "presets": ["warm-pad", "mellow-bass"],
+  "phase_usage": [0, 4, 5, 9]
+}

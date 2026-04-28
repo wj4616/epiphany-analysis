@@ -1,0 +1,65 @@
+#include "PluginProcessor.h"
+#include "PluginEditor.h"
+
+CogVSTAudioProcessor::CogVSTAudioProcessor()
+    : AudioProcessor(BusesProperties()
+        .withInput("Input", juce::AudioChannelSet::stereo(), true)
+        .withOutput("Output", juce::AudioChannelSet::stereo(), true))
+{
+}
+
+CogVSTAudioProcessor::~CogVSTAudioProcessor()
+{
+}
+
+void CogVSTAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
+{
+    juce::ignoreUnused(sampleRate, samplesPerBlock);
+}
+
+void CogVSTAudioProcessor::releaseResources()
+{
+}
+
+bool CogVSTAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
+{
+    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+        return false;
+
+    if (layouts.getMainInputChannelSet() != juce::AudioChannelSet::stereo() &&
+        layouts.getMainInputChannelSet() != juce::AudioChannelSet::mono())
+        return false;
+
+    return true;
+}
+
+void CogVSTAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+{
+    juce::ignoreUnused(midiMessages);
+    juce::ScopedNoDenormals noDenormals;
+
+    // TODO: Implement DSP processing in future tasks
+    // For now, pass audio through unchanged
+}
+
+juce::AudioProcessorEditor* CogVSTAudioProcessor::createEditor()
+{
+    return new CogVSTAudioProcessorEditor(*this);
+}
+
+void CogVSTAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
+{
+    juce::ignoreUnused(destData);
+    // TODO: Implement preset state saving
+}
+
+void CogVSTAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
+{
+    juce::ignoreUnused(data, sizeInBytes);
+    // TODO: Implement preset state loading
+}
+
+juce::AudioProcessor* createPluginFilter()
+{
+    return new CogVSTAudioProcessor();
+}

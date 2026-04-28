@@ -1,0 +1,30 @@
+{
+  "category": "audio-thread",
+  "description": "Audio thread safety violations",
+  "entries": [
+    {
+      "id": "fm-01-allocation",
+      "title": "Heap Allocation on Audio Thread",
+      "severity": "critical",
+      "confidence": 1.0
+    },
+    {
+      "id": "fm-07-thread-safety",
+      "title": "Thread Safety Violation in Parameter Callback",
+      "severity": "critical",
+      "confidence": 1.0
+    },
+    {
+      "id": "fm-04-denormals",
+      "title": "Denormal CPU Explosion",
+      "severity": "critical",
+      "confidence": 1.0
+    },
+    {
+      "id": "fm-05-feedback",
+      "title": "Feedback Loop Instability",
+      "severity": "critical",
+      "confidence": 1.0
+    }
+  ]
+}

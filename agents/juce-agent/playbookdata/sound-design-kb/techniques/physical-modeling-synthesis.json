@@ -1,0 +1,115 @@
+{
+  "title": "Physical Modeling Synthesis",
+  "description": "Mathematical algorithms for recreating acoustic instruments through excitation, resonance, and output simulation",
+  "source": "web-research",
+  "harvested_at": "2026-03-29T08:10:00.000000",
+  "kb_type": "sound-design",
+  "audio_relevance": 9,
+  "difficulty": "advanced",
+  "content": {
+    "overview": "Physical modeling uses mathematical algorithms to recreate how real instruments produce sound, creating organic, expressive sounds that respond naturally to playing dynamics",
+    "three_stages": {
+      "excitation": "Simulating initial energy input (plucking, striking, bowing, blowing)",
+      "resonance": "Calculating how instrument components vibrate and interact",
+      "output": "Combining calculations into final audio signal"
+    },
+    "leading_plugin_developers": {
+      "physical_audio": {
+        "description": "UK-based specialist in pure numerical modeling",
+        "plugins": [
+          "Tetrad - quad physical modeling with granular synthesis and metal plates",
+          "Preparation 2 - colliding strings with rattle and fret interactions",
+          "Modus - strings, plates, springs with collision modeling",
+          "Dual Spring Reverb/Dynamic Plate Reverb - mechanical reverb models"
+        ],
+        "key_feature": "No samples or impulse responses - pure real-time calculations"
+      },
+      "applied_acoustics_systems": {
+        "chromaphone_3": {
+          "description": "Two-layer architecture with resonator coupling",
+          "features": ["Mallet/noise excitation", "1000+ presets", "Strings, membranes, plates, bars"]
+        }
+      },
+      "ik_multimedia": {
+        "modo_bass_2": {
+          "description": "Physical modeling bass guitar",
+          "features": ["Customizable playing styles", "22 bass models", "Full amp/FX chain"]
+        }
+      },
+      "madrona_labs": {
+        "kaivo": {
+          "method": "FDTD (Finite-Difference Time-Domain)",
+          "features": ["8 resonators", "4 body models", "Semi-modular patching"]
+        }
+      },
+      "baby_audio": {
+        "atoms": {
+          "method": "Mass-spring network synthesis",
+          "description": "Virtual bowing creates evolving organic textures"
+        }
+      }
+    },
+    "free_open_source_options": {
+      "ripplerx": {
+        "github": "Open-source (GPL-3.0) modal synthesis",
+        "features": ["Dual resonators", "9 acoustic models", "Up to 64 partials", "Sidechain input", "MTS-ESP support"],
+        "formats": "VST3, AU, LV2, CLAP"
+      },
+      "chow_kick": "Vintage drum machine membrane circuit modeling",
+      "chow_tape_model": "Academic-grade tape machine emulation"
+    },
+    "core_dsp_algorithms": {
+      "digital_waveguide_modeling": {
+        "description": "Simulates 1D wave propagation in strings and tubes",
+        "implementation": "Fractional delay lines and interpolation",
+        "used_in": "Chromaphone, Kaivo (FDTD variant)"
+      },
+      "modal_synthesis": {
+        "description": "Models instruments as sets of resonant modes (partials)",
+        "concept": "Each mode represents a natural frequency of vibration",
+        "used_in": "RipplerX, Ableton Collision, AAS instruments"
+      },
+      "wave_digital_filters": {
+        "description": "Models scattering junctions and lossless interconnections",
+        "application": "Efficient simulation of complex acoustic systems"
+      },
+      "finite_difference_time_domain": {
+        "description": "Solves differential equations governing 2D/3D vibration",
+        "used_in": "Madrona Labs Kaivo for plates and drums"
+      },
+      "feedback_delay_networks": {
+        "description": "Essential for artificial reverberation",
+        "used_in": "Physical Audio reverb plugins"
+      }
+    },
+    "technical_learning_resources": {
+      "book": {
+        "title": "Physical Audio Signal Processing by Julius O. Smith III",
+        "availability": "Free online at DSPRelated.com",
+        "coverage": ["Digital waveguides", "Scattering junctions", "Commuted synthesis", "Nonlinear elements", "Finite difference schemes"],
+        "prerequisites": "Discrete-time signal processing, filter design, programming"
+      }
+    },
+    "advantages_tradeoffs": {
+      "advantages": [
+        "Expressive realism - responds to performance nuances",
+        "Infinite variation - no two notes identical",
+        "Small file sizes - no large sample libraries",
+        "Impossible instruments - create hybrid acoustics"
+      ],
+      "tradeoffs": [
+        "CPU intensive - real-time calculations demand processing power",
+        "Learning curve - physical parameters vs traditional synth controls",
+        "Not always 'perfect' - can lack exact character of specific vintage instruments"
+      ]
+    },
+    "applications": "Cinematic scoring, experimental sound design, electronic music where organic movement and expressive control are prioritized"
+  },
+  "sources": [
+    "https://physicalaudio.co.uk/",
+    "https://pluginerds.com/11-physical-modelling-plugins/",
+    "https://github.com/tiagolr/ripplerx",
+    "http://www.dsprelated.com/books/568.php",
+    "https://babyaud.io/atoms/"
+  ]
+}

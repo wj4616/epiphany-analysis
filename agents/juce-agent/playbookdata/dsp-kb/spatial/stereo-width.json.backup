@@ -1,0 +1,22 @@
+{
+  "title": "Stereo Width Processing",
+  "description": "Mid-side encoding and stereo widening",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:47:40.636074Z",
+  "kb_type": "dsp",
+  "audio_relevance": 8,
+  "difficulty": "intermediate",
+  "markdown": "# Stereo Width Processing\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "stereo width processing",
+    "mid-side encoding",
+    "stereo widening",
+    "mono compatibility"
+  ],
+  "sources": [
+    "Sound on Sound"
+  ]
+}

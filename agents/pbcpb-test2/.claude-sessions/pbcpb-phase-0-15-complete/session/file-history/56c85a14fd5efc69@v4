@@ -1,0 +1,9 @@
+# Metrics Tracker — record at every phase gate
+
+| Metric | Phase | Value | Target | Date |
+|--------|-------|-------|--------|------|
+| Files created | 0 | 4 | — | 2026-04-02 |
+| Files created | 1 | 89 | — | 2026-04-02 |
+| KB entries | 3 | 71 | — | 2026-04-02 |
+| Bridge entries | 3 | 5 | — | 2026-04-02 |
+| Directories created | 3 | 40 | — | 2026-04-02 |

@@ -1,0 +1,133 @@
+# Cross-Cutting Concerns
+
+These concerns touch every phase of the playbook and must be woven throughout, not isolated in one phase.
+
+## CCC-01: Audio Thread Safety
+
+**Description:** Real-time audio processing must never block, allocate, or perform non-deterministic operations.
+
+**Applies to:** All DSP implementation, parameter handling, state management, UI communication
+
+**Enforcement:**
+- Every code review includes audio thread audit
+- Prevention rules in Phase 4 (DSP Implementation)
+- Verification in Phase 9 (DAW Testing)
+
+**Test:** Plugin passes `pluginval` real-time safety tests
+
+## CCC-02: Human Creative Authority
+
+**Description:** Human makes ALL creative decisions. AI asks, never assumes defaults.
+
+**Applies to:** Plugin concept, sound identity, GUI design, preset naming, marketing positioning
+
+**Enforcement:**
+- Every phase with creative content requires human approval
+- AI must provide options, not single proposals
+- No "default" sound designs or preset names
+
+**Test:** Review logs show human decisions, not AI proposals
+
+## CCC-03: Knowledge Base Integration
+
+**Description:** Five knowledge layers (Technical, Sound Design, UI/UX, Commercial, Reference) must be consulted at appropriate phases.
+
+**Applies to:** All phases — each phase specifies which KB layers to load
+
+**Enforcement:**
+- Phase context_load includes relevant KB files
+- Sound Design queries use bridge layer for translation
+- Technical references verified before implementation
+
+**Test:** Implementation cites KB entries, not web searches
+
+## CCC-04: Session Boundary Management
+
+**Description:** Claude Code sessions have token limits. Playbook must define where to break sessions.
+
+**Applies to:** Multi-phase execution, large implementations
+
+**Enforcement:**
+- Session breaks at phase gates where decisions-ledger is updated
+- Fresh session loads decisions-ledger and artifact-manifest
+- Each session begins with context restoration
+
+**Test:** No session exceeds token budget; context preserved across sessions
+
+## CCC-05: Build Verification
+
+**Description:** Every code change must compile and pass tests before proceeding.
+
+**Applies to:** Phase 3 (Project Setup), Phase 4 (DSP), Phase 5 (State), Phase 6 (Integration)
+
+**Enforcement:**
+- Each task includes build command
+- Tests run before phase gate
+- CI pipeline (optional but recommended)
+
+**Test:** `cmake --build build && cd build && ctest`
+
+## CCC-06: Gain Staging Audit
+
+**Description:** Multiple conservative gain stages mask effects. Audit early and document.
+
+**Applies to:** Phase 0 (Specification), Phase 4 (DSP), Phase 9 (DAW Testing)
+
+**Enforcement:**
+- Specification includes gain staging philosophy
+- DSP implementation documents all gain points
+- DAW testing includes gain staging verification
+
+**Test:** Effect is audible at all parameter ranges
+
+## CCC-07: Cross-Platform Compatibility
+
+**Description:** Plugin must work on all target platforms and DAWs.
+
+**Applies to:** Build system, platform-specific code, testing
+
+**Enforcement:**
+- CMake configured for all target platforms
+- Platform-specific code isolated and conditional
+- Testing matrix covers Linux + REAPER minimum
+
+**Test:** Plugin loads in REAPER on primary platform; optional: macOS/Windows DAWs
+
+## CCC-08: Parameter Formula Verification
+
+**Description:** Formulas must be verified at boundary conditions (param=0, param=1).
+
+**Applies to:** All DSP algorithms, parameter conversions, display formatting
+
+**Enforcement:**
+- Self-review includes formula boundary check
+- Unit tests include boundary values
+- Prevention rules cite specific formula failures
+
+**Test:** All parameters produce correct output at 0, 0.5, 1.0
+
+## CCC-09: Documentation Completeness
+
+**Description:** Every phase produces documented artifacts. No TBD sections.
+
+**Applies to:** All phases
+
+**Enforcement:**
+- Gate conditions include documentation checks
+- Requirements document has no placeholders
+- Final playbook includes usage instructions
+
+**Test:** Gate verification lists each artifact with PASS/FAIL
+
+## CCC-10: Marketplace Readiness
+
+**Description:** Commercial distribution requirements affect technical decisions.
+
+**Applies to:** Phase 13 (Licensing), Phase 14 (Marketplace), all phases indirectly
+
+**Enforcement:**
+- Licensing system chosen before Phase 3
+- Marketplace requirements inform testing scope
+- Pricing strategy informs feature decisions
+
+**Test:** Plugin meets all requirements for target marketplace(s)

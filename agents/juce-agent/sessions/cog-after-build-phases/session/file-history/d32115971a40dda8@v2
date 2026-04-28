@@ -1,0 +1,59 @@
+#include "PluginEditor.h"
+
+CogVSTAudioProcessorEditor::CogVSTAudioProcessorEditor(CogVSTAudioProcessor& p)
+    : AudioProcessorEditor(&p), audioProcessor(p)
+{
+    // Spec: 950x580 window
+    setSize(950, 580);
+}
+
+CogVSTAudioProcessorEditor::~CogVSTAudioProcessorEditor()
+{
+}
+
+void CogVSTAudioProcessorEditor::paint(juce::Graphics& g)
+{
+    // Cosmic interdimensional mystical background
+    // Dark background with subtle gradient
+    auto bounds = getLocalBounds();
+
+    // Dark cosmic background
+    juce::ColourGradient gradient(
+        juce::Colour(15, 10, 30),   // Deep space blue-black at top
+        bounds.getX(), bounds.getY(),
+        juce::Colour(30, 15, 50),   // Slightly lighter purple at bottom
+        bounds.getX(), bounds.getBottom(),
+        false
+    );
+    g.setGradientFill(gradient);
+    g.fillAll();
+
+    // Title
+    g.setColour(juce::Colour(180, 150, 255));  // Soft purple glow
+    g.setFont(28.0f);
+    g.drawFittedText("Cog VST", bounds.removeFromTop(60), juce::Justification::centred, 1);
+
+    // Subtitle
+    g.setColour(juce::Colour(120, 100, 180));
+    g.setFont(12.0f);
+    g.drawFittedText("Interdimensional Sound Design Module", bounds.removeFromTop(20), juce::Justification::centred, 1);
+
+    // Placeholder: show parameter info for now
+    // Full GUI implementation to be done in future tasks
+    g.setColour(juce::Colours::white.withAlpha(0.5f));
+    g.setFont(14.0f);
+
+    auto infoBounds = getLocalBounds().reduced(20);
+    infoBounds.removeFromTop(80);
+
+    g.drawFittedText("Plugin loaded with " + juce::String(CogVSTAudioProcessor::paramIDs.size()) + " parameters.\n"
+                     "DSP engine active with spectral processing, resonant filters,\n"
+                     "drive circuit, chorus, and modulation.\n\n"
+                     "GUI implementation pending.",
+                     infoBounds, juce::Justification::centredTop, 5);
+}
+
+void CogVSTAudioProcessorEditor::resized()
+{
+    // Layout implementation pending
+}

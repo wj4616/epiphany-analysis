@@ -1,0 +1,81 @@
+{
+  "id": "cmake-kb_cmake-docs_command_add_library",
+  "kb": "cmake-kb",
+  "topic": "cmake-docs",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "Add a library target to the project. This is the primary command for building audio plugins.",
+  "concepts": [
+    {
+      "name": "STATIC",
+      "description": "- Static library (.lib/.a)",
+      "related": []
+    },
+    {
+      "name": "SHARED",
+      "description": "- Shared library (.dll/.so/.dylib)",
+      "related": []
+    },
+    {
+      "name": "MODULE",
+      "description": "- Plugin module - essential for VST3/AU/AAX plugins",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "cmake",
+      "code": "add_library(<name> [STATIC | SHARED | MODULE]\n            [<options>...] <sources>...)\n",
+      "preserved": true
+    },
+    {
+      "language": "cmake",
+      "code": "# VST3/AU/AAX Plugin\njuce_add_plugin(MyPlugin\n    PLUGIN_NAME \"My Plugin\"\n    PLUGIN_MANUFACTURER \"My Company\"\n    PLUGIN_MANUFACTURER_CODE \"Mycp\"\n    PLUGIN_CODE \"MPlg\"\n    FORMATS VST3 AU AAX Standalone\n)\n\n# Creates:\n# - MyPlugin_VST3 (MODULE library)\n# - MyPlugin_AU (MODULE library)\n# - MyPlugin_AAX (MODULE library)\n# - MyPlugin_Standalone (EXECUTABLE)\n",
+      "preserved": true
+    },
+    {
+      "language": "cmake",
+      "code": "add_library(MyPlugin_Object OBJECT\n    MyPlugin.cpp\n    MyPluginEditor.cpp\n)\n\n# Share objects between plugin formats\ntarget_link_libraries(MyPlugin_VST3\n    PRIVATE MyPlugin_Object\n)\n",
+      "preserved": true
+    },
+    {
+      "language": "cmake",
+      "code": "add_library(MyAudioUtils INTERFACE)\ntarget_include_directories(MyAudioUtils\n    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include\n)\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# add_library\n\nAdd a library target to the project. This is the primary command for building audio plugins.\n\n## Normal Libraries\n\n```cmake\nadd_library(<name> [STATIC | SHARED | MODULE]\n            [<options>...] <sources>...)\n```\n\n### Library Types\n\n- **STATIC** - Static library (.lib/.a)\n- **SHARED** - Shared library (.dll/.so/.dylib)\n- **MODULE** - Plugin module - essential for VST3/AU/AAX plugins\n\n## JUCE Plugin Example\n\n```cmake\n# VST3/AU/AAX Plugin\njuce_add_plugin(MyPlugin\n    PLUGIN_NAME \"My Plugin\"\n    PLUGIN_MANUFACTURER \"My Company\"\n    PLUGIN_MANUFACTURER_CODE \"Mycp\"\n    PLUGIN_CODE \"MPlg\"\n    FORMATS VST3 AU AAX Standalone\n)\n\n# Creates:\n# - MyPlugin_VST3 (MODULE library)\n# - MyPlugin_AU (MODULE library)\n# - MyPlugin_AAX (MODULE library)\n# - MyPlugin_Standalone (EXECUTABLE)\n```\n\n## Object Libraries\n\n```cmake\nadd_library(MyPlugin_Object OBJECT\n    MyPlugin.cpp\n    MyPluginEditor.cpp\n)\n\n# Share objects between plugin formats\ntarget_link_libraries(MyPlugin_VST3\n    PRIVATE MyPlugin_Object\n)\n```\n\n## Interface Libraries\n\nFor header-only utilities:\n\n```cmake\nadd_library(MyAudioUtils INTERFACE)\ntarget_include_directories(MyAudioUtils\n    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include\n)\n```\n\n## Audio Plugin Best Practices\n\n1. Use MODULE for plugins - VST3/AU plugins must be MODULE libraries\n2. Set proper extensions - Configure output extensions per platform\n3. Share objects - Use OBJECT libraries to reduce compilation time",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.942533+00:00"
+  },
+  "title": "CMake add_library Command",
+  "description": "CMake command to add library targets - critical for building VST3, AU, and AAX audio plugins",
+  "source": "cmake.org",
+  "harvested_at": "2026-03-29T06:05:16.079801",
+  "kb_type": "build",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "implementation_examples": [
+    {
+      "title": "JUCE Plugin with Multiple Formats",
+      "code": "juce_add_plugin(MySynth\n    PLUGIN_NAME \"MySynth\"\n    PLUGIN_MANUFACTURER \"SynthCo\"\n    PLUGIN_MANUFACTURER_CODE \"SntC\"\n    PLUGIN_CODE \"MSyn\"\n    FORMATS VST3 AU Standalone\n)\n\ntarget_link_libraries(MySynth\n    PRIVATE\n        juce::juce_audio_utils\n        juce::juce_audio_processors\n        juce::juce_dsp\n)"
+    }
+  ],
+  "tags": [
+    "cmake",
+    "library",
+    "plugin",
+    "vst3",
+    "au",
+    "aax",
+    "juce",
+    "target"
+  ],
+  "related_topics": [
+    "target_link_libraries",
+    "target_include_directories",
+    "target_compile_definitions"
+  ]
+}

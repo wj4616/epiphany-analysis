@@ -1,0 +1,16 @@
+{
+  "id": "sound-design_filters_resonance",
+  "kb": "sound-design",
+  "topic": "filters",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Filter Resonance and Self-Oscillation",
+  "summary": "Placeholder: Using resonance for character and self-oscillation for synthesis.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["filter", "resonance", "q", "self-oscillation"],
+  "related_topics": ["filters", "oscillators"],
+  "difficulty": "intermediate",
+  "domain_relevance": 9
+}

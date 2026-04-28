@@ -1,0 +1,1077 @@
+{
+  "id": "cpp-kb_cppreference_container_array",
+  "kb": "cpp-kb",
+  "topic": "cppreference",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Create account](https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fcontainer%2Farray&type=signup)",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "text",
+      "code": "#include <algorithm>\n#include <array>\n#include <iostream>\n#include <iterator>\n#include <string>\n\nint main()\n{\n    // Construction uses aggregate initialization\n    std::array<int, 3> a1{{1, 2, 3}}; // Double-braces required in C++11 prior to\n                                      // the CWG 1270 revision (not needed in C++11\n                                      // after the revision and in C++14 and beyond)\n\n    std::array<int, 3> a2 = {1, 2, 3}; // Double braces never required after =\n\n    // Container operations are supported\n    std::sort(a1.begin(), a1.end());\n    std::ranges::reverse_copy(a2, std::ostream_iterator<int>(std::cout, \" \"));\n    std::cout << '\\n';\n\n    // Ranged for loop is supported\n    std::array<std::string, 2> a3{\"E\", \"\\u018E\"};\n    for (const auto& s : a3)\n        std::cout << s << ' ';\n    std::cout << '\\n';\n\n    // Deduction guide for array creation (since C++17)\n    [[maybe_unused]] std::array a4{3.0, 1.0, 4.0}; // std::array<double, 3>\n\n    // Behavior of unspecified elements is the same as with built-in arrays\n    [[maybe_unused]] std::array<int, 2> a5; // No list init, a5[0] and a5[1]\n                                            // are default initialized\n    [[maybe_unused]] std::array<int, 2> a6{}; // List init, both elements are value\n                                              // initialized, a6[0] = a6[1] = 0\n    [[maybe_unused]] std::array<int, 2> a7{1}; // List init, unspecified element is value\n                                               // initialized, a7[0] = 1, a7[1] = 0\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "text",
+      "code": "3 2 1\nE \u018e\n",
+      "preserved": true
+    }
+  ],
+  "references": [
+    {
+      "title": "cppreference.com",
+      "url": "https://en.cppreference.com/index.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Create account",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fcontainer%2Farray&type=signup",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Log in",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fcontainer%2Farray \"You are encouraged to log in; however, it is not mandatory [o]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Page",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html \"View the content page [c]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Discussion",
+      "url": "https://en.cppreference.com/w/Talk%253Acpp/container/array.html \"Discussion about the content page [t]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "View",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit \"You can edit this page. Please use the preview button before saving [e]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "History",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=history \"Past revisions of this page [h]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "cpp",
+      "url": "https://en.cppreference.com/w/cpp.html \"cpp\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "container",
+      "url": "https://en.cppreference.com/w/cpp/container.html \"cpp/container\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Compiler support",
+      "url": "https://en.cppreference.com/w/cpp/compiler_support.html \"cpp/compiler support\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Freestanding and hosted",
+      "url": "https://en.cppreference.com/w/cpp/freestanding.html \"cpp/freestanding\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Language",
+      "url": "https://en.cppreference.com/w/cpp/language.html \"cpp/language\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Standard library",
+      "url": "https://en.cppreference.com/w/cpp/standard_library.html \"cpp/standard library\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Standard library headers",
+      "url": "https://en.cppreference.com/w/cpp/headers.html \"cpp/header\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Named requirements",
+      "url": "https://en.cppreference.com/w/cpp/iterator/concepts.html \"cpp/named req\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Feature test macros",
+      "url": "https://en.cppreference.com/w/cpp/experimental/feature_test.html \"cpp/feature test\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Language support library",
+      "url": "https://en.cppreference.com/w/cpp/utility.html#Language_support \"cpp/utility\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Concepts library",
+      "url": "https://en.cppreference.com/w/cpp/concepts.html \"cpp/concepts\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Diagnostics library",
+      "url": "https://en.cppreference.com/w/cpp/error.html \"cpp/error\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Memory management library",
+      "url": "https://en.cppreference.com/w/cpp/memory.html \"cpp/memory\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Metaprogramming library",
+      "url": "https://en.cppreference.com/w/cpp/meta.html \"cpp/meta\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "General utilities library",
+      "url": "https://en.cppreference.com/w/cpp/utility.html \"cpp/utility\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Iterators library",
+      "url": "https://en.cppreference.com/w/cpp/iterator.html \"cpp/iterator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Ranges library",
+      "url": "https://en.cppreference.com/w/cpp/ranges.html \"cpp/ranges\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Algorithms library",
+      "url": "https://en.cppreference.com/w/cpp/algorithm.html \"cpp/algorithm\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Strings library",
+      "url": "https://en.cppreference.com/w/cpp/string.html \"cpp/string\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Text processing library",
+      "url": "https://en.cppreference.com/w/cpp/text.html \"cpp/text\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Numerics library",
+      "url": "https://en.cppreference.com/w/cpp/numeric.html \"cpp/numeric\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Date and time library",
+      "url": "https://en.cppreference.com/w/cpp/chrono.html \"cpp/chrono\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Input/output library",
+      "url": "https://en.cppreference.com/w/cpp/io.html \"cpp/io\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Filesystem library",
+      "url": "https://en.cppreference.com/w/cpp/filesystem.html \"cpp/filesystem\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Concurrency support library",
+      "url": "https://en.cppreference.com/w/cpp/atomic.html \"cpp/thread\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Execution control library",
+      "url": "https://en.cppreference.com/w/cpp/experimental/execution.html \"cpp/execution\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Technical specifications",
+      "url": "https://en.cppreference.com/w/cpp/experimental.html \"cpp/experimental\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Symbols index",
+      "url": "https://en.cppreference.com/w/cpp/symbol_index.html \"cpp/symbol index\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "External libraries",
+      "url": "https://en.cppreference.com/w/cpp/links/libs.html \"cpp/links/libs\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "_node-handle_",
+      "url": "https://en.cppreference.com/w/cpp/container/node_handle.html \"cpp/container/node handle\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Sequence",
+      "url": "https://en.cppreference.com/w/cpp/container.html#Sequence_containers \"cpp/container\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "vector",
+      "url": "https://en.cppreference.com/w/cpp/container/vector.html \"cpp/container/vector\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "vector<bool>",
+      "url": "https://en.cppreference.com/w/cpp/container/vector_bool.html \"cpp/container/vector bool\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "inplace\\_vector",
+      "url": "https://en.cppreference.com/w/cpp/container/inplace_vector.html \"cpp/container/inplace vector\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "hive",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/hive&action=edit&redlink=1 \"cpp/container/hive (page does not exist",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "deque",
+      "url": "https://en.cppreference.com/w/cpp/container/deque.html \"cpp/container/deque\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "forward\\_list",
+      "url": "https://en.cppreference.com/w/cpp/container/forward_list.html \"cpp/container/forward list\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "list",
+      "url": "https://en.cppreference.com/w/cpp/container/list.html \"cpp/container/list\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Associative",
+      "url": "https://en.cppreference.com/w/cpp/container.html#Associative_containers \"cpp/container\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "set",
+      "url": "https://en.cppreference.com/w/cpp/container/set.html \"cpp/container/set\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "multiset",
+      "url": "https://en.cppreference.com/w/cpp/container/multiset.html \"cpp/container/multiset\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "map",
+      "url": "https://en.cppreference.com/w/cpp/container/map.html \"cpp/container/map\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "multimap",
+      "url": "https://en.cppreference.com/w/cpp/container/multimap.html \"cpp/container/multimap\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Unordered associative",
+      "url": "https://en.cppreference.com/w/cpp/container.html#Unordered_associative_containers \"cpp/container\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "unordered\\_set",
+      "url": "https://en.cppreference.com/w/cpp/container/unordered_set.html \"cpp/container/unordered set\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "unordered\\_multiset",
+      "url": "https://en.cppreference.com/w/cpp/container/unordered_multiset.html \"cpp/container/unordered multiset\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "unordered\\_map",
+      "url": "https://en.cppreference.com/w/cpp/container/unordered_map.html \"cpp/container/unordered map\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "unordered\\_multimap",
+      "url": "https://en.cppreference.com/w/cpp/container/unordered_multimap.html \"cpp/container/unordered multimap\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Adaptors",
+      "url": "https://en.cppreference.com/w/cpp/container.html#Container_adaptors \"cpp/container\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "stack",
+      "url": "https://en.cppreference.com/w/cpp/container/stack.html \"cpp/container/stack\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "queue",
+      "url": "https://en.cppreference.com/w/cpp/container/queue.html \"cpp/container/queue\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "priority\\_queue",
+      "url": "https://en.cppreference.com/w/cpp/container/priority_queue.html \"cpp/container/priority queue\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "flat\\_set",
+      "url": "https://en.cppreference.com/w/cpp/container/flat_set.html \"cpp/container/flat set\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "flat\\_multiset",
+      "url": "https://en.cppreference.com/w/cpp/container/flat_multiset.html \"cpp/container/flat multiset\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "flat\\_map",
+      "url": "https://en.cppreference.com/w/cpp/container/flat_map.html \"cpp/container/flat map\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "flat\\_multimap",
+      "url": "https://en.cppreference.com/w/cpp/container/flat_multimap.html \"cpp/container/flat multimap\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Views",
+      "url": "https://en.cppreference.com/w/cpp/container.html#Views \"cpp/container\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "span",
+      "url": "https://en.cppreference.com/w/cpp/container/span.html \"cpp/container/span\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "mdspan",
+      "url": "https://en.cppreference.com/w/cpp/container/mdspan.html \"cpp/container/mdspan\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Iterator invalidation",
+      "url": "https://en.cppreference.com/w/cpp/container.html#Iterator_invalidation \"cpp/container\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Member function table",
+      "url": "https://en.cppreference.com/w/cpp/container.html#Member_function_table \"cpp/container\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Non-member function table",
+      "url": "https://en.cppreference.com/w/cpp/container.html#Non-member_function_table \"cpp/container\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Member types",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Member_types \"cpp/container/array\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Member functions",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Member_functions \"cpp/container/array\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Element access",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Element_access \"cpp/container/array\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "array::at",
+      "url": "https://en.cppreference.com/w/cpp/container/array/at.html \"cpp/container/array/at\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "array::front",
+      "url": "https://en.cppreference.com/w/cpp/container/array/front.html \"cpp/container/array/front\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "array::back",
+      "url": "https://en.cppreference.com/w/cpp/container/array/back.html \"cpp/container/array/back\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "array::data",
+      "url": "https://en.cppreference.com/w/cpp/container/array/data.html \"cpp/container/array/data\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Operations",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Operations \"cpp/container/array\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "array::fill",
+      "url": "https://en.cppreference.com/w/cpp/container/array/fill.html \"cpp/container/array/fill\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "array::swap",
+      "url": "https://en.cppreference.com/w/cpp/container/array/swap.html \"cpp/container/array/swap\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Iterators",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Iterators \"cpp/container/array\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "array::beginarray::cbegin",
+      "url": "https://en.cppreference.com/w/cpp/container/array/begin.html \"cpp/container/array/begin\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "array::endarray::cend",
+      "url": "https://en.cppreference.com/w/cpp/container/array/end.html \"cpp/container/array/end\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "array::rbeginarray::crbegin",
+      "url": "https://en.cppreference.com/w/cpp/container/array/rbegin.html \"cpp/container/array/rbegin\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "array::rendarray::crend",
+      "url": "https://en.cppreference.com/w/cpp/container/array/rend.html \"cpp/container/array/rend\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Capacity",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Capacity \"cpp/container/array\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "array::empty",
+      "url": "https://en.cppreference.com/w/cpp/container/array/empty.html \"cpp/container/array/empty\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "array::size",
+      "url": "https://en.cppreference.com/w/cpp/container/array/size.html \"cpp/container/array/size\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "array::max\\_size",
+      "url": "https://en.cppreference.com/w/cpp/container/array/max_size.html \"cpp/container/array/max size\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Non-member functions",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Non-member_functions \"cpp/container/array\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "operator==operator<=>",
+      "url": "https://en.cppreference.com/w/cpp/container/array/operator_cmp.html \"cpp/container/array/operator cmp\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "get(std::array)",
+      "url": "https://en.cppreference.com/w/cpp/container/array/get.html \"cpp/container/array/get\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "swap(std::array)",
+      "url": "https://en.cppreference.com/w/cpp/container/array/swap2.html \"cpp/container/array/swap2\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "to\\_array",
+      "url": "https://en.cppreference.com/w/cpp/container/array/to_array.html \"cpp/container/array/to array\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Helper classes",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Helper_classes \"cpp/container/array\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "tuple\\_size<std::array>",
+      "url": "https://en.cppreference.com/w/cpp/container/array/tuple_size.html \"cpp/container/array/tuple size\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "tuple\\_element<std::array>",
+      "url": "https://en.cppreference.com/w/cpp/container/array/tuple_element.html \"cpp/container/array/tuple element\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Deduction guides",
+      "url": "https://en.cppreference.com/w/cpp/container/array/deduction_guides.html \"cpp/container/array/deduction guides\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::size\\_t",
+      "url": "https://en.cppreference.com/w/cpp/types/size_t.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "C-style array",
+      "url": "https://en.cppreference.com/w/cpp/language/array.html \"cpp/language/array\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "aggregate-initialization",
+      "url": "https://en.cppreference.com/w/cpp/language/aggregate_initialization.html \"cpp/language/aggregate initialization\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Container",
+      "url": "https://en.cppreference.com/w/cpp/named_req/Container.html \"cpp/named req/Container\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ReversibleContainer",
+      "url": "https://en.cppreference.com/w/cpp/named_req/ReversibleContainer.html \"cpp/named req/ReversibleContainer\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ContiguousContainer",
+      "url": "https://en.cppreference.com/w/cpp/named_req/ContiguousContainer.html \"cpp/named req/ContiguousContainer\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "SequenceContainer",
+      "url": "https://en.cppreference.com/w/cpp/named_req/SequenceContainer.html \"cpp/named req/SequenceContainer\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "1Iterator invalidation",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Iterator_invalidation",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "2Template parameters",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Template_parameters",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "3Member types",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Member_types",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "4Member functions",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Member_functions",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "4.1Implicitly-defined member functions",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Implicitly-defined_member_functions",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "4.2Element access",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Element_access",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "4.3Iterators",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Iterators",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "4.4Capacity",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Capacity",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "4.5Operations",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Operations",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "5Non-member functions",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Non-member_functions",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "6Helper classes",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Helper_classes",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "7Deduction guides",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Deduction_guides",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "8Example",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#Example",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "9See also",
+      "url": "https://en.cppreference.com/w/cpp/container/array.html#See_also",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=1 \"Edit section: Iterator invalidation\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=2 \"Edit section: Template parameters\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "MoveConstructible",
+      "url": "https://en.cppreference.com/w/cpp/named_req/MoveConstructible.html \"cpp/named req/MoveConstructible\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "MoveAssignable",
+      "url": "https://en.cppreference.com/w/cpp/named_req/MoveAssignable.html \"cpp/named req/MoveAssignable\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=3 \"Edit section: Member types\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::size\\_t",
+      "url": "https://en.cppreference.com/w/cpp/types/size_t.html \"cpp/types/size t\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::ptrdiff\\_t",
+      "url": "https://en.cppreference.com/w/cpp/types/ptrdiff_t.html \"cpp/types/ptrdiff t\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "LegacyRandomAccessIterator",
+      "url": "https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator.html \"cpp/named req/RandomAccessIterator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "LegacyContiguousIterator",
+      "url": "https://en.cppreference.com/w/cpp/named_req/ContiguousIterator.html \"cpp/named req/ContiguousIterator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "LiteralType",
+      "url": "https://en.cppreference.com/w/cpp/named_req/LiteralType.html \"cpp/named req/LiteralType\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "`contiguous_iterator`",
+      "url": "https://en.cppreference.com/w/cpp/iterator/contiguous_iterator.html \"cpp/iterator/contiguous iterator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "ConstexprIterator",
+      "url": "https://en.cppreference.com/w/cpp/named_req/ConstexprIterator.html \"cpp/named req/ConstexprIterator\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::reverse\\_iterator",
+      "url": "https://en.cppreference.com/w/cpp/iterator/reverse_iterator.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=4 \"Edit section: Member functions\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=5 \"Edit section: Non-member functions\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::swap",
+      "url": "https://en.cppreference.com/w/cpp/utility/swap.html \"cpp/algorithm/swap\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=6 \"Edit section: Helper classes\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=8 \"Edit section: Example\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "[edit",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=9 \"Edit section: See also\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "make\\_array",
+      "url": "https://en.cppreference.com/w/cpp/experimental/make_array.html \"cpp/experimental/make array\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&oldid=174050",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&oldid=174050",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Category",
+      "url": "https://en.cppreference.com/w/Special:Categories \"Special:Categories\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Todo with reason",
+      "url": "https://en.cppreference.com/w/Category%253ATodo_with_reason.html \"Category:Todo with reason\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Support us",
+      "url": "http://www.cppreference.com/support",
+      "domain": "www.cppreference.com"
+    },
+    {
+      "title": "Recent changes",
+      "url": "https://en.cppreference.com/w/Special:RecentChanges \"A list of recent changes in the wiki [r]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "FAQ",
+      "url": "https://en.cppreference.com/w/Cppreference%253AAbout.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Offline version",
+      "url": "https://en.cppreference.com/w/Cppreference%253AArchives.html",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "What links here",
+      "url": "https://en.cppreference.com/w/Special:WhatLinksHere/cpp/container/array \"A list of all wiki pages that link here [j]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Related changes",
+      "url": "https://en.cppreference.com/w/Special:RecentChangesLinked/cpp/container/array \"Recent changes in pages linked from this page [k]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Upload file",
+      "url": "http://upload.cppreference.com/w/Special:Upload \"Upload files [u]\"",
+      "domain": "upload.cppreference.com"
+    },
+    {
+      "title": "Special pages",
+      "url": "https://en.cppreference.com/w/Special:SpecialPages \"A list of all special pages [q]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Printable version",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&printable=yes \"Printable version of this page [p]\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Permanent link",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&oldid=174050 \"Permanent link to this revision of the page\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Page information",
+      "url": "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=info",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Deutsch",
+      "url": "http://de.cppreference.com/w/cpp/container/array \"cpp/container/array\"",
+      "domain": "de.cppreference.com"
+    },
+    {
+      "title": "Espa\u00f1ol",
+      "url": "http://es.cppreference.com/w/cpp/container/array \"cpp/container/array\"",
+      "domain": "es.cppreference.com"
+    },
+    {
+      "title": "Fran\u00e7ais",
+      "url": "http://fr.cppreference.com/w/cpp/container/array \"cpp/container/array\"",
+      "domain": "fr.cppreference.com"
+    },
+    {
+      "title": "Italiano",
+      "url": "http://it.cppreference.com/w/cpp/container/array \"cpp/container/array\"",
+      "domain": "it.cppreference.com"
+    },
+    {
+      "title": "\u65e5\u672c\u8a9e",
+      "url": "http://ja.cppreference.com/w/cpp/container/array \"cpp/container/array\"",
+      "domain": "ja.cppreference.com"
+    },
+    {
+      "title": "Polski",
+      "url": "http://pl.cppreference.com/w/cpp/container/array \"cpp/container/array\"",
+      "domain": "pl.cppreference.com"
+    },
+    {
+      "title": "Portugu\u00eas",
+      "url": "http://pt.cppreference.com/w/cpp/container/array \"cpp/container/array\"",
+      "domain": "pt.cppreference.com"
+    },
+    {
+      "title": "\u0420\u0443\u0441\u0441\u043a\u0438\u0439",
+      "url": "http://ru.cppreference.com/w/cpp/container/array \"cpp/container/array\"",
+      "domain": "ru.cppreference.com"
+    },
+    {
+      "title": "\u4e2d\u6587",
+      "url": "http://zh.cppreference.com/w/cpp/container/array \"cpp/container/array\"",
+      "domain": "zh.cppreference.com"
+    },
+    {
+      "title": "Privacy policy",
+      "url": "https://en.cppreference.com/w/Cppreference%253APrivacy_policy.html \"Cppreference:Privacy policy\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "About cppreference.com",
+      "url": "https://en.cppreference.com/w/Cppreference%253AAbout.html \"Cppreference:About\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "Disclaimers",
+      "url": "https://en.cppreference.com/w/Cppreference%253AGeneral_disclaimer.html \"Cppreference:General disclaimer\"",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "![Powered by MediaWiki",
+      "url": "https://en.cppreference.com/mwiki/skins/common/images/poweredby_mediawiki_88x31.png",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "![Powered by GeSHi",
+      "url": "https://upload.cppreference.com/mwiki/images/2/2b/powered_by_geshi_88x31.png",
+      "domain": "upload.cppreference.com"
+    },
+    {
+      "title": "![Hosted by Tiger Technologies",
+      "url": "https://upload.cppreference.com/mwiki/images/9/94/powered_by_tigertech_88x31.png",
+      "domain": "upload.cppreference.com"
+    }
+  ],
+  "original_markdown": "##### [cppreference.com](https://en.cppreference.com/index.html)\n\n[Create account](https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fcontainer%2Farray&type=signup)\n\n- [Log in](https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fcontainer%2Farray \"You are encouraged to log in; however, it is not mandatory [o]\")\n\n##### Namespaces\n\n- [Page](https://en.cppreference.com/w/cpp/container/array.html \"View the content page [c]\")\n- [Discussion](https://en.cppreference.com/w/Talk%253Acpp/container/array.html \"Discussion about the content page [t]\")\n\n##### Variants\n\n##### Views\n\n- [View](https://en.cppreference.com/w/cpp/container/array.html)\n- [Edit](https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit \"You can edit this page. Please use the preview button before saving [e]\")\n- [History](https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=history \"Past revisions of this page [h]\")\n\n##### Actions\n\n# std::array\n\nFrom cppreference.com\n\n< [cpp](https://en.cppreference.com/w/cpp.html \"cpp\") \u200e \\| [container](https://en.cppreference.com/w/cpp/container.html \"cpp/container\")\n\n[C++](https://en.cppreference.com/w/cpp.html \"cpp\")\n\n|     |\n| --- |\n| [Compiler support](https://en.cppreference.com/w/cpp/compiler_support.html \"cpp/compiler support\") |\n| [Freestanding and hosted](https://en.cppreference.com/w/cpp/freestanding.html \"cpp/freestanding\") |\n| [Language](https://en.cppreference.com/w/cpp/language.html \"cpp/language\") |\n| [Standard library](https://en.cppreference.com/w/cpp/standard_library.html \"cpp/standard library\") |\n| [Standard library headers](https://en.cppreference.com/w/cpp/headers.html \"cpp/header\") |\n| [Named requirements](https://en.cppreference.com/w/cpp/iterator/concepts.html \"cpp/named req\") |\n| [Feature test macros](https://en.cppreference.com/w/cpp/experimental/feature_test.html \"cpp/feature test\")(C++20) |\n| [Language support library](https://en.cppreference.com/w/cpp/utility.html#Language_support \"cpp/utility\") |\n| [Concepts library](https://en.cppreference.com/w/cpp/concepts.html \"cpp/concepts\")(C++20) |\n| [Diagnostics library](https://en.cppreference.com/w/cpp/error.html \"cpp/error\") |\n| [Memory management library](https://en.cppreference.com/w/cpp/memory.html \"cpp/memory\") |\n| [Metaprogramming library](https://en.cppreference.com/w/cpp/meta.html \"cpp/meta\")(C++11) |\n| [General utilities library](https://en.cppreference.com/w/cpp/utility.html \"cpp/utility\") |\n| [Containers library](https://en.cppreference.com/w/cpp/container.html \"cpp/container\") |\n| [Iterators library](https://en.cppreference.com/w/cpp/iterator.html \"cpp/iterator\") |\n| [Ranges library](https://en.cppreference.com/w/cpp/ranges.html \"cpp/ranges\")(C++20) |\n| [Algorithms library](https://en.cppreference.com/w/cpp/algorithm.html \"cpp/algorithm\") |\n| [Strings library](https://en.cppreference.com/w/cpp/string.html \"cpp/string\") |\n| [Text processing library](https://en.cppreference.com/w/cpp/text.html \"cpp/text\") |\n| [Numerics library](https://en.cppreference.com/w/cpp/numeric.html \"cpp/numeric\") |\n| [Date and time library](https://en.cppreference.com/w/cpp/chrono.html \"cpp/chrono\") |\n| [Input/output library](https://en.cppreference.com/w/cpp/io.html \"cpp/io\") |\n| [Filesystem library](https://en.cppreference.com/w/cpp/filesystem.html \"cpp/filesystem\")(C++17) |\n| [Concurrency support library](https://en.cppreference.com/w/cpp/atomic.html \"cpp/thread\")(C++11) |\n| [Execution control library](https://en.cppreference.com/w/cpp/experimental/execution.html \"cpp/execution\")(C++26) |\n| [Technical specifications](https://en.cppreference.com/w/cpp/experimental.html \"cpp/experimental\") |\n| [Symbols index](https://en.cppreference.com/w/cpp/symbol_index.html \"cpp/symbol index\") |\n| [External libraries](https://en.cppreference.com/w/cpp/links/libs.html \"cpp/links/libs\") |\n\n[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/navbar_content&action=edit)\n\n[Containers library](https://en.cppreference.com/w/cpp/container.html \"cpp/container\")\n\n|     |\n| --- |\n| [_node-handle_](https://en.cppreference.com/w/cpp/container/node_handle.html \"cpp/container/node handle\")<br>(C++17) |\n| [Sequence](https://en.cppreference.com/w/cpp/container.html#Sequence_containers \"cpp/container\") |\n| **array**<br>(C++11) |\n| [vector](https://en.cppreference.com/w/cpp/container/vector.html \"cpp/container/vector\") |\n| [vector<bool>](https://en.cppreference.com/w/cpp/container/vector_bool.html \"cpp/container/vector bool\") |\n| [inplace\\_vector](https://en.cppreference.com/w/cpp/container/inplace_vector.html \"cpp/container/inplace vector\")<br>(C++26) |\n| [hive](https://en.cppreference.com/mwiki/index.php?title=cpp/container/hive&action=edit&redlink=1 \"cpp/container/hive (page does not exist)\")<br>(C++26) |\n| [deque](https://en.cppreference.com/w/cpp/container/deque.html \"cpp/container/deque\") |\n| [forward\\_list](https://en.cppreference.com/w/cpp/container/forward_list.html \"cpp/container/forward list\")<br>(C++11) |\n| [list](https://en.cppreference.com/w/cpp/container/list.html \"cpp/container/list\") |\n| [Associative](https://en.cppreference.com/w/cpp/container.html#Associative_containers \"cpp/container\") |\n| [set](https://en.cppreference.com/w/cpp/container/set.html \"cpp/container/set\") |\n| [multiset](https://en.cppreference.com/w/cpp/container/multiset.html \"cpp/container/multiset\") |\n| [map](https://en.cppreference.com/w/cpp/container/map.html \"cpp/container/map\") |\n| [multimap](https://en.cppreference.com/w/cpp/container/multimap.html \"cpp/container/multimap\") |\n| [Unordered associative](https://en.cppreference.com/w/cpp/container.html#Unordered_associative_containers \"cpp/container\") |\n| [unordered\\_set](https://en.cppreference.com/w/cpp/container/unordered_set.html \"cpp/container/unordered set\")<br>(C++11) |\n| [unordered\\_multiset](https://en.cppreference.com/w/cpp/container/unordered_multiset.html \"cpp/container/unordered multiset\")<br>(C++11) |\n| [unordered\\_map](https://en.cppreference.com/w/cpp/container/unordered_map.html \"cpp/container/unordered map\")<br>(C++11) |\n| [unordered\\_multimap](https://en.cppreference.com/w/cpp/container/unordered_multimap.html \"cpp/container/unordered multimap\")<br>(C++11) |\n| [Adaptors](https://en.cppreference.com/w/cpp/container.html#Container_adaptors \"cpp/container\") |\n| [stack](https://en.cppreference.com/w/cpp/container/stack.html \"cpp/container/stack\") |\n| [queue](https://en.cppreference.com/w/cpp/container/queue.html \"cpp/container/queue\") |\n| [priority\\_queue](https://en.cppreference.com/w/cpp/container/priority_queue.html \"cpp/container/priority queue\") |\n| [flat\\_set](https://en.cppreference.com/w/cpp/container/flat_set.html \"cpp/container/flat set\")<br>(C++23) |\n| [flat\\_multiset](https://en.cppreference.com/w/cpp/container/flat_multiset.html \"cpp/container/flat multiset\")<br>(C++23) |\n| [flat\\_map](https://en.cppreference.com/w/cpp/container/flat_map.html \"cpp/container/flat map\")<br>(C++23) |\n| [flat\\_multimap](https://en.cppreference.com/w/cpp/container/flat_multimap.html \"cpp/container/flat multimap\")<br>(C++23) |\n| [Views](https://en.cppreference.com/w/cpp/container.html#Views \"cpp/container\") |\n| [span](https://en.cppreference.com/w/cpp/container/span.html \"cpp/container/span\")<br>(C++20) |\n| [mdspan](https://en.cppreference.com/w/cpp/container/mdspan.html \"cpp/container/mdspan\")<br>(C++23) |\n| Tables |\n| [Iterator invalidation](https://en.cppreference.com/w/cpp/container.html#Iterator_invalidation \"cpp/container\") |\n| [Member function table](https://en.cppreference.com/w/cpp/container.html#Member_function_table \"cpp/container\") |\n| [Non-member function table](https://en.cppreference.com/w/cpp/container.html#Non-member_function_table \"cpp/container\") |\n\n[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/navbar_content&action=edit)\n\n**`std::array`**\n\n|     |     |     |\n| --- | --- | --- |\n| [Member types](https://en.cppreference.com/w/cpp/container/array.html#Member_types \"cpp/container/array\") |\n| [Member functions](https://en.cppreference.com/w/cpp/container/array.html#Member_functions \"cpp/container/array\") |\n| |     |\n| --- |\n| [Element access](https://en.cppreference.com/w/cpp/container/array.html#Element_access \"cpp/container/array\") |\n| [array::at](https://en.cppreference.com/w/cpp/container/array/at.html \"cpp/container/array/at\") |\n| [array::operator\\[\\]](https://en.cppreference.com/w/cpp/container/array/operator_at.html \"cpp/container/array/operator at\")<br>`` |\n| [array::front](https://en.cppreference.com/w/cpp/container/array/front.html \"cpp/container/array/front\") |\n| [array::back](https://en.cppreference.com/w/cpp/container/array/back.html \"cpp/container/array/back\") |\n| [array::data](https://en.cppreference.com/w/cpp/container/array/data.html \"cpp/container/array/data\") |\n| [Operations](https://en.cppreference.com/w/cpp/container/array.html#Operations \"cpp/container/array\") |\n| [array::fill](https://en.cppreference.com/w/cpp/container/array/fill.html \"cpp/container/array/fill\") |\n| [array::swap](https://en.cppreference.com/w/cpp/container/array/swap.html \"cpp/container/array/swap\") | | |     |\n| --- |\n| [Iterators](https://en.cppreference.com/w/cpp/container/array.html#Iterators \"cpp/container/array\") |\n| [array::beginarray::cbegin](https://en.cppreference.com/w/cpp/container/array/begin.html \"cpp/container/array/begin\") |\n| [array::endarray::cend](https://en.cppreference.com/w/cpp/container/array/end.html \"cpp/container/array/end\") |\n| [array::rbeginarray::crbegin](https://en.cppreference.com/w/cpp/container/array/rbegin.html \"cpp/container/array/rbegin\")<br>`` |\n| [array::rendarray::crend](https://en.cppreference.com/w/cpp/container/array/rend.html \"cpp/container/array/rend\") | | |     |\n| --- |\n| [Capacity](https://en.cppreference.com/w/cpp/container/array.html#Capacity \"cpp/container/array\") |\n| [array::empty](https://en.cppreference.com/w/cpp/container/array/empty.html \"cpp/container/array/empty\") |\n| [array::size](https://en.cppreference.com/w/cpp/container/array/size.html \"cpp/container/array/size\") |\n| [array::max\\_size](https://en.cppreference.com/w/cpp/container/array/max_size.html \"cpp/container/array/max size\") |\n|  |\n|  |\n|  |\n|  |\n|  | |\n| [Non-member functions](https://en.cppreference.com/w/cpp/container/array.html#Non-member_functions \"cpp/container/array\") |\n| |     |\n| --- |\n| [operator==operator<=>](https://en.cppreference.com/w/cpp/container/array/operator_cmp.html \"cpp/container/array/operator cmp\")<br>(C++20) |\n| [get(std::array)](https://en.cppreference.com/w/cpp/container/array/get.html \"cpp/container/array/get\") |\n| [swap(std::array)](https://en.cppreference.com/w/cpp/container/array/swap2.html \"cpp/container/array/swap2\") |\n| [to\\_array](https://en.cppreference.com/w/cpp/container/array/to_array.html \"cpp/container/array/to array\")<br>(C++20) | | |     |\n| --- |\n| [operator\\|=operator<operator>operator<=operator>=](https://en.cppreference.com/w/cpp/container/array/operator_cmp.html \"cpp/container/array/operator cmp\")<br>(until C++20)(until C++20)(until C++20)(until C++20)(until C++20) | |\n| [Helper classes](https://en.cppreference.com/w/cpp/container/array.html#Helper_classes \"cpp/container/array\") |\n| [tuple\\_size<std::array>](https://en.cppreference.com/w/cpp/container/array/tuple_size.html \"cpp/container/array/tuple size\") |\n| [tuple\\_element<std::array>](https://en.cppreference.com/w/cpp/container/array/tuple_element.html \"cpp/container/array/tuple element\") |\n| [Deduction guides](https://en.cppreference.com/w/cpp/container/array/deduction_guides.html \"cpp/container/array/deduction guides\")(C++17) |\n\n[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/navbar_content&action=edit)\n\n|     |     |     |\n| --- | --- | --- |\n| Defined in header `<array>` |  |  |\n| template<<br>class T,<br>[std::size\\_t](https://en.cppreference.com/w/cpp/types/size_t.html) N<br>>struct array; |  | (since C++11) |\n|  |  |  |\n\n`std::array` is a container that encapsulates fixed size arrays.\n\nThis container is an aggregate type with the same semantics as a struct holding a [C-style array](https://en.cppreference.com/w/cpp/language/array.html \"cpp/language/array\") T\\[N\\] as its only non-static data member. Unlike a C-style array, it doesn't decay to T\\* automatically. As an aggregate type, it can be initialized with [aggregate-initialization](https://en.cppreference.com/w/cpp/language/aggregate_initialization.html \"cpp/language/aggregate initialization\") given at most `N` initializers that are convertible to `T`: std::array<int, 3> a ={1, 2, 3};.\n\nThe struct combines the performance and accessibility of a C-style array with the benefits of a standard container, such as knowing its own size, supporting assignment, random access iterators, etc.\n\n`std::array` satisfies the requirements of [Container](https://en.cppreference.com/w/cpp/named_req/Container.html \"cpp/named req/Container\") and [ReversibleContainer](https://en.cppreference.com/w/cpp/named_req/ReversibleContainer.html \"cpp/named req/ReversibleContainer\") except that default-constructed array is not empty and that the complexity of swapping is linear, satisfies the requirements of [ContiguousContainer](https://en.cppreference.com/w/cpp/named_req/ContiguousContainer.html \"cpp/named req/ContiguousContainer\"),(since C++17) and partially satisfies the requirements of [SequenceContainer](https://en.cppreference.com/w/cpp/named_req/SequenceContainer.html \"cpp/named req/SequenceContainer\").\n\nThere is a special case for a zero-length array (`N == 0`). In that case, array.begin()== array.end(), which is some unique value. The effect of calling front() or back() on a zero-sized array is undefined.\n\nAn array can also be used as a tuple of `N` elements of the same type.\n\n|     |\n| --- |\n| ## Contents<br>- [1Iterator invalidation](https://en.cppreference.com/w/cpp/container/array.html#Iterator_invalidation)<br>- [2Template parameters](https://en.cppreference.com/w/cpp/container/array.html#Template_parameters)<br>- [3Member types](https://en.cppreference.com/w/cpp/container/array.html#Member_types)<br>- [4Member functions](https://en.cppreference.com/w/cpp/container/array.html#Member_functions)<br>  - [4.1Implicitly-defined member functions](https://en.cppreference.com/w/cpp/container/array.html#Implicitly-defined_member_functions)<br>  - [4.2Element access](https://en.cppreference.com/w/cpp/container/array.html#Element_access)<br>  - [4.3Iterators](https://en.cppreference.com/w/cpp/container/array.html#Iterators)<br>  - [4.4Capacity](https://en.cppreference.com/w/cpp/container/array.html#Capacity)<br>  - [4.5Operations](https://en.cppreference.com/w/cpp/container/array.html#Operations)<br>- [5Non-member functions](https://en.cppreference.com/w/cpp/container/array.html#Non-member_functions)<br>- [6Helper classes](https://en.cppreference.com/w/cpp/container/array.html#Helper_classes)<br>- [7Deduction guides](https://en.cppreference.com/w/cpp/container/array.html#Deduction_guides)<br>- [8Example](https://en.cppreference.com/w/cpp/container/array.html#Example)<br>- [9See also](https://en.cppreference.com/w/cpp/container/array.html#See_also) |\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=1 \"Edit section: Iterator invalidation\")\\]Iterator invalidation\n\nAs a rule, iterators to an array are never invalidated throughout the lifetime of the array. One should take note, however, that during [swap](https://en.cppreference.com/w/cpp/container/array/swap.html \"cpp/container/array/swap\"), the iterator will continue to point to the same array element, and will thus change its value.\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=2 \"Edit section: Template parameters\")\\]Template parameters\n\n|     |     |     |\n| --- | --- | --- |\n| T | - | element type Must be [MoveConstructible](https://en.cppreference.com/w/cpp/named_req/MoveConstructible.html \"cpp/named req/MoveConstructible\") and [MoveAssignable](https://en.cppreference.com/w/cpp/named_req/MoveAssignable.html \"cpp/named req/MoveAssignable\"). |\n| N | - | the number of elements in the array or \u200b0\u200b. |\n\n|     |     |\n| --- | --- |\n|  | This section is incomplete<br>Reason: Complete the descriptions of template parameters. |\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=3 \"Edit section: Member types\")\\]Member types\n\n|     |     |\n| --- | --- |\n| Member type | Definition |\n| `value_type` | `T`[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_value_type&action=edit) |\n| `size_type` | [std::size\\_t](https://en.cppreference.com/w/cpp/types/size_t.html \"cpp/types/size t\")[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_size_type&action=edit) |\n| `difference_type` | [std::ptrdiff\\_t](https://en.cppreference.com/w/cpp/types/ptrdiff_t.html \"cpp/types/ptrdiff t\")[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_difference_type&action=edit) |\n| `reference` | value\\_type&[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_reference&action=edit) |\n| `const_reference` | const value\\_type&[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_const_reference&action=edit) |\n| `pointer` | value\\_type\\*[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_pointer&action=edit) |\n| `const_pointer` | const value\\_type\\*[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_const_pointer&action=edit) |\n| `iterator` | |     |     |\n| --- | --- |\n| [LegacyRandomAccessIterator](https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator.html \"cpp/named req/RandomAccessIterator\") and [LegacyContiguousIterator](https://en.cppreference.com/w/cpp/named_req/ContiguousIterator.html \"cpp/named req/ContiguousIterator\") to `value_type` | (until C++17) |\n| [LegacyRandomAccessIterator](https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator.html \"cpp/named req/RandomAccessIterator\") and [LegacyContiguousIterator](https://en.cppreference.com/w/cpp/named_req/ContiguousIterator.html \"cpp/named req/ContiguousIterator\") that is a [LiteralType](https://en.cppreference.com/w/cpp/named_req/LiteralType.html \"cpp/named req/LiteralType\") to `value_type` | (since C++17)<br>(until C++20) |\n| [LegacyRandomAccessIterator](https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator.html \"cpp/named req/RandomAccessIterator\"), [`contiguous_iterator`](https://en.cppreference.com/w/cpp/iterator/contiguous_iterator.html \"cpp/iterator/contiguous iterator\"), and [ConstexprIterator](https://en.cppreference.com/w/cpp/named_req/ConstexprIterator.html \"cpp/named req/ConstexprIterator\") to `value_type` | (since C++20) |\n\n[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_iterator&action=edit) |\n| `const_iterator` | |     |     |\n| --- | --- |\n| [LegacyRandomAccessIterator](https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator.html \"cpp/named req/RandomAccessIterator\") and [LegacyContiguousIterator](https://en.cppreference.com/w/cpp/named_req/ContiguousIterator.html \"cpp/named req/ContiguousIterator\") to const value\\_type | (until C++17) |\n| [LegacyRandomAccessIterator](https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator.html \"cpp/named req/RandomAccessIterator\") and [LegacyContiguousIterator](https://en.cppreference.com/w/cpp/named_req/ContiguousIterator.html \"cpp/named req/ContiguousIterator\") that is a [LiteralType](https://en.cppreference.com/w/cpp/named_req/LiteralType.html \"cpp/named req/LiteralType\") to const value\\_type | (since C++17)<br>(until C++20) |\n| [LegacyRandomAccessIterator](https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator.html \"cpp/named req/RandomAccessIterator\"), [`contiguous_iterator`](https://en.cppreference.com/w/cpp/iterator/contiguous_iterator.html \"cpp/iterator/contiguous iterator\"), and [ConstexprIterator](https://en.cppreference.com/w/cpp/named_req/ConstexprIterator.html \"cpp/named req/ConstexprIterator\") to const value\\_type | (since C++20) |\n\n[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_const_iterator&action=edit) |\n| `reverse_iterator` | [std::reverse\\_iterator](https://en.cppreference.com/w/cpp/iterator/reverse_iterator.html) <iterator>[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_reverse_iterator&action=edit) |\n| `const_reverse_iterator` | [std::reverse\\_iterator](https://en.cppreference.com/w/cpp/iterator/reverse_iterator.html) <const\\_iterator>[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_const_reverse_iterator&action=edit) |\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=4 \"Edit section: Member functions\")\\]Member functions\n\n|     |     |\n| --- | --- |\n| ##### Implicitly-defined member functions |\n| (constructor)<br>(implicitly declared) | initializes the array following the rules of [aggregate initialization](https://en.cppreference.com/w/cpp/language/aggregate_initialization.html \"cpp/language/aggregate initialization\") (note that default initialization may result in indeterminate values for non-class `T`) <br>(public member function) |\n| (destructor)<br>(implicitly declared) | destroys every element of the array <br>(public member function) |\n| operator=<br>(implicitly declared) | overwrites every element of the array with the corresponding element of another array <br>(public member function) |\n| ##### Element access |\n| [at](https://en.cppreference.com/w/cpp/container/array/at.html \"cpp/container/array/at\") | access specified element with bounds checking <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_at&action=edit) |\n| [operator\\[\\]](https://en.cppreference.com/w/cpp/container/array/operator_at.html \"cpp/container/array/operator at\") | access specified element <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_operator_at&action=edit) |\n| [front](https://en.cppreference.com/w/cpp/container/array/front.html \"cpp/container/array/front\") | access the first element <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_front&action=edit) |\n| [back](https://en.cppreference.com/w/cpp/container/array/back.html \"cpp/container/array/back\") | access the last element <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_back&action=edit) |\n| [data](https://en.cppreference.com/w/cpp/container/array/data.html \"cpp/container/array/data\") | direct access to the underlying contiguous storage <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_data&action=edit) |\n| ##### Iterators |\n| [begincbegin](https://en.cppreference.com/w/cpp/container/array/begin.html \"cpp/container/array/begin\") | returns an iterator to the beginning <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_begin&action=edit) |\n| [endcend](https://en.cppreference.com/w/cpp/container/array/end.html \"cpp/container/array/end\") | returns an iterator to the end <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_end&action=edit) |\n| [rbegincrbegin](https://en.cppreference.com/w/cpp/container/array/rbegin.html \"cpp/container/array/rbegin\") | returns a reverse iterator to the beginning <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_rbegin&action=edit) |\n| [rendcrend](https://en.cppreference.com/w/cpp/container/array/rend.html \"cpp/container/array/rend\") | returns a reverse iterator to the end <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_rend&action=edit) |\n| ##### Capacity |\n| [empty](https://en.cppreference.com/w/cpp/container/array/empty.html \"cpp/container/array/empty\") | checks whether the container is empty <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_empty&action=edit) |\n| [size](https://en.cppreference.com/w/cpp/container/array/size.html \"cpp/container/array/size\") | returns the number of elements <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_size&action=edit) |\n| [max\\_size](https://en.cppreference.com/w/cpp/container/array/max_size.html \"cpp/container/array/max size\") | returns the maximum possible number of elements <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_max_size&action=edit) |\n| ##### Operations |\n| [fill](https://en.cppreference.com/w/cpp/container/array/fill.html \"cpp/container/array/fill\") | fill the container with specified value <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_fill&action=edit) |\n| [swap](https://en.cppreference.com/w/cpp/container/array/swap.html \"cpp/container/array/swap\") | swaps the contents <br>(public member function)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_swap&action=edit) |\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=5 \"Edit section: Non-member functions\")\\]Non-member functions\n\n|     |     |\n| --- | --- |\n| [operator==operator!=operator<operator<=operator>operator>=operator<=>](https://en.cppreference.com/w/cpp/container/array/operator_cmp.html \"cpp/container/array/operator cmp\")<br>(C++11)(C++11)(removed in C++20)(C++11)(removed in C++20)(C++11)(removed in C++20)(C++11)(removed in C++20)(C++11)(removed in C++20)(C++20) | lexicographically compares the values of two `array`s <br>(function template)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_operator_cmp&action=edit) |\n| [get(std::array)](https://en.cppreference.com/w/cpp/container/array/get.html \"cpp/container/array/get\")<br>(C++11) | accesses an element of an `array`<br>(function template)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/dsc_get&action=edit) |\n| [std::swap(std::array)](https://en.cppreference.com/w/cpp/container/array/swap2.html \"cpp/container/array/swap2\")<br>(C++11) | specializes the [std::swap](https://en.cppreference.com/w/cpp/utility/swap.html \"cpp/algorithm/swap\") algorithm <br>(function template)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_swap2&action=edit) |\n| [to\\_array](https://en.cppreference.com/w/cpp/container/array/to_array.html \"cpp/container/array/to array\")<br>(C++20) | creates a `std::array` object from a built-in array <br>(function template)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/dsc_to_array&action=edit) |\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=6 \"Edit section: Helper classes\")\\]Helper classes\n\n|     |     |\n| --- | --- |\n| [std::tuple\\_size<std::array>](https://en.cppreference.com/w/cpp/container/array/tuple_size.html \"cpp/container/array/tuple size\")<br>(C++11) | obtains the size of an `array`<br>(class template specialization)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/dsc_tuple_size&action=edit) |\n| [std::tuple\\_element<std::array>](https://en.cppreference.com/w/cpp/container/array/tuple_element.html \"cpp/container/array/tuple element\")<br>(C++11) | obtains the type of the elements of `array`<br>(class template specialization)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/dsc_tuple_element&action=edit) |\n\n|     |     |\n| --- | --- |\n| ### [Deduction guides](https://en.cppreference.com/w/cpp/container/array/deduction_guides.html \"cpp/container/array/deduction guides\") | (since C++17) |\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=8 \"Edit section: Example\")\\]Example\n\nRun this code\n\n```\n#include <algorithm>\n#include <array>\n#include <iostream>\n#include <iterator>\n#include <string>\n\nint main()\n{\n    // Construction uses aggregate initialization\n    std::array<int, 3> a1{{1, 2, 3}}; // Double-braces required in C++11 prior to\n                                      // the CWG 1270 revision (not needed in C++11\n                                      // after the revision and in C++14 and beyond)\n\n    std::array<int, 3> a2 = {1, 2, 3}; // Double braces never required after =\n\n    // Container operations are supported\n    std::sort(a1.begin(), a1.end());\n    std::ranges::reverse_copy(a2, std::ostream_iterator<int>(std::cout, \" \"));\n    std::cout << '\\n';\n\n    // Ranged for loop is supported\n    std::array<std::string, 2> a3{\"E\", \"\\u018E\"};\n    for (const auto& s : a3)\n        std::cout << s << ' ';\n    std::cout << '\\n';\n\n    // Deduction guide for array creation (since C++17)\n    [[maybe_unused]] std::array a4{3.0, 1.0, 4.0}; // std::array<double, 3>\n\n    // Behavior of unspecified elements is the same as with built-in arrays\n    [[maybe_unused]] std::array<int, 2> a5; // No list init, a5[0] and a5[1]\n                                            // are default initialized\n    [[maybe_unused]] std::array<int, 2> a6{}; // List init, both elements are value\n                                              // initialized, a6[0] = a6[1] = 0\n    [[maybe_unused]] std::array<int, 2> a7{1}; // List init, unspecified element is value\n                                               // initialized, a7[0] = 1, a7[1] = 0\n}\n```\n\nOutput:\n\n```\n3 2 1\nE \u018e\n```\n\n### \\[ [edit](https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=9 \"Edit section: See also\")\\]See also\n\n|     |     |\n| --- | --- |\n| [inplace\\_vector](https://en.cppreference.com/w/cpp/container/inplace_vector.html \"cpp/container/inplace vector\")<br>(C++26) | resizable, fixed capacity, inplace contiguous array <br>(class template)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_inplace_vector&action=edit) |\n| [vector](https://en.cppreference.com/w/cpp/container/vector.html \"cpp/container/vector\") | resizable contiguous array <br>(class template)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_vector&action=edit) |\n| [deque](https://en.cppreference.com/w/cpp/container/deque.html \"cpp/container/deque\") | double-ended queue <br>(class template)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_deque&action=edit) |\n| [make\\_array](https://en.cppreference.com/w/cpp/experimental/make_array.html \"cpp/experimental/make array\")<br>(library fundamentals TS v2) | creates a **std::array** object whose size and optionally element type are deduced from the arguments <br>(function template)[\\[edit\\]](https://en.cppreference.com/mwiki/index.php?title=Template:cpp/experimental/dsc_make_array&action=edit) |\n\nRetrieved from \" [https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&oldid=174050](https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&oldid=174050)\"\n\n[Category](https://en.cppreference.com/w/Special:Categories \"Special:Categories\"):\n\n- [Todo with reason](https://en.cppreference.com/w/Category%253ATodo_with_reason.html \"Category:Todo with reason\")\n\n##### Navigation\n\n- [Support us](http://www.cppreference.com/support)\n- [Recent changes](https://en.cppreference.com/w/Special:RecentChanges \"A list of recent changes in the wiki [r]\")\n- [FAQ](https://en.cppreference.com/w/Cppreference%253AAbout.html)\n- [Offline version](https://en.cppreference.com/w/Cppreference%253AArchives.html)\n\n##### Toolbox\n\n- [What links here](https://en.cppreference.com/w/Special:WhatLinksHere/cpp/container/array \"A list of all wiki pages that link here [j]\")\n- [Related changes](https://en.cppreference.com/w/Special:RecentChangesLinked/cpp/container/array \"Recent changes in pages linked from this page [k]\")\n- [Upload file](http://upload.cppreference.com/w/Special:Upload \"Upload files [u]\")\n- [Special pages](https://en.cppreference.com/w/Special:SpecialPages \"A list of all special pages [q]\")\n- [Printable version](https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&printable=yes \"Printable version of this page [p]\")\n- [Permanent link](https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&oldid=174050 \"Permanent link to this revision of the page\")\n- [Page information](https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=info)\n\n- In other languages\n\n- [Deutsch](http://de.cppreference.com/w/cpp/container/array \"cpp/container/array\")\n- [Espa\u00f1ol](http://es.cppreference.com/w/cpp/container/array \"cpp/container/array\")\n- [Fran\u00e7ais](http://fr.cppreference.com/w/cpp/container/array \"cpp/container/array\")\n- [Italiano](http://it.cppreference.com/w/cpp/container/array \"cpp/container/array\")\n- [\u65e5\u672c\u8a9e](http://ja.cppreference.com/w/cpp/container/array \"cpp/container/array\")\n- [Polski](http://pl.cppreference.com/w/cpp/container/array \"cpp/container/array\")\n- [Portugu\u00eas](http://pt.cppreference.com/w/cpp/container/array \"cpp/container/array\")\n- [\u0420\u0443\u0441\u0441\u043a\u0438\u0439](http://ru.cppreference.com/w/cpp/container/array \"cpp/container/array\")\n- [\u4e2d\u6587](http://zh.cppreference.com/w/cpp/container/array \"cpp/container/array\")\n\n- This page was last modified on 2 August 2024, at 22:20.\n\n- [Privacy policy](https://en.cppreference.com/w/Cppreference%253APrivacy_policy.html \"Cppreference:Privacy policy\")\n- [About cppreference.com](https://en.cppreference.com/w/Cppreference%253AAbout.html \"Cppreference:About\")\n- [Disclaimers](https://en.cppreference.com/w/Cppreference%253AGeneral_disclaimer.html \"Cppreference:General disclaimer\")\n\n- [![Powered by MediaWiki](https://en.cppreference.com/mwiki/skins/common/images/poweredby_mediawiki_88x31.png)](https://www.mediawiki.org/)[![Powered by GeSHi](https://upload.cppreference.com/mwiki/images/2/2b/powered_by_geshi_88x31.png)](http://qbnz.com/highlighter/)[![Hosted by Tiger Technologies](https://upload.cppreference.com/mwiki/images/9/94/powered_by_tigertech_88x31.png)](http://www.tigertech.net/referral/cppreference.com)",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.889719+00:00"
+  },
+  "html": "<!DOCTYPE html><html lang=\"en\" dir=\"ltr\" class=\"client-nojs\">\n<body class=\"mediawiki ltr sitedir-ltr ns-0 ns-subject page-cpp_container_array skin-cppreference2 action-view cpp-navbar\">\n        <!-- header -->\n        <div id=\"mw-head\" class=\"noprint\">\n            <div id=\"cpp-head-first-base\">\n                <div id=\"cpp-head-first\">\n                    <h5><a href=\"https://en.cppreference.com/index.html\">\n                        cppreference.com                        </a></h5>\n                    <div id=\"cpp-head-search\">\n                        \n<!-- 0 -->\n<div id=\"p-search\">\n<form action=\"https://duckduckgo.com/\" method=\"get\">\n  \n  <input type=\"search\" name=\"q\">\n  <input type=\"submit\" value=\"Search\">\n</form>\n</div>\n\n<!-- /0 -->\n                    </div>\n                    <div id=\"cpp-head-personal\">\n                        \n<!-- 0 -->\n<div id=\"p-personal\" class=\"\">\n<span id=\"pt-createaccount\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&amp;returnto=cpp%2Fcontainer%2Farray&amp;type=signup\">Create account</a></span>\t<div class=\"menu\">\n        <ul>\n<li id=\"pt-login\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&amp;returnto=cpp%2Fcontainer%2Farray\" title=\"You are encouraged to log in; however, it is not mandatory [o]\" accesskey=\"o\">Log in</a></li>        </ul>\n    </div>\n</div>\n\n<!-- /0 -->\n                    </div>\n\n                </div>\n            </div>\n            <div id=\"cpp-head-second-base\">\n                <div id=\"cpp-head-second\">\n                    <div id=\"cpp-head-tools-left\">\n                        \n<!-- 0 -->\n<div id=\"p-namespaces\" class=\"vectorTabs\">\n\t<h5>Namespaces</h5>\n\t<ul>\n\t\t\t\t\t<li id=\"ca-nstab-main\" class=\"selected\"><span><a href=\"https://en.cppreference.com/w/cpp/container/array.html\" title=\"View the content page [c]\" accesskey=\"c\">Page</a></span></li>\n\t\t\t\t\t<li id=\"ca-talk\"><span><a href=\"https://en.cppreference.com/w/Talk%253Acpp/container/array.html\" title=\"Discussion about the content page [t]\" accesskey=\"t\">Discussion</a></span></li>\n\t\t\t</ul>\n</div>\n\n<!-- /0 -->\n\n<!-- 1 -->\n<div id=\"p-variants\" class=\"vectorMenu emptyPortlet\">\n\t\t<h5><span>Variants</span><a href=\"https://en.cppreference.com/w/cpp/container/array.html#\"></a></h5>\n\t<div class=\"menu\">\n\t\t<ul>\n\t\t\t\t\t</ul>\n\t</div>\n</div>\n\n<!-- /1 -->\n                    </div>\n                    <div id=\"cpp-head-tools-right\">\n                        \n<!-- 0 -->\n<div id=\"p-views\" class=\"vectorTabs\">\n\t<h5>Views</h5>\n\t<ul>\n\t\t\t\t\t<li id=\"ca-view\" class=\"selected\"><span><a href=\"https://en.cppreference.com/w/cpp/container/array.html\">View</a></span></li>\n\t\t\t\t\t<li id=\"ca-edit\"><span><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;action=edit\" title=\"You can edit this page. Please use the preview button before saving [e]\" accesskey=\"e\">Edit</a></span></li>\n\t\t\t\t\t<li id=\"ca-history\" class=\"collapsible\"><span><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;action=history\" title=\"Past revisions of this page [h]\" accesskey=\"h\">History</a></span></li>\n\t\t\t</ul>\n</div>\n\n<!-- /0 -->\n\n<!-- 1 -->\n<div id=\"p-cactions\" class=\"vectorMenu emptyPortlet\">\n\t<h5><span>Actions</span><a href=\"https://en.cppreference.com/w/cpp/container/array.html#\"></a></h5>\n\t<div class=\"menu\">\n\t\t<ul>\n\t\t\t\t\t</ul>\n\t</div>\n</div>\n\n<!-- /1 -->\n                    </div>\n                </div>\n            </div>\n        </div>\n        <!-- /header -->\n        <!-- content -->\n\n        <div id=\"cpp-content-base\">\n            <div id=\"content\">\n                <a id=\"top\"></a>\n                <div id=\"mw-js-message\" style=\"display:none;\"></div>\n                                <!-- firstHeading -->\n\n\n\n\n                <h1 id=\"firstHeading\" class=\"firstHeading\"><span style=\"font-size:0.7em; line-height:130%\">std::</span>array</h1>\n                <!-- /firstHeading -->\n                <!-- bodyContent -->\n                <div id=\"bodyContent\">\n                                        <!-- tagline -->\n                    <div id=\"siteSub\">From cppreference.com</div>\n                    <!-- /tagline -->\n                                        <!-- subtitle -->\n                    <div id=\"contentSub\"><span class=\"subpages\">&lt; <a href=\"https://en.cppreference.com/w/cpp.html\" title=\"cpp\">cpp</a>\u200e | <a href=\"https://en.cppreference.com/w/cpp/container.html\" title=\"cpp/container\">container</a></span></div>\n                    <!-- /subtitle -->\n                                                            <!-- bodycontent -->\n                    <div id=\"mw-content-text\" lang=\"en\" dir=\"ltr\" class=\"mw-content-ltr\"><div class=\"t-navbar\" style=\"\"><div class=\"t-navbar-sep\">&nbsp;</div><div class=\"t-navbar-head\"><a href=\"https://en.cppreference.com/w/cpp.html\" title=\"cpp\">C++</a><div class=\"t-navbar-menu\"><div><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"line-height:1.1em;\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/compiler_support.html\" title=\"cpp/compiler support\">Compiler support</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/freestanding.html\" title=\"cpp/freestanding\">Freestanding and hosted</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/language.html\" title=\"cpp/language\">Language</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/standard_library.html\" title=\"cpp/standard library\">Standard library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/headers.html\" title=\"cpp/header\">Standard library headers</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/iterator/concepts.html\" title=\"cpp/named req\">Named requirements</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/experimental/feature_test.html\" title=\"cpp/feature test\">Feature test macros</a> <span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/utility.html#Language_support\" title=\"cpp/utility\">Language support library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/concepts.html\" title=\"cpp/concepts\">Concepts library</a> <span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/error.html\" title=\"cpp/error\">Diagnostics library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/memory.html\" title=\"cpp/memory\">Memory management library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/meta.html\" title=\"cpp/meta\">Metaprogramming library</a> <span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/utility.html\" title=\"cpp/utility\">General utilities library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container.html\" title=\"cpp/container\">Containers library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/iterator.html\" title=\"cpp/iterator\">Iterators library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/ranges.html\" title=\"cpp/ranges\">Ranges library</a> <span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/algorithm.html\" title=\"cpp/algorithm\">Algorithms library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/string.html\" title=\"cpp/string\">Strings library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/text.html\" title=\"cpp/text\">Text processing library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/numeric.html\" title=\"cpp/numeric\">Numerics library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/chrono.html\" title=\"cpp/chrono\">Date and time library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/io.html\" title=\"cpp/io\">Input/output library</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/filesystem.html\" title=\"cpp/filesystem\">Filesystem library</a> <span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/atomic.html\" title=\"cpp/thread\">Concurrency support library</a> <span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/experimental/execution.html\" title=\"cpp/execution\">Execution control library</a> <span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/experimental.html\" title=\"cpp/experimental\">Technical specifications</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/symbol_index.html\" title=\"cpp/symbol index\">Symbols index</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/links/libs.html\" title=\"cpp/links/libs\">External libraries</a></td></tr>\n</tbody></table></div><div><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/navbar_content&amp;action=edit\">[edit]</a></span></div></div></div></div><div class=\"t-navbar-sep\">&nbsp;</div><div class=\"t-navbar-head\"><a href=\"https://en.cppreference.com/w/cpp/container.html\" title=\"cpp/container\">Containers library</a><div class=\"t-navbar-menu\"><div><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/node_handle.html\" title=\"cpp/container/node handle\"><span class=\"t-lines\"><span><i>node-handle</i></span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container.html#Sequence_containers\" title=\"cpp/container\">Sequence</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><strong class=\"selflink\"><span class=\"t-lines\"><span>array</span></span></strong></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/vector.html\" title=\"cpp/container/vector\"><span class=\"t-lines\"><span>vector</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/vector_bool.html\" title=\"cpp/container/vector bool\"><span class=\"t-lines\"><span>vector<span class=\"t-dsc-small\">&lt;bool&gt;</span></span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/inplace_vector.html\" title=\"cpp/container/inplace vector\"><span class=\"t-lines\"><span>inplace_vector</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/hive&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"cpp/container/hive (page does not exist)\"><span class=\"t-lines\"><span>hive</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/deque.html\" title=\"cpp/container/deque\"><span class=\"t-lines\"><span>deque</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/forward_list.html\" title=\"cpp/container/forward list\"><span class=\"t-lines\"><span>forward_list</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/list.html\" title=\"cpp/container/list\"><span class=\"t-lines\"><span>list</span></span></a></div></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container.html#Associative_containers\" title=\"cpp/container\">Associative</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/set.html\" title=\"cpp/container/set\"><span class=\"t-lines\"><span>set</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/multiset.html\" title=\"cpp/container/multiset\"><span class=\"t-lines\"><span>multiset</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/map.html\" title=\"cpp/container/map\"><span class=\"t-lines\"><span>map</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/multimap.html\" title=\"cpp/container/multimap\"><span class=\"t-lines\"><span>multimap</span></span></a></div></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container.html#Unordered_associative_containers\" title=\"cpp/container\">Unordered associative</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/unordered_set.html\" title=\"cpp/container/unordered set\"><span class=\"t-lines\"><span>unordered_set</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/unordered_multiset.html\" title=\"cpp/container/unordered multiset\"><span class=\"t-lines\"><span>unordered_multiset</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/unordered_map.html\" title=\"cpp/container/unordered map\"><span class=\"t-lines\"><span>unordered_map</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/unordered_multimap.html\" title=\"cpp/container/unordered multimap\"><span class=\"t-lines\"><span>unordered_multimap</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container.html#Container_adaptors\" title=\"cpp/container\">Adaptors</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/stack.html\" title=\"cpp/container/stack\"><span class=\"t-lines\"><span>stack</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/queue.html\" title=\"cpp/container/queue\"><span class=\"t-lines\"><span>queue</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/priority_queue.html\" title=\"cpp/container/priority queue\"><span class=\"t-lines\"><span>priority_queue</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/flat_set.html\" title=\"cpp/container/flat set\"><span class=\"t-lines\"><span>flat_set</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx23\">(C++23)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/flat_multiset.html\" title=\"cpp/container/flat multiset\"><span class=\"t-lines\"><span>flat_multiset</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx23\">(C++23)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/flat_map.html\" title=\"cpp/container/flat map\"><span class=\"t-lines\"><span>flat_map</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx23\">(C++23)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/flat_multimap.html\" title=\"cpp/container/flat multimap\"><span class=\"t-lines\"><span>flat_multimap</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx23\">(C++23)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container.html#Views\" title=\"cpp/container\">Views</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/span.html\" title=\"cpp/container/span\"><span class=\"t-lines\"><span>span</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/mdspan.html\" title=\"cpp/container/mdspan\"><span class=\"t-lines\"><span>mdspan</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx23\">(C++23)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\">Tables</td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container.html#Iterator_invalidation\" title=\"cpp/container\">Iterator invalidation</a></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container.html#Member_function_table\" title=\"cpp/container\">Member function table</a></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container.html#Non-member_function_table\" title=\"cpp/container\">Non-member function table</a></td></tr>\n</tbody></table></div><div><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/navbar_content&amp;action=edit\">[edit]</a></span></div></div></div></div><div class=\"t-navbar-sep\">&nbsp;</div><div class=\"t-navbar-head\"><strong class=\"selflink\"><tt>std::array</tt></strong><div class=\"t-navbar-menu\"><div><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Member_types\" title=\"cpp/container/array\">Member types</a></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Member_functions\" title=\"cpp/container/array\">Member functions</a></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Element_access\" title=\"cpp/container/array\">Element access</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/at.html\" title=\"cpp/container/array/at\"><span class=\"t-lines\"><span>array::at</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/operator_at.html\" title=\"cpp/container/array/operator at\"><span class=\"t-lines\"><span>array::operator[]</span></span></a></div><div><span class=\"t-lines\"><span><code>&nbsp;&nbsp;</code></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/front.html\" title=\"cpp/container/array/front\"><span class=\"t-lines\"><span>array::front</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/back.html\" title=\"cpp/container/array/back\"><span class=\"t-lines\"><span>array::back</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/data.html\" title=\"cpp/container/array/data\"><span class=\"t-lines\"><span>array::data</span></span></a></div></div></td></tr>\n<tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Operations\" title=\"cpp/container/array\">Operations</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/fill.html\" title=\"cpp/container/array/fill\"><span class=\"t-lines\"><span>array::fill</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/swap.html\" title=\"cpp/container/array/swap\"><span class=\"t-lines\"><span>array::swap</span></span></a></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Iterators\" title=\"cpp/container/array\">Iterators</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/begin.html\" title=\"cpp/container/array/begin\"><span class=\"t-lines\"><span>array::begin</span><span>array::cbegin</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/end.html\" title=\"cpp/container/array/end\"><span class=\"t-lines\"><span>array::end</span><span>array::cend</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/rbegin.html\" title=\"cpp/container/array/rbegin\"><span class=\"t-lines\"><span>array::rbegin</span><span>array::crbegin</span></span></a></div><div><span class=\"t-lines\"><span><code>&nbsp;&nbsp;</code></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/rend.html\" title=\"cpp/container/array/rend\"><span class=\"t-lines\"><span>array::rend</span><span>array::crend</span></span></a></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv-h2\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Capacity\" title=\"cpp/container/array\">Capacity</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/empty.html\" title=\"cpp/container/array/empty\"><span class=\"t-lines\"><span>array::empty</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/size.html\" title=\"cpp/container/array/size\"><span class=\"t-lines\"><span>array::size</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/max_size.html\" title=\"cpp/container/array/max size\"><span class=\"t-lines\"><span>array::max_size</span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><br>\n</td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><br>\n</td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><br>\n</td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><br>\n</td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><br>\n</td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Non-member_functions\" title=\"cpp/container/array\">Non-member functions</a></td></tr>\n<tr class=\"t-nv-col-table\"><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/operator_cmp.html\" title=\"cpp/container/array/operator cmp\"><span class=\"t-lines\"><span>operator==</span><span>operator&lt;=&gt;</span></span></a></div><div><span class=\"t-lines\"><span></span><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/get.html\" title=\"cpp/container/array/get\"><span class=\"t-lines\"><span>get<span class=\"t-dsc-small\">(std::array)</span></span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/swap2.html\" title=\"cpp/container/array/swap2\"><span class=\"t-lines\"><span>swap<span class=\"t-dsc-small\">(std::array)</span></span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/to_array.html\" title=\"cpp/container/array/to array\"><span class=\"t-lines\"><span>to_array</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div></td></tr>\n</tbody></table></div></td><td><div><table class=\"t-nv-begin\" cellpadding=\"0\" style=\"\">\n<tbody><tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/operator_cmp.html\" title=\"cpp/container/array/operator cmp\"><span class=\"t-lines\"><span>operator|=</span><span>operator&lt;</span><span>operator&gt;</span><span>operator&lt;=</span><span>operator&gt;=</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></span><span><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></span><span><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></span><span><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></span><span><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></span></span></div></div></td></tr>\n</tbody></table></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Helper_classes\" title=\"cpp/container/array\">Helper classes</a></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/tuple_size.html\" title=\"cpp/container/array/tuple size\"><span class=\"t-lines\"><span>tuple_size<span class=\"t-dsc-small\">&lt;std::array&gt;</span></span></span></a></div></div></td></tr>\n<tr class=\"t-nv\"><td colspan=\"5\"><div class=\"t-nv-ln-table\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/tuple_element.html\" title=\"cpp/container/array/tuple element\"><span class=\"t-lines\"><span>tuple_element<span class=\"t-dsc-small\">&lt;std::array&gt;</span></span></span></a></div></div></td></tr>\n<tr class=\"t-nv-h1\"><td colspan=\"5\"><a href=\"https://en.cppreference.com/w/cpp/container/array/deduction_guides.html\" title=\"cpp/container/array/deduction guides\">Deduction guides</a> <span class=\"t-mark-rev t-since-cxx17\">(C++17)</span></td></tr>\n</tbody></table></div><div><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/navbar_content&amp;action=edit\">[edit]</a></span></div></div></div></div><div class=\"t-navbar-sep\">&nbsp;</div></div>\n<table class=\"t-dcl-begin\"><tbody>\n<tr class=\"t-dsc-header\">\n<td> <div>Defined in header <code><a href=\"https://en.cppreference.com/w/cpp/header/array.html\" title=\"cpp/header/array\">&lt;array&gt;</a></code>\n </div></td>\n<td></td>\n<td></td>\n</tr>\n<tr class=\"t-dcl t-since-cxx11\">\n<td> <div><span class=\"mw-geshi cpp source-cpp\"><span class=\"kw1\">template</span><span class=\"sy1\">&lt;</span><br>\n<p>&nbsp; &nbsp; <span class=\"kw1\">class</span> T,<br>\n&nbsp; &nbsp; <a href=\"https://en.cppreference.com/w/cpp/types/size_t.html\"><span class=\"kw108\">std::<span class=\"me2\">size_t</span></span></a> N<br>\n</p>\n<span class=\"sy1\">&gt;</span> <span class=\"kw1\">struct</span> array<span class=\"sy4\">;</span></span></div></td>\n<td class=\"t-dcl-nopad\">  </td>\n<td> <span class=\"t-mark-rev t-since-cxx11\">(since C++11)</span> </td>\n</tr>\n<tr class=\"t-dcl-sep\"><td></td><td></td><td></td></tr>\n</tbody></table>\n<p><code>std::array</code> is a container that encapsulates fixed size arrays.\n</p><p>This container is an aggregate type with the same semantics as a struct holding a <a href=\"https://en.cppreference.com/w/cpp/language/array.html\" title=\"cpp/language/array\">C-style array</a> <span class=\"t-c\"><span class=\"mw-geshi cpp source-cpp\">T<span class=\"br0\">[</span>N<span class=\"br0\">]</span></span></span> as its only non-static data member. Unlike a C-style array, it doesn't decay to <span class=\"t-c\"><span class=\"mw-geshi cpp source-cpp\">T<span class=\"sy2\">*</span></span></span> automatically. As an aggregate type, it can be initialized with <a href=\"https://en.cppreference.com/w/cpp/language/aggregate_initialization.html\" title=\"cpp/language/aggregate initialization\">aggregate-initialization</a> given at most <code>N</code> initializers that are convertible to <code>T</code>: <span class=\"t-c\"><span class=\"mw-geshi cpp source-cpp\">std<span class=\"sy4\">::</span><span class=\"me2\">array</span><span class=\"sy1\">&lt;</span><span class=\"kw4\">int</span>, <span class=\"nu0\">3</span><span class=\"sy1\">&gt;</span> a <span class=\"sy1\">=</span> <span class=\"br0\">{</span><span class=\"nu0\">1</span>, <span class=\"nu0\">2</span>, <span class=\"nu0\">3</span><span class=\"br0\">}</span><span class=\"sy4\">;</span></span></span>.\n</p><p>The struct combines the performance and accessibility of a C-style array with the benefits of a standard container, such as knowing its own size, supporting assignment, random access iterators, etc.\n</p><p><code>std::array</code> satisfies the requirements of <a href=\"https://en.cppreference.com/w/cpp/named_req/Container.html\" title=\"cpp/named req/Container\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">Container</span></a> and <a href=\"https://en.cppreference.com/w/cpp/named_req/ReversibleContainer.html\" title=\"cpp/named req/ReversibleContainer\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">ReversibleContainer</span></a> except that default-constructed array is not empty and that the complexity of swapping is linear, <span class=\"t-rev-inl t-since-cxx17\"><span>satisfies the requirements of <a href=\"https://en.cppreference.com/w/cpp/named_req/ContiguousContainer.html\" title=\"cpp/named req/ContiguousContainer\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">ContiguousContainer</span></a>,</span><span><span class=\"t-mark-rev t-since-cxx17\">(since C++17)</span></span></span> and partially satisfies the requirements of <a href=\"https://en.cppreference.com/w/cpp/named_req/SequenceContainer.html\" title=\"cpp/named req/SequenceContainer\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">SequenceContainer</span></a>.\n</p><p>There is a special case for a zero-length array (<code>N == 0</code>). In that case, <span class=\"t-c\"><span class=\"mw-geshi cpp source-cpp\">array.<span class=\"me1\">begin</span><span class=\"br0\">(</span><span class=\"br0\">)</span> <span class=\"sy1\">==</span> array.<span class=\"me1\">end</span><span class=\"br0\">(</span><span class=\"br0\">)</span></span></span>, which is some unique value. The effect of calling <span class=\"t-c\"><span class=\"mw-geshi cpp source-cpp\">front<span class=\"br0\">(</span><span class=\"br0\">)</span></span></span> or <span class=\"t-c\"><span class=\"mw-geshi cpp source-cpp\">back<span class=\"br0\">(</span><span class=\"br0\">)</span></span></span> on a zero-sized array is undefined.\n</p><p>An array can also be used as a tuple of <code>N</code> elements of the same type.\n</p>\n<table id=\"toc\" class=\"toc\"><tbody><tr><td><div id=\"toctitle\"><h2>Contents</h2></div>\n<ul>\n<li class=\"toclevel-1 tocsection-1\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Iterator_invalidation\"><span class=\"tocnumber\">1</span> <span class=\"toctext\">Iterator invalidation</span></a></li>\n<li class=\"toclevel-1 tocsection-2\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Template_parameters\"><span class=\"tocnumber\">2</span> <span class=\"toctext\">Template parameters</span></a></li>\n<li class=\"toclevel-1 tocsection-3\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Member_types\"><span class=\"tocnumber\">3</span> <span class=\"toctext\">Member types</span></a></li>\n<li class=\"toclevel-1 tocsection-4\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Member_functions\"><span class=\"tocnumber\">4</span> <span class=\"toctext\">Member functions</span></a>\n<ul>\n<li class=\"toclevel-2\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Implicitly-defined_member_functions\"><span class=\"tocnumber\">4.1</span> <span class=\"toctext\">Implicitly-defined member functions</span></a></li>\n<li class=\"toclevel-2\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Element_access\"><span class=\"tocnumber\">4.2</span> <span class=\"toctext\">Element access</span></a></li>\n<li class=\"toclevel-2\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Iterators\"><span class=\"tocnumber\">4.3</span> <span class=\"toctext\">Iterators</span></a></li>\n<li class=\"toclevel-2\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Capacity\"><span class=\"tocnumber\">4.4</span> <span class=\"toctext\">Capacity</span></a></li>\n<li class=\"toclevel-2\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Operations\"><span class=\"tocnumber\">4.5</span> <span class=\"toctext\">Operations</span></a></li>\n</ul>\n</li>\n<li class=\"toclevel-1 tocsection-5\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Non-member_functions\"><span class=\"tocnumber\">5</span> <span class=\"toctext\">Non-member functions</span></a></li>\n<li class=\"toclevel-1 tocsection-6\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Helper_classes\"><span class=\"tocnumber\">6</span> <span class=\"toctext\">Helper classes</span></a></li>\n<li class=\"toclevel-1\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Deduction_guides\"><span class=\"tocnumber\">7</span> <span class=\"toctext\">Deduction guides</span></a></li>\n<li class=\"toclevel-1 tocsection-8\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#Example\"><span class=\"tocnumber\">8</span> <span class=\"toctext\">Example</span></a></li>\n<li class=\"toclevel-1 tocsection-9\"><a href=\"https://en.cppreference.com/w/cpp/container/array.html#See_also\"><span class=\"tocnumber\">9</span> <span class=\"toctext\">See also</span></a></li>\n</ul>\n</td></tr></tbody></table>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;action=edit&amp;section=1\" title=\"Edit section: Iterator invalidation\">edit</a>]</span> <span class=\"mw-headline\" id=\"Iterator_invalidation\">Iterator invalidation</span></h3>\n<p>As a rule, iterators to an array are never invalidated throughout the lifetime of the array. One should take note, however, that during <a href=\"https://en.cppreference.com/w/cpp/container/array/swap.html\" title=\"cpp/container/array/swap\">swap</a>, the iterator will continue to point to the same array element, and will thus change its value.\n</p>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;action=edit&amp;section=2\" title=\"Edit section: Template parameters\">edit</a>]</span> <span class=\"mw-headline\" id=\"Template_parameters\">Template parameters</span></h3>\n<table class=\"t-par-begin\">\n\n\n<tbody><tr class=\"t-par\">\n<td> T\n</td>\n<td> -\n</td>\n<td> element type Must be <a href=\"https://en.cppreference.com/w/cpp/named_req/MoveConstructible.html\" title=\"cpp/named req/MoveConstructible\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">MoveConstructible</span></a> and <a href=\"https://en.cppreference.com/w/cpp/named_req/MoveAssignable.html\" title=\"cpp/named req/MoveAssignable\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">MoveAssignable</span></a>.\n</td></tr>\n<tr class=\"t-par\">\n<td> N\n</td>\n<td> -\n</td>\n<td> the number of elements in the array or <span class=\"t-c\"><span class=\"mw-geshi cpp source-cpp\">\u200b<span class=\"nu0\">0</span>\u200b</span></span>.\n</td></tr></tbody></table>\n<table class=\"metadata plainlinks ambox mbox-small-left ambox-notice\" style=\"\"><tbody><tr><td class=\"mbox-empty-cell\"></td><td class=\"mbox-text\" style=\"\">This section is incomplete<br>Reason: Complete the descriptions of template parameters. </td></tr></tbody></table>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;action=edit&amp;section=3\" title=\"Edit section: Member types\">edit</a>]</span> <span class=\"mw-headline\" id=\"Member_types\">Member types</span></h3>\n<table class=\"t-dsc-begin\">\n\n<tbody><tr class=\"t-dsc-hitem\">\n<td> Member type\n</td>\n<td> Definition\n</td></tr>\n\n\n<tr class=\"t-dsc\">\n<td> <code>value_type</code>\n</td>\n<td> <code>T</code><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_value_type&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td> <code>size_type</code>\n</td>\n<td> <span class=\"t-lc\"><a href=\"https://en.cppreference.com/w/cpp/types/size_t.html\" title=\"cpp/types/size t\">std::size_t</a></span><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_size_type&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td> <code>difference_type</code>\n</td>\n<td> <span class=\"t-lc\"><a href=\"https://en.cppreference.com/w/cpp/types/ptrdiff_t.html\" title=\"cpp/types/ptrdiff t\">std::ptrdiff_t</a></span><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_difference_type&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td> <code>reference</code>\n</td>\n<td> <span class=\"mw-geshi cpp source-cpp\">value_type<span class=\"sy3\">&amp;</span></span><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_reference&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td> <code>const_reference</code>\n</td>\n<td> <span class=\"mw-geshi cpp source-cpp\"><span class=\"kw4\">const</span> value_type<span class=\"sy3\">&amp;</span></span><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_const_reference&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td> <code>pointer</code>\n</td>\n<td> <span class=\"mw-geshi cpp source-cpp\">value_type<span class=\"sy2\">*</span></span><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_pointer&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td> <code>const_pointer</code>\n</td>\n<td> <span class=\"mw-geshi cpp source-cpp\"><span class=\"kw4\">const</span> value_type<span class=\"sy2\">*</span></span><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_const_pointer&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td> <code>iterator</code>\n</td>\n<td> <table class=\"t-rev-begin\">\n<tbody><tr class=\"t-rev t-until-cxx17\"><td>\n<p><a href=\"https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator.html\" title=\"cpp/named req/RandomAccessIterator\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">LegacyRandomAccessIterator</span></a> and <a href=\"https://en.cppreference.com/w/cpp/named_req/ContiguousIterator.html\" title=\"cpp/named req/ContiguousIterator\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">LegacyContiguousIterator</span></a> to <code>value_type</code>\n</p>\n</td>\n<td><span class=\"t-mark-rev t-until-cxx17\">(until C++17)</span></td></tr>\n<tr class=\"t-rev t-since-cxx17 t-until-cxx20\"><td>\n<p><a href=\"https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator.html\" title=\"cpp/named req/RandomAccessIterator\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">LegacyRandomAccessIterator</span></a> and <a href=\"https://en.cppreference.com/w/cpp/named_req/ContiguousIterator.html\" title=\"cpp/named req/ContiguousIterator\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">LegacyContiguousIterator</span></a> that is a <a href=\"https://en.cppreference.com/w/cpp/named_req/LiteralType.html\" title=\"cpp/named req/LiteralType\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">LiteralType</span></a> to <code>value_type</code>\n</p>\n</td>\n<td><span class=\"t-mark-rev t-since-cxx17\">(since C++17)</span><br><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></td></tr>\n<tr class=\"t-rev t-since-cxx20\"><td>\n<p><a href=\"https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator.html\" title=\"cpp/named req/RandomAccessIterator\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">LegacyRandomAccessIterator</span></a>, <a href=\"https://en.cppreference.com/w/cpp/iterator/contiguous_iterator.html\" title=\"cpp/iterator/contiguous iterator\"><code>contiguous_iterator</code></a>, and <a href=\"https://en.cppreference.com/w/cpp/named_req/ConstexprIterator.html\" title=\"cpp/named req/ConstexprIterator\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">ConstexprIterator</span></a> to <code>value_type</code>\n</p>\n</td>\n<td><span class=\"t-mark-rev t-since-cxx20\">(since C++20)</span></td></tr>\n</tbody></table><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_iterator&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td> <code>const_iterator</code>\n</td>\n<td> <table class=\"t-rev-begin\">\n<tbody><tr class=\"t-rev t-until-cxx17\"><td>\n<p><a href=\"https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator.html\" title=\"cpp/named req/RandomAccessIterator\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">LegacyRandomAccessIterator</span></a> and <a href=\"https://en.cppreference.com/w/cpp/named_req/ContiguousIterator.html\" title=\"cpp/named req/ContiguousIterator\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">LegacyContiguousIterator</span></a> to <span class=\"mw-geshi cpp source-cpp\"><span class=\"kw4\">const</span> value_type</span>\n</p>\n</td>\n<td><span class=\"t-mark-rev t-until-cxx17\">(until C++17)</span></td></tr>\n<tr class=\"t-rev t-since-cxx17 t-until-cxx20\"><td>\n<p><a href=\"https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator.html\" title=\"cpp/named req/RandomAccessIterator\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">LegacyRandomAccessIterator</span></a> and <a href=\"https://en.cppreference.com/w/cpp/named_req/ContiguousIterator.html\" title=\"cpp/named req/ContiguousIterator\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">LegacyContiguousIterator</span></a> that is a <a href=\"https://en.cppreference.com/w/cpp/named_req/LiteralType.html\" title=\"cpp/named req/LiteralType\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">LiteralType</span></a> to <span class=\"mw-geshi cpp source-cpp\"><span class=\"kw4\">const</span> value_type</span>\n</p>\n</td>\n<td><span class=\"t-mark-rev t-since-cxx17\">(since C++17)</span><br><span class=\"t-mark-rev t-until-cxx20\">(until C++20)</span></td></tr>\n<tr class=\"t-rev t-since-cxx20\"><td>\n<p><a href=\"https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator.html\" title=\"cpp/named req/RandomAccessIterator\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">LegacyRandomAccessIterator</span></a>, <a href=\"https://en.cppreference.com/w/cpp/iterator/contiguous_iterator.html\" title=\"cpp/iterator/contiguous iterator\"><code>contiguous_iterator</code></a>, and <a href=\"https://en.cppreference.com/w/cpp/named_req/ConstexprIterator.html\" title=\"cpp/named req/ConstexprIterator\"><span style=\"font-family: Georgia, 'DejaVu Serif', serif; font-style:italic\">ConstexprIterator</span></a> to <span class=\"mw-geshi cpp source-cpp\"><span class=\"kw4\">const</span> value_type</span>\n</p>\n</td>\n<td><span class=\"t-mark-rev t-since-cxx20\">(since C++20)</span></td></tr>\n</tbody></table><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_const_iterator&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td> <code>reverse_iterator</code>\n</td>\n<td> <span class=\"mw-geshi cpp source-cpp\"><a href=\"https://en.cppreference.com/w/cpp/iterator/reverse_iterator.html\"><span class=\"kw664\">std::<span class=\"me2\">reverse_iterator</span></span></a><span class=\"sy1\">&lt;</span>iterator<span class=\"sy1\">&gt;</span></span><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_reverse_iterator&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td> <code>const_reverse_iterator</code>\n</td>\n<td> <span class=\"mw-geshi cpp source-cpp\"><a href=\"https://en.cppreference.com/w/cpp/iterator/reverse_iterator.html\"><span class=\"kw664\">std::<span class=\"me2\">reverse_iterator</span></span></a><span class=\"sy1\">&lt;</span>const_iterator<span class=\"sy1\">&gt;</span></span><span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_const_reverse_iterator&amp;action=edit\">[edit]</a></span>\n</td></tr>\n</tbody></table>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;action=edit&amp;section=4\" title=\"Edit section: Member functions\">edit</a>]</span> <span class=\"mw-headline\" id=\"Member_functions\">Member functions</span></h3>\n<table class=\"t-dsc-begin\">\n\n<tbody><tr>\n<td colspan=\"2\"> <h5> <span class=\"mw-headline\" id=\"Implicitly-defined_member_functions\"> Implicitly-defined member functions </span></h5>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div t-dsc-member-nobold-div\"><div><span class=\"t-lines\"><span>(constructor)</span></span></div><div><span class=\"t-lines\"><span><span class=\"t-mark\">(implicitly declared)</span></span></span></div></div>\n</td>\n<td>  initializes the array following the rules of <a href=\"https://en.cppreference.com/w/cpp/language/aggregate_initialization.html\" title=\"cpp/language/aggregate initialization\">aggregate initialization</a> (note that default initialization may result in indeterminate values for non-class <code>T</code>) <br> <span class=\"t-mark\">(public member function)</span>\n</td></tr>\n\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div t-dsc-member-nobold-div\"><div><span class=\"t-lines\"><span>(destructor)</span></span></div><div><span class=\"t-lines\"><span><span class=\"t-mark\">(implicitly declared)</span></span></span></div></div>\n</td>\n<td>  destroys every element of the array <br> <span class=\"t-mark\">(public member function)</span>\n</td></tr>\n\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><span class=\"t-lines\"><span>operator=</span></span></div><div><span class=\"t-lines\"><span><span class=\"t-mark\">(implicitly declared)</span></span></span></div></div>\n</td>\n<td>  overwrites every element of the array with the corresponding element of another array <br> <span class=\"t-mark\">(public member function)</span>\n</td></tr>\n\n\n\n<tr>\n<td colspan=\"2\"> <h5> <span class=\"mw-headline\" id=\"Element_access\"> Element access </span></h5>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/at.html\" title=\"cpp/container/array/at\"> <span class=\"t-lines\"><span>at</span></span></a></div></div>\n</td>\n<td>  access specified element with bounds checking <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_at&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/operator_at.html\" title=\"cpp/container/array/operator at\"> <span class=\"t-lines\"><span>operator[]</span></span></a></div></div>\n</td>\n<td>  access  specified element <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_operator_at&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/front.html\" title=\"cpp/container/array/front\"> <span class=\"t-lines\"><span>front</span></span></a></div></div>\n</td>\n<td>  access the first element <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_front&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/back.html\" title=\"cpp/container/array/back\"> <span class=\"t-lines\"><span>back</span></span></a></div></div>\n</td>\n<td>  access the last element <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_back&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/data.html\" title=\"cpp/container/array/data\"> <span class=\"t-lines\"><span>data</span></span></a></div></div>\n</td>\n<td>  direct access to the underlying contiguous storage <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_data&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n\n<tr>\n<td colspan=\"2\"> <h5> <span class=\"mw-headline\" id=\"Iterators\"> Iterators </span></h5>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/begin.html\" title=\"cpp/container/array/begin\"> <span class=\"t-lines\"><span>begin</span><span>cbegin</span></span></a></div></div>\n</td>\n<td>  returns an iterator to the beginning <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_begin&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/end.html\" title=\"cpp/container/array/end\"> <span class=\"t-lines\"><span>end</span><span>cend</span></span></a></div></div>\n</td>\n<td>  returns an iterator to the end <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_end&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/rbegin.html\" title=\"cpp/container/array/rbegin\"> <span class=\"t-lines\"><span>rbegin</span><span>crbegin</span></span></a></div></div>\n</td>\n<td>  returns a reverse iterator to the beginning <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_rbegin&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/rend.html\" title=\"cpp/container/array/rend\"> <span class=\"t-lines\"><span>rend</span><span>crend</span></span></a></div></div>\n</td>\n<td>  returns a reverse iterator to the end <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_rend&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n\n<tr>\n<td colspan=\"2\"> <h5> <span class=\"mw-headline\" id=\"Capacity\"> Capacity </span></h5>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/empty.html\" title=\"cpp/container/array/empty\"> <span class=\"t-lines\"><span>empty</span></span></a></div></div>\n</td>\n<td>  checks whether the container  is empty <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_empty&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/size.html\" title=\"cpp/container/array/size\"> <span class=\"t-lines\"><span>size</span></span></a></div></div>\n</td>\n<td>  returns the number of elements <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_size&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/max_size.html\" title=\"cpp/container/array/max size\"> <span class=\"t-lines\"><span>max_size</span></span></a></div></div>\n</td>\n<td>  returns the maximum possible number of elements <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_max_size&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n\n<tr>\n<td colspan=\"2\"> <h5> <span class=\"mw-headline\" id=\"Operations\"> Operations </span></h5>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/fill.html\" title=\"cpp/container/array/fill\"> <span class=\"t-lines\"><span>fill</span></span></a></div></div>\n</td>\n<td>  fill the container with specified value <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_fill&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/swap.html\" title=\"cpp/container/array/swap\"> <span class=\"t-lines\"><span>swap</span></span></a></div></div>\n</td>\n<td>  swaps the contents <br> <span class=\"t-mark\">(public member function)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_swap&amp;action=edit\">[edit]</a></span>\n</td></tr>\n</tbody></table>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;action=edit&amp;section=5\" title=\"Edit section: Non-member functions\">edit</a>]</span> <span class=\"mw-headline\" id=\"Non-member_functions\">Non-member functions</span></h3>\n<table class=\"t-dsc-begin\">\n\n<tbody><tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/operator_cmp.html\" title=\"cpp/container/array/operator cmp\"> <span class=\"t-lines\"><span>operator==</span><span>operator!=</span><span>operator&lt;</span><span>operator&lt;=</span><span>operator&gt;</span><span>operator&gt;=</span><span>operator&lt;=&gt;</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-until-cxx20\">(removed in C++20)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-until-cxx20\">(removed in C++20)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-until-cxx20\">(removed in C++20)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-until-cxx20\">(removed in C++20)</span></span><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span><span class=\"t-mark-rev t-until-cxx20\">(removed in C++20)</span></span><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div>\n</td>\n<td>  lexicographically compares the values of two <code>array</code>s <br> <span class=\"t-mark\">(function template)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_operator_cmp&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/get.html\" title=\"cpp/container/array/get\"> <span class=\"t-lines\"><span>get<span class=\"t-dsc-small\">(std::array)</span></span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div>\n</td>\n<td>  accesses an element of an <code>array</code> <br> <span class=\"t-mark\">(function template)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/dsc_get&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/swap2.html\" title=\"cpp/container/array/swap2\"> <span class=\"t-lines\"><span>std::swap<span class=\"t-dsc-small\">(std::array)</span></span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div>\n</td>\n<td>  specializes the <span class=\"t-lc\"><a href=\"https://en.cppreference.com/w/cpp/utility/swap.html\" title=\"cpp/algorithm/swap\">std::swap</a></span> algorithm <br> <span class=\"t-mark\">(function template)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_swap2&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/to_array.html\" title=\"cpp/container/array/to array\"> <span class=\"t-lines\"><span>to_array</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx20\">(C++20)</span></span></span></div></div>\n</td>\n<td>  creates a <code>std::array</code> object from a built-in array <br> <span class=\"t-mark\">(function template)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/dsc_to_array&amp;action=edit\">[edit]</a></span>\n</td></tr>\n</tbody></table>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;action=edit&amp;section=6\" title=\"Edit section: Helper classes\">edit</a>]</span> <span class=\"mw-headline\" id=\"Helper_classes\">Helper classes</span></h3>\n<table class=\"t-dsc-begin\">\n\n<tbody><tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/tuple_size.html\" title=\"cpp/container/array/tuple size\"> <span class=\"t-lines\"><span>std::tuple_size<span class=\"t-dsc-small\">&lt;std::array&gt;</span></span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div>\n</td>\n<td>  obtains the size of an <code>array</code> <br> <span class=\"t-mark\">(class template specialization)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/dsc_tuple_size&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/array/tuple_element.html\" title=\"cpp/container/array/tuple element\"> <span class=\"t-lines\"><span>std::tuple_element<span class=\"t-dsc-small\">&lt;std::array&gt;</span></span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx11\">(C++11)</span></span></span></div></div>\n</td>\n<td>  obtains the type of the elements of <code>array</code> <br> <span class=\"t-mark\">(class template specialization)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/dsc_tuple_element&amp;action=edit\">[edit]</a></span>\n</td></tr>\n</tbody></table>\n<table class=\"t-rev-begin\">\n<tbody><tr class=\"t-rev t-since-cxx17\"><td>\n<h3> <span class=\"mw-headline\" id=\"Deduction_guides\"><a href=\"https://en.cppreference.com/w/cpp/container/array/deduction_guides.html\" title=\"cpp/container/array/deduction guides\">Deduction guides</a></span></h3>\n</td>\n<td><span class=\"t-mark-rev t-since-cxx17\">(since C++17)</span></td></tr>\n</tbody></table>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;action=edit&amp;section=8\" title=\"Edit section: Example\">edit</a>]</span> <span class=\"mw-headline\" id=\"Example\">Example</span></h3>\n<div class=\"t-example\"><div class=\"t-example-live-link\"><div class=\"coliru-btn coliru-btn-run-init\">Run this code</div></div>\n<div dir=\"ltr\" class=\"mw-geshi\" style=\"text-align: left;\"><div class=\"cpp source-cpp\"><pre class=\"de1\"><span class=\"co2\">#include &lt;algorithm&gt;</span>\n<span class=\"co2\">#include &lt;array&gt;</span>\n<span class=\"co2\">#include &lt;iostream&gt;</span>\n<span class=\"co2\">#include &lt;iterator&gt;</span>\n<span class=\"co2\">#include &lt;string&gt;</span>\n&nbsp;\n<span class=\"kw4\">int</span> main<span class=\"br0\">(</span><span class=\"br0\">)</span>\n<span class=\"br0\">{</span>\n    <span class=\"co1\">// Construction uses aggregate initialization</span>\n    std<span class=\"sy4\">::</span><span class=\"me2\">array</span><span class=\"sy1\">&lt;</span><span class=\"kw4\">int</span>, <span class=\"nu0\">3</span><span class=\"sy1\">&gt;</span> a1<span class=\"br0\">{</span><span class=\"br0\">{</span><span class=\"nu0\">1</span>, <span class=\"nu0\">2</span>, <span class=\"nu0\">3</span><span class=\"br0\">}</span><span class=\"br0\">}</span><span class=\"sy4\">;</span> <span class=\"co1\">// Double-braces required in C++11 prior to</span>\n                                      <span class=\"co1\">// the CWG 1270 revision (not needed in C++11</span>\n                                      <span class=\"co1\">// after the revision and in C++14 and beyond)</span>\n&nbsp;\n    std<span class=\"sy4\">::</span><span class=\"me2\">array</span><span class=\"sy1\">&lt;</span><span class=\"kw4\">int</span>, <span class=\"nu0\">3</span><span class=\"sy1\">&gt;</span> a2 <span class=\"sy1\">=</span> <span class=\"br0\">{</span><span class=\"nu0\">1</span>, <span class=\"nu0\">2</span>, <span class=\"nu0\">3</span><span class=\"br0\">}</span><span class=\"sy4\">;</span> <span class=\"co1\">// Double braces never required after =</span>\n&nbsp;\n    <span class=\"co1\">// Container operations are supported</span>\n    <a href=\"https://en.cppreference.com/w/cpp/algorithm/sort.html\"><span class=\"kw1630\">std::<span class=\"me2\">sort</span></span></a><span class=\"br0\">(</span>a1.<span class=\"me1\">begin</span><span class=\"br0\">(</span><span class=\"br0\">)</span>, a1.<span class=\"me1\">end</span><span class=\"br0\">(</span><span class=\"br0\">)</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>\n    std<span class=\"sy4\">::</span><a href=\"https://en.cppreference.com/w/cpp/algorithm/ranges/reverse_copy.html\"><span class=\"kw3066\">ranges::<span class=\"me2\">reverse_copy</span></span></a><span class=\"br0\">(</span>a2, <a href=\"https://en.cppreference.com/w/cpp/iterator/ostream_iterator.html\"><span class=\"kw676\">std::<span class=\"me2\">ostream_iterator</span></span></a><span class=\"sy1\">&lt;</span><span class=\"kw4\">int</span><span class=\"sy1\">&gt;</span><span class=\"br0\">(</span><a href=\"https://en.cppreference.com/w/cpp/io/cout.html\"><span class=\"kw1775\">std::<span class=\"me2\">cout</span></span></a>, <span class=\"st0\">\" \"</span><span class=\"br0\">)</span><span class=\"br0\">)</span><span class=\"sy4\">;</span>\n    <a href=\"https://en.cppreference.com/w/cpp/io/cout.html\"><span class=\"kw1775\">std::<span class=\"me2\">cout</span></span></a> <span class=\"sy1\">&lt;&lt;</span> <span class=\"st0\">'<span class=\"es1\">\\n</span>'</span><span class=\"sy4\">;</span>\n&nbsp;\n    <span class=\"co1\">// Ranged for loop is supported</span>\n    std<span class=\"sy4\">::</span><span class=\"me2\">array</span><span class=\"sy1\">&lt;</span><a href=\"https://en.cppreference.com/w/cpp/string/basic_string.html\"><span class=\"kw1239\">std::<span class=\"me2\">string</span></span></a>, <span class=\"nu0\">2</span><span class=\"sy1\">&gt;</span> a3<span class=\"br0\">{</span><span class=\"st0\">\"E\"</span>, <span class=\"st0\">\"<span class=\"es3\">\\u018E</span>\"</span><span class=\"br0\">}</span><span class=\"sy4\">;</span>\n    <span class=\"kw1\">for</span> <span class=\"br0\">(</span><span class=\"kw4\">const</span> <span class=\"kw4\">auto</span><span class=\"sy3\">&amp;</span> s <span class=\"sy4\">:</span> a3<span class=\"br0\">)</span>\n        <a href=\"https://en.cppreference.com/w/cpp/io/cout.html\"><span class=\"kw1775\">std::<span class=\"me2\">cout</span></span></a> <span class=\"sy1\">&lt;&lt;</span> s <span class=\"sy1\">&lt;&lt;</span> <span class=\"st0\">' '</span><span class=\"sy4\">;</span>\n    <a href=\"https://en.cppreference.com/w/cpp/io/cout.html\"><span class=\"kw1775\">std::<span class=\"me2\">cout</span></span></a> <span class=\"sy1\">&lt;&lt;</span> <span class=\"st0\">'<span class=\"es1\">\\n</span>'</span><span class=\"sy4\">;</span>\n&nbsp;\n    <span class=\"co1\">// Deduction guide for array creation (since C++17)</span>\n    <span class=\"br0\">[</span><span class=\"br0\">[</span>maybe_unused<span class=\"br0\">]</span><span class=\"br0\">]</span> std<span class=\"sy4\">::</span><span class=\"me2\">array</span> a4<span class=\"br0\">{</span><span class=\"nu16\">3.0</span>, <span class=\"nu16\">1.0</span>, <span class=\"nu16\">4.0</span><span class=\"br0\">}</span><span class=\"sy4\">;</span> <span class=\"co1\">// std::array&lt;double, 3&gt;</span>\n&nbsp;\n    <span class=\"co1\">// Behavior of unspecified elements is the same as with built-in arrays</span>\n    <span class=\"br0\">[</span><span class=\"br0\">[</span>maybe_unused<span class=\"br0\">]</span><span class=\"br0\">]</span> std<span class=\"sy4\">::</span><span class=\"me2\">array</span><span class=\"sy1\">&lt;</span><span class=\"kw4\">int</span>, <span class=\"nu0\">2</span><span class=\"sy1\">&gt;</span> a5<span class=\"sy4\">;</span> <span class=\"co1\">// No list init, a5[0] and a5[1]</span>\n                                            <span class=\"co1\">// are default initialized</span>\n    <span class=\"br0\">[</span><span class=\"br0\">[</span>maybe_unused<span class=\"br0\">]</span><span class=\"br0\">]</span> std<span class=\"sy4\">::</span><span class=\"me2\">array</span><span class=\"sy1\">&lt;</span><span class=\"kw4\">int</span>, <span class=\"nu0\">2</span><span class=\"sy1\">&gt;</span> a6<span class=\"br0\">{</span><span class=\"br0\">}</span><span class=\"sy4\">;</span> <span class=\"co1\">// List init, both elements are value</span>\n                                              <span class=\"co1\">// initialized, a6[0] = a6[1] = 0</span>\n    <span class=\"br0\">[</span><span class=\"br0\">[</span>maybe_unused<span class=\"br0\">]</span><span class=\"br0\">]</span> std<span class=\"sy4\">::</span><span class=\"me2\">array</span><span class=\"sy1\">&lt;</span><span class=\"kw4\">int</span>, <span class=\"nu0\">2</span><span class=\"sy1\">&gt;</span> a7<span class=\"br0\">{</span><span class=\"nu0\">1</span><span class=\"br0\">}</span><span class=\"sy4\">;</span> <span class=\"co1\">// List init, unspecified element is value</span>\n                                               <span class=\"co1\">// initialized, a7[0] = 1, a7[1] = 0</span>\n<span class=\"br0\">}</span></pre></div></div>\n<p>Output:\n</p>\n<div dir=\"ltr\" class=\"mw-geshi\" style=\"text-align: left;\"><div class=\"text source-text\"><pre class=\"de1\">3 2 1\nE \u018e</pre></div></div> \n</div>\n<h3><span class=\"editsection\">[<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;action=edit&amp;section=9\" title=\"Edit section: See also\">edit</a>]</span> <span class=\"mw-headline\" id=\"See_also\">See also</span></h3>\n<table class=\"t-dsc-begin\">\n\n<tbody><tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/inplace_vector.html\" title=\"cpp/container/inplace vector\"> <span class=\"t-lines\"><span>inplace_vector</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-cxx26\">(C++26)</span></span></span></div></div>\n</td>\n<td>  resizable, fixed capacity, inplace contiguous array <br> <span class=\"t-mark\">(class template)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_inplace_vector&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/vector.html\" title=\"cpp/container/vector\"> <span class=\"t-lines\"><span>vector</span></span></a></div></div>\n</td>\n<td>  resizable contiguous array <br> <span class=\"t-mark\">(class template)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_vector&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/container/deque.html\" title=\"cpp/container/deque\"> <span class=\"t-lines\"><span>deque</span></span></a></div></div>\n</td>\n<td>  double-ended queue <br> <span class=\"t-mark\">(class template)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_deque&amp;action=edit\">[edit]</a></span>\n</td></tr>\n\n<tr class=\"t-dsc\">\n<td>  <div class=\"t-dsc-member-div\"><div><a href=\"https://en.cppreference.com/w/cpp/experimental/make_array.html\" title=\"cpp/experimental/make array\"> <span class=\"t-lines\"><span>make_array</span></span></a></div><div><span class=\"t-lines\"><span><span class=\"t-mark-rev t-since-libfund-ts-2 t-mark-ts\">(library fundamentals TS v2)</span></span></span></div></div>\n</td>\n<td>  creates a <span class=\"t-lc\"><strong class=\"selflink\">std::array</strong></span> object whose size and optionally element type are deduced from the arguments <br> <span class=\"t-mark\">(function template)</span> <span class=\"editsection noprint plainlinks\" title=\"Edit this template\"><a rel=\"nofollow\" class=\"external text\" href=\"https://en.cppreference.com/mwiki/index.php?title=Template:cpp/experimental/dsc_make_array&amp;action=edit\">[edit]</a></span>\n</td></tr>\n</tbody></table>\n\n<!-- \nNewPP limit report\nPreprocessor visited node count: 11432/1000000\nPreprocessor generated node count: 23800/1000000\nPost\u2010expand include size: 339257/4194304 bytes\nTemplate argument size: 76009/4194304 bytes\nHighest expansion depth: 23/40\nExpensive parser function count: 0/100\n-->\n\n<!-- Saved in parser cache with key mwiki1-mwiki_en_:pcache:idhash:850-0!*!0!!en!*!* and timestamp 20250418073137 -->\n</div>                    <!-- /bodycontent -->\n                                        <!-- printfooter -->\n                    <div class=\"printfooter\">\n                    Retrieved from \"<a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;oldid=174050\">https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;oldid=174050</a>\"                    </div>\n                    <!-- /printfooter -->\n                                                            <!-- catlinks -->\n                    <div id=\"catlinks\" class=\"catlinks\"><div id=\"mw-normal-catlinks\" class=\"mw-normal-catlinks\"><a href=\"https://en.cppreference.com/w/Special:Categories\" title=\"Special:Categories\">Category</a>: <ul><li><a href=\"https://en.cppreference.com/w/Category%253ATodo_with_reason.html\" title=\"Category:Todo with reason\">Todo with reason</a></li></ul></div></div>                    <!-- /catlinks -->\n                                                            <div class=\"visualClear\"></div>\n                    <!-- debughtml -->\n                                        <!-- /debughtml -->\n                </div>\n                <!-- /bodyContent -->\n            </div>\n        </div>\n        <!-- /content -->\n        <!-- footer -->\n        <div id=\"cpp-footer-base\" class=\"noprint\">\n            <div id=\"footer\">\n                        <div id=\"cpp-navigationn\">\n            <h5>Navigation</h5>\n            <ul>\n<li id=\"n-Support-us\"><a href=\"http://www.cppreference.com/support\" rel=\"nofollow\">Support us</a></li><li id=\"n-recentchanges\"><a href=\"https://en.cppreference.com/w/Special:RecentChanges\" title=\"A list of recent changes in the wiki [r]\" accesskey=\"r\">Recent changes</a></li><li id=\"n-FAQ\"><a href=\"https://en.cppreference.com/w/Cppreference%253AAbout.html\">FAQ</a></li><li id=\"n-Offline-version\"><a href=\"https://en.cppreference.com/w/Cppreference%253AArchives.html\">Offline version</a></li>            </ul>\n        </div>\n                        <div id=\"cpp-toolbox\">\n            <h5><span>Toolbox</span><a href=\"https://en.cppreference.com/w/cpp/container/array.html#\"></a></h5>\n            <ul>\n<li id=\"t-whatlinkshere\"><a href=\"https://en.cppreference.com/w/Special:WhatLinksHere/cpp/container/array\" title=\"A list of all wiki pages that link here [j]\" accesskey=\"j\">What links here</a></li><li id=\"t-recentchangeslinked\"><a href=\"https://en.cppreference.com/w/Special:RecentChangesLinked/cpp/container/array\" title=\"Recent changes in pages linked from this page [k]\" accesskey=\"k\">Related changes</a></li><li id=\"t-upload\"><a href=\"http://upload.cppreference.com/w/Special:Upload\" title=\"Upload files [u]\" accesskey=\"u\">Upload file</a></li><li id=\"t-specialpages\"><a href=\"https://en.cppreference.com/w/Special:SpecialPages\" title=\"A list of all special pages [q]\" accesskey=\"q\">Special pages</a></li><li id=\"t-print\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;printable=yes\" rel=\"alternate\" title=\"Printable version of this page [p]\" accesskey=\"p\">Printable version</a></li><li id=\"t-permalink\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;oldid=174050\" title=\"Permanent link to this revision of the page\">Permanent link</a></li><li id=\"t-info\"><a href=\"https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&amp;action=info\">Page information</a></li>            </ul>\n        </div>\n                        <div id=\"cpp-languagess\">\n            <div><ul><li>In other languages</li></ul></div>\n            <div><ul>\n<li class=\"interwiki-de\"><a href=\"http://de.cppreference.com/w/cpp/container/array\" title=\"cpp/container/array\" lang=\"de\" hreflang=\"de\">Deutsch</a></li><li class=\"interwiki-es\"><a href=\"http://es.cppreference.com/w/cpp/container/array\" title=\"cpp/container/array\" lang=\"es\" hreflang=\"es\">Espa\u00f1ol</a></li><li class=\"interwiki-fr\"><a href=\"http://fr.cppreference.com/w/cpp/container/array\" title=\"cpp/container/array\" lang=\"fr\" hreflang=\"fr\">Fran\u00e7ais</a></li><li class=\"interwiki-it\"><a href=\"http://it.cppreference.com/w/cpp/container/array\" title=\"cpp/container/array\" lang=\"it\" hreflang=\"it\">Italiano</a></li><li class=\"interwiki-ja\"><a href=\"http://ja.cppreference.com/w/cpp/container/array\" title=\"cpp/container/array\" lang=\"ja\" hreflang=\"ja\">\u65e5\u672c\u8a9e</a></li><li class=\"interwiki-pl\"><a href=\"http://pl.cppreference.com/w/cpp/container/array\" title=\"cpp/container/array\" lang=\"pl\" hreflang=\"pl\">Polski</a></li><li class=\"interwiki-pt\"><a href=\"http://pt.cppreference.com/w/cpp/container/array\" title=\"cpp/container/array\" lang=\"pt\" hreflang=\"pt\">Portugu\u00eas</a></li><li class=\"interwiki-ru\"><a href=\"http://ru.cppreference.com/w/cpp/container/array\" title=\"cpp/container/array\" lang=\"ru\" hreflang=\"ru\">\u0420\u0443\u0441\u0441\u043a\u0438\u0439</a></li><li class=\"interwiki-zh\"><a href=\"http://zh.cppreference.com/w/cpp/container/array\" title=\"cpp/container/array\" lang=\"zh\" hreflang=\"zh\">\u4e2d\u6587</a></li>            </ul></div>\n        </div>\n            <ul id=\"footer-info\">\n                                    <li id=\"footer-info-lastmod\"> This page was last modified on 2 August 2024, at 22:20.</li>\n                            </ul>\n                    <ul id=\"footer-places\">\n                                    <li id=\"footer-places-privacy\"><a href=\"https://en.cppreference.com/w/Cppreference%253APrivacy_policy.html\" title=\"Cppreference:Privacy policy\">Privacy policy</a></li>\n                                    <li id=\"footer-places-about\"><a href=\"https://en.cppreference.com/w/Cppreference%253AAbout.html\" title=\"Cppreference:About\">About cppreference.com</a></li>\n                                    <li id=\"footer-places-disclaimer\"><a href=\"https://en.cppreference.com/w/Cppreference%253AGeneral_disclaimer.html\" title=\"Cppreference:General disclaimer\">Disclaimers</a></li>\n                            </ul>\n                                    <ul id=\"footer-icons\" class=\"noprint\">\n                                    <li id=\"footer-poweredbyico\">\n                                            <a href=\"https://www.mediawiki.org/\"><img src=\"https://en.cppreference.com/mwiki/skins/common/images/poweredby_mediawiki_88x31.png\" alt=\"Powered by MediaWiki\" width=\"88\" height=\"31\"></a>                                            <a href=\"http://qbnz.com/highlighter/\"><img src=\"https://upload.cppreference.com/mwiki/images/2/2b/powered_by_geshi_88x31.png\" alt=\"Powered by GeSHi\" height=\"31\" width=\"88\"></a>                                            <a href=\"http://www.tigertech.net/referral/cppreference.com\"><img src=\"https://upload.cppreference.com/mwiki/images/9/94/powered_by_tigertech_88x31.png\" alt=\"Hosted by Tiger Technologies\" height=\"31\" width=\"88\"></a>                                        </li>\n                                </ul>\n                        <div style=\"clear:both\">\n            </div>\n            </div>\n        </div>\n        <!-- /footer -->\n        \n\n\n\n<!-- Served in 3.659 secs. -->\n\t\n\n\n</body><!-- Cached 20250418073138 --></html>",
+  "links": [
+    "https://en.cppreference.com/index.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fcontainer%2Farray&type=signup",
+    "https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&returnto=cpp%2Fcontainer%2Farray",
+    "https://en.cppreference.com/w/cpp/container/array.html",
+    "https://en.cppreference.com/w/Talk%253Acpp/container/array.html",
+    "https://en.cppreference.com/w/cpp/container/array.html#",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=history",
+    "https://en.cppreference.com/w/cpp.html",
+    "https://en.cppreference.com/w/cpp/container.html",
+    "https://en.cppreference.com/w/cpp/compiler_support.html",
+    "https://en.cppreference.com/w/cpp/freestanding.html",
+    "https://en.cppreference.com/w/cpp/language.html",
+    "https://en.cppreference.com/w/cpp/standard_library.html",
+    "https://en.cppreference.com/w/cpp/headers.html",
+    "https://en.cppreference.com/w/cpp/iterator/concepts.html",
+    "https://en.cppreference.com/w/cpp/experimental/feature_test.html",
+    "https://en.cppreference.com/w/cpp/utility.html#Language_support",
+    "https://en.cppreference.com/w/cpp/concepts.html",
+    "https://en.cppreference.com/w/cpp/error.html",
+    "https://en.cppreference.com/w/cpp/memory.html",
+    "https://en.cppreference.com/w/cpp/meta.html",
+    "https://en.cppreference.com/w/cpp/utility.html",
+    "https://en.cppreference.com/w/cpp/iterator.html",
+    "https://en.cppreference.com/w/cpp/ranges.html",
+    "https://en.cppreference.com/w/cpp/algorithm.html",
+    "https://en.cppreference.com/w/cpp/string.html",
+    "https://en.cppreference.com/w/cpp/text.html",
+    "https://en.cppreference.com/w/cpp/numeric.html",
+    "https://en.cppreference.com/w/cpp/chrono.html",
+    "https://en.cppreference.com/w/cpp/io.html",
+    "https://en.cppreference.com/w/cpp/filesystem.html",
+    "https://en.cppreference.com/w/cpp/atomic.html",
+    "https://en.cppreference.com/w/cpp/experimental/execution.html",
+    "https://en.cppreference.com/w/cpp/experimental.html",
+    "https://en.cppreference.com/w/cpp/symbol_index.html",
+    "https://en.cppreference.com/w/cpp/links/libs.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/navbar_content&action=edit",
+    "https://en.cppreference.com/w/cpp/container/node_handle.html",
+    "https://en.cppreference.com/w/cpp/container.html#Sequence_containers",
+    "https://en.cppreference.com/w/cpp/container/vector.html",
+    "https://en.cppreference.com/w/cpp/container/vector_bool.html",
+    "https://en.cppreference.com/w/cpp/container/inplace_vector.html",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/container/hive&action=edit&redlink=1",
+    "https://en.cppreference.com/w/cpp/container/deque.html",
+    "https://en.cppreference.com/w/cpp/container/forward_list.html",
+    "https://en.cppreference.com/w/cpp/container/list.html",
+    "https://en.cppreference.com/w/cpp/container.html#Associative_containers",
+    "https://en.cppreference.com/w/cpp/container/set.html",
+    "https://en.cppreference.com/w/cpp/container/multiset.html",
+    "https://en.cppreference.com/w/cpp/container/map.html",
+    "https://en.cppreference.com/w/cpp/container/multimap.html",
+    "https://en.cppreference.com/w/cpp/container.html#Unordered_associative_containers",
+    "https://en.cppreference.com/w/cpp/container/unordered_set.html",
+    "https://en.cppreference.com/w/cpp/container/unordered_multiset.html",
+    "https://en.cppreference.com/w/cpp/container/unordered_map.html",
+    "https://en.cppreference.com/w/cpp/container/unordered_multimap.html",
+    "https://en.cppreference.com/w/cpp/container.html#Container_adaptors",
+    "https://en.cppreference.com/w/cpp/container/stack.html",
+    "https://en.cppreference.com/w/cpp/container/queue.html",
+    "https://en.cppreference.com/w/cpp/container/priority_queue.html",
+    "https://en.cppreference.com/w/cpp/container/flat_set.html",
+    "https://en.cppreference.com/w/cpp/container/flat_multiset.html",
+    "https://en.cppreference.com/w/cpp/container/flat_map.html",
+    "https://en.cppreference.com/w/cpp/container/flat_multimap.html",
+    "https://en.cppreference.com/w/cpp/container.html#Views",
+    "https://en.cppreference.com/w/cpp/container/span.html",
+    "https://en.cppreference.com/w/cpp/container/mdspan.html",
+    "https://en.cppreference.com/w/cpp/container.html#Iterator_invalidation",
+    "https://en.cppreference.com/w/cpp/container.html#Member_function_table",
+    "https://en.cppreference.com/w/cpp/container.html#Non-member_function_table",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/navbar_content&action=edit",
+    "https://en.cppreference.com/w/cpp/container/array.html#Member_types",
+    "https://en.cppreference.com/w/cpp/container/array.html#Member_functions",
+    "https://en.cppreference.com/w/cpp/container/array.html#Element_access",
+    "https://en.cppreference.com/w/cpp/container/array/at.html",
+    "https://en.cppreference.com/w/cpp/container/array/operator_at.html",
+    "https://en.cppreference.com/w/cpp/container/array/front.html",
+    "https://en.cppreference.com/w/cpp/container/array/back.html",
+    "https://en.cppreference.com/w/cpp/container/array/data.html",
+    "https://en.cppreference.com/w/cpp/container/array.html#Operations",
+    "https://en.cppreference.com/w/cpp/container/array/fill.html",
+    "https://en.cppreference.com/w/cpp/container/array/swap.html",
+    "https://en.cppreference.com/w/cpp/container/array.html#Iterators",
+    "https://en.cppreference.com/w/cpp/container/array/begin.html",
+    "https://en.cppreference.com/w/cpp/container/array/end.html",
+    "https://en.cppreference.com/w/cpp/container/array/rbegin.html",
+    "https://en.cppreference.com/w/cpp/container/array/rend.html",
+    "https://en.cppreference.com/w/cpp/container/array.html#Capacity",
+    "https://en.cppreference.com/w/cpp/container/array/empty.html",
+    "https://en.cppreference.com/w/cpp/container/array/size.html",
+    "https://en.cppreference.com/w/cpp/container/array/max_size.html",
+    "https://en.cppreference.com/w/cpp/container/array.html#Non-member_functions",
+    "https://en.cppreference.com/w/cpp/container/array/operator_cmp.html",
+    "https://en.cppreference.com/w/cpp/container/array/get.html",
+    "https://en.cppreference.com/w/cpp/container/array/swap2.html",
+    "https://en.cppreference.com/w/cpp/container/array/to_array.html",
+    "https://en.cppreference.com/w/cpp/container/array.html#Helper_classes",
+    "https://en.cppreference.com/w/cpp/container/array/tuple_size.html",
+    "https://en.cppreference.com/w/cpp/container/array/tuple_element.html",
+    "https://en.cppreference.com/w/cpp/container/array/deduction_guides.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/navbar_content&action=edit",
+    "https://en.cppreference.com/w/cpp/header/array.html",
+    "https://en.cppreference.com/w/cpp/types/size_t.html",
+    "https://en.cppreference.com/w/cpp/language/array.html",
+    "https://en.cppreference.com/w/cpp/language/aggregate_initialization.html",
+    "https://en.cppreference.com/w/cpp/named_req/Container.html",
+    "https://en.cppreference.com/w/cpp/named_req/ReversibleContainer.html",
+    "https://en.cppreference.com/w/cpp/named_req/ContiguousContainer.html",
+    "https://en.cppreference.com/w/cpp/named_req/SequenceContainer.html",
+    "https://en.cppreference.com/w/cpp/container/array.html#Iterator_invalidation",
+    "https://en.cppreference.com/w/cpp/container/array.html#Template_parameters",
+    "https://en.cppreference.com/w/cpp/container/array.html#Implicitly-defined_member_functions",
+    "https://en.cppreference.com/w/cpp/container/array.html#Deduction_guides",
+    "https://en.cppreference.com/w/cpp/container/array.html#Example",
+    "https://en.cppreference.com/w/cpp/container/array.html#See_also",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=1",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=2",
+    "https://en.cppreference.com/w/cpp/named_req/MoveConstructible.html",
+    "https://en.cppreference.com/w/cpp/named_req/MoveAssignable.html",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=3",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_value_type&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_size_type&action=edit",
+    "https://en.cppreference.com/w/cpp/types/ptrdiff_t.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_difference_type&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_reference&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_const_reference&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_pointer&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_const_pointer&action=edit",
+    "https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator.html",
+    "https://en.cppreference.com/w/cpp/named_req/ContiguousIterator.html",
+    "https://en.cppreference.com/w/cpp/named_req/LiteralType.html",
+    "https://en.cppreference.com/w/cpp/iterator/contiguous_iterator.html",
+    "https://en.cppreference.com/w/cpp/named_req/ConstexprIterator.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_iterator&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_const_iterator&action=edit",
+    "https://en.cppreference.com/w/cpp/iterator/reverse_iterator.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_reverse_iterator&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_const_reverse_iterator&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=4",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_at&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_operator_at&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_front&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_back&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_data&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_begin&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_end&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_rbegin&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_rend&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_empty&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_size&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_max_size&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_fill&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_swap&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=5",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_operator_cmp&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/dsc_get&action=edit",
+    "https://en.cppreference.com/w/cpp/utility/swap.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_swap2&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/dsc_to_array&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=6",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/dsc_tuple_size&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/array/dsc_tuple_element&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=8",
+    "https://en.cppreference.com/w/cpp/algorithm/sort.html",
+    "https://en.cppreference.com/w/cpp/algorithm/ranges/reverse_copy.html",
+    "https://en.cppreference.com/w/cpp/iterator/ostream_iterator.html",
+    "https://en.cppreference.com/w/cpp/io/cout.html",
+    "https://en.cppreference.com/w/cpp/string/basic_string.html",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=edit&section=9",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_inplace_vector&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_vector&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/container/dsc_deque&action=edit",
+    "https://en.cppreference.com/w/cpp/experimental/make_array.html",
+    "https://en.cppreference.com/mwiki/index.php?title=Template:cpp/experimental/dsc_make_array&action=edit",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&oldid=174050",
+    "https://en.cppreference.com/w/Special:Categories",
+    "https://en.cppreference.com/w/Category%253ATodo_with_reason.html",
+    "http://www.cppreference.com/support",
+    "https://en.cppreference.com/w/Special:RecentChanges",
+    "https://en.cppreference.com/w/Cppreference%253AAbout.html",
+    "https://en.cppreference.com/w/Cppreference%253AArchives.html",
+    "https://en.cppreference.com/w/Special:WhatLinksHere/cpp/container/array",
+    "https://en.cppreference.com/w/Special:RecentChangesLinked/cpp/container/array",
+    "http://upload.cppreference.com/w/Special:Upload",
+    "https://en.cppreference.com/w/Special:SpecialPages",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&printable=yes",
+    "https://en.cppreference.com/mwiki/index.php?title=cpp/container/array&action=info",
+    "http://de.cppreference.com/w/cpp/container/array",
+    "http://es.cppreference.com/w/cpp/container/array",
+    "http://fr.cppreference.com/w/cpp/container/array",
+    "http://it.cppreference.com/w/cpp/container/array",
+    "http://ja.cppreference.com/w/cpp/container/array",
+    "http://pl.cppreference.com/w/cpp/container/array",
+    "http://pt.cppreference.com/w/cpp/container/array",
+    "http://ru.cppreference.com/w/cpp/container/array",
+    "http://zh.cppreference.com/w/cpp/container/array",
+    "https://en.cppreference.com/w/Cppreference%253APrivacy_policy.html",
+    "https://en.cppreference.com/w/Cppreference%253AGeneral_disclaimer.html",
+    "https://www.mediawiki.org/",
+    "http://qbnz.com/highlighter/",
+    "http://www.tigertech.net/referral/cppreference.com"
+  ],
+  "source_url": "https://en.cppreference.com/w/cpp/container/array",
+  "source": "cppreference",
+  "harvested_at": "2026-03-29T06:03:49.176083",
+  "kb_type": "cpp"
+}

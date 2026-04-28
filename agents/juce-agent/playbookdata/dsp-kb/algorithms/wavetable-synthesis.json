@@ -1,0 +1,84 @@
+{
+  "id": "dsp-kb_algorithms_wavetable-synthesis",
+  "kb": "dsp-kb",
+  "topic": "algorithms",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "Wavetable synthesis produces complex timbres by reading stored waveforms at varying rates. Key challenges:",
+  "concepts": [
+    {
+      "name": "Table size",
+      "description": "2048-4096 samples provides good quality/performance balance",
+      "related": []
+    },
+    {
+      "name": "Number of tables",
+      "description": "8-16 tables for smooth transitions",
+      "related": []
+    },
+    {
+      "name": "Interpolation",
+      "description": "Linear is fast; Hermite or cubic for higher quality",
+      "related": []
+    },
+    {
+      "name": "Memory",
+      "description": "Store tables as floats; consider SIMD alignment",
+      "related": []
+    },
+    {
+      "name": "Phase precision",
+      "description": "Use double for phase accumulator to avoid drift",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "class WavetableOscillator\n{\npublic:\n    WavetableOscillator()\n    {\n        // Create bandlimited tables for different frequency ranges\n        createWavetables();\n    }\n    \n    void setFrequency(float freq, float sampleRate)\n    {\n        phaseIncrement = freq / sampleRate;\n        \n        // Select appropriate table based on frequency\n        for (int i = 0; i < wavetableCount; ++i)\n        {\n            if (freq <= tableMaxFreqs[i])\n            {\n                currentTable = i;\n                break;\n            }\n        }\n    }\n    \n    float process()\n    {\n        // Get current table\n        const float* table = wavetables[currentTable];\n        \n        // Interpolate between samples\n        float index = phase * tableLength;\n        int i0 = (int)index;\n        int i1 = (i0 + 1) % tableLength;\n        float frac = index - i0;\n        \n        float sample = table[i0] * (1.0f - frac) + table[i1] * frac;\n        \n        // Advance phase\n        phase += phaseIncrement;\n        if (phase >= 1.0f) phase -= 1.0f;\n        \n        return sample;\n    }\n    \nprivate:\n    float phase = 0.0f;\n    float phaseIncrement = 0.0f;\n    int currentTable = 0;\n    \n    static constexpr int tableLength = 2048;\n    static constexpr int wavetableCount = 8;\n    float wavetables[wavetableCount][tableLength];\n    float tableMaxFreqs[wavetableCount];\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "void createWavetables()\n{\n    // Start with full-bandwidth waveform\n    std::vector<float> fullSpectrum(tableLength);\n    \n    // Create base waveform (e.g., sawtooth)\n    for (int i = 0; i < tableLength; ++i)\n    {\n        float phase = 2.0f * M_PI * i / tableLength;\n        // Sawtooth: odd harmonics with 1/n amplitude\n        for (int h = 1; h <= maxHarmonics; ++h)\n        {\n            fullSpectrum[i] += sin(h * phase) / h;\n        }\n    }\n    \n    // Create progressively bandlimited copies\n    for (int table = 0; table < wavetableCount; ++table)\n    {\n        float maxFreq = getMaxFreqForTable(table);\n        int maxHarmonics = (int)(sampleRate / (2.0f * maxFreq));\n        \n        // Copy and filter\n        for (int i = 0; i < tableLength; ++i)\n        {\n            wavetables[table][i] = 0;\n            for (int h = 1; h <= maxHarmonics && h < tableLength/2; ++h)\n            {\n                // FFT coefficient for harmonic h\n                // ... (FFT/IFFT approach)\n            }\n        }\n    }\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "float polyBLEP(float t, float dt)\n{\n    // t is the phase, dt is the phase increment\n    if (t < dt)\n    {\n        // Rising edge\n        t /= dt;\n        return t * t * (0.5f - t);\n    }\n    else if (t > 1.0f - dt)\n    {\n        // Falling edge\n        t = (t - 1.0f) / dt;\n        return t * t * (0.5f + t);\n    }\n    return 0;\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class WavetableSynthVoice : public SynthesiserVoice\n{\npublic:\n    void noteOn(int midiNote, float velocity) override\n    {\n        auto freq = MidiMessage::getMidiNoteInHertz(midiNote);\n        oscillator.setFrequency(freq, getSampleRate());\n        envelope.noteOn();\n    }\n    \n    void renderNextBlock(AudioBuffer<float>& buffer, int startSample, int numSamples) override\n    {\n        auto* channelData = buffer.getWritePointer(0, startSample);\n        \n        for (int i = 0; i < numSamples; ++i)\n        {\n            channelData[i] = oscillator.process() * envelope.getNextSample();\n        }\n    }\n    \nprivate:\n    WavetableOscillator oscillator;\n    ADSR envelope;\n};\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Wavetable Synthesis\n\n## Overview\n\nWavetable synthesis produces complex timbres by reading stored waveforms at varying rates. Key challenges:\n\n1. **Aliasing** - High harmonics fold back when above Nyquist frequency\n2. **Bandlimiting** - Need different tables for different frequency ranges\n3. **Interpolation** - Smooth output requires interpolation between samples\n\n## Architecture\n\n```cpp\nclass WavetableOscillator\n{\npublic:\n    WavetableOscillator()\n    {\n        // Create bandlimited tables for different frequency ranges\n        createWavetables();\n    }\n    \n    void setFrequency(float freq, float sampleRate)\n    {\n        phaseIncrement = freq / sampleRate;\n        \n        // Select appropriate table based on frequency\n        for (int i = 0; i < wavetableCount; ++i)\n        {\n            if (freq <= tableMaxFreqs[i])\n            {\n                currentTable = i;\n                break;\n            }\n        }\n    }\n    \n    float process()\n    {\n        // Get current table\n        const float* table = wavetables[currentTable];\n        \n        // Interpolate between samples\n        float index = phase * tableLength;\n        int i0 = (int)index;\n        int i1 = (i0 + 1) % tableLength;\n        float frac = index - i0;\n        \n        float sample = table[i0] * (1.0f - frac) + table[i1] * frac;\n        \n        // Advance phase\n        phase += phaseIncrement;\n        if (phase >= 1.0f) phase -= 1.0f;\n        \n        return sample;\n    }\n    \nprivate:\n    float phase = 0.0f;\n    float phaseIncrement = 0.0f;\n    int currentTable = 0;\n    \n    static constexpr int tableLength = 2048;\n    static constexpr int wavetableCount = 8;\n    float wavetables[wavetableCount][tableLength];\n    float tableMaxFreqs[wavetableCount];\n};\n```\n\n## Bandlimited Table Generation\n\n```cpp\nvoid createWavetables()\n{\n    // Start with full-bandwidth waveform\n    std::vector<float> fullSpectrum(tableLength);\n    \n    // Create base waveform (e.g., sawtooth)\n    for (int i = 0; i < tableLength; ++i)\n    {\n        float phase = 2.0f * M_PI * i / tableLength;\n        // Sawtooth: odd harmonics with 1/n amplitude\n        for (int h = 1; h <= maxHarmonics; ++h)\n        {\n            fullSpectrum[i] += sin(h * phase) / h;\n        }\n    }\n    \n    // Create progressively bandlimited copies\n    for (int table = 0; table < wavetableCount; ++table)\n    {\n        float maxFreq = getMaxFreqForTable(table);\n        int maxHarmonics = (int)(sampleRate / (2.0f * maxFreq));\n        \n        // Copy and filter\n        for (int i = 0; i < tableLength; ++i)\n        {\n            wavetables[table][i] = 0;\n            for (int h = 1; h <= maxHarmonics && h < tableLength/2; ++h)\n            {\n                // FFT coefficient for harmonic h\n                // ... (FFT/IFFT approach)\n            }\n        }\n    }\n}\n```\n\n## Anti-Aliasing Techniques\n\n### 1. Multiple Bandlimited Tables\n- Pre-compute tables for different frequency ranges\n- Higher-frequency tables have fewer harmonics\n- Linear crossfade between adjacent tables\n\n### 2. PolyBLEP (Polynomial Bandlimited Step)\n```cpp\nfloat polyBLEP(float t, float dt)\n{\n    // t is the phase, dt is the phase increment\n    if (t < dt)\n    {\n        // Rising edge\n        t /= dt;\n        return t * t * (0.5f - t);\n    }\n    else if (t > 1.0f - dt)\n    {\n        // Falling edge\n        t = (t - 1.0f) / dt;\n        return t * t * (0.5f + t);\n    }\n    return 0;\n}\n```\n\n### 3. Antiderivative Anti-Aliasing (ADAA)\n- Modern approach using IIR filters\n- Up to order 16 anti-aliasing\n- SIMD optimization available\n\n## JUCE Implementation\n\n```cpp\nclass WavetableSynthVoice : public SynthesiserVoice\n{\npublic:\n    void noteOn(int midiNote, float velocity) override\n    {\n        auto freq = MidiMessage::getMidiNoteInHertz(midiNote);\n        oscillator.setFrequency(freq, getSampleRate());\n        envelope.noteOn();\n    }\n    \n    void renderNextBlock(AudioBuffer<float>& buffer, int startSample, int numSamples) override\n    {\n        auto* channelData = buffer.getWritePointer(0, startSample);\n        \n        for (int i = 0; i < numSamples; ++i)\n        {\n            channelData[i] = oscillator.process() * envelope.getNextSample();\n        }\n    }\n    \nprivate:\n    WavetableOscillator oscillator;\n    ADSR envelope;\n};\n```\n\n## Best Practices\n\n1. **Table size**: 2048-4096 samples provides good quality/performance balance\n2. **Number of tables**: 8-16 tables for smooth transitions\n3. **Interpolation**: Linear is fast; Hermite or cubic for higher quality\n4. **Memory**: Store tables as floats; consider SIMD alignment\n5. **Phase precision**: Use double for phase accumulator to avoid drift\n\n## Common Waveforms\n\n| Waveform | Harmonic Spectrum | Notes |\n|----------|------------------|-------|\n| Sine | Fundamental only | No aliasing needed |\n| Sawtooth | All harmonics, 1/n | Most aliasing-prone |\n| Square | Odd harmonics, 1/n | Moderate aliasing |\n| Triangle | Odd harmonics, 1/n\u00b2 | Least aliasing-prone |\n| PWM | Variable width | Two tables with phase offset |\n\n## References\n\n- EarLevel Engineering: \"A wavetable oscillator\u2014the code\"\n- JUCE DSP Module documentation\n- libadawata: Antiderivative Anti-Aliasing library",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.776811+00:00"
+  },
+  "title": "Wavetable Synthesis",
+  "description": "Bandlimited wavetable oscillator implementation with anti-aliasing",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "dsp",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "implementation_examples": 3,
+  "tags": [
+    "wavetable",
+    "oscillator",
+    "anti-aliasing",
+    "bandlimited",
+    "synthesis"
+  ],
+  "related_topics": [
+    "oscillator",
+    "filter",
+    "dsp",
+    "synthesis"
+  ]
+}

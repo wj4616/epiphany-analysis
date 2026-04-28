@@ -1,0 +1,16 @@
+{
+  "id": "technical_testing_catch2-setup",
+  "kb": "technical",
+  "topic": "testing",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Unit Testing with Catch2 for JUCE Plugins",
+  "summary": "Placeholder: Setting up Catch2 test framework for DSP and parameter testing.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["testing", "catch2", "unit-test", "juce"],
+  "related_topics": ["testing", "build-systems"],
+  "difficulty": "beginner",
+  "domain_relevance": 8
+}

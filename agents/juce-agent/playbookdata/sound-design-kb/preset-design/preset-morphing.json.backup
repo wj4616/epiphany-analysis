@@ -1,0 +1,22 @@
+{
+  "title": "Preset Morphing",
+  "description": "Interpolation and continuous preset control",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:48:50.734111Z",
+  "kb_type": "sound-design",
+  "audio_relevance": 8,
+  "difficulty": "intermediate",
+  "markdown": "# Preset Morphing\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "preset morphing",
+    "interpolation presets",
+    "XY pad presets",
+    "continuous preset control"
+  ],
+  "sources": [
+    "Music production blogs"
+  ]
+}

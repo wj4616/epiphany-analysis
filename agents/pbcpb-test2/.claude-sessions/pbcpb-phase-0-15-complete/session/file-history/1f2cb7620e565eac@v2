@@ -1,0 +1,16 @@
+{
+  "id": "technical_juce-patterns_apvts-setup",
+  "kb": "technical",
+  "topic": "juce-patterns",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "AudioProcessorValueTreeState Setup Pattern",
+  "summary": "Placeholder: Thread-safe parameter management using JUCE's APVTS system.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["juce", "apvts", "parameters", "thread-safe"],
+  "related_topics": ["realtime-safety", "state-management"],
+  "difficulty": "intermediate",
+  "domain_relevance": 10
+}

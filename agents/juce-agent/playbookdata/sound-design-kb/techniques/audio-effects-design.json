@@ -1,0 +1,111 @@
+{
+  "id": "sound-design-kb_techniques_audio-effects-design",
+  "kb": "sound-design-kb",
+  "topic": "techniques",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "Audio effects modify sound in real-time. The most common effects are based on:\n- **Delay lines**: Echo, chorus, flanger, reverb\n- **Filters**: EQ, wah-wah\n- **Dynamics**: Compression, limiting, gating\n- **Modulation**: Tremolo, ring modulation",
+  "concepts": [
+    {
+      "name": "Delay lines",
+      "description": "Echo, chorus, flanger, reverb",
+      "related": []
+    },
+    {
+      "name": "Filters",
+      "description": "EQ, wah-wah",
+      "related": []
+    },
+    {
+      "name": "Dynamics",
+      "description": "Compression, limiting, gating",
+      "related": []
+    },
+    {
+      "name": "Modulation",
+      "description": "Tremolo, ring modulation",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "class DelayLine\n{\npublic:\n    DelayLine()\n    {\n        buffer.resize(maxDelaySamples, 0.0f);\n    }\n    \n    void setDelay(float delayMs, double sampleRate)\n    {\n        delaySamples = delayMs * sampleRate / 1000.0f;\n        delaySamples = std::min(delaySamples, maxDelaySamples - 1);\n    }\n    \n    float process(float input)\n    {\n        // Read from buffer\n        float output = buffer[readIndex];\n        \n        // Write to buffer\n        buffer[writeIndex] = input;\n        \n        // Update indices\n        writeIndex = (writeIndex + 1) % maxDelaySamples;\n        readIndex = (writeIndex - delaySamples + maxDelaySamples) % maxDelaySamples;\n        \n        return output;\n    }\n    \nprivate:\n    std::vector<float> buffer;\n    int writeIndex = 0;\n    int readIndex = 0;\n    int delaySamples = 0;\n    static constexpr int maxDelaySamples = 65536;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class EchoEffect\n{\npublic:\n    void prepare(double sampleRate, int maxBlockSize)\n    {\n        this->sampleRate = sampleRate;\n        delay.setDelay(250.0f, sampleRate);  // 250ms default\n    }\n    \n    void setDelayTime(float ms)\n    {\n        delay.setDelay(ms, sampleRate);\n    }\n    \n    void setFeedback(float fb) { feedback = fb; }\n    void setMix(float m) { mix = m; }\n    \n    float process(float input)\n    {\n        float delayed = delay.process(input + feedback * lastOutput);\n        lastOutput = delayed;\n        return input * (1.0f - mix) + delayed * mix;\n    }\n    \nprivate:\n    DelayLine delay;\n    double sampleRate = 44100.0;\n    float feedback = 0.5f;\n    float mix = 0.5f;\n    float lastOutput = 0.0f;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class ChorusEffect\n{\npublic:\n    ChorusEffect()\n    {\n        lfo.setFrequency(0.5f);  // Slow modulation\n    }\n    \n    void prepare(double sampleRate, int maxBlockSize)\n    {\n        this->sampleRate = sampleRate;\n    }\n    \n    void setRate(float hz) { lfo.setFrequency(hz); }\n    void setDepth(float d) { depth = d; }\n    void setMix(float m) { mix = m; }\n    \n    float process(float input)\n    {\n        // LFO modulates delay time\n        float lfoValue = lfo.process();\n        float modDelay = baseDelay + lfoValue * depth * 5.0f;  // \u00b15ms\n        \n        delay.setDelay(modDelay, sampleRate);\n        float delayed = delay.process(input);\n        \n        return input * (1.0f - mix) + delayed * mix;\n    }\n    \nprivate:\n    DelayLine delay;\n    Oscillator lfo;\n    double sampleRate = 44100.0;\n    float baseDelay = 20.0f;  // 20ms base\n    float depth = 5.0f;\n    float mix = 0.5f;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class FlangerEffect\n{\npublic:\n    FlangerEffect()\n    {\n        lfo.setFrequency(0.2f);\n    }\n    \n    void prepare(double sampleRate, int maxBlockSize)\n    {\n        this->sampleRate = sampleRate;\n    }\n    \n    void setRate(float hz) { lfo.setFrequency(hz); }\n    void setDepth(float d) { depth = d; }\n    void setFeedback(float fb) { feedback = fb; }\n    \n    float process(float input)\n    {\n        // Short delay (1-10ms) modulated by LFO\n        float lfoValue = lfo.process();\n        float modDelay = 1.0f + lfoValue * depth * 5.0f;  // 1-10ms\n        \n        delay.setDelay(modDelay, sampleRate);\n        float delayed = delay.process(input);\n        \n        // Feedback creates resonant sweep\n        float output = input + delayed * 0.5f + feedback * lastDelayed;\n        lastDelayed = delayed;\n        \n        return output * 0.5f;\n    }\n    \nprivate:\n    DelayLine delay;\n    Oscillator lfo;\n    double sampleRate = 44100.0;\n    float depth = 1.0f;\n    float feedback = 0.7f;\n    float lastDelayed = 0.0f;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class PhaserEffect\n{\npublic:\n    PhaserEffect()\n    {\n        lfo.setFrequency(0.3f);\n    }\n    \n    void prepare(double sampleRate, int maxBlockSize)\n    {\n        this->sampleRate = sampleRate;\n        \n        // Initialize all-pass filters\n        for (auto& filter : allPassFilters)\n        {\n            filter.setCutoff(1000.0f);\n        }\n    }\n    \n    void setRate(float hz) { lfo.setFrequency(hz); }\n    void setDepth(float d) { depth = d; }\n    void setFeedback(float fb) { feedback = fb; }\n    \n    float process(float input)\n    {\n        float lfoValue = lfo.process();\n        \n        // Cascade of all-pass filters with modulated frequency\n        float output = input;\n        for (int i = 0; i < numStages; ++i)\n        {\n            float cutoff = baseCutoff + lfoValue * depth * range;\n            allPassFilters[i].setCutoff(cutoff);\n            output = allPassFilters[i].process(output);\n        }\n        \n        // Feedback\n        output += feedback * lastOutput;\n        lastOutput = output;\n        \n        // Mix\n        return input * (1.0f - mix) + output * mix;\n    }\n    \nprivate:\n    static constexpr int numStages = 4;\n    AllPassFilter allPassFilters[numStages];\n    Oscillator lfo;\n    double sampleRate = 44100.0;\n    float baseCutoff = 1000.0f;\n    float range = 2000.0f;\n    float depth = 0.5f;\n    float feedback = 0.5f;\n    float mix = 0.5f;\n    float lastOutput = 0.0f;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class AlgorithmicReverb\n{\npublic:\n    void prepare(double sampleRate, int maxBlockSize)\n    {\n        this->sampleRate = sampleRate;\n        \n        // Initialize comb filters\n        for (int i = 0; i < numCombs; ++i)\n        {\n            combs[i].setDelay(combDelays[i] * sampleRate / 1000.0f);\n            combs[i].setFeedback(feedback);\n        }\n        \n        // Initialize all-pass filters\n        for (int i = 0; i < numAllPass; ++i)\n        {\n            allPasses[i].setDelay(allPassDelays[i] * sampleRate / 1000.0f);\n        }\n    }\n    \n    void setRoomSize(float size) { roomSize = size; }\n    void setDamping(float damp) { damping = damp; }\n    void setMix(float m) { mix = m; }\n    \n    float process(float input)\n    {\n        float output = 0.0f;\n        \n        // Parallel comb filters\n        for (int i = 0; i < numCombs; ++i)\n        {\n            output += combs[i].process(input);\n        }\n        \n        // Series all-pass filters\n        for (int i = 0; i < numAllPass; ++i)\n        {\n            output = allPasses[i].process(output);\n        }\n        \n        return input * (1.0f - mix) + output * mix * roomSize;\n    }\n    \nprivate:\n    static constexpr int numCombs = 4;\n    static constexpr int numAllPass = 2;\n    \n    CombFilter combs[numCombs];\n    AllPassFilter allPasses[numAllPass];\n    \n    // Prime delays for natural sound\n    float combDelays[numCombs] = {29.0f, 37.0f, 44.0f, 53.0f};\n    float allPassDelays[numAllPass] = {5.0f, 1.7f};\n    \n    double sampleRate = 44100.0;\n    float roomSize = 0.7f;\n    float damping = 0.5f;\n    float feedback = 0.7f;\n    float mix = 0.3f;\n};\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "class Compressor\n{\npublic:\n    void setThreshold(float db) { threshold = db; }\n    void setRatio(float r) { ratio = r; }\n    void setAttack(float ms) { attackCoeff = std::exp(-1.0f / (ms / 1000.0f * sampleRate)); }\n    void setRelease(float ms) { releaseCoeff = std::exp(-1.0f / (ms / 1000.0f * sampleRate)); }\n    \n    float process(float input)\n    {\n        // Level detection\n        float inputLevel = std::abs(input);\n        \n        // Envelope follower\n        if (inputLevel > envelope)\n        {\n            envelope = attackCoeff * envelope + (1.0f - attackCoeff) * inputLevel;\n        }\n        else\n        {\n            envelope = releaseCoeff * envelope + (1.0f - releaseCoeff) * inputLevel;\n        }\n        \n        // Compute gain reduction\n        float db = 20.0f * std::log10(envelope + 1e-10f);\n        float gainReduction = 0.0f;\n        \n        if (db > threshold)\n        {\n            gainReduction = (db - threshold) * (1.0f - 1.0f / ratio);\n        }\n        \n        float gain = std::pow(10.0f, -gainReduction / 20.0f);\n        \n        return input * gain;\n    }\n    \nprivate:\n    double sampleRate = 44100.0;\n    float threshold = -20.0f;  // dB\n    float ratio = 4.0f;\n    float attackCoeff = 0.0f;\n    float releaseCoeff = 0.0f;\n    float envelope = 0.0f;\n};\n",
+      "preserved": true
+    }
+  ],
+  "references": [
+    {
+      "title": "Dattorro's Effect Design Paper",
+      "url": "https://ccrma.stanford.edu/~dattorro/EffectDesignPart1.pdf",
+      "domain": "ccrma.stanford.edu"
+    },
+    {
+      "title": "Designing Audio Effect Plug-Ins in C++",
+      "url": "https://www.oreilly.com/library/view/designing-audio-effect/",
+      "domain": "www.oreilly.com"
+    },
+    {
+      "title": "JUCE Delay Line Tutorial",
+      "url": "https://docs.juce.com/master/tutorial_dsp_delay_line.html",
+      "domain": "docs.juce.com"
+    }
+  ],
+  "original_markdown": "# Audio Effect Design\n\n## Overview\n\nAudio effects modify sound in real-time. The most common effects are based on:\n- **Delay lines**: Echo, chorus, flanger, reverb\n- **Filters**: EQ, wah-wah\n- **Dynamics**: Compression, limiting, gating\n- **Modulation**: Tremolo, ring modulation\n\n## Delay-Based Effects\n\n### Basic Delay\n```cpp\nclass DelayLine\n{\npublic:\n    DelayLine()\n    {\n        buffer.resize(maxDelaySamples, 0.0f);\n    }\n    \n    void setDelay(float delayMs, double sampleRate)\n    {\n        delaySamples = delayMs * sampleRate / 1000.0f;\n        delaySamples = std::min(delaySamples, maxDelaySamples - 1);\n    }\n    \n    float process(float input)\n    {\n        // Read from buffer\n        float output = buffer[readIndex];\n        \n        // Write to buffer\n        buffer[writeIndex] = input;\n        \n        // Update indices\n        writeIndex = (writeIndex + 1) % maxDelaySamples;\n        readIndex = (writeIndex - delaySamples + maxDelaySamples) % maxDelaySamples;\n        \n        return output;\n    }\n    \nprivate:\n    std::vector<float> buffer;\n    int writeIndex = 0;\n    int readIndex = 0;\n    int delaySamples = 0;\n    static constexpr int maxDelaySamples = 65536;\n};\n```\n\n### Echo/Delay Effect\n```cpp\nclass EchoEffect\n{\npublic:\n    void prepare(double sampleRate, int maxBlockSize)\n    {\n        this->sampleRate = sampleRate;\n        delay.setDelay(250.0f, sampleRate);  // 250ms default\n    }\n    \n    void setDelayTime(float ms)\n    {\n        delay.setDelay(ms, sampleRate);\n    }\n    \n    void setFeedback(float fb) { feedback = fb; }\n    void setMix(float m) { mix = m; }\n    \n    float process(float input)\n    {\n        float delayed = delay.process(input + feedback * lastOutput);\n        lastOutput = delayed;\n        return input * (1.0f - mix) + delayed * mix;\n    }\n    \nprivate:\n    DelayLine delay;\n    double sampleRate = 44100.0;\n    float feedback = 0.5f;\n    float mix = 0.5f;\n    float lastOutput = 0.0f;\n};\n```\n\n### Chorus\n```cpp\nclass ChorusEffect\n{\npublic:\n    ChorusEffect()\n    {\n        lfo.setFrequency(0.5f);  // Slow modulation\n    }\n    \n    void prepare(double sampleRate, int maxBlockSize)\n    {\n        this->sampleRate = sampleRate;\n    }\n    \n    void setRate(float hz) { lfo.setFrequency(hz); }\n    void setDepth(float d) { depth = d; }\n    void setMix(float m) { mix = m; }\n    \n    float process(float input)\n    {\n        // LFO modulates delay time\n        float lfoValue = lfo.process();\n        float modDelay = baseDelay + lfoValue * depth * 5.0f;  // \u00b15ms\n        \n        delay.setDelay(modDelay, sampleRate);\n        float delayed = delay.process(input);\n        \n        return input * (1.0f - mix) + delayed * mix;\n    }\n    \nprivate:\n    DelayLine delay;\n    Oscillator lfo;\n    double sampleRate = 44100.0;\n    float baseDelay = 20.0f;  // 20ms base\n    float depth = 5.0f;\n    float mix = 0.5f;\n};\n```\n\n### Flanger\n```cpp\nclass FlangerEffect\n{\npublic:\n    FlangerEffect()\n    {\n        lfo.setFrequency(0.2f);\n    }\n    \n    void prepare(double sampleRate, int maxBlockSize)\n    {\n        this->sampleRate = sampleRate;\n    }\n    \n    void setRate(float hz) { lfo.setFrequency(hz); }\n    void setDepth(float d) { depth = d; }\n    void setFeedback(float fb) { feedback = fb; }\n    \n    float process(float input)\n    {\n        // Short delay (1-10ms) modulated by LFO\n        float lfoValue = lfo.process();\n        float modDelay = 1.0f + lfoValue * depth * 5.0f;  // 1-10ms\n        \n        delay.setDelay(modDelay, sampleRate);\n        float delayed = delay.process(input);\n        \n        // Feedback creates resonant sweep\n        float output = input + delayed * 0.5f + feedback * lastDelayed;\n        lastDelayed = delayed;\n        \n        return output * 0.5f;\n    }\n    \nprivate:\n    DelayLine delay;\n    Oscillator lfo;\n    double sampleRate = 44100.0;\n    float depth = 1.0f;\n    float feedback = 0.7f;\n    float lastDelayed = 0.0f;\n};\n```\n\n### Phaser\n```cpp\nclass PhaserEffect\n{\npublic:\n    PhaserEffect()\n    {\n        lfo.setFrequency(0.3f);\n    }\n    \n    void prepare(double sampleRate, int maxBlockSize)\n    {\n        this->sampleRate = sampleRate;\n        \n        // Initialize all-pass filters\n        for (auto& filter : allPassFilters)\n        {\n            filter.setCutoff(1000.0f);\n        }\n    }\n    \n    void setRate(float hz) { lfo.setFrequency(hz); }\n    void setDepth(float d) { depth = d; }\n    void setFeedback(float fb) { feedback = fb; }\n    \n    float process(float input)\n    {\n        float lfoValue = lfo.process();\n        \n        // Cascade of all-pass filters with modulated frequency\n        float output = input;\n        for (int i = 0; i < numStages; ++i)\n        {\n            float cutoff = baseCutoff + lfoValue * depth * range;\n            allPassFilters[i].setCutoff(cutoff);\n            output = allPassFilters[i].process(output);\n        }\n        \n        // Feedback\n        output += feedback * lastOutput;\n        lastOutput = output;\n        \n        // Mix\n        return input * (1.0f - mix) + output * mix;\n    }\n    \nprivate:\n    static constexpr int numStages = 4;\n    AllPassFilter allPassFilters[numStages];\n    Oscillator lfo;\n    double sampleRate = 44100.0;\n    float baseCutoff = 1000.0f;\n    float range = 2000.0f;\n    float depth = 0.5f;\n    float feedback = 0.5f;\n    float mix = 0.5f;\n    float lastOutput = 0.0f;\n};\n```\n\n## Reverb\n\n### Algorithmic Reverb\n```cpp\nclass AlgorithmicReverb\n{\npublic:\n    void prepare(double sampleRate, int maxBlockSize)\n    {\n        this->sampleRate = sampleRate;\n        \n        // Initialize comb filters\n        for (int i = 0; i < numCombs; ++i)\n        {\n            combs[i].setDelay(combDelays[i] * sampleRate / 1000.0f);\n            combs[i].setFeedback(feedback);\n        }\n        \n        // Initialize all-pass filters\n        for (int i = 0; i < numAllPass; ++i)\n        {\n            allPasses[i].setDelay(allPassDelays[i] * sampleRate / 1000.0f);\n        }\n    }\n    \n    void setRoomSize(float size) { roomSize = size; }\n    void setDamping(float damp) { damping = damp; }\n    void setMix(float m) { mix = m; }\n    \n    float process(float input)\n    {\n        float output = 0.0f;\n        \n        // Parallel comb filters\n        for (int i = 0; i < numCombs; ++i)\n        {\n            output += combs[i].process(input);\n        }\n        \n        // Series all-pass filters\n        for (int i = 0; i < numAllPass; ++i)\n        {\n            output = allPasses[i].process(output);\n        }\n        \n        return input * (1.0f - mix) + output * mix * roomSize;\n    }\n    \nprivate:\n    static constexpr int numCombs = 4;\n    static constexpr int numAllPass = 2;\n    \n    CombFilter combs[numCombs];\n    AllPassFilter allPasses[numAllPass];\n    \n    // Prime delays for natural sound\n    float combDelays[numCombs] = {29.0f, 37.0f, 44.0f, 53.0f};\n    float allPassDelays[numAllPass] = {5.0f, 1.7f};\n    \n    double sampleRate = 44100.0;\n    float roomSize = 0.7f;\n    float damping = 0.5f;\n    float feedback = 0.7f;\n    float mix = 0.3f;\n};\n```\n\n## Dynamics\n\n### Compressor\n```cpp\nclass Compressor\n{\npublic:\n    void setThreshold(float db) { threshold = db; }\n    void setRatio(float r) { ratio = r; }\n    void setAttack(float ms) { attackCoeff = std::exp(-1.0f / (ms / 1000.0f * sampleRate)); }\n    void setRelease(float ms) { releaseCoeff = std::exp(-1.0f / (ms / 1000.0f * sampleRate)); }\n    \n    float process(float input)\n    {\n        // Level detection\n        float inputLevel = std::abs(input);\n        \n        // Envelope follower\n        if (inputLevel > envelope)\n        {\n            envelope = attackCoeff * envelope + (1.0f - attackCoeff) * inputLevel;\n        }\n        else\n        {\n            envelope = releaseCoeff * envelope + (1.0f - releaseCoeff) * inputLevel;\n        }\n        \n        // Compute gain reduction\n        float db = 20.0f * std::log10(envelope + 1e-10f);\n        float gainReduction = 0.0f;\n        \n        if (db > threshold)\n        {\n            gainReduction = (db - threshold) * (1.0f - 1.0f / ratio);\n        }\n        \n        float gain = std::pow(10.0f, -gainReduction / 20.0f);\n        \n        return input * gain;\n    }\n    \nprivate:\n    double sampleRate = 44100.0;\n    float threshold = -20.0f;  // dB\n    float ratio = 4.0f;\n    float attackCoeff = 0.0f;\n    float releaseCoeff = 0.0f;\n    float envelope = 0.0f;\n};\n```\n\n## Effect Chain Order\n\n| Position | Effect | Reason |\n|----------|--------|--------|\n| 1 | EQ/Filter | Shape source before dynamics |\n| 2 | Dynamics | Control level before modulation |\n| 3 | Modulation | Chorus/flange/phaser |\n| 4 | Delay | Create space before reverb |\n| 5 | Reverb | Add ambient space |\n\n## Common Effect Parameter Ranges\n\n| Effect | Parameter | Range |\n|--------|-----------|-------|\n| Delay | Time | 1ms - 2s |\n| Delay | Feedback | 0% - 90% |\n| Chorus | Rate | 0.1 - 10 Hz |\n| Chorus | Depth | 1 - 10 ms |\n| Flanger | Rate | 0.1 - 5 Hz |\n| Flanger | Feedback | 0% - 95% |\n| Phaser | Stages | 2 - 12 |\n| Phaser | Rate | 0.1 - 10 Hz |\n| Reverb | Room Size | 10 - 200 ms (pre-delay) |\n| Reverb | Decay | 0.5 - 10 s |\n\n## References\n\n- [Dattorro's Effect Design Paper](https://ccrma.stanford.edu/~dattorro/EffectDesignPart1.pdf)\n- [Designing Audio Effect Plug-Ins in C++](https://www.oreilly.com/library/view/designing-audio-effect/)\n- [JUCE Delay Line Tutorial](https://docs.juce.com/master/tutorial_dsp_delay_line.html)",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.822009+00:00"
+  },
+  "title": "Audio Effect Design",
+  "description": "Design and implementation of audio effects: reverb, delay, chorus, flanger, phaser",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "sound-design",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "implementation_examples": 6,
+  "tags": [
+    "effects",
+    "delay",
+    "reverb",
+    "chorus",
+    "flanger",
+    "phaser",
+    "compression"
+  ],
+  "related_topics": [
+    "filter",
+    "dsp",
+    "oscillator"
+  ]
+}

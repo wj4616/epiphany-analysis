@@ -1,0 +1,319 @@
+# Phase Structure: JUCE VST Business Playbook
+
+## Design Principles
+
+1. **Coherent Blocks:** Each phase has a clear objective and delivers specific artifacts
+2. **Output → Input:** A phase's output is the next phase's input
+3. **Gated Transitions:** Every phase ends with verifiable approval criteria
+4. **Progressive Flow:** Early phases understand, middle phases build, late phases verify and operate
+5. **Cross-Cutting Integration:** Concerns woven into relevant phases, not isolated
+
+---
+
+## Phase Structure (17 Phases)
+
+### Phase 0: Commission & Scoping
+**Objective:** Define exactly what plugin is being built, for whom, and under what constraints.
+
+**Type:** Understanding (stakeholder decisions)
+
+**Key Outputs:**
+- SPEC.md with all creative decisions locked
+- Technical constraints documented
+- Success criteria measurable
+
+**KB Layers:** None (decisions only)
+
+---
+
+### Phase 1: Plugin Concept & Sound Identity
+**Objective:** Define the plugin's sonic character and creative direction.
+
+**Type:** Understanding (creative decisions)
+
+**Key Outputs:**
+- Sound identity document (user's exact words)
+- Reference plugins/hardware
+- Genre context
+- Uniqueness statement
+
+**KB Layers:** Sound Design (bridge queries for translation)
+
+**Human-Only Decisions:** All creative choices — sound identity, aesthetic direction, preset names
+
+---
+
+### Phase 2: Architecture & Task Breakdown
+**Objective:** Turn the spec into a buildable plan with complete code.
+
+**Type:** Planning
+
+**Key Outputs:**
+- Class architecture document
+- DSP algorithms with math
+- Task list with code
+- Build commands
+
+**KB Layers:** Technical (patterns, safety)
+
+---
+
+### Phase 3: Project Setup & Test Framework
+**Objective:** Set up build system and test framework before writing DSP code.
+
+**Type:** Setup
+
+**Key Outputs:**
+- CMakeLists.txt configured
+- Test framework integrated
+- CI pipeline (optional)
+
+**KB Layers:** Technical (build-systems, testing)
+
+---
+
+### Phase 4: DSP Implementation
+**Objective:** Implement core audio processing with real-time safety.
+
+**Type:** Implementation
+
+**Key Outputs:**
+- DSP modules
+- Process chain
+- Parameter smoothing
+- Real-time safety verification
+
+**KB Layers:** Technical (dsp-algorithms, realtime-safety), Sound Design (bridge for parameter translation)
+
+**Human-Only Decisions:** Effect intensity ranges, sound character adjustments
+
+---
+
+### Phase 5: State Management
+**Objective:** Implement preset system and DAW session persistence.
+
+**Type:** Implementation
+
+**Key Outputs:**
+- APVTS parameter layout
+- State save/load
+- Preset bank system
+
+**KB Layers:** Technical (juce-patterns)
+
+---
+
+### Phase 6: Integration
+**Objective:** Connect DSP modules into working plugin.
+
+**Type:** Implementation
+
+**Key Outputs:**
+- Integrated processor
+- Thread-safe parameter flow
+- Build verification
+
+**KB Layers:** Technical (juce-patterns, realtime-safety)
+
+---
+
+### Phase 7: GUI Design
+**Objective:** Design and implement visual interface.
+
+**Type:** Implementation
+
+**Key Outputs:**
+- Editor class
+- LookAndFeel
+- Control layout
+- Accessibility compliance
+
+**KB Layers:** UI/UX (control-types, layout-patterns, accessibility)
+
+**Human-Only Decisions:** Visual aesthetic, color scheme, layout choices
+
+---
+
+### Phase 8: Validation & Testing
+**Objective:** Comprehensive testing and quality verification.
+
+**Type:** Verification
+
+**Key Outputs:**
+- Unit tests passing
+- pluginval validation
+- Audio thread safety audit
+- Gain staging verification
+
+**KB Layers:** Technical (testing, realtime-safety)
+
+---
+
+### Phase 9: DAW Testing
+**Objective:** Human perceptual testing in actual DAW.
+
+**Type:** Verification (human-only)
+
+**Key Outputs:**
+- DAW compatibility verification
+- Perceptual bug fixes
+- CPU/memory profiling
+
+**KB Layers:** None (human testing)
+
+---
+
+### Phase 10: Licensing Integration
+**Objective:** Integrate commercial licensing system.
+
+**Type:** Implementation
+
+**Key Outputs:**
+- License validation implemented
+- Trial/full mode differentiation
+- Anti-tamper measures
+
+**KB Layers:** Commercial (licensing)
+
+---
+
+### Phase 11: Marketplace Preparation
+**Objective:** Prepare all materials for marketplace listing.
+
+**Type:** Preparation
+
+**Key Outputs:**
+- Marketplace listings (KVR, Plugin Boutique)
+- Product descriptions
+- Screenshots/videos
+- Pricing documentation
+
+**KB Layers:** Commercial (marketplaces, pricing)
+
+---
+
+### Phase 12: Marketing Launch Preparation
+**Objective:** Execute pre-launch marketing activities.
+
+**Type:** Operations
+
+**Key Outputs:**
+- Email list setup
+- Landing page
+- Launch content prepared
+- Community outreach plan
+
+**KB Layers:** Commercial (marketing)
+
+---
+
+### Phase 13: Release & Distribution
+**Objective:** Build distribution packages and publish.
+
+**Type:** Operations
+
+**Key Outputs:**
+- Installers built
+- Published to marketplaces
+- Direct sales setup
+
+**KB Layers:** Commercial (distribution)
+
+---
+
+### Phase 14: Post-Launch Operations
+**Objective:** Customer support, bug fixes, updates.
+
+**Type:** Operations
+
+**Key Outputs:**
+- Support system active
+- Update process documented
+- Feedback collection
+
+**KB Layers:** Commercial (distribution, support)
+
+---
+
+### Phase 15: Continuous Improvement
+**Objective:** Iterate based on feedback and sales data.
+
+**Type:** Operations
+
+**Key Outputs:**
+- Sales analysis
+- Feature prioritization
+- Update roadmap
+
+**KB Layers:** All (feedback integration)
+
+---
+
+### Phase 16: Knowledge Base Maintenance
+**Objective:** Update KB with lessons learned.
+
+**Type:** Knowledge Management
+
+**Key Outputs:**
+- KB entries updated
+- New patterns documented
+- Failure modes cataloged
+
+**KB Layers:** All
+
+---
+
+## Phase Flow Diagram
+
+```
+Phase 0 (Commission)
+     ↓
+Phase 1 (Concept) ←── Sound Design KB (bridge)
+     ↓
+Phase 2 (Architecture) ←── Technical KB
+     ↓
+Phase 3 (Setup) ←── Technical KB (build-systems)
+     ↓
+Phase 4 (DSP) ←── Technical KB + Sound Design KB (bridge)
+     ↓
+Phase 5 (State)
+     ↓
+Phase 6 (Integration)
+     ↓
+Phase 7 (GUI) ←── UI/UX KB
+     ↓
+Phase 8 (Validation) ←── Technical KB (testing)
+     ↓
+Phase 9 (DAW Testing) ←── Human-only
+     ↓
+Phase 10 (Licensing) ←── Commercial KB (licensing)
+     ↓
+Phase 11 (Marketplace) ←── Commercial KB (marketplaces)
+     ↓
+Phase 12 (Marketing) ←── Commercial KB (marketing)
+     ↓
+Phase 13 (Release) ←── Commercial KB (distribution)
+     ↓
+Phase 14 (Post-Launch)
+     ↓
+Phase 15 (Continuous Improvement)
+     ↓
+Phase 16 (KB Maintenance)
+```
+
+---
+
+## Cross-Cutting Concerns Integration
+
+| Concern | Phases Applied |
+|---------|-----------------|
+| Audio Thread Safety | 2, 4, 5, 6, 8, 9 |
+| Human Creative Authority | 0, 1, 7, 9 |
+| Knowledge Base Integration | All (context_load per phase) |
+| Session Boundary Management | All (session breaks at gates) |
+| Build Verification | 3, 4, 5, 6, 7, 8 |
+| Gain Staging Audit | 0, 4, 9 |
+| Cross-Platform Compatibility | 2, 3, 8, 13 |
+| Parameter Formula Verification | 2, 4, 8 |
+| Documentation Completeness | All (gate checks) |
+| Marketplace Readiness | 10, 11, 12, 13 |

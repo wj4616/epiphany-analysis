@@ -1,0 +1,16 @@
+{
+  "id": "commercial_licensing_ilok",
+  "kb": "commercial",
+  "topic": "licensing",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "iLok Licensing System",
+  "summary": "Placeholder: PACE Anti-Piracy, iLok Cloud, machine activation, and implementation.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["licensing", "ilok", "pace", "drm", "protection"],
+  "related_topics": ["licensing", "anti-piracy"],
+  "difficulty": "intermediate",
+  "domain_relevance": 8
+}

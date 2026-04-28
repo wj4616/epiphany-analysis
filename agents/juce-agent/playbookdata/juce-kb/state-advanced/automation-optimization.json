@@ -1,0 +1,41 @@
+{
+  "id": "juce-kb_state-advanced_automation-optimization",
+  "kb": "juce-kb",
+  "topic": "state-advanced",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Content to be harvested]",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Example code placeholder\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Automation Optimization\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:39.969960+00:00"
+  },
+  "title": "Automation Optimization",
+  "description": "Efficient DAW automation handling",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:49:39.109305Z",
+  "kb_type": "juce",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "plugin automation",
+    "parameter automation",
+    "DAW automation",
+    "smooth parameters"
+  ],
+  "sources": [
+    "JUCE forum"
+  ]
+}

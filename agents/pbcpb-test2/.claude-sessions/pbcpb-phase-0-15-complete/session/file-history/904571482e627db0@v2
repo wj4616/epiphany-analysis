@@ -1,0 +1,16 @@
+{
+  "id": "ui-ux_layout-patterns_hierarchy",
+  "kb": "ui-ux",
+  "topic": "layout-patterns",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Visual Hierarchy in Plugin UI",
+  "summary": "Placeholder: Size, color, and position for emphasizing important controls.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["ui", "layout", "hierarchy", "emphasis", "visual"],
+  "related_topics": ["layout-patterns", "grouping"],
+  "difficulty": "intermediate",
+  "domain_relevance": 8
+}

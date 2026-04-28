@@ -1,0 +1,44 @@
+{
+  "id": "bridge_warm_default",
+  "category": "warm",
+  "descriptor": "warm",
+  "parameters": [
+    {
+      "parameter": "filter_cutoff",
+      "value_range": [0.2, 0.4],
+      "typical_default": 0.3,
+      "why": "Reduced high frequencies (lower cutoff) creates warmth by rolling off harsh upper harmonics"
+    },
+    {
+      "parameter": "filter_resonance",
+      "value_range": [0.1, 0.2],
+      "typical_default": 0.15,
+      "why": "Subtle resonance adds character without being harsh"
+    },
+    {
+      "parameter": "saturation",
+      "value_range": [0.1, 0.3],
+      "typical_default": 0.2,
+      "why": "Soft saturation adds harmonic content that psychoacoustically reads as warmth"
+    }
+  ],
+  "source": "Sound Design KB",
+  "confidence": 0.85,
+  "why": "Warmth comes from reduced high frequencies (lower cutoff), subtle resonance for character, and soft saturation that adds pleasing harmonics without harshness.",
+  "anti_patterns": [
+    {
+      "avoid": "High resonance (above 0.3) with low cutoff",
+      "reason": "Creates nasal, boxy sound rather than warmth"
+    },
+    {
+      "avoid": "Adding warmth through EQ boost instead of filter reduction",
+      "reason": "Often adds noise and unmusical resonance; subtractive approach is cleaner"
+    }
+  ],
+  "related_descriptors": ["smooth", "deep", "lush"],
+  "example_plugins": [
+    {"name": "u-he Diva", "how_used": "Low-pass filter with gentle slope + subtle drive"},
+    {"name": "Arturia Juno-6", "how_used": "Chorus + low-pass filter at 30%"}
+  ],
+  "user_feedback": []
+}

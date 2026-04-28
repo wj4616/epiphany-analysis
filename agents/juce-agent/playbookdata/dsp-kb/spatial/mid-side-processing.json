@@ -1,0 +1,42 @@
+{
+  "id": "dsp-kb_spatial_mid-side-processing",
+  "kb": "dsp-kb",
+  "topic": "spatial",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Content to be harvested]",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Example code placeholder\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Mid-Side Processing\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.780150+00:00"
+  },
+  "title": "Mid-Side Processing",
+  "description": "M/S encoding, decoding, and processing",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:47:41.014852Z",
+  "kb_type": "dsp",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "M/S processing",
+    "mid side encoding",
+    "mid side EQ",
+    "side chain processing"
+  ],
+  "sources": [
+    "AES papers",
+    "Sound on Sound"
+  ]
+}

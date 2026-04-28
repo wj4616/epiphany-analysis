@@ -1,0 +1,339 @@
+{
+  "id": "dsp-kb_algorithms_juce-dsp-reference",
+  "kb": "dsp-kb",
+  "topic": "algorithms",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "This reference covers what JUCE provides out-of-the-box, what the community provides, and common DSP algorithms with implementation notes.",
+  "concepts": [
+    {
+      "name": "Use:",
+      "description": "EQ bands, simple LP/HP/BP/notch",
+      "related": []
+    },
+    {
+      "name": "JUCE:",
+      "description": "`dsp::IIR::Filter` with `dsp::IIR::Coefficients::makeLowPass()` etc.",
+      "related": []
+    },
+    {
+      "name": "CPU:",
+      "description": "Very low (2 multiply-adds per sample)",
+      "related": []
+    },
+    {
+      "name": "Pitfall:",
+      "description": "Unstable at very low frequencies relative to sample rate; coefficient recomputation needed on sample rate change",
+      "related": []
+    },
+    {
+      "name": "Formula:",
+      "description": "`y[n] = b0*x[n] + b1*x[n-1] + b2*x[n-2] - a1*y[n-1] - a2*y[n-2]`",
+      "related": []
+    },
+    {
+      "name": "Key advantage:",
+      "description": "Unconditionally stable at all frequencies, click-free modulation",
+      "related": []
+    },
+    {
+      "name": "Outputs:",
+      "description": "LP, HP, BP simultaneously from same computation",
+      "related": []
+    },
+    {
+      "name": "When to use over biquad:",
+      "description": "Always, unless you need specific biquad topology for emulation",
+      "related": []
+    },
+    {
+      "name": "WARNING:",
+      "description": "Do NOT confuse with the **Chamberlin SVF** (`f = 2*sin(pi*fc/fs)`). The Chamberlin SVF is unstable at high frequencies and clicks during modulation. JUCE's `StateVariableTPTFilter` is the correct (TPT) implementation. If you see `2*sin(...)` in SVF code, it's the wrong algorithm.",
+      "related": []
+    },
+    {
+      "name": "Reference:",
+      "description": "Vadim Zavalishin \u2014 \"The Art of VA Filter Design\" (free PDF); Andy Simper (Cytomic) papers at cytomic.com/files/dsp/",
+      "related": []
+    },
+    {
+      "name": "Note:",
+      "description": "Self-oscillates at high resonance; drive parameter adds saturation",
+      "related": []
+    },
+    {
+      "name": "Key property:",
+      "description": "Flat magnitude response when LP + HP outputs are summed",
+      "related": []
+    },
+    {
+      "name": "Common orders:",
+      "description": "2nd (12dB/oct), 4th (24dB/oct)",
+      "related": []
+    },
+    {
+      "name": "Implementation:",
+      "description": "First-order highpass at ~5Hz",
+      "related": []
+    },
+    {
+      "name": "Custom implementation required",
+      "description": "(juce::dsp::Reverb is basic)",
+      "related": []
+    },
+    {
+      "name": "Components:",
+      "description": "N delay lines + N\u00d7N mixing matrix + per-line feedback",
+      "related": []
+    },
+    {
+      "name": "Typical sizes:",
+      "description": "4, 8, or 16 lines",
+      "related": []
+    },
+    {
+      "name": "Delay lengths:",
+      "description": "Use mutually prime numbers to avoid coloration",
+      "related": []
+    },
+    {
+      "name": "Mixing matrices:",
+      "description": "Hadamard (orthogonal, normalized by 1/sqrt(N)) or Householder",
+      "related": []
+    },
+    {
+      "name": "Damping:",
+      "description": "One-pole lowpass per line in feedback path",
+      "related": []
+    },
+    {
+      "name": "Decay formula:",
+      "description": "`gain = pow(10, -3 * delayLength / (decaySeconds * sampleRate))`",
+      "related": []
+    },
+    {
+      "name": "Quality:",
+      "description": "Metallic coloration; FDN preferred for modern use",
+      "related": []
+    },
+    {
+      "name": "Latency:",
+      "description": "Introduces latency equal to first partition size",
+      "related": []
+    },
+    {
+      "name": "Reference implementation:",
+      "description": "mverb (github.com/FigBug/mverb)",
+      "related": []
+    },
+    {
+      "name": "Parameters:",
+      "description": "time (ms), feedback (0\u20130.95), mix",
+      "related": []
+    },
+    {
+      "name": "Interpolation:",
+      "description": "Linear for basic, Lagrange3rd for pitch-modulated",
+      "related": []
+    },
+    {
+      "name": "Difference from chorus:",
+      "description": "Shorter delay, higher feedback, more pronounced comb filtering",
+      "related": []
+    },
+    {
+      "name": "Or:",
+      "description": "`y[n] = x[n - D] + g * x[n]` (feedforward comb)",
+      "related": []
+    },
+    {
+      "name": "Resonant frequency:",
+      "description": "`fs / D` Hz",
+      "related": []
+    },
+    {
+      "name": "Common curves:",
+      "description": "`tanh(x)`, `x / (1 + |x|)` (soft clip), `atan(x)`, hard clip",
+      "related": []
+    },
+    {
+      "name": "Full formula:",
+      "description": "`output = input + drive * (sin(input * foldAmt * PI) / foldAmt - input)`",
+      "related": []
+    },
+    {
+      "name": "Boundary check:",
+      "description": "Verify at drive=0 and drive=1 \u2014 formula must reduce to identity at drive=0",
+      "related": []
+    },
+    {
+      "name": "Aliasing:",
+      "description": "Use `dsp::Oversampling` (2x\u20134x) or ADAA (chowdsp_waveshapers) \u2014 wavefolder generates dense harmonics",
+      "related": []
+    },
+    {
+      "name": "Approach:",
+      "description": "Asymmetric waveshaping (different curves for positive/negative)",
+      "related": []
+    },
+    {
+      "name": "Community:",
+      "description": "SmartGuitarAmp (neural network), Schrammel_OJD, BYOD",
+      "related": []
+    },
+    {
+      "name": "Advantage:",
+      "description": "Lower CPU than oversampling for equivalent alias reduction",
+      "related": []
+    },
+    {
+      "name": "Key parameters:",
+      "description": "threshold, ratio, attack, release, makeup gain, knee",
+      "related": []
+    },
+    {
+      "name": "Architecture pattern (SimpleCompressor):",
+      "description": "Separate gain calculation from audio processing",
+      "related": []
+    },
+    {
+      "name": "Sidechain:",
+      "description": "Feed external signal to level detector instead of input; gain reduction still applied to main signal",
+      "related": []
+    },
+    {
+      "name": "Key:",
+      "description": "Look-ahead buffer allows the limiter to react before peaks arrive",
+      "related": []
+    },
+    {
+      "name": "Output safety:",
+      "description": "Always have a limiter or tanh() at the final output",
+      "related": []
+    },
+    {
+      "name": "Formula (one-pole):",
+      "description": "`env = (|x| > env) ? attackCoeff * (env - |x|) + |x| : releaseCoeff * (env - |x|) + |x|`",
+      "related": []
+    },
+    {
+      "name": "Coefficients:",
+      "description": "`coeff = exp(-1 / (time * sampleRate))`",
+      "related": []
+    },
+    {
+      "name": "Anti-aliasing:",
+      "description": "Band-limit wavetables per octave (mipmap approach) or use PolyBLEP",
+      "related": []
+    },
+    {
+      "name": "Features:",
+      "description": "Voice stealing, note-on/off handling, per-voice rendering",
+      "related": []
+    },
+    {
+      "name": "Pattern:",
+      "description": "Subclass `SynthesiserVoice`, override `renderNextBlock()`",
+      "related": []
+    },
+    {
+      "name": "Encode:",
+      "description": "`mid = (L + R) / 2; side = (L - R) / 2`",
+      "related": []
+    },
+    {
+      "name": "Decode:",
+      "description": "`L = mid + side; R = mid - side`",
+      "related": []
+    },
+    {
+      "name": "Width:",
+      "description": "Scale side signal; 0 = mono, 1 = natural, 2 = extra wide",
+      "related": []
+    },
+    {
+      "name": "For mix:",
+      "description": "`dryGain = cos(mix * PI/2); wetGain = sin(mix * PI/2)`",
+      "related": []
+    },
+    {
+      "name": "Waveforms:",
+      "description": "Sine, triangle, saw, square, sample-and-hold (random)",
+      "related": []
+    },
+    {
+      "name": "Sync:",
+      "description": "Optional tempo sync via host BPM",
+      "related": []
+    },
+    {
+      "name": "TextureBodyDetector pattern:",
+      "description": "`texture = fast_env - slow_env; body = slow_env`",
+      "related": []
+    },
+    {
+      "name": "Constants:",
+      "description": "`fftOrder = 10` or `11`, `fftSize = 1 << fftOrder` (1024 or 2048 points)",
+      "related": []
+    },
+    {
+      "name": "Members:",
+      "description": "`dsp::FFT forwardFFT{fftOrder}`, `std::array<float, fftSize> fifo`, `std::array<float, fftSize * 2> fftData`, `int fifoIndex = 0`, `bool nextFFTBlockReady = false`",
+      "related": []
+    },
+    {
+      "name": "Pipeline:",
+      "description": "A pipeline: concept",
+      "related": []
+    },
+    {
+      "name": "Thread safety:",
+      "description": "Only set `bool` flag from audio thread; only read fftData from UI thread after flag check",
+      "related": []
+    },
+    {
+      "name": "Tutorial:",
+      "description": "JUCE \"The fast Fourier transform\"",
+      "related": []
+    }
+  ],
+  "code_blocks": [],
+  "references": [],
+  "original_markdown": "# JUCE DSP Reference: Built-in Classes & Algorithm Catalog\n## Compiled from: JUCE docs, chowdsp_utils, awesome-juce, Stanford 320c\n\nThis reference covers what JUCE provides out-of-the-box, what the community provides, and common DSP algorithms with implementation notes.\n\n---\n\n## 1. Built-in juce::dsp Classes\n\n### Filters\n| Class | Description | When to use |\n|---|---|---|\n| `dsp::IIR::Filter` | Standard IIR (biquad) filter | Simple EQ bands, basic filtering |\n| `dsp::IIR::Coefficients` | Biquad coefficient computation | LP, HP, BP, notch, shelf, peak EQ |\n| `dsp::FIR::Filter` | Finite impulse response filter | Linear phase filtering, crossovers |\n| `dsp::StateVariableTPTFilter` | Topology-preserving SVF | Modulated filters, resonant sweeps \u2014 stable at all frequencies |\n| `dsp::FirstOrderTPTFilter` | First-order TPT filter | Simple LP/HP, DC blocking, one-pole smoothing |\n| `dsp::LinkwitzRileyFilter` | Crossover filter (flat summing) | Multi-band processing, crossovers |\n| `dsp::LadderFilter` | Moog-style 4-pole ladder | Analog-style resonant filtering |\n| `dsp::FilterDesign` | Design utilities | Generating coefficients for various filter types |\n\n### Delay & Time-based\n| Class | Description | When to use |\n|---|---|---|\n| `dsp::DelayLine` | Variable-length delay with interpolation | Delays, reverbs, chorus, flanger |\n| `dsp::DelayLineInterpolationTypes::Linear` | Linear interpolation | General purpose, good quality |\n| `dsp::DelayLineInterpolationTypes::Lagrange3rd` | 3rd-order Lagrange | Higher quality pitch shifting |\n| `dsp::DelayLineInterpolationTypes::Thiran` | Allpass interpolation | Fractional delay, physical modeling |\n| `dsp::DelayLineInterpolationTypes::None` | No interpolation | Integer-sample delays only |\n\n### Effects\n| Class | Description | When to use |\n|---|---|---|\n| `dsp::Chorus` | Modulated delay chorus | Chorus/ensemble effect |\n| `dsp::Phaser` | Allpass chain phaser | Phaser effect |\n| `dsp::Reverb` | Simple room reverb | Basic reverb (limited quality \u2014 custom FDN preferred for serious use) |\n| `dsp::Convolution` | FFT-based convolution | IR reverbs, cabinet simulation |\n| `dsp::WaveShaper` | Transfer function distortion | Saturation, clipping, waveshaping |\n\n### Dynamics\n| Class | Description | When to use |\n|---|---|---|\n| `dsp::Compressor` | Basic compressor | Simple dynamic range compression |\n| `dsp::Limiter` | Brick-wall limiter | Output protection |\n| `dsp::NoiseGate` | Noise gate | Signal suppression below threshold |\n| `dsp::BallisticsFilter` | Envelope follower (attack/release) | Level detection, metering, sidechain |\n\n### Mixing & Routing\n| Class | Description | When to use |\n|---|---|---|\n| `dsp::DryWetMixer` | Dry/wet mixing | Effect mix control (handles latency compensation) |\n| `dsp::Gain` | Level control | Volume, gain staging |\n| `dsp::Panner` | Stereo panning | Pan control |\n| `dsp::ProcessorChain` | Sequential DSP chain | Chaining multiple processors |\n| `dsp::ProcessorDuplicator` | Mono\u2192stereo duplication | Running mono processor on stereo signal |\n\n### Synthesis\n| Class | Description | When to use |\n|---|---|---|\n| `dsp::Oscillator` | Wavetable oscillator | Tone generation, LFOs |\n| `ADSR` (juce_audio_basics) | Envelope generator | Amplitude/filter envelopes |\n| `Synthesiser` (juce_audio_basics) | Voice allocator | Polyphonic instrument plugins |\n| `SynthesiserVoice` | Single voice | Per-voice processing |\n| `SynthesiserSound` | Sound mapping | MIDI note\u2192voice routing |\n\n### Analysis & Math\n| Class | Description | When to use |\n|---|---|---|\n| `dsp::FFT` | Fast Fourier Transform | Spectrum analysis, spectral processing |\n| `dsp::WindowingFunction` | Hann, Hamming, Blackman, etc. | FFT windowing, grain envelopes |\n| `dsp::LookupTable` | Precomputed function table | Fast sin/cos/tanh approximation |\n| `dsp::FastMathApproximations` | Approximate sin, cos, tan, exp, log | CPU savings in inner loops |\n| `dsp::Matrix` | Matrix operations | FDN mixing matrices, spatial audio |\n| `dsp::Oversampling` | Up/downsampling | Anti-aliasing for nonlinear processing |\n| `dsp::SIMDRegister` | SIMD vector operations | Vectorized per-sample processing |\n| `dsp::AudioBlock` | Block-level audio view | Efficient buffer manipulation |\n\n---\n\n## 2. Community DSP Libraries\n\n### chowdsp_utils (largest community library)\n| Module | Provides | License |\n|---|---|---|\n| `chowdsp_filters` | Butterworth, Chebyshev, Elliptic, SVF, Werner filters, ARP 1047 emulation | GPLv3/BSD |\n| `chowdsp_dsp_utils` | Advanced delay lines, pitch shifters, convolution, resampling | GPLv3 |\n| `chowdsp_waveshapers` | ADAA waveshaping (hard/soft clip, tanh, rectifiers), wavefolding | GPLv3 |\n| `chowdsp_reverb` | FDN reverb templates | GPLv3 |\n| `chowdsp_compressor` | Level detectors, gain computers | GPLv3 |\n| `chowdsp_eq` | EQ bands, multi-band, linear phase EQ | GPLv3 |\n| `chowdsp_sources` | Anti-aliased oscillators (saw, square, triangle), noise generators | GPLv3 |\n| `chowdsp_modal_dsp` | Modal filters for physical modeling | GPLv3 |\n| `chowdsp_simd` | XSIMD wrapper, SIMD math | GPLv3 |\n| `chowdsp_buffers` | SIMD-optimized audio buffers | GPLv3 |\n| `chowdsp_plugin_state` | APVTS replacement with better performance | BSD |\n| `chowdsp_presets` | Preset management system | BSD |\n\n### Other notable DSP resources\n| Library | What it provides | URL |\n|---|---|---|\n| Gin (FigBug) | Large utility collection, StackBlur, websockets | github.com/FigBug/Gin |\n| sst-filters | Surge synthesizer filters as standalone library | github.com/surge-synthesizer/sst-filters |\n| sst-waveshapers | Surge waveshapers as standalone library | github.com/surge-synthesizer/sst-waveshapers |\n| signalsmith-stretch | Polyphonic pitch/time stretching | github.com/Signalsmith-Audio/signalsmith-stretch |\n| signalsmith-dsp | General DSP utilities | github.com/Signalsmith-Audio/dsp |\n| Audio-Effects | Book examples: delay, chorus, flanger, phaser, tremolo, ring mod, distortion, compressor | github.com/juandagilc/Audio-Effects |\n| ob_HIIR | Laurent DeSoras' upsampling/downsampling library | github.com/AndrewJJ/ob_HIIR |\n| AudioTK | Workflow/pipeline DSP toolkit, circuit modeling | github.com/AudioTK/AudioTK |\n\n---\n\n## 3. DSP Algorithm Catalog\n\n### Filters\n\n#### Biquad (IIR 2nd order)\n- **Use:** EQ bands, simple LP/HP/BP/notch\n- **JUCE:** `dsp::IIR::Filter` with `dsp::IIR::Coefficients::makeLowPass()` etc.\n- **CPU:** Very low (2 multiply-adds per sample)\n- **Pitfall:** Unstable at very low frequencies relative to sample rate; coefficient recomputation needed on sample rate change\n- **Formula:** `y[n] = b0*x[n] + b1*x[n-1] + b2*x[n-2] - a1*y[n-1] - a2*y[n-2]`\n\n#### Cytomic TPT State Variable Filter\n- **Use:** Modulated filters, resonant sweeps \u2014 THE preferred filter for plugins\n- **JUCE:** `dsp::StateVariableTPTFilter` (implements Andy Simper's Cytomic TPT design)\n- **CPU:** Low (few multiply-adds per sample)\n- **Key advantage:** Unconditionally stable at all frequencies, click-free modulation\n- **Formula:** Uses trapezoidal integration: `g = tan(pi * fc / fs)`\n- **Outputs:** LP, HP, BP simultaneously from same computation\n- **When to use over biquad:** Always, unless you need specific biquad topology for emulation\n- **WARNING:** Do NOT confuse with the **Chamberlin SVF** (`f = 2*sin(pi*fc/fs)`). The Chamberlin SVF is unstable at high frequencies and clicks during modulation. JUCE's `StateVariableTPTFilter` is the correct (TPT) implementation. If you see `2*sin(...)` in SVF code, it's the wrong algorithm.\n- **Reference:** Vadim Zavalishin \u2014 \"The Art of VA Filter Design\" (free PDF); Andy Simper (Cytomic) papers at cytomic.com/files/dsp/\n\n#### Moog Ladder Filter\n- **Use:** Analog-style 4-pole (24dB/oct) resonant filter\n- **JUCE:** `dsp::LadderFilter`\n- **CPU:** Moderate (4 cascaded stages)\n- **Note:** Self-oscillates at high resonance; drive parameter adds saturation\n\n#### Linkwitz-Riley Crossover\n- **Use:** Multi-band processing (splitting signal into frequency bands)\n- **JUCE:** `dsp::LinkwitzRileyFilter`\n- **Key property:** Flat magnitude response when LP + HP outputs are summed\n- **Common orders:** 2nd (12dB/oct), 4th (24dB/oct)\n\n#### DC Blocker\n- **Use:** Remove DC offset from signal\n- **Implementation:** First-order highpass at ~5Hz\n- **Formula:** `y[n] = x[n] - x[n-1] + 0.995 * y[n-1]`\n\n### Reverb\n\n#### Feedback Delay Network (FDN)\n- **Use:** Algorithmic reverb (dense, colorless diffusion)\n- **Custom implementation required** (juce::dsp::Reverb is basic)\n- **Components:** N delay lines + N\u00d7N mixing matrix + per-line feedback\n- **Typical sizes:** 4, 8, or 16 lines\n- **Delay lengths:** Use mutually prime numbers to avoid coloration\n- **Mixing matrices:** Hadamard (orthogonal, normalized by 1/sqrt(N)) or Householder\n- **Damping:** One-pole lowpass per line in feedback path\n- **Decay formula:** `gain = pow(10, -3 * delayLength / (decaySeconds * sampleRate))`\n- **CPU:** Moderate to high (scales with N)\n\n#### Schroeder Reverb\n- **Use:** Classic digital reverb (historical reference, less used now)\n- **Components:** Parallel comb filters \u2192 series allpass filters\n- **CPU:** Low\n- **Quality:** Metallic coloration; FDN preferred for modern use\n\n#### Convolution Reverb\n- **Use:** Realistic room simulation using impulse responses\n- **JUCE:** `dsp::Convolution`\n- **CPU:** High (FFT-based partitioned convolution)\n- **Latency:** Introduces latency equal to first partition size\n- **Note:** Use `suspendProcessing(true)` when loading new IRs\n\n#### Dattorro Plate Reverb\n- **Use:** Plate-style reverb with rich diffusion\n- **Reference implementation:** mverb (github.com/FigBug/mverb)\n- **Components:** Input diffusion \u2192 tank (modulated allpass loops)\n\n### Delay Effects\n\n#### Simple Delay\n- **Use:** Echo, slapback\n- **JUCE:** `dsp::DelayLine`\n- **Parameters:** time (ms), feedback (0\u20130.95), mix\n- **Interpolation:** Linear for basic, Lagrange3rd for pitch-modulated\n\n#### Chorus\n- **Use:** Thickening, ensemble effect\n- **JUCE:** `dsp::Chorus` (or custom with `dsp::DelayLine` + LFO)\n- **Parameters:** rate (0.1\u20135Hz), depth (1\u201320ms), mix\n- **Implementation:** Short delay (5\u201330ms) modulated by LFO\n\n#### Flanger\n- **Use:** Metallic sweep, jet-plane effect\n- **Implementation:** Very short delay (0.1\u201310ms) modulated by LFO with feedback\n- **Difference from chorus:** Shorter delay, higher feedback, more pronounced comb filtering\n\n#### Comb Filter\n- **Use:** Metallic resonance, Karplus-Strong synthesis\n- **Implementation:** `y[n] = x[n] + g * y[n - D]` (feedback comb)\n- **Or:** `y[n] = x[n - D] + g * x[n]` (feedforward comb)\n- **Resonant frequency:** `fs / D` Hz\n\n### Distortion & Saturation\n\n#### Waveshaping (transfer function)\n- **Use:** Saturation, distortion, harmonic enhancement\n- **JUCE:** `dsp::WaveShaper`\n- **Common curves:** `tanh(x)`, `x / (1 + |x|)` (soft clip), `atan(x)`, hard clip\n- **Note:** Use oversampling (`dsp::Oversampling`) to reduce aliasing\n\n#### Wavefolder\n- **Use:** Complex harmonic generation, west-coast synthesis\n- **Full formula:** `output = input + drive * (sin(input * foldAmt * PI) / foldAmt - input)`\n  - At `drive=0`: output = input (true bypass, no processing)\n  - At `drive=1`: output = sin(input * foldAmt * PI) / foldAmt (full fold)\n  - The `/ foldAmt` normalizes amplitude as fold amount increases\n- **Boundary check:** Verify at drive=0 and drive=1 \u2014 formula must reduce to identity at drive=0\n- **Aliasing:** Use `dsp::Oversampling` (2x\u20134x) or ADAA (chowdsp_waveshapers) \u2014 wavefolder generates dense harmonics\n- **Note:** Each fold adds harmonics; multiple passes compound\n\n#### Tube/Valve Saturation\n- **Use:** Warm analog-style distortion\n- **Approach:** Asymmetric waveshaping (different curves for positive/negative)\n- **Community:** SmartGuitarAmp (neural network), Schrammel_OJD, BYOD\n\n#### Bitcrusher\n- **Use:** Lo-fi, retro digital distortion\n- **Implementation:** Sample-rate reduction (sample & hold) + bit-depth reduction (quantization)\n- **Parameters:** bits (1\u201316), sample rate reduction factor\n\n#### ADAA Waveshaping (Anti-Derivative Anti-Aliasing)\n- **Use:** Alias-free nonlinear processing without oversampling\n- **Community:** chowdsp_waveshapers provides ADAA implementations\n- **Advantage:** Lower CPU than oversampling for equivalent alias reduction\n\n### Dynamics\n\n#### Compressor\n- **Use:** Dynamic range control\n- **JUCE:** `dsp::Compressor` (basic) or custom\n- **Community:** CTAGDRC, SimpleCompressor (with look-ahead), valentine\n- **Components:** Level detector (RMS or peak) \u2192 gain computer (threshold, ratio, knee) \u2192 gain stage\n- **Formula:** `gainReduction = (input_dB - threshold) * (1 - 1/ratio)` (above threshold)\n- **Key parameters:** threshold, ratio, attack, release, makeup gain, knee\n- **Architecture pattern (SimpleCompressor):** Separate gain calculation from audio processing:\n  1. **Gain reduction computer:** Takes sidechain level \u2192 computes gain reduction values (reusable for compressor/limiter/expander)\n  2. **Look-ahead processor:** Buffers gain reduction samples, delays them to anticipate peaks before they arrive at output\n  3. **Apply stage:** Multiply audio by smoothed gain reduction\n- **Sidechain:** Feed external signal to level detector instead of input; gain reduction still applied to main signal\n- **Reference:** Reiss \u2014 \"Tutorial on dynamic range compression\" (theory); SimpleCompressor repo (implementation)\n\n#### Limiter\n- **Use:** Output protection, loudness maximization\n- **JUCE:** `dsp::Limiter`\n- **Key:** Look-ahead buffer allows the limiter to react before peaks arrive\n- **Output safety:** Always have a limiter or tanh() at the final output\n\n#### Envelope Follower\n- **Use:** Amplitude detection, sidechain, auto-wah, ducking\n- **JUCE:** `dsp::BallisticsFilter` (attack/release follower)\n- **Formula (one-pole):** `env = (|x| > env) ? attackCoeff * (env - |x|) + |x| : releaseCoeff * (env - |x|) + |x|`\n- **Coefficients:** `coeff = exp(-1 / (time * sampleRate))`\n\n### Synthesis\n\n#### Wavetable Oscillator\n- **Use:** Tone generation with arbitrary waveforms\n- **JUCE:** `dsp::Oscillator` (basic) or custom\n- **Implementation:** Pre-compute one cycle, read with phase accumulator + interpolation\n- **Anti-aliasing:** Band-limit wavetables per octave (mipmap approach) or use PolyBLEP\n\n#### PolyBLEP (Polynomal Band-Limited Step)\n- **Use:** Anti-aliased classic waveforms (saw, square, triangle)\n- **Community:** chowdsp_sources provides anti-aliased oscillators\n- **Advantage:** CPU-efficient alias reduction for hard-edged waveforms\n\n#### FM Synthesis\n- **Use:** Metallic, bell-like, evolving timbres\n- **Implementation:** Carrier oscillator frequency modulated by modulator oscillator\n- **Parameters:** carrier freq, modulator ratio, modulation index\n- **Reference:** Dexed (DX7 emulation)\n\n#### Karplus-Strong (Plucked String)\n- **Use:** Physical modeling of plucked strings\n- **Implementation:** Short noise burst \u2192 delay line with LP filter in feedback\n- **Parameters:** frequency (from delay length), damping (LP filter cutoff), excitation\n\n#### ADSR Envelope\n- **Use:** Amplitude or filter modulation per note\n- **JUCE:** `juce::ADSR`\n- **Parameters:** attack, decay, sustain (level), release (all in seconds except sustain)\n\n#### Voice Allocation\n- **Use:** Polyphonic instrument plugins\n- **JUCE:** `juce::Synthesiser` + `juce::SynthesiserVoice`\n- **Features:** Voice stealing, note-on/off handling, per-voice rendering\n- **Pattern:** Subclass `SynthesiserVoice`, override `renderNextBlock()`\n\n### Spatial / Stereo\n\n#### Mid-Side Processing\n- **Use:** Stereo width control\n- **Encode:** `mid = (L + R) / 2; side = (L - R) / 2`\n- **Decode:** `L = mid + side; R = mid - side`\n- **Width:** Scale side signal; 0 = mono, 1 = natural, 2 = extra wide\n\n#### Per-Line FDN Panning\n- **Use:** Stereo reverb with motion (used in Epiphany Machine v3)\n- **Implementation:** Each FDN delay line gets its own pan position + slow sine LFO\n- **Advantage:** Natural stereo motion without mid-side artifacts\n\n#### Equal-Power Panning\n- **Formula:** `left = cos(pan * PI/2); right = sin(pan * PI/2)` where pan 0=left, 1=right\n- **For mix:** `dryGain = cos(mix * PI/2); wetGain = sin(mix * PI/2)`\n\n### Modulation\n\n#### LFO (Low Frequency Oscillator)\n- **Use:** Periodic modulation of any parameter\n- **Implementation:** Phase accumulator + waveform lookup\n- **Waveforms:** Sine, triangle, saw, square, sample-and-hold (random)\n- **Sync:** Optional tempo sync via host BPM\n\n#### Envelope Follower (as modulation source)\n- **Use:** Input-reactive modulation\n- **Implementation:** Dual one-pole filters (fast attack, slow release)\n- **TextureBodyDetector pattern:** `texture = fast_env - slow_env; body = slow_env`\n\n### Analysis\n\n#### FFT Spectrum Analyzer (full pattern from JUCE tutorial)\n- **JUCE:** `dsp::FFT` + `dsp::WindowingFunction`\n- **Constants:** `fftOrder = 10` or `11`, `fftSize = 1 << fftOrder` (1024 or 2048 points)\n- **Members:** `dsp::FFT forwardFFT{fftOrder}`, `std::array<float, fftSize> fifo`, `std::array<float, fftSize * 2> fftData`, `int fifoIndex = 0`, `bool nextFFTBlockReady = false`\n- **Pipeline:**\n  1. **processBlock:** Push samples into FIFO. When `fifoIndex == fftSize`, copy fifo\u2192fftData, reset index, set ready flag\n  2. **Timer/VBlank (UI thread):** Check ready flag \u2192 `forwardFFT.performFrequencyOnlyForwardTransform(fftData.data())` \u2192 normalize magnitudes \u2192 `repaint()`\n  3. **paint():** Map frequency bins to x-axis (log scale), magnitude to y-axis (dB scale). Log frequency: `skewedX = 1.0f - std::exp(std::log(proportion) * 0.2f)`\n- **Thread safety:** Only set `bool` flag from audio thread; only read fftData from UI thread after flag check\n- **Tutorial:** JUCE \"The fast Fourier transform\"\n\n#### Level Meter\n- **Implementation:** Peak or RMS detection with ballistics (attack/release)\n- **Thread safety:** Use `std::atomic<float>` to pass levels from audio to UI thread\n- **Community:** `ff_meters` (LED-style meters)\n\n---\n\n## 4. CPU Cost Guide\n\n| Operation | Relative CPU | Notes |\n|---|---|---|\n| Gain scaling | Very low | 1 multiply per sample |\n| Biquad filter | Very low | 5 multiply-adds per sample |\n| TPT SVF filter | Low | ~8 operations per sample |\n| SmoothedValue | Very low | 1 multiply-add per sample |\n| Delay line read | Low | 1 read + interpolation |\n| Envelope follower | Very low | 2 comparisons + multiply per sample |\n| 8-line FDN reverb | Moderate | 8 delay reads + 8x8 matrix multiply per sample |\n| Convolution (1024pt) | Moderate-High | FFT-based, partitioned |\n| Oversampling 4x | High | 4x processing + up/down filter |\n| FFT (2048pt) | Moderate | Per-block, not per-sample |\n| Granular processing | Moderate | Depends on grain count and windowing |\n\n---\n\n## Sources\n- docs.juce.com/master/group__juce__dsp.html\n- github.com/Chowdhury-DSP/chowdsp_utils\n- github.com/sudara/awesome-juce\n- ccrma.stanford.edu/courses/320c/\n- melatonin.dev/blog/\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.777382+00:00"
+  },
+  "title": "JUCE DSP Reference: Built-in Classes & Algorithm Catalog",
+  "description": "Comprehensive DSP reference covering JUCE built-in classes, community DSP libraries, and common algorithm implementations with code examples",
+  "source": "harvested",
+  "source_urls": [
+    "docs.juce.com/master/group__juce__dsp.html",
+    "github.com/Chowdhury-DSP/chowdsp_utils",
+    "github.com/sudara/awesome-juce",
+    "ccrma.stanford.edu/courses/320c/",
+    "melatonin.dev/blog/"
+  ],
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "dsp",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "implementation_examples": 25,
+  "tags": [
+    "juce",
+    "dsp",
+    "filters",
+    "reverb",
+    "delay",
+    "dynamics",
+    "synthesis",
+    "effects",
+    "algorithms"
+  ],
+  "related_topics": [
+    "patterns",
+    "api",
+    "audio-basics",
+    "performance"
+  ]
+}

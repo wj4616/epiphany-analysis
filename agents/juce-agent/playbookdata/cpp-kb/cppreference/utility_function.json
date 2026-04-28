@@ -1,0 +1,44 @@
+{
+  "id": "cpp-kb_cppreference_utility_function",
+  "kb": "cpp-kb",
+  "topic": "cppreference",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "std::function is a general-purpose polymorphic function wrapper. It can store, copy, and invoke any CopyConstructible callable target: functions, lambdas, bind expressions, function objects, and member function pointers.",
+  "concepts": ["function-wrapper", "type-erasure", "callable", "polymorphic"],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "#include <functional>\n#include <iostream>\n\nstruct Foo {\n    Foo(int num) : num_(num) {}\n    void print_add(int i) const { std::cout << num_ + i << '\\n'; }\n    int num_;\n};\n\nvoid print_num(int i) { std::cout << i << '\\n'; }\n\nstruct PrintNum {\n    void operator()(int i) const { std::cout << i << '\\n'; }\n};\n\nint main() {\n    // Store a free function\n    std::function<void(int)> f_display = print_num;\n    f_display(-9);\n\n    // Store a lambda\n    std::function<void()> f_display_42 = []() { print_num(42); };\n    f_display_42();\n\n    // Store result of std::bind\n    std::function<void()> f_display_31337 = std::bind(print_num, 31337);\n    f_display_31337();\n\n    // Store call to member function\n    std::function<void(const Foo&, int)> f_add_display = &Foo::print_add;\n    const Foo foo(314159);\n    f_add_display(foo, 1);\n\n    // Store call to data member accessor\n    std::function<int(Foo const&)> f_num = &Foo::num_;\n    std::cout << \"num_: \" << f_num(foo) << '\\n';\n\n    // Store function object\n    std::function<void(int)> f_display_obj = PrintNum();\n    f_display_obj(18);\n\n    return 0;\n}\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Key properties:\n// - Can store any CopyConstructible callable\n// - Invoking an empty std::function throws std::bad_function_call\n// - Type erasure: hides actual callable type\n// - operator bool() checks if target is contained\n\n// Checking if callable:\nstd::function<void()> f;\nif (f) {  // operator bool()\n    f();\n}\n\n// Recursive lambda using std::function\nauto factorial = [](int n) {\n    std::function<int(int)> fac = [&](int n) {\n        return (n < 2) ? 1 : n * fac(n - 1);\n    };\n    return fac(n);\n};\n",
+      "preserved": true
+    }
+  ],
+  "references": [
+    {
+      "title": "std::function",
+      "url": "https://en.cppreference.com/w/cpp/utility/functional/function",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::move_only_function",
+      "url": "https://en.cppreference.com/w/cpp/utility/functional/move_only_function",
+      "domain": "en.cppreference.com"
+    },
+    {
+      "title": "std::bind",
+      "url": "https://en.cppreference.com/w/cpp/utility/functional/bind",
+      "domain": "en.cppreference.com"
+    }
+  ],
+  "source_url": "https://en.cppreference.com/w/cpp/utility/functional/function",
+  "harvested_at": "2026-03-30T12:00:00.000000+00:00",
+  "synced_at": "2026-03-30T12:00:00.000000+00:00",
+  "cpp_version": "C++11",
+  "cpp17_notes": "C++17 deprecates result_type, argument_type, first_argument_type, second_argument_type aliases (removed in C++20). C++23 adds move_only_function for move-only callables. C++26 adds copyable_function and function_ref.",
+  "audio_thread_notes": "std::function MUST NOT be used on the audio thread. Assignment and construction may allocate heap memory due to type erasure. Use templates, raw function pointers, or std::atomic<T*> for callback passing. If a callback must be stored, assign during initialization."
+}

@@ -1,0 +1,184 @@
+{
+  "kb_name": "ui-kb",
+  "topic": "color-palettes",
+  "version": "1.0.0",
+  "last_updated": "2026-03-29T07:00:00Z",
+  "content": {
+    "title": "Color Palettes for Audio Plugin UI Design",
+    "overview": "Comprehensive color palette collections and guidelines for creating professional audio plugin interfaces.",
+    "design_trends": {
+      "glassmorphism": {
+        "description": "Leading trend featuring frosted glass effects with transparency and background blur",
+        "characteristics": [
+          "Semi-transparent panels with subtle blur effects",
+          "Soft shadows and sharp outlines",
+          "Pastel or neutral accent colors against blurred backgrounds"
+        ],
+        "examples": ["Ujam's Finisher series", "XLN Audio's Addictive Drums 2"]
+      },
+      "dark_theme_dominance": {
+        "description": "Most modern synth UIs use darker interfaces to reduce eye strain",
+        "examples": [
+          "Minimal Audio Current 2.0 - darker, modern look",
+          "Serum 2 Dark Blue skin - emphasizes clarity and reduced eye fatigue",
+          "ABYSS by Dawesome - dark, cinematic aesthetics"
+        ]
+      }
+    },
+    "color_palettes": [
+      {
+        "id": "midnight-velocity",
+        "name": "Midnight Velocity",
+        "style": "High-Contrast Modern",
+        "description": "Professional dark theme with electric accents",
+        "colors": {
+          "background": {
+            "primary": "#0A0E1A",
+            "secondary": "#1A1D29"
+          },
+          "accents": {
+            "primary": "#00D9FF",
+            "alternative": "#1ABC9C",
+            "secondary": "#F39C12",
+            "alternative_secondary": "#E67E22"
+          },
+          "text": {
+            "primary": "#E0E6ED",
+            "secondary": "#8B92A0"
+          },
+          "controls": {
+            "active": "#FFFFFF",
+            "inactive": "#A0A0A0"
+          }
+        },
+        "use_case": "Professional mixing and mastering plugins"
+      },
+      {
+        "id": "analog-signal-sunrise",
+        "name": "Analog Signal Sunrise",
+        "style": "Vintage-Modern Hybrid",
+        "description": "Hardware-inspired interface with modern functionality",
+        "colors": {
+          "background": {
+            "primary": "#2C2F33",
+            "secondary": "#36393F"
+          },
+          "accents": {
+            "primary": "#0066CC",
+            "warning": "#FFB347"
+          },
+          "panels": {
+            "housing": "#4A4D52",
+            "static": "#F0F0F0"
+          }
+        },
+        "use_case": "Analog-modeled synthesizers and effects"
+      },
+      {
+        "id": "grid-runner-nights",
+        "name": "Grid Runner Nights",
+        "style": "Cyberpunk/Electronic",
+        "description": "Futuristic theme for electronic music tools",
+        "colors": {
+          "background": {
+            "deep_space": "#0F1419"
+          },
+          "accents": {
+            "data_stream": "#00FFAA",
+            "glacial": "#4A90E2",
+            "laser": "#00BFFF"
+          },
+          "metallic": {
+            "chromatic_steel": "#6C7A89"
+          }
+        },
+        "use_case": "Electronic music synthesizers and creative effects"
+      },
+      {
+        "id": "classic-dark",
+        "name": "Classic Dark",
+        "style": "Traditional Dark Theme",
+        "description": "Time-tested dark interface with blue accents",
+        "colors": {
+          "background": "#2B2B2B",
+          "panel": "#3C3F41",
+          "accent": "#4A90E2",
+          "text": "#BBBBBB",
+          "highlight": "#FFFFFF"
+        },
+        "use_case": "General purpose plugins and utilities"
+      },
+      {
+        "id": "warm-analog",
+        "name": "Warm Analog",
+        "style": "Vintage Hardware",
+        "description": "Warm, vintage-inspired color scheme",
+        "colors": {
+          "background": "#1A1A1A",
+          "panel": "#2D1810",
+          "accent": "#D4A574",
+          "text": "#F5F5F5",
+          "highlight": "#FFB347"
+        },
+        "use_case": "Vintage synthesizer emulations and tape effects"
+      }
+    ],
+    "color_rules": {
+      "sixty_thirty_ten": {
+        "rule": "60% dominant color, 30% secondary, 10% accent",
+        "application": {
+          "sixty_percent": "Dark background (main panel)",
+          "thirty_percent": "Control surfaces (slightly lighter dark)",
+          "ten_percent": "Active parameters, modulation indicators"
+        }
+      },
+      "contrast_requirements": {
+        "wcag_aa": "Minimum 4.5:1 for normal text, 3:1 for UI components",
+        "professional": "7:1+ for professional audio software",
+        "testing": "Use built-in contrast checker tools"
+      }
+    },
+    "color_psychology": {
+      "blue_cyan": {
+        "emotion": "Trust, clarity, technical precision",
+        "use": "Filter controls, FX parameters"
+      },
+      "orange_amber": {
+        "emotion": "Warmth, energy, warning",
+        "use": "Modulation, overload indicators"
+      },
+      "purple": {
+        "emotion": "Creativity, depth",
+        "use": "LFOs, experimental features"
+      },
+      "green": {
+        "emotion": "Confirmation, natural",
+        "use": "Tuning, 'in-key' indicators"
+      }
+    },
+    "accessibility": {
+      "avoid_pure_black": "#000000 causes eye strain and halation",
+      "sufficient_contrast": "Ensure text is readable against backgrounds",
+      "color_alone": "Don't rely solely on color - use icons and labels",
+      "reduced_motion": "Support users with vestibular disorders"
+    },
+    "implementation_tips": {
+      "gradients": "Use subtle gradients for depth without overwhelming",
+      "glow_effects": "Apply believable glow for active elements",
+      "state_changes": "Clear visual feedback for hover, active, disabled states",
+      "performance": "Optimize blur effects - can impact older systems"
+    },
+    "tools": [
+      "Adobe Color CC - creating harmonious dark themes",
+      "Coolors.co - quick palette generation with contrast checking",
+      "Stark plugin - Figma/Sketch accessibility testing",
+      "Alien Instruments Contrast Checker - designed for audio software"
+    ]
+  },
+  "sources": [
+    "https://vogerdesign.com/blog/glassmorphism-audio-plugin-ui/",
+    "https://www.audio-ui.com/p/xfer-serum-2-dark-blue-v-1-0/",
+    "https://www.dawesomemusic.com/plugins/abyss/",
+    "https://alien-instruments.github.io/Accessible-Projects-and-Tools/"
+  ]
+}

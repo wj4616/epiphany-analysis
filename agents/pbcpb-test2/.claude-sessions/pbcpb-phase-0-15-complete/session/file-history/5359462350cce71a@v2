@@ -1,0 +1,16 @@
+{
+  "id": "commercial_marketplaces_plugin-boutique",
+  "kb": "commercial",
+  "topic": "marketplaces",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Plugin Boutique Marketplace",
+  "summary": "Placeholder: Listing on Plugin Boutique, commission rates, and promotional options.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["marketplace", "plugin-boutique", "listing", "distribution"],
+  "related_topics": ["marketplaces", "pricing"],
+  "difficulty": "beginner",
+  "domain_relevance": 9
+}

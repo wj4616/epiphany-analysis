@@ -1,0 +1,23 @@
+{
+  "title": "MIDI Protocol Basics",
+  "description": "Fundamental MIDI protocol concepts and data format",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:45:41.235819Z",
+  "kb_type": "midi",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "markdown": "# MIDI Protocol Basics\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "MIDI protocol basics",
+    "MIDI specification",
+    "MIDI data format",
+    "MIDI message structure"
+  ],
+  "sources": [
+    "MIDI Association",
+    "JUCE forum"
+  ]
+}

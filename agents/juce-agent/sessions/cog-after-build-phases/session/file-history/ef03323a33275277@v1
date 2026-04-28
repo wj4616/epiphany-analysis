@@ -1,0 +1,25 @@
+#include "SpectralDroneEngine.h"
+
+namespace CogDSP
+{
+
+void SpectralDroneEngine::prepare(double sr, int samplesPerBlock)
+{
+    sampleRate = sr;
+    juce::ignoreUnused(samplesPerBlock);
+}
+
+void SpectralDroneEngine::process(float* output, int numSamples)
+{
+    // TODO: Implement spectral drone synthesis
+    for (int i = 0; i < numSamples; ++i)
+    {
+        output[i] = 0.0f;
+    }
+}
+
+void SpectralDroneEngine::reset()
+{
+}
+
+} // namespace CogDSP

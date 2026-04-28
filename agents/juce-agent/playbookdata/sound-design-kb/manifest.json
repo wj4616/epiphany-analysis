@@ -1,0 +1,291 @@
+{
+  "kb_name": "sound-design-kb",
+  "version": "1.0.0",
+  "created": "2026-03-30T12:24:56.300843+00:00",
+  "last_sync": "2026-03-30T12:24:56.300844+00:00",
+  "status": "ready",
+  "topics": [
+    {
+      "name": "modulation-routing",
+      "files": {
+        "mod-matrix.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300250+00:00",
+          "synced_at": "2026-03-30T12:24:56.300252+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 217
+        },
+        "lfo-shapes.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300268+00:00",
+          "synced_at": "2026-03-30T12:24:56.300269+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 210
+        },
+        "modulation-routing.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300284+00:00",
+          "synced_at": "2026-03-30T12:24:56.300285+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 218
+        },
+        "envelope-curves.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300299+00:00",
+          "synced_at": "2026-03-30T12:24:56.300300+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 215
+        }
+      }
+    },
+    {
+      "name": "preset-design",
+      "files": {
+        "macro-controls.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300337+00:00",
+          "synced_at": "2026-03-30T12:24:56.300338+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 220
+        },
+        "preset-morphing.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300352+00:00",
+          "synced_at": "2026-03-30T12:24:56.300353+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 215
+        },
+        "sound-design-workflow.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300367+00:00",
+          "synced_at": "2026-03-30T12:24:56.300368+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 221
+        },
+        "preset-methodology.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300386+00:00",
+          "synced_at": "2026-03-30T12:24:56.300387+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 225
+        }
+      }
+    },
+    {
+      "name": "effects-chain",
+      "files": {
+        "parallel-effects.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300417+00:00",
+          "synced_at": "2026-03-30T12:24:56.300417+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 216
+        },
+        "effects-ordering.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300431+00:00",
+          "synced_at": "2026-03-30T12:24:56.300432+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 222
+        }
+      }
+    },
+    {
+      "name": "layering",
+      "files": {
+        "serial-layering.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300459+00:00",
+          "synced_at": "2026-03-30T12:24:56.300460+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 215
+        },
+        "parallel-layering.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300474+00:00",
+          "synced_at": "2026-03-30T12:24:56.300474+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 217
+        }
+      }
+    },
+    {
+      "name": "techniques",
+      "files": {
+        "additive-synthesis.json": {
+          "status": "placeholder",
+          "harvested_at": null,
+          "synced_at": null,
+          "synced_timestamp": null,
+          "has_semantic": false,
+          "source": "web-research",
+          "markdown_length": 0
+        },
+        "vector-synthesis.json": {
+          "status": "placeholder",
+          "harvested_at": null,
+          "synced_at": null,
+          "synced_timestamp": null,
+          "has_semantic": false,
+          "source": "web-research",
+          "markdown_length": 0
+        },
+        "synth-bass-design.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300567+00:00",
+          "synced_at": "2026-03-30T12:24:56.300568+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 1639
+        },
+        "wavetable-synthesis.json": {
+          "status": "placeholder",
+          "harvested_at": null,
+          "synced_at": null,
+          "synced_timestamp": null,
+          "has_semantic": false,
+          "source": "web-research",
+          "markdown_length": 0
+        },
+        "granular-ambient-synthesis.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300621+00:00",
+          "synced_at": "2026-03-30T12:24:56.300622+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 9466
+        },
+        "pad-synth-design.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300641+00:00",
+          "synced_at": "2026-03-30T12:24:56.300642+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 2834
+        },
+        "audio-effects-design.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300678+00:00",
+          "synced_at": "2026-03-30T12:24:56.300679+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 9419
+        },
+        "drum-synthesis.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300705+00:00",
+          "synced_at": "2026-03-30T12:24:56.300706+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 6475
+        },
+        "subtractive-synthesis.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300735+00:00",
+          "synced_at": "2026-03-30T12:24:56.300736+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 8532
+        },
+        "physical-modeling-synthesis.json": {
+          "status": "placeholder",
+          "harvested_at": null,
+          "synced_at": null,
+          "synced_timestamp": null,
+          "has_semantic": false,
+          "source": "web-research",
+          "markdown_length": 0
+        },
+        "lead-synth-design.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300780+00:00",
+          "synced_at": "2026-03-30T12:24:56.300781+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 2810
+        },
+        "fm-synthesis-basics.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300807+00:00",
+          "synced_at": "2026-03-30T12:24:56.300808+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 4248
+        },
+        "fm-synthesis-sound-design.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.300836+00:00",
+          "synced_at": "2026-03-30T12:24:56.300836+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 6270
+        }
+      }
+    },
+    {
+      "name": "ambient-textures",
+      "files": {
+        "psychedelic-ambient-sound-design.md": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:30:00.000000+00:00",
+          "synced_at": "2026-03-30T12:30:00.000000+00:00",
+          "synced_timestamp": 1774873800,
+          "has_semantic": true,
+          "source": "web-research",
+          "markdown_length": 35000,
+          "topics": [
+            "evolving pads",
+            "granular synthesis",
+            "psychoacoustic synthesis",
+            "drone synthesis",
+            "surreal textures",
+            "shimmer reverb",
+            "wavetable morphing",
+            "spatial audio",
+            "spectral processing",
+            "convolution reverb",
+            "modulation matrix",
+            "slow LFO",
+            "filter self-oscillation",
+            "unison detuning",
+            "layering",
+            "tape saturation"
+          ]
+        }
+      }
+    }
+  ]
+}

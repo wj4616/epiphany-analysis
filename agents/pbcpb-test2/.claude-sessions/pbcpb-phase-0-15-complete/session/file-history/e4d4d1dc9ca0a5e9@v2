@@ -1,0 +1,205 @@
+# Population Strategy
+
+## Overview
+
+The Knowledge Base is populated in three phases: **Placeholder Seeding**, **Harvesting**, and **Curation**. This document defines how each KB layer gets populated.
+
+---
+
+## Placeholder Seeding
+
+During playbook setup, minimum one placeholder entry per topic per layer is created with fallback content.
+
+### Technical KB Placeholders
+
+| Topic | Minimum Placeholders |
+|-------|---------------------|
+| `realtime-safety` | `atomic-audio`, `lock-free-patterns`, `allocation-avoidance` |
+| `juce-patterns` | `apvts-setup`, `state-management`, `parameter-smoothing` |
+| `dsp-algorithms` | `filter-basics`, `oscillator-basics`, `gain-staging` |
+| `build-systems` | `cmake-fetchcontent`, `ci-github-actions` |
+| `testing` | `catch2-setup`, `pluginval-validation` |
+
+### Sound Design KB Placeholders
+
+| Topic | Minimum Placeholders |
+|-------|---------------------|
+| `synthesis-types` | `subtractive`, `fm`, `wavetable`, `granular`, `additive` |
+| `oscillators` | `waveform-types`, `detune`, `sync` |
+| `filters` | `filter-types`, `resonance`, `modulation` |
+| `modulation` | `lfo-basics`, `envelope-basics`, `routing` |
+| `effects` | `reverb`, `delay`, `distortion` |
+| `genre-techniques` | `psychedelic`, `ambient`, `pad`, `bass` |
+| `preset-methodology` | `naming-conventions`, `preset-structure` |
+
+### UI/UX KB Placeholders
+
+| Topic | Minimum Placeholders |
+|-------|---------------------|
+| `control-types` | `knobs`, `sliders`, `buttons`, `meters` |
+| `layout-patterns` | `grouping`, `hierarchy`, `spacing` |
+| `accessibility` | `keyboard-support`, `screen-readers` |
+| `feedback` | `visual-feedback`, `tooltips` |
+| `platform-standards` | `daw-conventions` |
+
+### Commercial KB Placeholders
+
+| Topic | Minimum Placeholders |
+|-------|---------------------|
+| `marketplaces` | `kvr-audio`, `plugin-boutique`, `direct-sales` |
+| `licensing` | `ilok`, `custom-solutions`, `anti-piracy` |
+| `pricing` | `strategy`, `positioning`, `bundles` |
+| `marketing` | `launch-timeline`, `content-strategy`, `community-building` |
+| `distribution` | `installers`, `updates`, `support` |
+
+### Reference KB Placeholders
+
+| Topic | Minimum Placeholders |
+|-------|---------------------|
+| `textbooks` | `pirkle-dsp`, `zolzer-dafx`, `smith-audio` |
+| `documentation` | `juce-docs`, `vst3-sdk` |
+| `talks` | `adc-presentations` |
+| `papers` | `dsp-research` |
+| `tutorials` | `community-tutorials` |
+
+---
+
+## Harvesting Sources
+
+### Where Content Comes From
+
+| Source Type | Quality Criteria | Harvesting Method |
+|-------------|------------------|-------------------|
+| **Official Docs** | JUCE documentation, VST3 SDK docs | Direct linking, structured extraction |
+| **Textbooks** | Pirkle "Designing Audio Effect Plugins", Zölzer "DAFX", Smith "Physical Audio Signal Processing" | Summarized key concepts, code examples |
+| **Expert Tutorials** | ADC talks, JUCE tutorials, timur.audio, The Audio Programmer | Extracted patterns, distilled wisdom |
+| **Community Forums** | JUCE Forum, KVR Developer Forum | Best practices curated, solutions verified |
+| **Web Research** | Published articles, blog posts | Synthesized and verified |
+
+### Quality Criteria for Harvested Content
+
+| Criterion | Requirement |
+|-----------|-------------|
+| **Accuracy** | Verified against official docs or tested in code |
+| **Relevance** | Directly applicable to VST plugin development |
+| **Completeness** | Contains all necessary information (no TBD sections) |
+| **Currency** | Not outdated (checked against current JUCE version) |
+| **Clarity** | Understandable by C++ beginner with audio background |
+
+### Harvesting Workflow
+
+1. **Identify Source** → Locate authoritative source for topic
+2. **Extract Content** → Summarize key concepts, extract code examples
+3. **Structure Entry** → Apply entry schema, fill all required fields
+4. **Add Code Blocks** → Include working code examples where applicable
+5. **Cross-Reference** → Link to related topics and KB entries
+6. **Set Status** → Mark as `harvested`
+7. **Queue for Curation** → Add to curation queue for review
+
+---
+
+## Curation Rules
+
+### What Must Happen Before Harvested Content Becomes Curated
+
+1. **Accuracy Review**
+   - Code examples compile (for Technical KB)
+   - Math formulas verified at boundary conditions
+   - Links still valid (for Reference KB)
+
+2. **Completeness Check**
+   - All schema fields filled (no TBD)
+   - Code blocks have descriptions
+   - Concepts have related entries
+
+3. **Relevance Check**
+   - Entry directly applicable to VST development
+   - Domain relevance score >= 5
+   - Appropriate difficulty level assigned
+
+4. **Cross-Reference Validation**
+   - Related topics exist
+   - Related KB entries exist
+   - No orphan references
+
+5. **Human Approval**
+   - Subject matter expert review (for Sound Design KB)
+   - Technical accuracy verification (for Technical KB)
+   - Currency verification (for Commercial KB)
+
+### Curation Status Progression
+
+```
+placeholder → harvested → curated → synced
+                ↑            ↑
+            (auto-populate) (human review)
+```
+
+---
+
+## Sync Rules
+
+### How Curated Entries Get Indexed
+
+1. **Index Update**
+   - Add entry ID to per-KB index
+   - Update cross-reference mappings
+   - Update master registry
+
+2. **Version Tagging**
+   - Tag with current playbook version
+   - Old entries preserved for rollback
+   - Queries filter by version tag
+
+3. **Bridge Synchronization**
+   - If Sound Design entry has parameter mappings, update Bridge
+   - Confidence scores recalculated
+   - Anti-patterns validated
+
+---
+
+## Versioning Protocol
+
+### Append-Only, Never Edit
+
+| Scenario | Action |
+|----------|--------|
+| **New entry** | Create with version 1.0.0 |
+| **Minor update** | Create new entry with version bump, link from old |
+| **Major rewrite** | Create new entry with `supersedes` field |
+| **Deprecation** | Mark old entry with `superseded_by` field |
+| **Rollback needed** | Query for previous version tag |
+
+### Version Numbering
+
+- **Major (X.0.0)**: Complete rewrite, incompatible changes
+- **Minor (0.X.0)**: New content, backward compatible
+- **Patch (0.0.X)**: Typo fixes, clarification
+
+### Query Filtering
+
+```
+# Get latest version of entry
+SELECT * FROM kb_entries WHERE id = ? ORDER BY version DESC LIMIT 1
+
+# Get all versions for rollback
+SELECT * FROM kb_entries WHERE id = ? ORDER BY version DESC
+
+# Get entries for specific playbook version
+SELECT * FROM kb_entries WHERE version_tag = ?
+```
+
+---
+
+## Initial Population Timeline
+
+| Phase | Duration | Activities |
+|-------|----------|------------|
+| **Placeholder** | Day 1 | Create all placeholder entries |
+| **Harvest Technical** | Days 2-4 | Populate Technical KB from docs/tutorials |
+| **Harvest Sound Design** | Days 5-7 | Populate Sound Design KB from research |
+| **Harvest UI/UX** | Day 8 | Populate UI/UX KB from standards |
+| **Harvest Commercial** | Day 9 | Populate Commercial KB from research |
+| **Seed Bridge** | Day 10 | Pre-seed common sound-to-parameter mappings |
+| **Curate Core** | Days 11-14 | Review and approve core entries |
+| **Sync Indexes** | Day 15 | Build cross-references, update registries |

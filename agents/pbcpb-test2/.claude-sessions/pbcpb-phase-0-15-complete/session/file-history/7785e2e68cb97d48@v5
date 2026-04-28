@@ -1,0 +1,23 @@
+# Artifact Manifest — update at every phase gate
+
+| File | Phase | Status | Summary |
+|------|-------|--------|---------|
+| README.md | 0 | Complete | Purpose, overview, target user documented |
+| scope.md | 0 | Complete | Configuration, in/out/adjacent scope defined |
+| constraints.md | 0 | Complete | Budget, technical stack, process constraints |
+| success-criteria.md | 0 | Complete | Product, quality, commercial, KB criteria |
+| decisions-ledger.md | 0 | Complete | Configuration, complexity profile, session plan, phase inventory |
+| artifact-manifest.md | 0 | Complete | Tracking file initialized |
+| metrics-tracker.md | 0 | Complete | Tracking file initialized |
+| research/domain-analysis.md | 1 | Complete | Industry overview, processes, terminology, KPIs |
+| research/best-practices.md | 1 | Complete | JUCE standards, DSP patterns, UI/UX, commercial |
+| research/competitive-templates.md | 1 | Complete | Audit of v7 playbook, gap analysis |
+| research/cross-cutting-concerns.md | 1 | Complete | 10 cross-cutting concerns documented |
+| research/platform-concerns.md | 1 | Complete | Linux Mint, JUCE, anti-patterns, deployment |
+| research/sme-interviews.md | 1 | Complete | 8 questions with key insights |
+| research/requirements.md | 1 | Complete | Domain, quality, strategic, platform requirements |
+| architecture/kb-architecture.md | 2 | Complete | 5-layer KB with bridge, separation rules |
+| architecture/entry-schema.json | 2 | Complete | Full entry schema with required fields |
+| architecture/bridge-schema.json | 2 | Complete | Bridge schema for sound-to-parameter translation |
+| architecture/population-strategy.md | 2 | Complete | Placeholder, harvesting, curation, sync rules |
+| architecture/directory-structure.md | 2 | Complete | Complete directory tree with naming conventions |

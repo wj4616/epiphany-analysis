@@ -1,0 +1,47 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmake -B build -DCMAKE_BUILD_TYPE=Debug)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(cmake --build build --target QuantumChorusTests)",
+      "Bash(ctest -R DSPTests --output-on-failure -V)",
+      "Bash(ls -la /home/myuser/vst/alien-chorus/Source/UI/*.h /home/myuser/vst/alien-chorus/Source/UI/*.cpp)",
+      "Read(//home/myuser/vst/alien-chorus/**)",
+      "Bash(./QuantumChorusTests_artefacts/QuantumChorusTests)",
+      "Bash(/home/myuser/vst/alien-chorus/build/QuantumChorusTests_artefacts/Debug/QuantumChorusTests)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(find /home/myuser/vst/alien-chorus/build -name *.vst3 -o -name *.so)",
+      "Bash(git tag -a v0.1.0 -m \"Quantum Chorus v0.1.0 -- initial release:*)",
+      "Bash(/home/myuser/vst/alien-chorus/docs/superpowers/plans/2026-03-25-ui-revamp.md:*)",
+      "Bash(/home/myuser/vst/alien-chorus/docs/superpowers/specs/2026-03-26-alien-lfo-integration-design.md:*)",
+      "Bash(/home/myuser/vst/alien-chorus/docs/superpowers/plans/2026-03-26-alien-lfo-integration.md:*)",
+      "Bash(./QuantumChorusTests_artefacts/Debug/QuantumChorusTests)",
+      "Bash(cp -r \"/home/myuser/vst/alien-chorus/build/QuantumChorus_artefacts/Debug/VST3/Quantum Chorus.vst3\" ~/.vst3/)",
+      "Read(//home/myuser/.vst3/Quantum Chorus.vst3/Contents/x86_64-linux/**)",
+      "Read(//home/myuser/.claude/skills/**)",
+      "Skill(security-review)",
+      "Skill(security-review:*)",
+      "Bash(cmake -B build -DCMAKE_BUILD_TYPE=Release)",
+      "Bash(cmake --build build --config Release)",
+      "Bash(ls -la /home/myuser/EpiphanyMachine/src/DSP/StereoWidener.*)",
+      "Bash(python3 -:*)",
+      "Bash(grep -c '\"\"preset\"\"' /home/myuser/EpiphanyMachine/src/PluginProcessor.cpp)",
+      "Bash(grep '\"\"preset\"\"' /home/myuser/EpiphanyMachine/src/PluginProcessor.cpp)",
+      "Read(//home/myuser/agents/juce-agent/playbookdata/data/**)",
+      "Read(//home/myuser/agents/juce-agent/playbookdata/**)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:docs.juce.com)",
+      "WebFetch(domain:juce.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(find /home/myuser/EpiphanyMachine -maxdepth 3 -not -path */build/* -not -path */.git/* -not -path */node_modules/* -type d)",
+      "Read(//home/myuser/**)"
+    ],
+    "additionalDirectories": [
+      "/home/myuser/EpiphanyMachine/docs/superpowers",
+      "/home/myuser/agents/juce-agent/playbookdata/references",
+      "/home/myuser/agents/juce-agent/playbookdata"
+    ]
+  },
+  "effortLevel": "high"
+}

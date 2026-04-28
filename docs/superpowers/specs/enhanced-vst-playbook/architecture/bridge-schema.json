@@ -1,0 +1,396 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Enhanced VST Playbook Bridge Schema",
+  "description": "Schema for bridge entries that translate between sonic descriptions and DSP parameters",
+  "version": "1.0.0",
+  "type": "object",
+
+  "definitions": {
+    "parameter_value": {
+      "oneOf": [
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Single normalized value (0-1)"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Range [min, max] in normalized units (0-1)"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "max": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "default": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "curve": {
+              "type": "string",
+              "enum": ["linear", "exponential", "logarithmic"],
+              "description": "Mapping curve type"
+            }
+          },
+          "required": ["min", "max"]
+        }
+      ]
+    },
+
+    "modulation_source": {
+      "type": "object",
+      "required": ["source"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": ["lfo", "envelope", "key_follow", "velocity", "aftertouch", "mod_wheel", "random", "step_sequencer"],
+          "description": "Modulation source type"
+        },
+        "depth": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Modulation depth range"
+        },
+        "rate_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "LFO rate range (for LFO sources)"
+        },
+        "shape": {
+          "type": "string",
+          "enum": ["sine", "triangle", "sawtooth", "square", "random", "sample_and_hold"],
+          "description": "LFO shape"
+        },
+        "attack": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Envelope attack range"
+        },
+        "decay": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Envelope decay range"
+        },
+        "sustain": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Envelope sustain range"
+        },
+        "release": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Envelope release range"
+        }
+      }
+    },
+
+    "filter_translation": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["lowpass", "highpass", "bandpass", "notch", "allpass"],
+          "description": "Filter type"
+        },
+        "cutoff_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Filter cutoff frequency range (normalized)"
+        },
+        "resonance_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Filter resonance/Q range (normalized)"
+        },
+        "modulation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/modulation_source"
+          },
+          "description": "Modulation applied to filter"
+        },
+        "slope": {
+          "type": "integer",
+          "enum": [12, 24, 48],
+          "description": "Filter slope in dB/octave"
+        }
+      }
+    },
+
+    "oscillator_translation": {
+      "type": "object",
+      "properties": {
+        "waveforms": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["sine", "triangle", "sawtooth", "square", "noise", "wavetable"]
+          },
+          "description": "Waveform types"
+        },
+        "pitch_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Pitch modulation range"
+        },
+        "detune_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Detune amount range"
+        },
+        "unison_voices": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16,
+          "description": "Number of unison voices"
+        },
+        "unison_detune": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Unison detune spread"
+        },
+        "unison_spread": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Stereo spread for unison"
+        },
+        "modulation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/modulation_source"
+          },
+          "description": "Modulation applied to oscillator"
+        }
+      }
+    },
+
+    "effect_translation": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["reverb", "delay", "chorus", "phaser", "flanger", "distortion", "compressor", "eq"],
+          "description": "Effect type"
+        },
+        "mix_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Dry/wet mix range"
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/parameter_value"
+          },
+          "description": "Effect-specific parameters"
+        },
+        "modulation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/modulation_source"
+          },
+          "description": "Modulation applied to effect"
+        }
+      }
+    },
+
+    "reverb_translation": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["hall", "room", "plate", "spring", "algorithmic", "convolution"],
+          "description": "Reverb type"
+        },
+        "mix_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Dry/wet mix range"
+        },
+        "decay_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Decay time range (normalized or seconds)"
+        },
+        "predelay_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Pre-delay range"
+        },
+        "damping_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "High-frequency damping range"
+        },
+        "width_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Stereo width range"
+        },
+        "modulation": {
+          "type": "string",
+          "description": "Modulation after reverb (chorus, etc.)"
+        }
+      }
+    },
+
+    "amplitude_translation": {
+      "type": "object",
+      "properties": {
+        "attack_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Attack time range"
+        },
+        "decay_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Decay time range"
+        },
+        "sustain_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Sustain level range"
+        },
+        "release_range": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Release time range"
+        },
+        "velocity_sensitivity": {
+          "$ref": "#/definitions/parameter_value",
+          "description": "Velocity to amplitude mapping"
+        }
+      }
+    }
+  },
+
+  "required": ["id", "sonic_description", "translation", "confidence"],
+
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^bridge-[a-z0-9-]+$",
+      "description": "Unique bridge entry ID (kebab-case, prefixed with 'bridge-')"
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable title"
+    },
+    "sonic_description": {
+      "type": "string",
+      "description": "Human-readable sonic description (e.g., 'warm, lush pad')"
+    },
+    "sonic_keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Keywords that match this bridge (for lookup)"
+    },
+    "translation": {
+      "type": "object",
+      "description": "Technical parameter translations",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/filter_translation",
+          "description": "Filter parameter translation"
+        },
+        "oscillator": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/oscillator_translation"
+          },
+          "description": "Oscillator parameter translations"
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {"$ref": "#/definitions/effect_translation"},
+              {"$ref": "#/definitions/reverb_translation"}
+            ]
+          },
+          "description": "Effect parameter translations"
+        },
+        "amplitude": {
+          "$ref": "#/definitions/amplitude_translation",
+          "description": "Amplitude envelope translation"
+        },
+        "custom_parameters": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/parameter_value"
+          },
+          "description": "Custom parameter translations"
+        }
+      }
+    },
+    "why": {
+      "type": "string",
+      "description": "Explanation of why these parameters create the sonic description"
+    },
+    "how_to_apply": {
+      "type": "string",
+      "description": "Guidance on when and how to use this bridge"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Confidence score (0-1)"
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["expert_synthesist", "preset_analysis", "community_consensus", "academic_derivation"]
+        },
+        "reference": {
+          "type": "string"
+        },
+        "verified_by": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "presets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Example preset IDs that use this translation"
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "description": {"type": "string"},
+          "parameters": {"type": "object"}
+        }
+      },
+      "description": "Example parameter combinations"
+    },
+    "related_bridges": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Related bridge entry IDs"
+    },
+    "phase_usage": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 12
+      },
+      "description": "Phases where this bridge is typically used"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional implementation notes"
+    }
+  }
+}

@@ -1,0 +1,124 @@
+#include "ChorusEnsemble.h"
+#include <cmath>
+
+namespace CogDSP
+{
+
+// Static member definitions
+constexpr std::array<float, ChorusEnsemble::numVoices> ChorusEnsemble::lfoRates;
+constexpr std::array<float, ChorusEnsemble::numVoices> ChorusEnsemble::baseDelays;
+
+void ChorusEnsemble::prepare(double sr, int samplesPerBlock)
+{
+    sampleRate = sr;
+
+    // Maximum delay is base delay + modulation depth + safety margin
+    constexpr float maxModDepthMs = 1.0f;  // ±0.5ms mod depth
+    constexpr float safetyMarginMs = 2.0f;
+    constexpr float maxDelayMs = 16.0f + maxModDepthMs + safetyMarginMs;
+
+    // Initialize voices
+    for (int i = 0; i < numVoices; ++i)
+    {
+        voices[i].prepare(sampleRate, maxDelayMs);
+        voices[i].lfoRate = lfoRates[i];
+        voices[i].baseDelayMs = baseDelays[i];
+        voices[i].modDepth = 0.5f;
+    }
+
+    // Initialize smoothed thickness
+    smoothedThickness.reset(sampleRate, 0.02);  // 20ms smoothing
+    smoothedThickness.setCurrentAndTargetValue(thickness);
+
+    reset();
+}
+
+void ChorusEnsemble::process(float* left, float* right, int numSamples)
+{
+    // Update smoothed thickness
+    smoothedThickness.setTargetValue(thickness);
+    smoothedThickness.skip(numSamples);
+    const float currentThickness = smoothedThickness.getCurrentValue();
+
+    // Check for bypass
+    if (currentThickness < 0.001f)
+    {
+        // Transparent passthrough
+        return;
+    }
+
+    // Process each sample
+    for (int i = 0; i < numSamples; ++i)
+    {
+        const float inputL = left[i];
+        const float inputR = right[i];
+
+        // Sum of modulated voices
+        float wetL = 0.0f;
+        float wetR = 0.0f;
+
+        // Update LFOs at block rate (every 32 samples for efficiency)
+        // But interpolate per-sample for smoothness
+        const bool updateLfo = (i % 32 == 0);
+
+        for (int v = 0; v < numVoices; ++v)
+        {
+            // Update LFO phase
+            if (updateLfo)
+            {
+                const float phaseIncrement = voices[v].lfoRate * 2.0f * Constants::PI / static_cast<float>(sampleRate);
+                voices[v].lfoPhase += phaseIncrement * 32.0f;  // Account for block rate
+
+                // Keep phase in [0, 2π]
+                while (voices[v].lfoPhase >= Constants::TWO_PI)
+                    voices[v].lfoPhase -= Constants::TWO_PI;
+            }
+
+            // Sinusoidal modulation
+            const float mod = std::sin(voices[v].lfoPhase);
+
+            // Modulated delay = base + mod * depth
+            const float delayMs = voices[v].baseDelayMs + mod * voices[v].modDepth;
+            voices[v].delay.setDelay(delayMs);
+
+            // Process (stereo with slight separation per voice)
+            // Voices 0,2 go more to left, voices 1,3 go more to right
+            const float panL = (v % 2 == 0) ? 1.0f : 0.7f;
+            const float panR = (v % 2 == 0) ? 0.7f : 1.0f;
+
+            // Sum stereo to mono for voice input
+            const float monoInput = (inputL + inputR) * 0.5f;
+
+            // Process through delay
+            const float delayed = voices[v].delay.process(monoInput);
+
+            wetL += delayed * panL;
+            wetR += delayed * panR;
+        }
+
+        // Normalize by number of voices
+        wetL /= static_cast<float>(numVoices);
+        wetR /= static_cast<float>(numVoices);
+
+        // Crossfade between dry and wet based on thickness
+        // Equal-power crossfade
+        auto gains = equalPowerCrossfade(1.0f - currentThickness);
+        const float dryGain = gains.dry;
+        const float wetGain = gains.wet;
+
+        left[i] = inputL * dryGain + wetL * wetGain;
+        right[i] = inputR * dryGain + wetR * wetGain;
+    }
+}
+
+void ChorusEnsemble::reset()
+{
+    for (int i = 0; i < numVoices; ++i)
+    {
+        voices[i].reset();
+    }
+
+    smoothedThickness.setCurrentAndTargetValue(thickness);
+}
+
+} // namespace CogDSP

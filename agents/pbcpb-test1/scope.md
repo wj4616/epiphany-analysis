@@ -1,0 +1,48 @@
+# Scope
+
+## In Scope
+
+### Development
+- VST3 audio plugin development using JUCE 8.0.x framework and C++17
+- CMake build system with FetchContent for dependency management
+- DSP algorithm research and implementation for synthesizers, effects, modules, and tools
+- Audio thread safety, gain staging, parameter management, state serialization
+- Modern audio plugin UI/UX design — synthesizer control layout theory, knob/slider/meter design
+- Preset system design and sound design methodology
+- Unit testing with Catch2, DAW testing in REAPER
+
+### Sound Design Knowledge Base
+- General synthesizer sound design theory (subtractive, FM, wavetable, granular, additive, hybrid)
+- Synthesizer patch creation theory and methodology
+- Synth module sound design (oscillators, filters, modulation routing)
+- Core focus areas: psychedelic, ambient, pad, creative, psybient sound design
+- Abstract and experimental sound design techniques
+- Sources: academic papers, professional textbooks (Pirkle, Zölzer, Smith), expert tutorials
+
+### Commercial
+- VST plugin marketing strategies for 2026 marketplace conditions
+- Commercial licensing systems (PACE iLok, eLicenser, custom solutions, open-source alternatives)
+- Anti-piracy countermeasures effective for KVR Audio and similar marketplaces
+- Marketplace listing strategies: KVR Audio, Plugin Boutique, direct sales
+- Pricing strategy for indie developers targeting average consumer budgets
+- Full business plan for a solo developer VST product launch
+
+### Reference Material
+- C++ documentation curated for audio relevance
+- JUCE framework documentation and patterns
+- DSP algorithm references
+- UI/UX design references for audio software
+
+## Out of Scope
+
+- Cross-platform builds beyond Linux (future version consideration)
+- Hardware integration or physical product design
+- DAWs other than REAPER for testing (v1.0)
+- Multi-developer team workflows
+- Mobile/embedded audio development
+
+## Adjacent
+
+- Claude Code skill development for JUCE-specific assistance
+- Knowledge base maintenance beyond initial bootstrapping
+- Post-launch analytics and A/B testing

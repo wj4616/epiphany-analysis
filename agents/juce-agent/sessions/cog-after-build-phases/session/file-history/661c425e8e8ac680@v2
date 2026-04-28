@@ -1,0 +1,142 @@
+#include "Waveshaper.h"
+#include <cmath>
+
+namespace CogDSP
+{
+
+void Waveshaper::prepare(double sr, int samplesPerBlock, int latencySamps)
+{
+    sampleRate = sr;
+    latencySamples = latencySamps;
+
+    // Prepare DC blockers
+    dcBlockerL.prepare(sampleRate);
+    dcBlockerR.prepare(sampleRate);
+
+    // Prepare latency compensation delay
+    // Convert latency samples to milliseconds for DelayLine
+    const float latencyMs = static_cast<float>(latencySamples) * 1000.0f / static_cast<float>(sampleRate);
+    latencyDelayL.prepare(sampleRate, latencyMs + 1.0f);  // +1 for safety
+    latencyDelayR.prepare(sampleRate, latencyMs + 1.0f);
+    latencyDelayL.setDelay(latencyMs);
+    latencyDelayR.setDelay(latencyMs);
+
+    // Initialize smoothed drive
+    smoothedDrive.reset(sampleRate, 0.02);  // 20ms smoothing
+    smoothedDrive.setCurrentAndTargetValue(drive);
+
+    reset();
+}
+
+void Waveshaper::process(float* left, float* right, int numSamples)
+{
+    // Update smoothed drive
+    smoothedDrive.setTargetValue(drive);
+    smoothedDrive.skip(numSamples);
+    const float currentDrive = smoothedDrive.getCurrentValue();
+
+    // Check for bypass condition (drive near zero)
+    if (currentDrive < 0.001f)
+    {
+        // Bypass: pass through with latency compensation only
+        for (int i = 0; i < numSamples; ++i)
+        {
+            left[i] = latencyDelayL.process(left[i]);
+            right[i] = latencyDelayR.process(right[i]);
+        }
+        return;
+    }
+
+    // Process through waveshaper
+    for (int i = 0; i < numSamples; ++i)
+    {
+        // Waveshape
+        float outL = processSample(left[i], currentDrive);
+        float outR = processSample(right[i], currentDrive);
+
+        // DC block
+        outL = dcBlockerL.processSample(outL);
+        outR = dcBlockerR.processSample(outR);
+
+        // Latency compensation delay
+        left[i] = latencyDelayL.process(outL);
+        right[i] = latencyDelayR.process(outR);
+    }
+}
+
+float Waveshaper::processSample(float input, float currentDrive)
+{
+    // Bypass at very low drive (already handled in process(), but safety check)
+    if (currentDrive < 0.001f)
+        return input;
+
+    // Determine curve blend based on drive
+    // 0-0.5: soft curve (warm)
+    // 0.5-1: hard curve (aggressive)
+    float softOutput, hardOutput;
+    float curveBlend;
+
+    if (currentDrive <= 0.5f)
+    {
+        // Only soft curve, drive scaled 0-1 within this range
+        const float softDrive = currentDrive * 2.0f;  // 0-1
+        softOutput = softCurve(input, softDrive);
+        hardOutput = softCurve(input, softDrive);  // Same as soft
+        curveBlend = 1.0f;  // All soft
+    }
+    else
+    {
+        // Blend soft to hard
+        const float hardDrive = (currentDrive - 0.5f) * 2.0f;  // 0-1
+        softOutput = softCurve(input, 1.0f);  // Full soft
+        hardOutput = hardCurve(input, hardDrive);
+        curveBlend = (currentDrive - 0.5f) * 2.0f;  // 0-1 as we go from soft to hard
+    }
+
+    // Blend between curves
+    const float output = lerp(softOutput, hardOutput, curveBlend);
+
+    return output;
+}
+
+float Waveshaper::softCurve(float x, float gain)
+{
+    // Soft curve: tanh(x * (1 + gain * 3))
+    // Warm, even harmonics, tube-style
+    // gain=0: tanh(x), gentle
+    // gain=1: tanh(x * 4), much more saturation
+    const float driveMultiplier = 1.0f + gain * 3.0f;
+    return fastTanh(x * driveMultiplier);
+}
+
+float Waveshaper::hardCurve(float x, float gain)
+{
+    // Hard curve: (2/PI) * atan(x * (1 + gain * 8))
+    // Asymmetric, odd+even harmonics, aggressive bite
+    // Bounded to ±0.64 at all inputs
+    // gain=0: (2/PI) * atan(x)
+    // gain=1: (2/PI) * atan(x * 9)
+
+    const float driveMultiplier = 1.0f + gain * 8.0f;
+    const float scaledInput = x * driveMultiplier;
+
+    // Use fast atan approximation
+    const float atanResult = fastAtan(scaledInput);
+
+    // Scale to ±0.64 maximum (2/PI ≈ 0.64)
+    const float output = (2.0f / Constants::PI) * atanResult;
+
+    // Safety clamp (atan bounded to ±PI/2, so output bounded to ±0.64)
+    return std::clamp(output, -0.64f, 0.64f);
+}
+
+void Waveshaper::reset()
+{
+    dcBlockerL.reset();
+    dcBlockerR.reset();
+    latencyDelayL.reset();
+    latencyDelayR.reset();
+    smoothedDrive.setCurrentAndTargetValue(drive);
+}
+
+} // namespace CogDSP

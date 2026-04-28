@@ -1,0 +1,26 @@
+# Success Criteria
+
+## Product Criteria
+1. **Functional Plugin:** Working VST3 plugin that loads in REAPER, processes or generates audio correctly, has a functional modern UI, and saves/loads presets
+
+2. **Quality:** Plugin passes:
+   - Audio thread safety audit
+   - Gain staging verification
+   - Unit tests
+
+## Commercial Criteria
+3. **Commercial Readiness:** Licensing system integrated, marketplace listing prepared, pricing strategy documented
+
+4. **Business Plan:** Complete marketing strategy covering:
+   - Pre-launch activities
+   - Launch activities
+   - Post-launch activities
+   - All achievable by a solo developer
+
+## Knowledge Base Criteria
+5. **Structured Multi-Layer KB:** Five layers (Technical, Sound Design, UI/UX, Commercial, Reference) populated with enough content that Claude Code produces informed implementations at every phase
+
+6. **Bridge Mechanism:** Sound Design → Technical bridge for subjective-to-parameter translation (e.g., "warm" → filter cutoff range + saturation amount)
+
+## Reproducibility
+7. **Another developer** with similar skills could follow this playbook and produce a comparable result

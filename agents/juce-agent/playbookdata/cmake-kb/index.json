@@ -1,0 +1,27 @@
+{
+  "kb_name": "cmake-kb",
+  "version": "1.0.0",
+  "last_updated": "2026-03-30T12:24:56.308271+00:00",
+  "topics": {
+    "cmake-docs": {
+      "files": [
+        "command_target_compile_definitions.json",
+        "command_target_link_libraries.json",
+        "command_add_library.json",
+        "command_target_include_directories.json",
+        "command_add_executable.json"
+      ],
+      "file_count": 5,
+      "last_updated": "2026-03-30T12:24:56.308273+00:00"
+    },
+    "curated": {
+      "files": [
+        "cmake-audio-patterns.json",
+        "juce-cmake-best-practices.json",
+        "juce-audio-plugin-cmake.json"
+      ],
+      "file_count": 3,
+      "last_updated": "2026-03-30T12:24:56.308274+00:00"
+    }
+  }
+}

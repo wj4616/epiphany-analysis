@@ -1,0 +1,18 @@
+# juce-vst-business-trial2
+
+## Status
+Phase 0: Commission & Scoping — In Progress
+
+## Project Overview
+_To be defined_
+
+## Purpose Statement
+_To be defined_
+
+## Structure
+- `research/` — Domain research documents
+- `architecture/` — Design documents
+- `drafts/` — Work-in-progress content
+- `audits/` — Quality audit results
+- `testing/` — Test scenarios and results
+- `final/` — Completed playbook output

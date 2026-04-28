@@ -1,0 +1,26 @@
+{
+  "markdown": "# 404 Not Found\n\nThe requested URL (/w/cpp/string/string\\_view.html)\nwas not found on this server.",
+  "metadata": {
+    "title": "404 Not Found",
+    "language": "en",
+    "scrapeId": "019d39b1-9fec-7503-9615-e27fd9cdbf5c",
+    "sourceURL": "https://en.cppreference.com/w/cpp/string/string_view",
+    "url": "https://en.cppreference.com/w/cpp/string/string_view.html",
+    "statusCode": 404,
+    "error": "Not Found",
+    "contentType": "text/html; charset=iso-8859-1",
+    "timezone": "America/New_York",
+    "proxyUsed": "basic",
+    "cacheState": "miss",
+    "indexId": "da8d9e5d-2d76-4c33-81b3-835b35ab56d3",
+    "creditsUsed": 1,
+    "concurrencyLimited": false
+  },
+  "html": "<!DOCTYPE html><html lang=\"en\">\n<body>\n\n\n\n<div>\n\n<h1>404 Not Found</h1>\n\n<p>\nThe requested URL (/w/cpp/string/string_view.html)\nwas not found on this server.\n</p>\n\n</div>\n\n\n\n\n\n</body></html>",
+  "links": [],
+  "source_url": "https://en.cppreference.com/w/cpp/string/string_view",
+  "source": "cppreference",
+  "topic": "string/string_view",
+  "harvested_at": "2026-03-29T06:03:56.050987",
+  "kb_type": "cpp"
+}

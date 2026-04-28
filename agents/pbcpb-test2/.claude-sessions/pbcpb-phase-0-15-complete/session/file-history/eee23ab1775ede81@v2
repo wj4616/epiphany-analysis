@@ -1,0 +1,28 @@
+{
+  "kb": "technical",
+  "status_summary": {
+    "placeholder": 13,
+    "harvested": 0,
+    "curated": 0,
+    "synced": 0
+  },
+  "sync_history": [
+    {"date": "2026-04-02", "action": "directory_created", "entries_added": 0},
+    {"date": "2026-04-02", "action": "placeholders_seeded", "entries_added": 13}
+  ],
+  "curation_queue": [
+    {"entry_id": "technical_realtime-safety_atomic-audio", "status": "pending_harvest"},
+    {"entry_id": "technical_realtime-safety_lock-free-patterns", "status": "pending_harvest"},
+    {"entry_id": "technical_realtime-safety_allocation-avoidance", "status": "pending_harvest"},
+    {"entry_id": "technical_juce-patterns_apvts-setup", "status": "pending_harvest"},
+    {"entry_id": "technical_juce-patterns_state-management", "status": "pending_harvest"},
+    {"entry_id": "technical_juce-patterns_parameter-smoothing", "status": "pending_harvest"},
+    {"entry_id": "technical_dsp-algorithms_filter-basics", "status": "pending_harvest"},
+    {"entry_id": "technical_dsp-algorithms_oscillator-basics", "status": "pending_harvest"},
+    {"entry_id": "technical_dsp-algorithms_gain-staging", "status": "pending_harvest"},
+    {"entry_id": "technical_build-systems_cmake-fetchcontent", "status": "pending_harvest"},
+    {"entry_id": "technical_build-systems_ci-github-actions", "status": "pending_harvest"},
+    {"entry_id": "technical_testing_catch2-setup", "status": "pending_harvest"},
+    {"entry_id": "technical_testing_pluginval-validation", "status": "pending_harvest"}
+  ]
+}

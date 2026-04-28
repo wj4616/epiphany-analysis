@@ -1,0 +1,71 @@
+{
+  "harvest_metadata": {
+    "kb_type": "dsp-kb",
+    "topic": "feedback delay network FDN",
+    "harvested_at": "2026-03-30T23:24:17.557861+00:00",
+    "quality_filter": {
+      "passed": 3,
+      "rejected": 32,
+      "rejection_reasons": {
+        "not_relevant": 32
+      }
+    },
+    "thresholds": {
+      "min_content_length": 500,
+      "min_relevance_score": 0.2,
+      "max_noise_ratio": 0.5
+    }
+  },
+  "result": {
+    "data": [
+      {
+        "url": "https://www.youtube.com/watch?v=C0aU2tLpKsw",
+        "title": "Zita FDN Reverb Algorithm on the Daisy Seed (Feedback ... - YouTube",
+        "markdown": "![Thumbnail (1920x1080)](https://i.ytimg.com/vi/C0aU2tLpKsw/maxresdefault.jpg)\n# [Zita FDN Reverb Algorithm on the Daisy Seed (Feedback Delay Network) (Noise Engineering Versio)](https://www.youtube.com/watch?v=C0aU2tLpKsw)\n\n**Visibility**: Public\n**Uploaded by**: [Lantertronics](http://www.youtube.com/@Lantertronics)\n**Uploaded at**: 2025-12-11T23:20:37-08:00\n**Published at**: 2025-12-11T23:20:37-08:00\n**Length**: 06:54\n**Views**: 1037\n**Likes**: 62\n**Category**: Education\n\n## Description\n\n```\nAndrew Ionascu's reverb code for the Daisy Seed: https://github.com/adion12/DaisyVerb\n(see zita.ccp for the Zita FDN algorithm code)\n\nPrevious videos on Daisy Seed reverb algorithms:\nhttps://youtu.be/PNHGs7RQc_o\nhttps://youtu.be/jKZgz84T4gw\n\nSupport this channel via a special purpose donation to the Georgia Tech Foundation (GTF210000920), earmarked for my work: https://youtu.be/2BnAYPB5xag\n\n0:00 Algorithm\n2:00 Demo\n3:25 FDN order\n4:56 Freeze effect\n```\n\n",
+        "quality_report": {
+          "url": "https://www.youtube.com/watch?v=C0aU2tLpKsw",
+          "title": "Zita FDN Reverb Algorithm on the Daisy Seed (Feedback ... - YouTube",
+          "content_length": 958,
+          "has_code": true,
+          "code_blocks": 2,
+          "relevance_score": 0.8350730688935283,
+          "noise_ratio": 0.0967741935483871,
+          "passed": true,
+          "rejection_reason": null
+        }
+      },
+      {
+        "url": "https://caml.music.mcgill.ca/~gary/307/week6/node11.html",
+        "title": "Feedback Delay Networks (FDN) - McGill University",
+        "markdown": "[![next](https://caml.music.mcgill.ca/~gary/307/images/next.png)](https://caml.music.mcgill.ca/~gary/307/week6/node12.html)[![up](https://caml.music.mcgill.ca/~gary/307/images/up.png)](https://caml.music.mcgill.ca/~gary/307/week6/reverb.html)[![previous](https://caml.music.mcgill.ca/~gary/307/images/prev.png)](https://caml.music.mcgill.ca/~gary/307/week6/node10.html)\n\n**Next:** [References](https://caml.music.mcgill.ca/~gary/307/week6/node12.html) **Up:** [Digital Reverberation](https://caml.music.mcgill.ca/~gary/307/week6/reverb.html) **Previous:** [Late Reverberation](https://caml.music.mcgill.ca/~gary/307/week6/node10.html)\n\n## Feedback Delay Networks (FDN)\n\n|     |\n| --- |\n| ![\\begin{figure}\\begin{center} \\begin{picture}(7.0,2.4) \\put(0.25,0){\\epsfig{fil... ...{$y[n]$} % put(6.3,0.54)\\{$y[n]$\\} \\par\\end{picture} \\end{center} \\end{figure}](https://caml.music.mcgill.ca/~gary/307/week6/img41.png) |\n\n**Figure 12:**\nA feedback delay network structure proposed for artificial reverberation by [Jot (1992)](https://caml.music.mcgill.ca/~gary/307/week6/node12.html#jot:thesis).\n\n- Figure\u00a0[12](https://caml.music.mcgill.ca/~gary/307/week6/node11.html#fig:fdn) illustrates an example FDN reverberator using three delay lines proposed by [Jot (1992)](https://caml.music.mcgill.ca/~gary/307/week6/node12.html#jot:thesis).\n\n- An FDN can be seen as a vector feedback comb filter, with ![$N$](https://caml.music.mcgill.ca/~gary/307/week6/img42.png) feedback \u201cchannels\u201d (![$N$](https://caml.music.mcgill.ca/~gary/307/week6/img42.png)=3 in Fig.\u00a0[12](https://caml.music.mcgill.ca/~gary/307/week6/node11.html#fig:fdn)).\n\n- The \u201cmixing matrix\u201d provides diffusion by \u201cscattering\u201d energy amongst the ![$N$](https://caml.music.mcgill.ca/~gary/307/week6/img42.png) channels. Assuming decay control is handled by the ![$g_{i}$](https://caml.music.mcgill.ca/~gary/307/week6/img43.png) coefficients, this matrix should be \u201clossless\u201d.\n\n- To achieve frequency-dependent decay control, the ![$g_{i}$](https://caml.music.mcgill.ca/~gary/307/week6/img43.png) coefficients can be replaced by low-order digital filters.\n\n- The \u201ctonal correction\u201d filter ![$E(z)$](https://caml.music.mcgill.ca/~gary/307/week6/img44.png) is a low-order filter which serves to equalize modal energy amongst the three bands.\n\n- The delay-line lengths are generally chosen to be mutually prime. System \u201ctuning\u201d remains a manual, trial and error process.\n\n- A relatively intuitive approach to the building of an FDN reverberator is provided by [Geraint Luff](https://signalsmith-audio.co.uk/writing/2021/lets-write-a-reverb/).\n\n- A Matlab Toolbox for developing FDN reverberators is provided by [Sebastian Schlecht](https://github.com/SebastianJiroSchlecht/fdnToolbox).\n\n\n* * *\n\n|     |     |\n| --- | --- |\n| [![McGill](https://caml.music.mcgill.ca/~gary/307/images/mcgill.gif)](http://www.mcgill.ca/) | \u00a92004-2025 McGill University. All Rights Reserved.<br>Maintained by [Gary P. Scavone](http://www.music.mcgill.ca/~gary/). |",
+        "quality_report": {
+          "url": "https://caml.music.mcgill.ca/~gary/307/week6/node11.html",
+          "title": "Feedback Delay Networks (FDN) - McGill University",
+          "content_length": 2988,
+          "has_code": false,
+          "code_blocks": 0,
+          "relevance_score": 0.2677376171352075,
+          "noise_ratio": 0.02857142857142857,
+          "passed": true,
+          "rejection_reason": null
+        }
+      },
+      {
+        "url": "http://research.spa.aalto.fi/publications/papers/eurasip-colorless-fdn/",
+        "title": "Feedback Delay Network Optimization",
+        "markdown": "|     |     |\n| --- | --- |\n| [![](http://research.spa.aalto.fi/publications/papers/eurasip-colorless-fdn/eleclogo.png)](http://elec.aalto.fi/) | # Optimizing tiny colorless feedback delay networks<br>## Gloria Dal Santo, Karolina Prawda, Sebastian J. Schlecht, and Vesa V\u00e4lim\u00e4ki |\n\n### Demo page for the paper submitted to EURASIP Journal on Audio, Speech, and Music Processing, Directions of DAFx.\n\n#### This page includes sound samples of the tested FDN configurations. The samples are divided into three reverberation conditions: lossless, homogeneous decay, frequency-dependent decay. The samples were used in the subjective assessment section of the paper.\n\n#### - DiffFDN-O: Optimized differentiable FDN with a random orthogonal feedback matrix. - DiffFDN-RO: DiffFDN with random parameters. These random parameters are used as the initialization for the optimization of DiffFDN. - DiffFDN-SCAT: Optimized differentiable FDN with a scattering feedback matrix. - DiffFDN-HH: Optimized differentiable FDN with a Householder feedback matrix. - SH: FDN implementation of the Schroeder series all-pass reverberator. - REF: Reference (WGN / decaying WGN / FDN with 64 delay lines).\n\n###### Lossless\n\n|     |     |     |     |     |     |     |\n| --- | --- | --- | --- | --- | --- | --- |\n\n| ### N | ### DiffFDN | ### RO | ### DiffFDN (SCAT) | ### DiffFDN (HH) | ### SH | ### REF |\n| 4 |  |  |  |  |  |  |\n| 6 |  |  |  |  |  |  |\n| 8 |  |  |  |  |  |  |\n\n###### Homogeneous Decay\n\n|     |     |     |     |     |     |     |\n| --- | --- | --- | --- | --- | --- | --- |\n\n| ### N | ### DiffFDN | ### RO | ### DiffFDN (SCAT) | ### DiffFDN (HH) | ### SH | ### REF |\n| 4 |  |  |  |  |  |  |\n| 6 |  |  |  |  |  |  |\n| 8 |  |  |  |  |  |  |\n\n###### Frequency Dependent Decay\n\n|     |     |     |     |     |     |     |\n| --- | --- | --- | --- | --- | --- | --- |\n\n|  | ### DiffFDN | ### RO | ### DiffFDN (SCAT) | ### DiffFDN (HH) | ### SH | ### REF |\n| N = 4 |  |  |  |  |  |  |\n| N = 6 |  |  |  |  |  |  |\n| N = 8 |  |  |  |  |  |  |\n\n .\n\n\n_Last updated: 02.02.2024_",
+        "quality_report": {
+          "url": "http://research.spa.aalto.fi/publications/papers/eurasip-colorless-fdn/",
+          "title": "Feedback Delay Network Optimization",
+          "content_length": 2061,
+          "has_code": false,
+          "code_blocks": 0,
+          "relevance_score": 0.38816108685104317,
+          "noise_ratio": 0.0,
+          "passed": true,
+          "rejection_reason": null
+        }
+      }
+    ]
+  }
+}

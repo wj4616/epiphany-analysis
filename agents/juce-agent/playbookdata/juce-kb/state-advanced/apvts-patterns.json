@@ -1,0 +1,42 @@
+{
+  "id": "juce-kb_state-advanced_apvts-patterns",
+  "kb": "juce-kb",
+  "topic": "state-advanced",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "[Content to be harvested]",
+  "concepts": [],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Example code placeholder\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# APVTS Patterns\n\n[Content to be harvested]\n\n## Overview\n\n[Overview content]\n\n## Key Concepts\n\n- [Concept 1]\n- [Concept 2]\n\n## Implementation\n\n```cpp\n// Example code placeholder\n```\n\n## See Also\n\n- [Related topic]\n",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:39.970257+00:00"
+  },
+  "title": "APVTS Patterns",
+  "description": "AudioProcessorValueTreeState best practices",
+  "source": "curated",
+  "harvested_at": "2026-03-30T09:49:33.131567Z",
+  "kb_type": "juce",
+  "audio_relevance": 10,
+  "difficulty": "intermediate",
+  "implementation_examples": [],
+  "tags": [],
+  "related_topics": [],
+  "search_terms": [
+    "JUCE APVTS",
+    "AudioProcessorValueTreeState",
+    "parameter attachment",
+    "state management JUCE"
+  ],
+  "sources": [
+    "JUCE forum",
+    "melatonin.dev"
+  ]
+}

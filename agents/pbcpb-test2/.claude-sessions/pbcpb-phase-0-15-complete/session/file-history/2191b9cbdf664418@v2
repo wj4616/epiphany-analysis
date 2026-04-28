@@ -1,0 +1,16 @@
+{
+  "id": "commercial_marketing_launch-timeline",
+  "kb": "commercial",
+  "topic": "marketing",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Plugin Launch Timeline",
+  "summary": "Placeholder: 30-day pre-launch marketing plan, day-by-day activities.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["marketing", "launch", "timeline", "pre-launch"],
+  "related_topics": ["marketing", "content-strategy"],
+  "difficulty": "beginner",
+  "domain_relevance": 10
+}

@@ -1,0 +1,16 @@
+{
+  "id": "ui-ux_accessibility_keyboard-support",
+  "kb": "ui-ux",
+  "topic": "accessibility",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Keyboard Navigation for Plugin UI",
+  "summary": "Placeholder: Tab order, arrow keys, keyboard shortcuts for accessibility.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["ui", "accessibility", "keyboard", "navigation", "tab"],
+  "related_topics": ["accessibility", "control-types"],
+  "difficulty": "intermediate",
+  "domain_relevance": 8
+}

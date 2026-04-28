@@ -1,0 +1,78 @@
+{
+  "id": "sound-design-kb_techniques_pad-synth-design",
+  "kb": "sound-design-kb",
+  "topic": "techniques",
+  "status": "synced",
+  "version": "2.0.0",
+  "summary": "Pads provide atmosphere and harmonic foundation:",
+  "concepts": [
+    {
+      "name": "Attack",
+      "description": "500-2000ms (very slow for evolving texture)",
+      "related": []
+    },
+    {
+      "name": "Decay",
+      "description": "1000-3000ms (slow decay to sustain)",
+      "related": []
+    },
+    {
+      "name": "Sustain",
+      "description": "80-100% (high sustain for continuous sound)",
+      "related": []
+    },
+    {
+      "name": "Release",
+      "description": "1000-3000ms (smooth fade-out)",
+      "related": []
+    }
+  ],
+  "code_blocks": [
+    {
+      "language": "cpp",
+      "code": "// Pad oscillator setup for richness\nosc1.setWaveform(Oscillator::sawWave);   // Primary\nosc2.setWaveform(Oscillator::sawWave);   // Detuned layer\nosc2.setDetune(12);                       // +12 cents\nosc3.setWaveform(Oscillator::sawWave);   // Another layer\nosc3.setDetune(-12);                      // -12 cents\nosc4.setWaveform(Oscillator::triangleWave); // Subtle shimmer\nosc4.setDetune(5);\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Slow LFO for evolving pads\nlfo.setFrequency(0.1f);  // Very slow (0.1 Hz)\nlfoModAmount = 0.02f;    // Subtle pitch modulation\n\n// Apply to filter cutoff\nfilterCutoff = baseCutoff * (1.0f + lfoOutput * 0.3f);\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Slow filter sweep for movement\nfilterEnv.setAttack(2000);    // 2 second attack\nfilterEnv.setDecay(4000);     // 4 second decay\nfilterEnv.setSustain(0.8f);   // High sustain\nfilterEnv.setRelease(3000);   // 3 second release\n",
+      "preserved": true
+    },
+    {
+      "language": "cpp",
+      "code": "// Typical pad effects chain\nclass PadEffects\n{\npublic:\n    void prepare(double sampleRate, int maxBlockSize)\n    {\n        // Chorus for width\n        chorus.setRate(0.3f);\n        chorus.setDepth(0.5f);\n        \n        // Delay for echo\n        delay.setDelayTime(0.375f);  // Dotted quarter\n        delay.setFeedback(0.4f);\n        \n        // Reverb for space\n        reverb.setRoomSize(0.8f);\n        reverb.setDamping(0.3f);\n    }\n    \n    void process(AudioBuffer<float>& buffer)\n    {\n        chorus.process(buffer);\n        delay.process(buffer);\n        reverb.process(buffer);\n    }\n};\n",
+      "preserved": true
+    }
+  ],
+  "references": [],
+  "original_markdown": "# Pad Synth Sound Design\n\n## Core Elements\n\nPads provide atmosphere and harmonic foundation:\n\n1. **Slow evolution** - Long attack and release times\n2. **Rich harmonics** - Multiple detuned oscillators\n3. **Movement** - LFO modulation and filter sweeps\n\n## Oscillator Configuration\n\n```cpp\n// Pad oscillator setup for richness\nosc1.setWaveform(Oscillator::sawWave);   // Primary\nosc2.setWaveform(Oscillator::sawWave);   // Detuned layer\nosc2.setDetune(12);                       // +12 cents\nosc3.setWaveform(Oscillator::sawWave);   // Another layer\nosc3.setDetune(-12);                      // -12 cents\nosc4.setWaveform(Oscillator::triangleWave); // Subtle shimmer\nosc4.setDetune(5);\n```\n\n## Envelope Settings\n\n- **Attack**: 500-2000ms (very slow for evolving texture)\n- **Decay**: 1000-3000ms (slow decay to sustain)\n- **Sustain**: 80-100% (high sustain for continuous sound)\n- **Release**: 1000-3000ms (smooth fade-out)\n\n## Modulation for Movement\n\n### LFO Modulation\n```cpp\n// Slow LFO for evolving pads\nlfo.setFrequency(0.1f);  // Very slow (0.1 Hz)\nlfoModAmount = 0.02f;    // Subtle pitch modulation\n\n// Apply to filter cutoff\nfilterCutoff = baseCutoff * (1.0f + lfoOutput * 0.3f);\n```\n\n### Filter Envelope\n```cpp\n// Slow filter sweep for movement\nfilterEnv.setAttack(2000);    // 2 second attack\nfilterEnv.setDecay(4000);     // 4 second decay\nfilterEnv.setSustain(0.8f);   // High sustain\nfilterEnv.setRelease(3000);   // 3 second release\n```\n\n## Common Pad Types\n\n### Ambient Pad\n- Sine/triangle waves with long attack\n- Subtle reverb (3-5 second decay)\n- No filter modulation\n- Meditative, ethereal\n\n### String Pad\n- Saw waves with slow attack\n- Filter envelope for bow-like attack\n- Chorus for ensemble width\n- Classic 80s/90s sound\n\n### Evolving Pad\n- Multiple modulations\n- LFO on filter, amplitude, and pitch\n- Effects chain (chorus, delay, reverb)\n- Modern electronic\n\n## Effects Chain\n\n```cpp\n// Typical pad effects chain\nclass PadEffects\n{\npublic:\n    void prepare(double sampleRate, int maxBlockSize)\n    {\n        // Chorus for width\n        chorus.setRate(0.3f);\n        chorus.setDepth(0.5f);\n        \n        // Delay for echo\n        delay.setDelayTime(0.375f);  // Dotted quarter\n        delay.setFeedback(0.4f);\n        \n        // Reverb for space\n        reverb.setRoomSize(0.8f);\n        reverb.setDamping(0.3f);\n    }\n    \n    void process(AudioBuffer<float>& buffer)\n    {\n        chorus.process(buffer);\n        delay.process(buffer);\n        reverb.process(buffer);\n    }\n};\n```\n\n## Best Practices\n\n1. **Use unison** - Multiple detuned voices create richness\n2. **Modulate slowly** - Pads should evolve, not jump\n3. **Layer effects** - Chorus + delay + reverb is the classic chain\n4. **Check mono** - Ensure pad still sounds good in mono\n5. **CPU awareness** - Pads can be expensive; limit voice count",
+  "metadata": {
+    "migrated_from": "markdown",
+    "migrated_at": "2026-03-30T12:26:45.821628+00:00"
+  },
+  "title": "Pad Synth Sound Design",
+  "description": "Techniques for creating evolving pad sounds in synthesizers",
+  "source": "curated",
+  "harvested_at": "2026-03-29T00:00:00.000000",
+  "kb_type": "sound-design",
+  "audio_relevance": 9,
+  "difficulty": "intermediate",
+  "implementation_examples": 2,
+  "tags": [
+    "pad",
+    "synthesis",
+    "modulation",
+    "effects",
+    "ambient"
+  ],
+  "related_topics": [
+    "parameters",
+    "dsp",
+    "lfo"
+  ]
+}

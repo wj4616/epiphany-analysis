@@ -1,0 +1,388 @@
+{
+  "kb_name": "dsp-kb",
+  "version": "1.0.0",
+  "created": "2026-03-30T12:24:56.298909+00:00",
+  "last_sync": "2026-03-30T13:43:48.155043+00:00",
+  "status": "ready",
+  "topics": [
+    {
+      "name": "reverb",
+      "files": {
+        "impulse-response.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.297971+00:00",
+          "synced_at": "2026-03-30T12:24:56.297979+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 228
+        },
+        "convolution-reverb.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298013+00:00",
+          "synced_at": "2026-03-30T12:24:56.298015+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 218
+        },
+        "reverb-design.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298040+00:00",
+          "synced_at": "2026-03-30T12:24:56.298041+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 223
+        },
+        "algorithmic-reverb.json": {
+          "status": "synced",
+          "synced_at": "2026-03-30T13:43:48.155035+00:00",
+          "synced_timestamp": 1774878228,
+          "credits_used": 0,
+          "sources": [],
+          "retry_count": 0,
+          "last_error": null
+        }
+      }
+    },
+    {
+      "name": "synthesis",
+      "files": {
+        "karplus-strong-string.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298150+00:00",
+          "synced_at": "2026-03-30T12:24:56.298151+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 5905
+        }
+      }
+    },
+    {
+      "name": "algorithms",
+      "files": {
+        "fft-audio-processing.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298206+00:00",
+          "synced_at": "2026-03-30T12:24:56.298207+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 7176
+        },
+        "wavetable-synthesis.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298240+00:00",
+          "synced_at": "2026-03-30T12:24:56.298241+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 5177
+        },
+        "juce-dsp-reference.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298296+00:00",
+          "synced_at": "2026-03-30T12:24:56.298297+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "harvested",
+          "markdown_length": 18832
+        },
+        "dynamics-processing.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298326+00:00",
+          "synced_at": "2026-03-30T12:24:56.298327+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 8290
+        }
+      }
+    },
+    {
+      "name": "dynamics",
+      "files": {
+        "multiband-compression.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298366+00:00",
+          "synced_at": "2026-03-30T12:24:56.298367+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 221
+        },
+        "limiter-design.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298391+00:00",
+          "synced_at": "2026-03-30T12:24:56.298392+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 214
+        },
+        "noise-gate.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298408+00:00",
+          "synced_at": "2026-03-30T12:24:56.298409+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 225
+        },
+        "expander.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298425+00:00",
+          "synced_at": "2026-03-30T12:24:56.298426+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 214
+        },
+        "compressor.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298440+00:00",
+          "synced_at": "2026-03-30T12:24:56.298441+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 223
+        }
+      }
+    },
+    {
+      "name": "pitch",
+      "files": {
+        "formant-shifting.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298474+00:00",
+          "synced_at": "2026-03-30T12:24:56.298475+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 216
+        },
+        "harmonizer.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298490+00:00",
+          "synced_at": "2026-03-30T12:24:56.298491+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 217
+        },
+        "pitch-shifting.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298504+00:00",
+          "synced_at": "2026-03-30T12:24:56.298505+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 224
+        }
+      }
+    },
+    {
+      "name": "spatial",
+      "files": {
+        "binaural-audio.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298535+00:00",
+          "synced_at": "2026-03-30T12:24:56.298536+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 214
+        },
+        "mid-side-processing.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298551+00:00",
+          "synced_at": "2026-03-30T12:24:56.298552+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 219
+        },
+        "stereo-width.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298566+00:00",
+          "synced_at": "2026-03-30T12:24:56.298566+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 223
+        }
+      }
+    },
+    {
+      "name": "filters",
+      "files": {
+        "biquad-filter-design.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298605+00:00",
+          "synced_at": "2026-03-30T12:24:56.298606+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 5989
+        }
+      }
+    },
+    {
+      "name": "delay",
+      "files": {
+        "delay-lines.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298638+00:00",
+          "synced_at": "2026-03-30T12:24:56.298639+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 219
+        },
+        "echo.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298654+00:00",
+          "synced_at": "2026-03-30T12:24:56.298655+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 211
+        },
+        "ping-pong-delay.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298668+00:00",
+          "synced_at": "2026-03-30T12:24:56.298669+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 215
+        }
+      }
+    },
+    {
+      "name": "theory",
+      "files": {
+        "dsp-latency-optimization.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298710+00:00",
+          "synced_at": "2026-03-30T12:24:56.298711+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 7940
+        }
+      }
+    },
+    {
+      "name": "optimization",
+      "files": {
+        "simd-optimization.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298749+00:00",
+          "synced_at": "2026-03-30T12:24:56.298749+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 7317
+        }
+      }
+    },
+    {
+      "name": "distortion",
+      "files": {
+        "waveshaping.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298779+00:00",
+          "synced_at": "2026-03-30T12:24:56.298780+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 218
+        },
+        "saturation.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298794+00:00",
+          "synced_at": "2026-03-30T12:24:56.298795+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 217
+        },
+        "soft-clipping.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298809+00:00",
+          "synced_at": "2026-03-30T12:24:56.298810+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 213
+        }
+      }
+    },
+    {
+      "name": "modulation",
+      "files": {
+        "tremolo.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298839+00:00",
+          "synced_at": "2026-03-30T12:24:56.298840+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 214
+        },
+        "flanger.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298854+00:00",
+          "synced_at": "2026-03-30T12:24:56.298855+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 217
+        },
+        "phaser.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298869+00:00",
+          "synced_at": "2026-03-30T12:24:56.298870+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 216
+        },
+        "vibrato.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298884+00:00",
+          "synced_at": "2026-03-30T12:24:56.298885+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 214
+        },
+        "chorus.json": {
+          "status": "synced",
+          "harvested_at": "2026-03-30T12:24:56.298898+00:00",
+          "synced_at": "2026-03-30T12:24:56.298899+00:00",
+          "synced_timestamp": 1774873496,
+          "has_semantic": false,
+          "source": "curated",
+          "markdown_length": 223
+        }
+      }
+    }
+  ],
+  "phases": [
+    {
+      "name": "reverb",
+      "files": {
+        "algorithmic-reverb.json": {
+          "status": "harvested",
+          "harvested_at": "2026-03-31T02:58:19.358882+00:00",
+          "credits_used": 0,
+          "sources": 2
+        }
+      }
+    }
+  ]
+}

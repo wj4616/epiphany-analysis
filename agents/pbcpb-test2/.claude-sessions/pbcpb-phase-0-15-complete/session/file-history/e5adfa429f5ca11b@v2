@@ -1,0 +1,16 @@
+{
+  "id": "commercial_distribution_installers",
+  "kb": "commercial",
+  "topic": "distribution",
+  "status": "placeholder",
+  "version": "1.0.0",
+  "title": "Plugin Installer Creation",
+  "summary": "Placeholder: Creating installers for Windows, macOS, Linux.",
+  "description": "PLACEHOLDER - Content to be harvested from research documents.",
+  "source": {"type": "placeholder"},
+  "concepts": [],
+  "tags": ["distribution", "installer", "windows", "macos", "linux"],
+  "related_topics": ["distribution", "licensing"],
+  "difficulty": "intermediate",
+  "domain_relevance": 8
+}
