@@ -81,3 +81,10 @@ node_modules/
 
 # Logs
 *.log
+
+# Environment / secrets
+.env
+.env.*
+run-with-api-key.sh
+*api-key*
+*api_key*
