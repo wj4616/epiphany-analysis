@@ -160,13 +160,13 @@ fix pipeline with idempotent recovery.
 
 ## Invocation
 
-```
+~~~
 /epiphany-audit [<path>] [--audit | --fix <report>] [--verbose] [--deep]
                 [--improve] [--auto | --confirm-all | --dry-run]
                 [--escalate-finding F00N] [--test-cmd '<cmd>']
                 [--monorepo-subtree-limit N] [--reverify-state]
                 [--full-rerun | --no-rerun]
-```
+~~~
 
 See `SKILL.md` for the complete invocation contract, node registry,
 halt states, and behavioral specification.
@@ -1037,7 +1037,7 @@ This fixture violates the invariant `partial: true ⇔ halt_state: non-null` by 
         "resolved":                {"type": "array", "items": {"type": "string"}},
         "fix_induced_regressions": {"type": "array", "items": {"type": "string"}},
         "unchanged":               {"type": "array", "items": {"type": "string"}},
-        "new_findings_discovered": {"type": "array", "items": {"type": "string"}}
+        "new_findings_discovered": {"type": "array", "items": {"type": "object"}}
       }
     },
     "diff_scope_check": {"type": "string", "enum": ["pass","fail-with-unmapped-hunks","n/a"]},
@@ -1286,7 +1286,7 @@ This violates the invariant `total_findings == tier_1 + tier_2 + tier_3 + deferr
       "required": ["id", "status", "tier", "fix_group_id", "proposed_diff", "files_touched"],
       "properties": {
         "id":            {"type": "string"},
-        "status":        {"type": "string", "const": "simulated"},
+        "status":        {"type": "string", "enum": ["simulated", "deferred-at-triage"]},
         "tier":          {"type": "integer", "enum": [1, 2, 3]},
         "tier_classification_reason": {"oneOf": [{"type": "string"}, {"type": "null"}]},
         "fix_group_id":  {"type": "string"},
@@ -2360,7 +2360,7 @@ Each `.md` file in this directory is a dimension plugin conforming to
 
 ## Example custom plugin frontmatter
 
-```yaml
+~~~yaml
 schema_version: 1
 name: juce-rt-safety
 display_name: JUCE Real-Time Audio Safety
@@ -2376,7 +2376,7 @@ prompt_template: |
 kb_route_query: null
 intra_node_token_budget: 30000
 priority: high
-```
+~~~
 ```
 
 - [ ] **Step 7: Validate dimension plugins against schema**
@@ -3189,7 +3189,7 @@ Logic errors, type/lifetime, boundary violations, concurrency, resource leaks, e
 
 ## Token Budget
 
-30k tokens per analyzer invocation (intra-node soft budget under `--deep`; see §6.1 of spec).
+30k tokens per analyzer invocation (intra-node soft budget under `--deep`; see SKILL.md §2 `--deep` flag).
 
 ## Backtrack / Aggregation
 
@@ -4097,6 +4097,8 @@ user_approvals: {           // per tier; populated after interactive confirmatio
 
 Emits Dry-Run Plan v1 and **halts here** — no PreFlight, no FixApplier, no branch creation. The plan contains `proposed_diff` (the literal patch N19 WOULD apply) for each finding.
 
+If `--no-rerun` or `--full-rerun` is also set, emit a user-facing warning before proceeding: *"`--no-rerun`/`--full-rerun` has no effect under `--dry-run` — the audit-rerun tier policy is irrelevant when the fix pipeline halts at N17."* This is a warning only; N17 continues normally.
+
 ## Tier Confirmation Protocol
 
 Default policy (applied in order T1 → T2 → T3):
@@ -4272,7 +4274,7 @@ recovery_manifest_updates: RecoveryEvent[]
 ## Side Effects
 
 - Git-staged: working-tree edits + commits on PASS; `git checkout -- <tracked-touched-files>` + `git clean -fd <new-files-created-by-this-attempt>` on FAIL (NEVER `git revert`)
-- Write-recovery-manifest: boundary-aligned writes ONLY at fix-group start, end-success, end-failure (per O3 spec §5.3)
+- Write-recovery-manifest: boundary-aligned writes ONLY at fix-group start, end-success, end-failure (see Atomic Loop section below and Recovery-Manifest Write Policy section)
 - Write-log: events per fix-group iteration
 
 ## Halt Conditions
@@ -5071,7 +5073,7 @@ optionally drives a safeguarded fix pipeline. It is designed to:
 | Flag | Behavior |
 |------|----------|
 | `--verbose` | Adds depth where it improves actionability; never adds nitpick padding |
-| `--deep` | Lifts spawn budget to ≤3; subagent fan-out for analyzers; interactive B-FIND prompt; 80k-token checkpoint cap |
+| `--deep` | Lifts spawn budget to ≤3 (≤4 with `--improve`); subagent fan-out for analyzers; interactive B-FIND prompt; 80k-token checkpoint cap |
 | `--improve` | After audit + save prompt, run improvement subpipeline (N24–N27). Valid in audit/no-flag mode only; warning + skip if used with `--fix` |
 | `--escalate-finding F00N` | Force finding to Tier-3 regardless of N16 classification; overrides `--auto` for that finding; `halt-on-invalid-finding-id` if ID not in report |
 | `--test-cmd '<cmd>'` | Override auto-detected test command |
@@ -5189,13 +5191,13 @@ invoke
                  └─ N19 FixApplier (atomic loop per fix-group)
                       └─ N20 PerFixVerifier (targeted tests + type check)
                            [E_repair: 1st→retry N19; 2nd→replan N17; 3rd→cap-hit→N22]
-                 └─ N21 RegressionBattery
-                      battery (tests/types/lint/build/diff-scope)
-                      + tiered audit-rerun (Tier-1: skip; Tier-2: narrow; Tier-3: full)
-                      [E_rerun_fail: induced regressions → N16 re-triage]
-                 └─ N23 FixReporter (planned termination: partial=false)
-                      └─ E_finalize → N22 RollbackHandler (archive manifest)
-                           └─ E_complete → user
+                           └─ N21 RegressionBattery
+                                battery (tests/types/lint/build/diff-scope)
+                                + tiered audit-rerun (Tier-1: skip; Tier-2: narrow; Tier-3: full)
+                                [E_rerun_fail: induced regressions → N16 re-triage]
+                                └─ N23 FixReporter (planned termination: partial=false)
+                                     └─ E_finalize → N22 RollbackHandler (archive manifest)
+                                          └─ E_complete → user
 ```
 
 ### Halt-mid-fix path
