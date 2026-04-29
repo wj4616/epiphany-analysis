@@ -2,7 +2,7 @@
 import json, os, pytest
 import jsonschema
 
-SKILL = os.path.expanduser("~/.claude/skills/epiphany-audit")
+SKILL = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def load_schema():
     with open(os.path.join(SKILL, "schemas/improvement-report-v1.schema.json")) as f:
@@ -15,7 +15,7 @@ def load_fixture(name):
 def test_valid_improvement_report_passes():
     jsonschema.validate(load_fixture("valid_improvement_report"), load_schema())
 
-def test_count_mismatch_fails():
+def test_count_sum_invariant_fixture_has_mismatch():
     doc = load_fixture("invalid_improvement_report_count_mismatch")
     ts = doc
     expected_survivors = ts["notable"] + ts["quick_wins"] + ts["worthwhile"]
