@@ -11,7 +11,7 @@ Exits 1 if overlap is below 80% (for non-optional expected findings).
 """
 import sys, os, re, yaml, argparse
 
-SKILL = os.path.expanduser("~/.claude/skills/epiphany-audit")
+SKILL = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def load_expected(fixture_name):

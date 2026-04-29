@@ -2,7 +2,7 @@
 """Checks every module file has all required Layer-B contract sections."""
 import os, sys, glob, re
 
-SKILL = os.path.expanduser("~/.claude/skills/epiphany-audit")
+SKILL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REQUIRED_SECTIONS = [
     "## Inputs", "## Outputs", "## Side Effects",
     "## Halt Conditions", "## Token Budget",

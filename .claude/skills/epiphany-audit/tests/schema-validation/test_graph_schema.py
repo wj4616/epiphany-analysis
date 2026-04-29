@@ -2,7 +2,7 @@
 import json, os, pytest
 import jsonschema
 
-SKILL = os.path.expanduser("~/.claude/skills/epiphany-audit")
+SKILL = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def load(name):
     with open(os.path.join(SKILL, name)) as f:
