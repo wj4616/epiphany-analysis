@@ -1,0 +1,20 @@
+{
+  "session_id": "fixture-pass",
+  "node_a": {
+    "content_hash": "MISMATCH"
+  },
+  "node_b": {
+    "genius_detection": "genius-current"
+  },
+  "modules": {
+    "m-analyze": {
+      "status": "completed",
+      "a1_complete": true,
+      "b1_complete": true
+    },
+    "m-integrate": {
+      "status": "completed",
+      "audit_verdict": "PASS"
+    }
+  }
+}
