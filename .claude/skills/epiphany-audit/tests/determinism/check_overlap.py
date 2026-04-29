@@ -29,7 +29,7 @@ def parse_actual_report(report_path):
     for block in re.finditer(r'^id: F\d+\s*\nlocation: (.+?)\s*\ndimensions: \[([^\]]+)\]',
                               content, re.MULTILINE):
         loc = block.group(1).strip()
-        dims = [d.strip() for d in block.group(2).split(",")]
+        dims = [d.strip().strip("'\"") for d in block.group(2).split(",")]
         locations.append((loc, dims))
     return locations
 
@@ -43,7 +43,7 @@ def check_overlap(actual_findings, expected):
 
     matched = 0
     for exp in required:
-        exp_loc_prefix = exp["location"].replace("source/", "")
+        exp_loc_prefix = exp["location"].removeprefix("source/")
         for (actual_loc, actual_dims) in actual_findings:
             loc_matches = exp_loc_prefix in actual_loc
             dim_matches = exp["dimension"] in actual_dims

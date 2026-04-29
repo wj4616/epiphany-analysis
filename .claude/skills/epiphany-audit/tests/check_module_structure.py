@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Checks every module file has all required Layer-B contract sections."""
-import os, sys, glob
+import os, sys, glob, re
 
 SKILL = os.path.expanduser("~/.claude/skills/epiphany-audit")
 REQUIRED_SECTIONS = [
@@ -18,7 +18,8 @@ if not module_files:
 
 for path in module_files:
     content = open(path).read()
-    missing = [s for s in REQUIRED_SECTIONS if s not in content]
+    missing = [s for s in REQUIRED_SECTIONS
+               if not re.search(rf'^{re.escape(s)}\s*$', content, re.MULTILINE)]
     if missing:
         errors.append(f"{os.path.basename(path)}: missing {missing}")
 
